@@ -60,7 +60,7 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": ".",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -74,7 +74,8 @@
       "^@core/(.*)$": "<rootDir>/src/core/$1",
       "^@agents/(.*)$": "<rootDir>/src/agents/$1",
       "^@shared/(.*)$": "<rootDir>/src/shared/$1"
-    }
+    },
+    "testMatch": ["**/src/**/*.spec.ts"]
   }
 }
 

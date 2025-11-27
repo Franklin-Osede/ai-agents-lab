@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FollowUpAgentService } from '../application/services/follow-up-agent.service';
 import { GenerateFollowUpDto } from './dto/generate-follow-up.dto';
 import { FollowUpResponseDto } from './dto/follow-up-response.dto';
+import { FollowUpUrgency } from '../domain/entities/follow-up.entity';
 
 @ApiTags('Follow-up Agent')
 @Controller('agents/follow-up')
@@ -27,7 +28,7 @@ export class FollowUpAgentController {
       return {
         success: false,
         message: 'Error generating follow-up message',
-        urgency: 'LOW',
+        urgency: FollowUpUrgency.LOW,
         suggestedNextSteps: [],
       };
     }

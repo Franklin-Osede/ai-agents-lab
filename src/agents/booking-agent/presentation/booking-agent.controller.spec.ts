@@ -3,6 +3,7 @@ import { BookingAgentController } from './booking-agent.controller';
 import { BookingAgentService } from '../application/services/booking-agent.service';
 import { Result } from '../../../../core/domain/shared/value-objects/result';
 import { IntentType } from '../../../../core/domain/agents/entities/agent-intent.entity';
+import { BookingResponseDto } from './dto/booking-response.dto';
 
 describe('BookingAgentController', () => {
   let controller: BookingAgentController;
@@ -84,8 +85,11 @@ describe('BookingAgentController', () => {
       // Assert
       expect(result.success).toBe(false);
       expect(result.message).toBe('An error occurred processing your request');
-      expect(result.intent?.type).toBe('UNKNOWN');
-      expect(result.intent?.confidence).toBe(0);
+      expect(result.intent).toBeDefined();
+      if (result.intent) {
+        expect(result.intent.type).toBe('UNKNOWN');
+        expect(result.intent.confidence).toBe(0);
+      }
     });
   });
 });

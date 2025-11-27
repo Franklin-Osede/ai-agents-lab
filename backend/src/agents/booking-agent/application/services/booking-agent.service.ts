@@ -4,7 +4,7 @@ import {
   AI_PROVIDER_TOKEN,
 } from '../../../../core/domain/agents/interfaces/ai-provider.interface';
 import { Result } from '../../../../core/domain/shared/value-objects/result';
-import { Booking, BookingStatus } from '../../domain/entities/booking.entity';
+import { Booking } from '../../domain/entities/booking.entity';
 import { IBookingRepository } from '../../domain/interfaces/booking-repository.interface';
 import { IntentClassifierService } from '../../../../shared/services/intent-classifier.service';
 import {
@@ -17,7 +17,7 @@ export interface BookingRequest {
   message: string;
   customerId?: string;
   businessId: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
 
 export interface BookingResponse {

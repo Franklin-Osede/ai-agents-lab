@@ -114,7 +114,7 @@ export class BookingAgentService {
   private async generateBookingResponse(
     userMessage: string,
     availableTimes: string[],
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
   ): Promise<string> {
     const systemPrompt = `You are a professional booking assistant for a ${context?.businessType || 'business'}.
 Your role is to help customers book appointments in a friendly and efficient manner.

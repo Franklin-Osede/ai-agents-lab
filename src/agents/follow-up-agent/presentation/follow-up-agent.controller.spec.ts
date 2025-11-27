@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FollowUpAgentController } from './follow-up-agent.controller';
 import { FollowUpAgentService } from '../application/services/follow-up-agent.service';
-import { Result } from '../../../../core/domain/shared/value-objects/result';
+import { Result } from '@core/domain/shared/value-objects/result';
 import { FollowUpUrgency } from '../domain/entities/follow-up.entity';
 
 describe('FollowUpAgentController', () => {

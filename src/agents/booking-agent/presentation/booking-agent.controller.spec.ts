@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BookingAgentController } from './booking-agent.controller';
 import { BookingAgentService } from '../application/services/booking-agent.service';
-import { Result } from '../../../../core/domain/shared/value-objects/result';
-import { IntentType } from '../../../../core/domain/agents/entities/agent-intent.entity';
+import { Result } from '@core/domain/shared/value-objects/result';
+import { IntentType } from '@core/domain/agents/entities/agent-intent.entity';
 import { BookingResponseDto } from './dto/booking-response.dto';
 
 describe('BookingAgentController', () => {

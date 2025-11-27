@@ -71,10 +71,9 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "^@domain/(.*)$": "<rootDir>/domain/$1",
-      "^@application/(.*)$": "<rootDir>/application/$1",
-      "^@infrastructure/(.*)$": "<rootDir>/infrastructure/$1",
-      "^@presentation/(.*)$": "<rootDir>/presentation/$1"
+      "^@core/(.*)$": "<rootDir>/src/core/$1",
+      "^@agents/(.*)$": "<rootDir>/src/agents/$1",
+      "^@shared/(.*)$": "<rootDir>/src/shared/$1"
     }
   }
 }

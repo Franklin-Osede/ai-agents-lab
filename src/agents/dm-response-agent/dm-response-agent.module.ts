@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { DmResponseAgentController } from './presentation/dm-response-agent.controller';
 import { DmResponseAgentService } from './application/services/dm-response-agent.service';
-import { IntentClassifierService } from '../../../shared/services/intent-classifier.service';
+import { IntentClassifierService } from '@shared/services/intent-classifier.service';
 import { CoreModule } from '../../core/core.module';
 
 /**

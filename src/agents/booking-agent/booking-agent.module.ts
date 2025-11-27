@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { BookingAgentController } from './presentation/booking-agent.controller';
 import { BookingAgentService } from './application/services/booking-agent.service';
-import { IntentClassifierService } from '../../../shared/services/intent-classifier.service';
+import { IntentClassifierService } from '@shared/services/intent-classifier.service';
 import { CoreModule } from '../../core/core.module';
 
 /**

@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DmResponseAgentController } from './dm-response-agent.controller';
 import { DmResponseAgentService } from '../application/services/dm-response-agent.service';
-import { Result } from '../../../../core/domain/shared/value-objects/result';
+import { Result } from '@core/domain/shared/value-objects/result';
 import { MessageChannel } from '../domain/entities/message.entity';
-import { IntentType } from '../../../../core/domain/agents/entities/agent-intent.entity';
+import { IntentType } from '@core/domain/agents/entities/agent-intent.entity';
 
 describe('DmResponseAgentController', () => {
   let controller: DmResponseAgentController;

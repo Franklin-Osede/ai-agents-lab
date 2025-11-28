@@ -11,5 +11,6 @@ export class MetricsPanelComponent {
     intent?: string;
     confidence?: number;
   } = {};
+  @Input() agentColor = '#667eea';
 }
 

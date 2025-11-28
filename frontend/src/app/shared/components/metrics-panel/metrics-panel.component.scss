@@ -36,10 +36,10 @@
 .intent-badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  background: #dbeafe;
-  color: #1e40af;
   border-radius: 6px;
   font-size: 0.875rem;
+  border: 1px solid;
+  font-weight: 600;
 }
 
 .confidence-bar {
@@ -53,8 +53,8 @@
 
 .confidence-fill {
   height: 100%;
-  background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
   transition: width 0.3s ease;
+  border-radius: 4px;
 }
 
 .confidence-text {

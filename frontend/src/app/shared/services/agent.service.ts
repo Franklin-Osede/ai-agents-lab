@@ -10,41 +10,44 @@ export class AgentService {
       {
         id: 'booking',
         name: 'Booking Agent',
-        description: 'Automatic appointment booking system',
+        description: 'Sistema automático de reservas de citas. Permite a tus clientes reservar citas 24/7 sin intervención manual.',
         icon: '📅',
         features: [
-          'Detects booking intent',
-          'Suggests available times',
-          'Confirms appointments automatically',
+          'Detecta intención de reserva automáticamente',
+          'Sugiere horarios disponibles en tiempo real',
+          'Confirma citas y envía recordatorios',
+          'Reduce no-shows con confirmaciones inteligentes',
         ],
         endpoint: 'booking',
-        color: '#3B82F6',
+        color: '#1e40af', // Azul oscuro profesional para reservas
       },
       {
         id: 'dm-response',
         name: 'DM Response Agent',
-        description: 'Auto-responds to Instagram/WhatsApp messages',
+        description: 'Responde automáticamente a mensajes directos de Instagram, WhatsApp y Telegram. Nunca pierdas una oportunidad de venta.',
         icon: '💬',
         features: [
-          'Responds 24/7',
-          'Understands customer intent',
-          'Provides instant answers',
+          'Responde en segundos, 24/7',
+          'Entiende preguntas sobre precios y servicios',
+          'Proporciona información instantánea',
+          'Mantiene el tono profesional de tu marca',
         ],
         endpoint: 'dm-response',
-        color: '#10B981',
+        color: '#047857', // Verde oscuro para comunicación
       },
       {
         id: 'follow-up',
         name: 'Follow-up Agent',
-        description: 'Automated customer follow-up system',
+        description: 'Sistema de seguimiento automatizado. Genera mensajes personalizados para reconectar con clientes y aumentar conversiones.',
         icon: '🔄',
         features: [
-          'Tracks customer interactions',
-          'Generates personalized follow-ups',
-          'Increases conversion rates',
+          'Rastrea interacciones con clientes',
+          'Genera seguimientos personalizados',
+          'Aumenta tasas de conversión',
+          'Mantiene relaciones a largo plazo',
         ],
         endpoint: 'follow-up',
-        color: '#F59E0B',
+        color: '#c2410c', // Naranja oscuro para acción/seguimiento
       },
     ];
   }

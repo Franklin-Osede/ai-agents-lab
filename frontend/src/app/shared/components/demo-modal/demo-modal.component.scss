@@ -22,28 +22,45 @@
   flex-direction: column;
   animation: slideUp 0.3s ease;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border-top: 4px solid;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 2px solid;
 
   .header-info {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 1rem;
+    flex: 1;
 
     .agent-icon {
       font-size: 2rem;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      color: white;
+      flex-shrink: 0;
     }
 
     h2 {
-      margin: 0;
+      margin: 0 0 0.5rem 0;
       font-size: 1.5rem;
       color: #1f2937;
+    }
+
+    .use-case-description {
+      margin: 0;
+      font-size: 0.875rem;
+      color: #6b7280;
+      line-height: 1.5;
     }
   }
 
@@ -84,6 +101,49 @@
   min-height: 0;
 }
 
+.examples-section {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border-left: 3px solid;
+
+  .examples-label {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .examples-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .example-btn {
+    padding: 0.625rem 1rem;
+    background: white;
+    border: 2px solid;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    font-weight: 500;
+
+    &:hover:not(:disabled) {
+      background: rgba(0, 0, 0, 0.02);
+      transform: translateX(4px);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
 .input-section {
   display: flex;
   gap: 0.5rem;
@@ -111,16 +171,16 @@
 
   .send-btn {
     padding: 0.75rem 1.5rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: opacity 0.3s;
+    transition: all 0.3s;
 
     &:hover:not(:disabled) {
-      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
     &:disabled {

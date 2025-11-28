@@ -1,6 +1,6 @@
-<div class="agent-card" [style.border-color]="agent.color">
+<div class="agent-card" [style.border-top-color]="getBorderColor()" [style.background]="getCardGradient()">
   <div class="card-header">
-    <div class="agent-icon" [style.background-color]="agent.color + '20'">
+    <div class="agent-icon" [style.background]="getButtonGradient()">
       {{ agent.icon }}
     </div>
     <h3 class="agent-name">{{ agent.name }}</h3>
@@ -13,8 +13,8 @@
   </ul>
 
   <div class="card-actions">
-    <button class="btn-primary" (click)="onTryIt()">
-      ▶️ Try It Now
+    <button class="btn-primary" [style.background]="getButtonGradient()" (click)="onTryIt()">
+      <span>▶️ Probar Ahora</span>
     </button>
   </div>
 </div>

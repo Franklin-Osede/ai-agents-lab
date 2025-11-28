@@ -20,26 +20,88 @@ export class DemoModalComponent implements OnInit {
     intent?: string;
     confidence?: number;
   } = {};
+  exampleMessages: string[] = [];
+  useCaseDescription = '';
 
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
+    this.setupAgentSpecificContent();
     this.addWelcomeMessage();
+  }
+
+  setupAgentSpecificContent(): void {
+    const content: Record<string, { examples: string[]; description: string }> = {
+      booking: {
+        examples: [
+          'Quiero reservar una cita para mañana a las 2pm',
+          'Necesito una cita esta semana',
+          '¿Tienen disponibilidad el viernes por la tarde?',
+          'Quiero cancelar mi cita del lunes',
+        ],
+        description: 'Simula cómo tus clientes pueden reservar citas automáticamente. El agente detecta la intención, sugiere horarios disponibles y confirma la reserva.',
+      },
+      'dm-response': {
+        examples: [
+          '¿Cuánto cuesta el tratamiento de botox?',
+          '¿Tienen disponibilidad esta semana?',
+          '¿Qué servicios ofrecen?',
+          'Necesito información sobre precios',
+        ],
+        description: 'Simula respuestas automáticas a mensajes directos de Instagram/WhatsApp. El agente responde preguntas comunes sobre precios, servicios y disponibilidad.',
+      },
+      'follow-up': {
+        examples: [
+          'Consulta sobre servicios de estética hace 3 días',
+          'Cliente preguntó precios hace 5 días pero no reservó',
+          'Primera consulta hace una semana, necesita seguimiento',
+          'Cliente interesado en botox pero no concretó cita',
+        ],
+        description: 'Genera mensajes de seguimiento personalizados para reconectar con clientes. El agente crea mensajes apropiados según el tiempo transcurrido y el contexto de la última interacción.',
+      },
+    };
+
+    const agentContent = content[this.agent.id] || { examples: [], description: '' };
+    this.exampleMessages = agentContent.examples;
+    this.useCaseDescription = agentContent.description;
   }
 
   addWelcomeMessage(): void {
     const welcomeMessages: Record<string, string> = {
-      booking: "Hi! I'm your booking assistant. Try asking: 'I want to book an appointment tomorrow at 2pm'",
-      'dm-response': "Hi! I'm your DM response agent. Try asking: 'How much does botox cost?'",
-      'follow-up': "Hi! I'm your follow-up agent. I'll generate personalized follow-up messages for your customers.",
+      booking: "👋 ¡Hola! Soy tu asistente de reservas. Puedo ayudarte a reservar citas, verificar disponibilidad y gestionar tus reservas. Prueba con uno de los ejemplos o escribe tu propia solicitud.",
+      'dm-response': "💬 ¡Hola! Soy tu agente de respuestas automáticas. Respondo preguntas sobre precios, servicios y disponibilidad. Prueba con uno de los ejemplos o haz tu propia pregunta.",
+      'follow-up': "🔄 ¡Hola! Soy tu agente de seguimiento. Genero mensajes personalizados para reconectar con tus clientes. Prueba con uno de los ejemplos para ver cómo funcionaría en tu negocio.",
     };
 
     this.messages.push({
       id: 'welcome',
-      content: welcomeMessages[this.agent.id] || 'Hello! How can I help you?',
+      content: welcomeMessages[this.agent.id] || '¡Hola! ¿Cómo puedo ayudarte?',
       sender: 'agent',
       timestamp: new Date(),
     });
+  }
+
+  getAgentGradient(): string {
+    const gradients: Record<string, string> = {
+      booking: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #1e3a8a 100%)',
+      'dm-response': 'linear-gradient(135deg, #047857 0%, #065f46 50%, #064e3b 100%)',
+      'follow-up': 'linear-gradient(135deg, #c2410c 0%, #9a3412 50%, #7c2d12 100%)',
+    };
+    return gradients[this.agent.id] || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+  }
+
+  getPlaceholder(): string {
+    const placeholders: Record<string, string> = {
+      booking: 'Escribe tu solicitud de reserva...',
+      'dm-response': 'Escribe tu pregunta...',
+      'follow-up': 'Describe la situación del cliente...',
+    };
+    return placeholders[this.agent.id] || 'Escribe tu mensaje...';
+  }
+
+  useExample(example: string): void {
+    this.currentMessage = example;
+    this.sendMessage();
   }
 
   async sendMessage(): Promise<void> {
@@ -93,9 +155,10 @@ export class DemoModalComponent implements OnInit {
         this.messages.push(agentMessage);
       }
     } catch (error) {
+      console.error('Error:', error);
       this.messages.push({
         id: (Date.now() + 2).toString(),
-        content: 'Sorry, I encountered an error. Please try again.',
+        content: 'Lo siento, encontré un error. Por favor, verifica que el backend esté corriendo y vuelve a intentar.',
         sender: 'agent',
         timestamp: new Date(),
       });

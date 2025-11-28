@@ -1,15 +1,35 @@
 <div class="modal-overlay" (click)="onClose()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
+  <div class="modal-content" (click)="$event.stopPropagation()" [style.border-top-color]="agent.color">
+    <div class="modal-header" [style.border-bottom-color]="agent.color + '30'">
       <div class="header-info">
-        <span class="agent-icon">{{ agent.icon }}</span>
-        <h2>{{ agent.name }}</h2>
+        <span class="agent-icon" [style.background]="getAgentGradient()">{{ agent.icon }}</span>
+        <div>
+          <h2>{{ agent.name }}</h2>
+          <p class="use-case-description">{{ useCaseDescription }}</p>
+        </div>
       </div>
       <button class="close-btn" (click)="onClose()">×</button>
     </div>
 
     <div class="modal-body">
       <div class="chat-section">
+        <!-- Ejemplos rápidos -->
+        <div class="examples-section" *ngIf="exampleMessages.length > 0">
+          <p class="examples-label">💡 Ejemplos para probar:</p>
+          <div class="examples-grid">
+            <button
+              *ngFor="let example of exampleMessages"
+              class="example-btn"
+              [style.border-color]="agent.color"
+              [style.color]="agent.color"
+              (click)="useExample(example)"
+              [disabled]="isLoading"
+            >
+              {{ example }}
+            </button>
+          </div>
+        </div>
+
         <app-chat-interface
           [messages]="messages"
           [isLoading]="isLoading"
@@ -20,22 +40,23 @@
             type="text"
             [(ngModel)]="currentMessage"
             (keypress)="onKeyPress($event)"
-            placeholder="Type your message..."
+            [placeholder]="getPlaceholder()"
             class="message-input"
             [disabled]="isLoading"
           />
           <button
             class="send-btn"
+            [style.background]="getAgentGradient()"
             (click)="sendMessage()"
             [disabled]="isLoading || !currentMessage.trim()"
           >
-            {{ isLoading ? 'Sending...' : 'Send' }}
+            {{ isLoading ? 'Enviando...' : 'Enviar' }}
           </button>
         </div>
       </div>
 
       <div class="metrics-section">
-        <app-metrics-panel [metrics]="metrics"></app-metrics-panel>
+        <app-metrics-panel [metrics]="metrics" [agentColor]="agent.color"></app-metrics-panel>
       </div>
     </div>
   </div>

@@ -1,0 +1,30 @@
+<div class="landing-page">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">AI Agents Lab</h1>
+      <p class="hero-subtitle">
+        Professional AI agents for business automation. Click any agent below to see it in action.
+      </p>
+    </div>
+  </section>
+
+  <!-- Agents Grid -->
+  <section class="agents-section">
+    <div class="agents-grid">
+      <app-agent-card
+        *ngFor="let agent of agents"
+        [agent]="agent"
+        (tryIt)="openDemo(agent)"
+      ></app-agent-card>
+    </div>
+  </section>
+
+  <!-- Demo Modal -->
+  <app-demo-modal
+    *ngIf="showModal && selectedAgent"
+    [agent]="selectedAgent"
+    (close)="closeModal()"
+  ></app-demo-modal>
+</div>
+

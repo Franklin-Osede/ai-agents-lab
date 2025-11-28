@@ -1,0 +1,21 @@
+<div class="agent-card" [style.border-color]="agent.color">
+  <div class="card-header">
+    <div class="agent-icon" [style.background-color]="agent.color + '20'">
+      {{ agent.icon }}
+    </div>
+    <h3 class="agent-name">{{ agent.name }}</h3>
+  </div>
+
+  <p class="agent-description">{{ agent.description }}</p>
+
+  <ul class="features-list">
+    <li *ngFor="let feature of agent.features">{{ feature }}</li>
+  </ul>
+
+  <div class="card-actions">
+    <button class="btn-primary" (click)="onTryIt()">
+      ▶️ Try It Now
+    </button>
+  </div>
+</div>
+

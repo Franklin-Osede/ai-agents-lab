@@ -1,0 +1,43 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="header-info">
+        <span class="agent-icon">{{ agent.icon }}</span>
+        <h2>{{ agent.name }}</h2>
+      </div>
+      <button class="close-btn" (click)="onClose()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="chat-section">
+        <app-chat-interface
+          [messages]="messages"
+          [isLoading]="isLoading"
+        ></app-chat-interface>
+
+        <div class="input-section">
+          <input
+            type="text"
+            [(ngModel)]="currentMessage"
+            (keypress)="onKeyPress($event)"
+            placeholder="Type your message..."
+            class="message-input"
+            [disabled]="isLoading"
+          />
+          <button
+            class="send-btn"
+            (click)="sendMessage()"
+            [disabled]="isLoading || !currentMessage.trim()"
+          >
+            {{ isLoading ? 'Sending...' : 'Send' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="metrics-section">
+        <app-metrics-panel [metrics]="metrics"></app-metrics-panel>
+      </div>
+    </div>
+  </div>
+</div>
+

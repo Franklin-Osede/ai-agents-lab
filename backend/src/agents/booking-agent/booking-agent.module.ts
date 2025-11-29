@@ -3,6 +3,7 @@ import { BookingAgentController } from './presentation/booking-agent.controller'
 import { BookingAgentService } from './application/services/booking-agent.service';
 import { IntentClassifierService } from '@shared/services/intent-classifier.service';
 import { CoreModule } from '../../core/core.module';
+import { EntityExtractorService } from './application/services/entity-extractor.service';
 
 /**
  * Booking Agent Module
@@ -19,6 +20,7 @@ import { CoreModule } from '../../core/core.module';
   providers: [
     BookingAgentService,
     IntentClassifierService,
+    EntityExtractorService,
     // In real implementation, you'd inject the repository here
     {
       provide: 'IBookingRepository',

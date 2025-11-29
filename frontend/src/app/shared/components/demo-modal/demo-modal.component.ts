@@ -20,6 +20,20 @@ export class DemoModalComponent implements OnInit {
     intent?: string;
     confidence?: number;
   } = {};
+  extractedEntities?: {
+    dates: string[];
+    times: string[];
+    services: string[];
+    location?: string;
+    people?: number;
+  };
+  voiceMessage?: {
+    script: string;
+    audioUrl: string;
+    videoUrl?: string;
+    duration?: number;
+    estimatedCost?: number;
+  };
   exampleMessages: string[] = [];
   useCaseDescription = '';
 
@@ -59,6 +73,15 @@ export class DemoModalComponent implements OnInit {
         ],
         description: 'Genera mensajes de seguimiento personalizados para reconectar con clientes. El agente crea mensajes apropiados según el tiempo transcurrido y el contexto de la última interacción.',
       },
+      voice: {
+        examples: [
+          'Cliente consultó sobre botox hace 3 días',
+          'Seguimiento post-consulta con video personalizado',
+          'Onboarding de nuevo cliente con mensaje de voz',
+          'Recordatorio de cita con audio personalizado',
+        ],
+        description: 'Genera mensajes de voz y video personalizados con IA. Crea contenido multimedia que aumenta engagement y conversiones. Usa D-ID para generar audio y video profesional.',
+      },
     };
 
     const agentContent = content[this.agent.id] || { examples: [], description: '' };
@@ -71,6 +94,7 @@ export class DemoModalComponent implements OnInit {
       booking: "👋 ¡Hola! Soy tu asistente de reservas. Puedo ayudarte a reservar citas, verificar disponibilidad y gestionar tus reservas. Prueba con uno de los ejemplos o escribe tu propia solicitud.",
       'dm-response': "💬 ¡Hola! Soy tu agente de respuestas automáticas. Respondo preguntas sobre precios, servicios y disponibilidad. Prueba con uno de los ejemplos o haz tu propia pregunta.",
       'follow-up': "🔄 ¡Hola! Soy tu agente de seguimiento. Genero mensajes personalizados para reconectar con tus clientes. Prueba con uno de los ejemplos para ver cómo funcionaría en tu negocio.",
+      voice: "🎤 ¡Hola! Soy tu agente de voz. Genero mensajes de audio y video personalizados con IA para aumentar engagement. Prueba con uno de los ejemplos para ver cómo funcionaría.",
     };
 
     this.messages.push({
@@ -86,6 +110,7 @@ export class DemoModalComponent implements OnInit {
       booking: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #1e3a8a 100%)',
       'dm-response': 'linear-gradient(135deg, #047857 0%, #065f46 50%, #064e3b 100%)',
       'follow-up': 'linear-gradient(135deg, #c2410c 0%, #9a3412 50%, #7c2d12 100%)',
+      voice: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%)',
     };
     return gradients[this.agent.id] || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
   }
@@ -95,6 +120,7 @@ export class DemoModalComponent implements OnInit {
       booking: 'Escribe tu solicitud de reserva...',
       'dm-response': 'Escribe tu pregunta...',
       'follow-up': 'Describe la situación del cliente...',
+      voice: 'Describe el contexto para el mensaje de voz...',
     };
     return placeholders[this.agent.id] || 'Escribe tu mensaje...';
   }
@@ -135,6 +161,11 @@ export class DemoModalComponent implements OnInit {
             .generateFollowUp(messageToSend, 3)
             .toPromise();
           break;
+        case 'voice':
+          response = await this.apiService
+            .generateVoice(messageToSend, false)
+            .toPromise();
+          break;
         default:
           throw new Error('Unknown agent');
       }
@@ -143,6 +174,26 @@ export class DemoModalComponent implements OnInit {
       this.metrics.responseTime = responseTime;
       this.metrics.intent = response?.intent?.type;
       this.metrics.confidence = response?.intent?.confidence;
+
+      // Extract entities if available (for booking agent)
+      if (response?.entities) {
+        this.extractedEntities = response.entities;
+      } else {
+        this.extractedEntities = undefined;
+      }
+
+      // Extract voice message if available (for voice agent)
+      if (response && 'audioUrl' in response) {
+        this.voiceMessage = {
+          script: response.script || '',
+          audioUrl: response.audioUrl || '',
+          videoUrl: response.videoUrl,
+          duration: response.duration,
+          estimatedCost: response.estimatedCost,
+        };
+      } else {
+        this.voiceMessage = undefined;
+      }
 
       if (response) {
         const agentMessage: ChatMessage = {

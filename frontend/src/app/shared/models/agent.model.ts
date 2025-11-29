@@ -8,6 +8,14 @@ export interface Agent {
   color: string;
 }
 
+export interface BookingEntities {
+  dates: string[];
+  times: string[];
+  services: string[];
+  location?: string;
+  people?: number;
+}
+
 export interface AgentResponse {
   success: boolean;
   message?: string;
@@ -18,6 +26,7 @@ export interface AgentResponse {
     type: string;
     confidence: number;
   };
+  entities?: BookingEntities;
   urgency?: 'LOW' | 'MEDIUM' | 'HIGH';
   suggestedNextSteps?: string[];
 }

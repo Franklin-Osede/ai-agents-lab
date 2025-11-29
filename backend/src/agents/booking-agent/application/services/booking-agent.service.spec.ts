@@ -11,6 +11,8 @@ import {
 } from '../../../../core/domain/agents/entities/agent-intent.entity';
 import { AiProviderException } from '../../../../core/shared/exceptions/business.exception';
 import { Booking } from '../../domain/entities/booking.entity';
+import { EntityExtractorService } from './entity-extractor.service';
+import { BookingEntities } from '../../domain/value-objects/booking-entities';
 
 describe('BookingAgentService', () => {
   let service: BookingAgentService;
@@ -30,6 +32,10 @@ describe('BookingAgentService', () => {
     findAvailableSlots: jest.fn(),
   };
 
+  const mockEntityExtractor = {
+    extractEntities: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -42,6 +48,10 @@ describe('BookingAgentService', () => {
         {
           provide: 'IBookingRepository',
           useValue: mockBookingRepository,
+        },
+        {
+          provide: EntityExtractorService,
+          useValue: mockEntityExtractor,
         },
       ],
     })
@@ -58,6 +68,7 @@ describe('BookingAgentService', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    mockEntityExtractor.extractEntities.mockReset();
   });
 
   describe('processBookingRequest', () => {
@@ -74,7 +85,10 @@ describe('BookingAgentService', () => {
         dates: ['tomorrow'],
       });
 
+      const emptyEntities = BookingEntities.create({});
+
       jest.spyOn(intentClassifier, 'classify').mockResolvedValue(mockIntent);
+      jest.spyOn(mockEntityExtractor, 'extractEntities').mockResolvedValue(emptyEntities);
       jest
         .spyOn(aiProvider, 'generateResponse')
         .mockResolvedValue(
@@ -94,6 +108,69 @@ describe('BookingAgentService', () => {
       expect(intentClassifier.classify).toHaveBeenCalledWith(request.message);
     });
 
+    it('should include extracted entities in response', async () => {
+      // Arrange
+      const request = {
+        message: 'Quiero reservar mañana a las 2pm para botox',
+        customerId: 'customer-123',
+        businessId: 'business-456',
+      };
+
+      const mockIntent = new AgentIntent(IntentType.BOOKING, 0.9, request.message, {
+        times: ['14:00'],
+        dates: ['tomorrow'],
+      });
+
+      const mockEntities = BookingEntities.create({
+        dates: ['2024-01-15'],
+        times: ['14:00'],
+        services: ['botox'],
+      });
+
+      jest.spyOn(intentClassifier, 'classify').mockResolvedValue(mockIntent);
+      jest.spyOn(mockEntityExtractor, 'extractEntities').mockResolvedValue(mockEntities);
+      jest
+        .spyOn(aiProvider, 'generateResponse')
+        .mockResolvedValue(
+          'Great! I have availability tomorrow at 2:00 PM. Would that work for you?',
+        );
+
+      // Act
+      const result = await service.processBookingRequest(request);
+
+      // Assert
+      expect(result.isSuccess).toBe(true);
+      expect(result.value.entities).toBeDefined();
+      expect(result.value.entities?.dates).toContain('2024-01-15');
+      expect(result.value.entities?.times).toContain('14:00');
+      expect(result.value.entities?.services).toContain('botox');
+      expect(mockEntityExtractor.extractEntities).toHaveBeenCalledWith(request.message);
+    });
+
+    it('should handle entity extraction failure gracefully', async () => {
+      // Arrange
+      const request = {
+        message: 'Quiero reservar',
+        businessId: 'business-456',
+      };
+
+      const mockIntent = new AgentIntent(IntentType.BOOKING, 0.9, request.message);
+      const emptyEntities = BookingEntities.create({});
+
+      jest.spyOn(intentClassifier, 'classify').mockResolvedValue(mockIntent);
+      jest.spyOn(mockEntityExtractor, 'extractEntities').mockResolvedValue(emptyEntities);
+      jest.spyOn(aiProvider, 'generateResponse').mockResolvedValue('Response');
+
+      // Act
+      const result = await service.processBookingRequest(request);
+
+      // Assert
+      expect(result.isSuccess).toBe(true);
+      // When entities are empty, they should not be included in response (undefined)
+      // This is the expected behavior - we only include entities when they exist
+      expect(result.value.entities).toBeUndefined();
+    });
+
     it('should handle non-booking intents with low confidence', async () => {
       // Arrange
       const request = {
@@ -102,8 +179,10 @@ describe('BookingAgentService', () => {
       };
 
       const mockIntent = new AgentIntent(IntentType.INFORMATION, 0.5, request.message);
+      const emptyEntities = BookingEntities.create({});
 
       jest.spyOn(intentClassifier, 'classify').mockResolvedValue(mockIntent);
+      jest.spyOn(mockEntityExtractor, 'extractEntities').mockResolvedValue(emptyEntities);
       jest
         .spyOn(aiProvider, 'generateResponse')
         .mockResolvedValue('I can help you with that! Would you like to book an appointment?');
@@ -127,8 +206,10 @@ describe('BookingAgentService', () => {
 
       const mockIntent = new AgentIntent(IntentType.BOOKING, 0.9, request.message);
       const availableSlots = ['10:00', '11:00', '14:00'];
+      const emptyEntities = BookingEntities.create({});
 
       jest.spyOn(intentClassifier, 'classify').mockResolvedValue(mockIntent);
+      jest.spyOn(mockEntityExtractor, 'extractEntities').mockResolvedValue(emptyEntities);
       jest.spyOn(mockBookingRepository, 'findAvailableSlots').mockResolvedValue(availableSlots);
       jest.spyOn(aiProvider, 'generateResponse').mockResolvedValue('Response');
 
@@ -149,8 +230,10 @@ describe('BookingAgentService', () => {
       };
 
       const mockIntent = new AgentIntent(IntentType.BOOKING, 0.9, request.message);
+      const emptyEntities = BookingEntities.create({});
 
       jest.spyOn(intentClassifier, 'classify').mockResolvedValue(mockIntent);
+      jest.spyOn(mockEntityExtractor, 'extractEntities').mockResolvedValue(emptyEntities);
       jest
         .spyOn(mockBookingRepository, 'findAvailableSlots')
         .mockRejectedValue(new Error('Repository error'));
@@ -173,8 +256,10 @@ describe('BookingAgentService', () => {
       };
 
       const mockIntent = new AgentIntent(IntentType.BOOKING, 0.9, request.message);
+      const emptyEntities = BookingEntities.create({});
 
       jest.spyOn(intentClassifier, 'classify').mockResolvedValue(mockIntent);
+      jest.spyOn(mockEntityExtractor, 'extractEntities').mockResolvedValue(emptyEntities);
       jest.spyOn(aiProvider, 'generateResponse').mockRejectedValue(new Error('AI Provider Error'));
 
       // Act

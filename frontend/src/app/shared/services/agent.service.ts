@@ -49,6 +49,20 @@ export class AgentService {
         endpoint: 'follow-up',
         color: '#c2410c', // Naranja oscuro para acción/seguimiento
       },
+      {
+        id: 'voice',
+        name: 'Voice Agent',
+        description: 'Genera mensajes de voz y video personalizados con IA. Automatiza outreaching con contenido multimedia que aumenta engagement.',
+        icon: '🎤',
+        features: [
+          'Genera audio personalizado con IA',
+          'Crea videos con avatares hablando',
+          'Personaliza mensajes por cliente',
+          'Aumenta engagement con multimedia',
+        ],
+        endpoint: 'voice',
+        color: '#7c3aed', // Púrpura para voz/multimedia
+      },
     ];
   }
 

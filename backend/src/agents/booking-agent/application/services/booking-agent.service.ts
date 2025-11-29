@@ -12,6 +12,8 @@ import {
   IntentType,
 } from '../../../../core/domain/agents/entities/agent-intent.entity';
 import { AiProviderException } from '../../../../core/shared/exceptions/business.exception';
+import { EntityExtractorService } from './entity-extractor.service';
+import { BookingEntities } from '../../domain/value-objects/booking-entities';
 
 export interface BookingRequest {
   message: string;
@@ -29,6 +31,13 @@ export interface BookingResponse {
     type: string;
     confidence: number;
   };
+  entities?: {
+    dates: string[];
+    times: string[];
+    services: string[];
+    location?: string;
+    people?: number;
+  };
 }
 
 @Injectable()
@@ -39,6 +48,7 @@ export class BookingAgentService {
     private readonly intentClassifier: IntentClassifierService,
     @Inject(AI_PROVIDER_TOKEN) private readonly aiProvider: IAiProvider,
     @Inject('IBookingRepository') private readonly bookingRepository?: IBookingRepository,
+    private readonly entityExtractor?: EntityExtractorService,
   ) {}
 
   async processBookingRequest(request: BookingRequest): Promise<Result<BookingResponse>> {
@@ -58,6 +68,12 @@ export class BookingAgentService {
           },
         });
       }
+
+      // Extract entities from message
+      const entitiesResult = this.entityExtractor
+        ? await this.entityExtractor.extractEntities(request.message)
+        : BookingEntities.create({});
+      const entities = entitiesResult.isSuccess ? entitiesResult.value : BookingEntities.create({}).value;
 
       const suggestedTimes = await this.extractAvailableTimes(request.businessId, intent);
       const responseMessage = await this.generateBookingResponse(
@@ -79,6 +95,7 @@ export class BookingAgentService {
           type: intent.type,
           confidence: intent.confidence,
         },
+        entities: entities.hasEntities() ? entities.toPlainObject() : undefined,
       });
     } catch (error) {
       this.logger.error(`Error processing booking request: ${error.message}`, error.stack);

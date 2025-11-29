@@ -4,6 +4,7 @@ import { CoreModule } from './core/core.module';
 import { BookingAgentModule } from './agents/booking-agent/booking-agent.module';
 import { DmResponseAgentModule } from './agents/dm-response-agent/dm-response-agent.module';
 import { FollowUpAgentModule } from './agents/follow-up-agent/follow-up-agent.module';
+import { VoiceAgentModule } from './agents/voice-agent/voice-agent.module';
 
 /**
  * Main Application Module
@@ -27,6 +28,7 @@ import { FollowUpAgentModule } from './agents/follow-up-agent/follow-up-agent.mo
     BookingAgentModule,
     DmResponseAgentModule,
     FollowUpAgentModule,
+    VoiceAgentModule,
   ],
 })
 export class AppModule {}

@@ -35,6 +35,22 @@
           [isLoading]="isLoading"
         ></app-chat-interface>
 
+        <!-- Entity Extraction (only for booking agent) -->
+        <app-entity-extraction
+          *ngIf="agent.id === 'booking' && extractedEntities"
+          [entities]="extractedEntities"
+        ></app-entity-extraction>
+
+        <!-- Voice Player (only for voice agent) -->
+        <app-voice-player
+          *ngIf="agent.id === 'voice' && voiceMessage"
+          [audioUrl]="voiceMessage.audioUrl"
+          [videoUrl]="voiceMessage.videoUrl"
+          [script]="voiceMessage.script"
+          [duration]="voiceMessage.duration"
+          [estimatedCost]="voiceMessage.estimatedCost"
+        ></app-voice-player>
+
         <div class="input-section">
           <input
             type="text"

@@ -10,6 +10,8 @@ import { AgentCardComponent } from './shared/components/agent-card/agent-card.co
 import { DemoModalComponent } from './shared/components/demo-modal/demo-modal.component';
 import { ChatInterfaceComponent } from './shared/components/chat-interface/chat-interface.component';
 import { MetricsPanelComponent } from './shared/components/metrics-panel/metrics-panel.component';
+import { EntityExtractionComponent } from './shared/components/entity-extraction/entity-extraction.component';
+import { VoicePlayerComponent } from './shared/components/voice-player/voice-player.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +21,8 @@ import { MetricsPanelComponent } from './shared/components/metrics-panel/metrics
     DemoModalComponent,
     ChatInterfaceComponent,
     MetricsPanelComponent,
+    EntityExtractionComponent,
+    VoicePlayerComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule],
   providers: [],

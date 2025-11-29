@@ -41,5 +41,22 @@ export class ApiService {
       daysSinceLastContact,
     });
   }
+
+  generateVoice(
+    context: string,
+    includeVideo: boolean = false,
+    avatarImageUrl?: string,
+  ): Observable<any> {
+    return this.http.post(`${this.baseUrl}/agents/voice/generate`, {
+      customerId: 'demo-customer',
+      businessId: 'demo-business',
+      context,
+      channel: 'WHATSAPP',
+      includeVideo,
+      avatarImageUrl,
+      customerName: 'María',
+      language: 'es',
+    });
+  }
 }
 

@@ -1,8 +1,25 @@
+import { z } from 'zod';
 import { Result } from '../../../../core/domain/shared/value-objects/result';
 
 /**
+ * Zod schema for BookingEntities validation
+ * Used with LangChain StructuredOutputParser for robust extraction
+ */
+export const BookingEntitiesSchema = z.object({
+  dates: z
+    .array(z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'))
+    .default([]),
+  times: z.array(z.string().regex(/^\d{2}:\d{2}$/, 'Time must be in HH:mm format')).default([]),
+  services: z.array(z.string()).default([]),
+  location: z.string().optional(),
+  people: z.number().int().positive().optional(),
+});
+
+export type BookingEntitiesInput = z.infer<typeof BookingEntitiesSchema>;
+
+/**
  * BookingEntities Value Object
- * 
+ *
  * Represents extracted entities from a booking message.
  * Follows DDD principles: immutable, validated, business logic encapsulation.
  */
@@ -63,4 +80,3 @@ export class BookingEntities {
     };
   }
 }
-

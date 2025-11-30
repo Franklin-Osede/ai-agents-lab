@@ -13,7 +13,7 @@ export class Booking extends BaseEntity {
   scheduledTime: Date;
   status: BookingStatus;
   notes?: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
 
   constructor(customerId: string, businessId: string, scheduledTime: Date, notes?: string) {
     super();

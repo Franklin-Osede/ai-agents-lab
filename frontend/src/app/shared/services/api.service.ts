@@ -7,7 +7,7 @@ import { AgentResponse } from '../models/agent.model';
   providedIn: 'root',
 })
 export class ApiService {
-  private readonly baseUrl = 'http://localhost:3000/api/v1';
+  private readonly baseUrl = 'http://localhost:3001/api/v1';
 
   constructor(private http: HttpClient) {}
 

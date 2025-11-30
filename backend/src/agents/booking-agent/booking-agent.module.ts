@@ -4,6 +4,13 @@ import { BookingAgentService } from './application/services/booking-agent.servic
 import { IntentClassifierService } from '@shared/services/intent-classifier.service';
 import { CoreModule } from '../../core/core.module';
 import { EntityExtractorService } from './application/services/entity-extractor.service';
+import { ConfigModule } from '@nestjs/config';
+import { CheckAvailabilityTool } from './application/tools/check-availability.tool';
+import { SuggestTimesTool } from './application/tools/suggest-times.tool';
+import { ConfirmBookingTool } from './application/tools/confirm-booking.tool';
+import { BookingAgentChainService } from './application/services/booking-agent-chain.service';
+import { LangChainProvider } from '../../core/infrastructure/ai/langchain.provider';
+import { InMemoryBookingRepository } from './infrastructure/repositories/in-memory-booking.repository';
 
 /**
  * Booking Agent Module
@@ -15,16 +22,26 @@ import { EntityExtractorService } from './application/services/entity-extractor.
  * - presentation/: Controllers and DTOs
  */
 @Module({
-  imports: [CoreModule],
+  imports: [CoreModule, ConfigModule],
   controllers: [BookingAgentController],
   providers: [
     BookingAgentService,
     IntentClassifierService,
     EntityExtractorService,
-    // In real implementation, you'd inject the repository here
+    // LangChain Provider (if using LangChain)
+    LangChainProvider,
+    // LangChain Chain Service
+    BookingAgentChainService,
+    // LangChain Tools
+    CheckAvailabilityTool,
+    SuggestTimesTool,
+    ConfirmBookingTool,
+    // Repository - Use InMemoryBookingRepository for demos
+    // In production, replace with real database repository
+    InMemoryBookingRepository,
     {
       provide: 'IBookingRepository',
-      useValue: null, // Placeholder - implement repository in infrastructure layer
+      useClass: InMemoryBookingRepository,
     },
   ],
   exports: [BookingAgentService],

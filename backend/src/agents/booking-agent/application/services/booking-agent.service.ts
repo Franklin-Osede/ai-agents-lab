@@ -14,6 +14,8 @@ import {
 import { AiProviderException } from '../../../../core/shared/exceptions/business.exception';
 import { EntityExtractorService } from './entity-extractor.service';
 import { BookingEntities } from '../../domain/value-objects/booking-entities';
+import { BookingAgentChainService } from './booking-agent-chain.service';
+import { ConfigService } from '@nestjs/config';
 
 export interface BookingRequest {
   message: string;
@@ -49,9 +51,84 @@ export class BookingAgentService {
     @Inject(AI_PROVIDER_TOKEN) private readonly aiProvider: IAiProvider,
     @Inject('IBookingRepository') private readonly bookingRepository?: IBookingRepository,
     private readonly entityExtractor?: EntityExtractorService,
+    private readonly bookingAgentChain?: BookingAgentChainService,
+    private readonly configService?: ConfigService,
   ) {}
 
   async processBookingRequest(request: BookingRequest): Promise<Result<BookingResponse>> {
+    // Check if LangChain should be used
+    const useLangChain =
+      this.configService?.get<string>('USE_LANGCHAIN', 'false').toLowerCase() === 'true' &&
+      this.bookingAgentChain;
+
+    if (useLangChain) {
+      return this.processBookingRequestWithLangChain(request);
+    }
+
+    // Original implementation (fallback)
+    return this.processBookingRequestOriginal(request);
+  }
+
+  /**
+   * Process booking request using LangChain agent with tools and memory
+   */
+  private async processBookingRequestWithLangChain(
+    request: BookingRequest,
+  ): Promise<Result<BookingResponse>> {
+    try {
+      this.logger.log(
+        `Processing booking request with LangChain for business: ${request.businessId}`,
+      );
+
+      if (!this.bookingAgentChain) {
+        throw new Error('BookingAgentChain not available');
+      }
+
+      // Use LangChain chain to process request
+      const response = await this.bookingAgentChain.processRequest(request.message, {
+        businessId: request.businessId,
+        customerId: request.customerId,
+        businessType: request.context?.businessType as string,
+        ...request.context,
+      });
+
+      // Extract entities for response (optional, chain handles it)
+      const entitiesResult = this.entityExtractor
+        ? await this.entityExtractor.extractEntities(request.message)
+        : BookingEntities.create({});
+      const entities = entitiesResult.isSuccess
+        ? entitiesResult.value
+        : BookingEntities.create({}).value;
+
+      // Classify intent for response
+      const intent = await this.intentClassifier.classify(request.message);
+
+      return Result.ok({
+        success: true,
+        message: response,
+        suggestedTimes: entities.times.length > 0 ? entities.times : undefined,
+        intent: {
+          type: intent.type,
+          confidence: intent.confidence,
+        },
+        entities: entities.hasEntities() ? entities.toPlainObject() : undefined,
+      });
+    } catch (error) {
+      this.logger.error(
+        `Error processing booking request with LangChain: ${(error as Error).message}`,
+        (error as Error).stack,
+      );
+      // Fallback to original implementation
+      return this.processBookingRequestOriginal(request);
+    }
+  }
+
+  /**
+   * Original booking request processing (fallback)
+   */
+  private async processBookingRequestOriginal(
+    request: BookingRequest,
+  ): Promise<Result<BookingResponse>> {
     try {
       this.logger.log(`Processing booking request for business: ${request.businessId}`);
 
@@ -73,7 +150,9 @@ export class BookingAgentService {
       const entitiesResult = this.entityExtractor
         ? await this.entityExtractor.extractEntities(request.message)
         : BookingEntities.create({});
-      const entities = entitiesResult.isSuccess ? entitiesResult.value : BookingEntities.create({}).value;
+      const entities = entitiesResult.isSuccess
+        ? entitiesResult.value
+        : BookingEntities.create({}).value;
 
       const suggestedTimes = await this.extractAvailableTimes(request.businessId, intent);
       const responseMessage = await this.generateBookingResponse(

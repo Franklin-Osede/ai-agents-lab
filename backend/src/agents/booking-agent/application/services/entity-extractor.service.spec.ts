@@ -4,8 +4,6 @@ import {
   IAiProvider,
   AI_PROVIDER_TOKEN,
 } from '../../../../core/domain/agents/interfaces/ai-provider.interface';
-import { BookingEntities } from '../../domain/value-objects/booking-entities';
-import { AiProviderException } from '../../../../core/shared/exceptions/business.exception';
 
 describe('EntityExtractorService', () => {
   let service: EntityExtractorService;
@@ -157,4 +155,3 @@ describe('EntityExtractorService', () => {
     });
   });
 });
-

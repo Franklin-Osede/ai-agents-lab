@@ -19,5 +19,5 @@ export class ProcessBookingRequestDto {
 
   @ApiProperty({ description: 'Business context', required: false })
   @IsOptional()
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }

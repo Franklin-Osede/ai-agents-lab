@@ -50,7 +50,7 @@ async function bootstrap() {
     .addTag('dm-response-agent', 'Direct message response agent')
     .addTag('follow-up-agent', 'Automated follow-up agent')
     .addBearerAuth()
-    .addServer(process.env.API_URL || 'http://localhost:3000', 'Development server')
+    .addServer(process.env.API_URL || 'http://localhost:3001', 'Development server')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -62,7 +62,7 @@ async function bootstrap() {
     },
   });
 
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 3001;
   await app.listen(port);
 
   logger.log(`🚀 Application is running on: http://localhost:${port}`);

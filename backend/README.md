@@ -23,7 +23,7 @@ npm run start:dev
 
 ## API Documentation
 
-Once running, visit: http://localhost:3000/api/docs
+Once running, visit: http://localhost:3001/api/docs
 
 ## Testing
 

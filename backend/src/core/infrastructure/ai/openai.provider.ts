@@ -18,7 +18,7 @@ export class OpenAiProvider implements IAiProvider {
     const userPrompt = context?.userPrompt || prompt;
 
     const completion = await this.client.chat.completions.create({
-      model: context?.model || 'gpt-4-turbo-preview',
+      model: context?.model || 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },

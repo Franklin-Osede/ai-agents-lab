@@ -14,6 +14,7 @@ export class BookingAgentController {
   @ApiOperation({ summary: 'Process a booking request' })
   @ApiResponse({ status: 200, type: BookingResponseDto })
   async processBooking(@Body() dto: ProcessBookingRequestDto): Promise<BookingResponseDto> {
+    try {
     const result = await this.bookingAgentService.processBookingRequest({
       message: dto.message,
       customerId: dto.customerId,
@@ -22,16 +23,28 @@ export class BookingAgentController {
     });
 
     if (result.isFailure) {
+        console.error('BookingAgentService error:', result.error);
+        return {
+          success: false,
+          message: result.error?.message || 'An error occurred processing your request',
+          intent: {
+            type: 'UNKNOWN',
+            confidence: 0,
+          },
+        };
+      }
+
+      return result.value;
+    } catch (error) {
+      console.error('Controller error:', error);
       return {
         success: false,
-        message: 'An error occurred processing your request',
+        message: (error as Error).message || 'An error occurred processing your request',
         intent: {
           type: 'UNKNOWN',
           confidence: 0,
         },
       };
     }
-
-    return result.value;
   }
 }

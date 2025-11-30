@@ -1,5 +1,4 @@
 import { BookingEntities } from './booking-entities';
-import { Result } from '../../../../core/domain/shared/value-objects/result';
 
 describe('BookingEntities Value Object', () => {
   describe('create', () => {
@@ -121,4 +120,3 @@ describe('BookingEntities Value Object', () => {
     });
   });
 });
-

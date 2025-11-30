@@ -1,0 +1,60 @@
+<div class="entity-extraction" *ngIf="hasEntities()">
+  <div class="entity-header">
+    <span class="entity-icon">🔍</span>
+    <h4 class="entity-title">Información Extraída</h4>
+  </div>
+
+  <div class="entities-container">
+    <!-- Dates -->
+    <div class="entity-group" *ngIf="entities && entities.dates && entities.dates.length > 0">
+      <span class="entity-label">📅 Fechas:</span>
+      <div class="entity-badges">
+        <span
+          *ngFor="let date of entities.dates"
+          class="entity-badge date-badge"
+          [title]="formatDate(date)"
+        >
+          {{ formatDate(date) }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Times -->
+    <div class="entity-group" *ngIf="entities && entities.times && entities.times.length > 0">
+      <span class="entity-label">⏰ Horarios:</span>
+      <div class="entity-badges">
+        <span
+          *ngFor="let time of entities.times"
+          class="entity-badge time-badge"
+        >
+          {{ formatTime(time) }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Services -->
+    <div class="entity-group" *ngIf="entities && entities.services && entities.services.length > 0">
+      <span class="entity-label">💼 Servicios:</span>
+      <div class="entity-badges">
+        <span
+          *ngFor="let service of entities.services"
+          class="entity-badge service-badge"
+        >
+          {{ service }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Location -->
+    <div class="entity-group" *ngIf="entities && entities.location">
+      <span class="entity-label">📍 Ubicación:</span>
+      <span class="entity-badge location-badge">{{ entities.location }}</span>
+    </div>
+
+    <!-- People -->
+    <div class="entity-group" *ngIf="entities && entities.people">
+      <span class="entity-label">👤 Personas:</span>
+      <span class="entity-badge people-badge">{{ entities.people }}</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,80 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()" [style.border-top-color]="agent.color">
+    <div class="modal-header" [style.border-bottom-color]="agent.color + '30'">
+      <div class="header-info">
+        <span class="agent-icon" [style.background]="getAgentGradient()">{{ agent.icon }}</span>
+        <div>
+          <h2>{{ agent.name }}</h2>
+          <p class="use-case-description">{{ useCaseDescription }}</p>
+        </div>
+      </div>
+      <button class="close-btn" (click)="onClose()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="chat-section">
+        <!-- Ejemplos rápidos -->
+        <div class="examples-section" *ngIf="exampleMessages.length > 0">
+          <p class="examples-label">💡 Ejemplos para probar:</p>
+          <div class="examples-grid">
+            <button
+              *ngFor="let example of exampleMessages"
+              class="example-btn"
+              [style.border-color]="agent.color"
+              [style.color]="agent.color"
+              (click)="useExample(example)"
+              [disabled]="isLoading"
+            >
+              {{ example }}
+            </button>
+          </div>
+        </div>
+
+        <app-chat-interface
+          [messages]="messages"
+          [isLoading]="isLoading"
+        ></app-chat-interface>
+
+        <!-- Entity Extraction (only for booking agent) -->
+        <app-entity-extraction
+          *ngIf="agent.id === 'booking' && extractedEntities"
+          [entities]="extractedEntities"
+        ></app-entity-extraction>
+
+        <!-- Voice Player (only for voice agent) -->
+        <app-voice-player
+          *ngIf="agent.id === 'voice' && voiceMessage"
+          [audioUrl]="voiceMessage.audioUrl"
+          [videoUrl]="voiceMessage.videoUrl"
+          [script]="voiceMessage.script"
+          [duration]="voiceMessage.duration"
+          [estimatedCost]="voiceMessage.estimatedCost"
+        ></app-voice-player>
+
+        <div class="input-section">
+          <input
+            type="text"
+            [(ngModel)]="currentMessage"
+            (keypress)="onKeyPress($event)"
+            [placeholder]="getPlaceholder()"
+            class="message-input"
+            [disabled]="isLoading"
+          />
+          <button
+            class="send-btn"
+            [style.background]="getAgentGradient()"
+            (click)="sendMessage()"
+            [disabled]="isLoading || !currentMessage.trim()"
+          >
+            {{ isLoading ? 'Enviando...' : 'Enviar' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="metrics-section">
+        <app-metrics-panel [metrics]="metrics" [agentColor]="agent.color"></app-metrics-panel>
+      </div>
+    </div>
+  </div>
+</div>
+

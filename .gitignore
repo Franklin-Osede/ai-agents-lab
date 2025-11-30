@@ -1,12 +1,14 @@
 # Dependencies
 node_modules/
 **/node_modules/
+package-lock.json
 
 # Build outputs
 dist/
 **/dist/
 build/
 **/build/
+*.tsbuildinfo
 
 # Environment variables
 .env
@@ -39,3 +41,11 @@ coverage/
 tmp/
 temp/
 *.tmp
+
+# Frontend
+frontend/dist/
+frontend/node_modules/
+
+# Backend
+backend/dist/
+backend/node_modules/

@@ -1,0 +1,32 @@
+<div class="metrics-panel">
+  <h3 class="metrics-title">Métricas en Vivo</h3>
+
+  <div class="metric-card" *ngIf="metrics.responseTime">
+    <div class="metric-label">Tiempo de Respuesta</div>
+    <div class="metric-value">{{ metrics.responseTime }}ms</div>
+  </div>
+
+  <div class="metric-card" *ngIf="metrics.intent">
+    <div class="metric-label">Intención Detectada</div>
+    <div class="metric-value intent-badge" [style.background-color]="agentColor + '20'" [style.color]="agentColor" [style.border-color]="agentColor + '40'">{{ metrics.intent }}</div>
+  </div>
+
+  <div class="metric-card" *ngIf="metrics.confidence !== undefined">
+    <div class="metric-label">Confianza</div>
+    <div class="metric-value">
+      <div class="confidence-bar">
+        <div
+          class="confidence-fill"
+          [style.width.%]="metrics.confidence * 100"
+          [style.background]="agentColor"
+        ></div>
+      </div>
+      <span class="confidence-text">{{ (metrics.confidence * 100).toFixed(0) }}%</span>
+    </div>
+  </div>
+
+  <div class="metrics-placeholder" *ngIf="!metrics.responseTime && !metrics.intent">
+    <p>Las métricas aparecerán aquí cuando envíes un mensaje</p>
+  </div>
+</div>
+

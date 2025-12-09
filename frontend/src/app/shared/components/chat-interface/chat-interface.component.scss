@@ -1,4 +1,4 @@
-.chat-container {
+you.chat-container {
   height: 400px;
   overflow-y: auto;
   padding: 1rem;
@@ -14,65 +14,149 @@
   gap: 1rem;
 }
 
-.message {
+.message-system {
+    align-self: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 0.5rem 0;
+    animation: fadeIn 0.5s ease;
+    
+    .message-content {
+        background: transparent;
+        box-shadow: none;
+        border: 1px dashed #e5e7eb;
+        color: #6b7280;
+        font-size: 0.85rem;
+        font-style: italic;
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .message-avatar { display: none; }
+}
+
+// Chat Interface with New "Green" Theme
+$primary-bubble: #13ec5b;
+$primary-text: #064e3b;
+$user-bubble-text: #064e3b; // Dark green text for user bubble
+$agent-bubble: #e7f3eb;
+$agent-text: #1f2937;
+$bg-light: #f6f8f6;
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
   display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  scroll-behavior: smooth;
+  // Hide scrollbar but keep functionality
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.message-wrapper {
+  display: flex;
+  align-items: flex-end;
   gap: 0.75rem;
-  animation: slideIn 0.3s ease;
-
-  &.message-user {
-    flex-direction: row-reverse;
-
-    .message-content {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
+  max-width: 80%;
+  animation: messageIn 0.3s ease-out forwards;
+  
+  &.user {
+    align-self: flex-end;
+    flex-direction: row; // Keep avatar on right? Or just bubble on right.
+    justify-content: flex-end;
   }
-
-  &.message-agent {
-    .message-content {
-      background: white;
-      color: #1f2937;
-      border: 1px solid #e5e7eb;
-    }
+  
+  &.agent {
+    align-self: flex-start;
   }
 }
 
-.message-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  flex-shrink: 0;
-  background: #f3f4f6;
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid #e5e7eb;
+    flex-shrink: 0;
+    
+    &.user-avatar {
+        display: none; // Hide user avatar to match snippet style (only text alignment)
+    }
 }
 
 .message-content {
-  max-width: 70%;
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
-.message-text {
-  margin-bottom: 0.25rem;
+.sender-info {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    margin-left: 4px;
+    margin-right: 4px;
+    
+    .user & {
+        text-align: right;
+    }
+}
+
+.message-bubble {
+  padding: 0.875rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.95rem;
   line-height: 1.5;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  max-width: 100%;
+  word-wrap: break-word;
+  font-family: 'Inter', sans-serif;
+
+  &.user {
+    background: $primary-bubble;
+    color: $user-bubble-text;
+    border-bottom-right-radius: 4px; // Speech bubble effect
+    font-weight: 500;
+  }
+
+  &.agent {
+    background: $agent-bubble;
+    color: $agent-text;
+    border-bottom-left-radius: 4px;
+  }
+  
+  &.system {
+      background: transparent;
+      box-shadow: none;
+      color: #6b7280;
+      font-style: italic;
+      font-size: 0.85rem;
+      padding: 0;
+      text-align: center;
+      width: 100%;
+  }
+  
+  p {
+      margin: 0;
+  }
 }
 
-.message-time {
-  font-size: 0.75rem;
-  opacity: 0.7;
-  margin-top: 0.25rem;
-}
-
-.message-intent {
-  font-size: 0.75rem;
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  opacity: 0.8;
+@keyframes messageIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .typing-indicator {
@@ -94,17 +178,6 @@
     &:nth-child(3) {
       animation-delay: 0.4s;
     }
-  }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 

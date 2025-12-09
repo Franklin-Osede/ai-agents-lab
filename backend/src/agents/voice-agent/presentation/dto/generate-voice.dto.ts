@@ -11,7 +11,9 @@ export class GenerateVoiceDto {
   @IsString()
   businessId: string;
 
-  @ApiProperty({ description: 'Context for personalization (e.g., "Cliente consultó sobre botox hace 3 días")' })
+  @ApiProperty({
+    description: 'Context for personalization (e.g., "Cliente consultó sobre botox hace 3 días")',
+  })
   @IsString()
   context: string;
 
@@ -39,4 +41,3 @@ export class GenerateVoiceDto {
   @IsString()
   language?: string;
 }
-

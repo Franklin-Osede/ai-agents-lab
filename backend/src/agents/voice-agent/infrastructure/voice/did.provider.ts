@@ -4,10 +4,10 @@ import { IVoiceProvider } from '../../domain/interfaces/voice-provider.interface
 
 /**
  * D-ID Provider
- * 
+ *
  * Implementation of IVoiceProvider using D-ID API.
  * D-ID is the cheapest option: $5.99/month with good quality.
- * 
+ *
  * Documentation: https://docs.d-id.com/
  */
 @Injectable()
@@ -41,11 +41,11 @@ export class DidProvider implements IVoiceProvider {
       // D-ID uses text-to-speech through their API
       // For now, we'll use a simple implementation
       // In production, you'd call D-ID's API here
-      
+
       const response = await fetch(`${this.baseUrl}/talks`, {
         method: 'POST',
         headers: {
-          'Authorization': `Basic ${this.apiKey}`,
+          Authorization: `Basic ${this.apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -96,7 +96,7 @@ export class DidProvider implements IVoiceProvider {
       const response = await fetch(`${this.baseUrl}/talks`, {
         method: 'POST',
         headers: {
-          'Authorization': `Basic ${this.apiKey}`,
+          Authorization: `Basic ${this.apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -118,7 +118,7 @@ export class DidProvider implements IVoiceProvider {
       }
 
       const data = await response.json();
-      
+
       // D-ID returns a job ID, we need to poll for result
       const videoUrl = await this.pollForVideoResult(data.id);
       return videoUrl || this.getMockVideoUrl();
@@ -139,7 +139,7 @@ export class DidProvider implements IVoiceProvider {
       try {
         const response = await fetch(`${this.baseUrl}/talks/${jobId}`, {
           headers: {
-            'Authorization': `Basic ${this.apiKey}`,
+            Authorization: `Basic ${this.apiKey}`,
           },
         });
 
@@ -177,4 +177,3 @@ export class DidProvider implements IVoiceProvider {
     return 'https://example.com/mock-video.mp4';
   }
 }
-

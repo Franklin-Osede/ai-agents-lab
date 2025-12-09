@@ -176,9 +176,7 @@ export class InMemoryBookingRepository implements IBookingRepository {
 
       // Create a set of booked times
       const bookedTimes = new Set(
-        existingBookings.map((booking) =>
-          booking.scheduledTime.toTimeString().substring(0, 5),
-        ),
+        existingBookings.map((booking) => booking.scheduledTime.toTimeString().substring(0, 5)),
       );
 
       // Filter out booked slots
@@ -221,4 +219,3 @@ export class InMemoryBookingRepository implements IBookingRepository {
     return Array.from(this.bookings.values());
   }
 }
-

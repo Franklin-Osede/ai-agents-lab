@@ -1,101 +1,40 @@
 import { DynamicStructuredTool } from '@langchain/core/tools';
 import { z } from 'zod';
-import { Injectable, Inject, Logger } from '@nestjs/common';
-import { IBookingRepository } from '../../domain/interfaces/booking-repository.interface';
 
-const schema = z.object({
-  businessId: z.string().describe('Business ID to check availability for'),
-  date: z.string().describe('Date in YYYY-MM-DD format to check availability'),
-  duration: z
-    .number()
-    .int()
-    .positive()
-    .optional()
-    .describe('Duration in minutes (optional, defaults to 60)'),
-});
+export const checkAvailabilityTool = new DynamicStructuredTool({
+  name: 'check_availability',
+  description:
+    'Checks availability for a given date. ALWAYS use this tool before suggesting times.',
+  schema: z.object({
+    date: z.string().describe('The date to check availability for, in YYYY-MM-DD format.'),
+  }),
+  func: async ({ date }) => {
+    console.log(`[Tool] Checking availability for ${date}`);
 
-/**
- * Helper function to create DynamicStructuredTool without TypeScript deep instantiation errors
- * This is a workaround for LangChain v1.x TypeScript limitations
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function createTool(config: any): any {
-  return new DynamicStructuredTool(config);
-}
+    // MOCK LOGIC: Dynamic availability based on date hash
+    // This ensures same date returns same slots, but different dates differ
+    const dayHash = date.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const slots = [];
 
-/**
- * CheckAvailabilityTool
- *
- * LangChain tool for checking available time slots for a specific date.
- * Used by the booking agent to query availability from the repository.
- */
-@Injectable()
-export class CheckAvailabilityTool {
-  private readonly logger = new Logger(CheckAvailabilityTool.name);
-  // NOTE: Using 'any' here due to known TypeScript deep instantiation issue with LangChain v1.x
-  // The tool works correctly at runtime, this is only a TypeScript compiler limitation
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private toolInstance: any = null;
-
-  constructor(
-    @Inject('IBookingRepository') private readonly bookingRepository: IBookingRepository | null,
-  ) {}
-
-  /**
-   * Get the LangChain tool instance (lazy initialization)
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  getTool(): any {
-    if (!this.toolInstance) {
-      this.toolInstance = createTool({
-        name: 'check_availability',
-        description:
-          'Check available time slots for a specific date. Use this when customer asks about availability or wants to book an appointment.',
-        schema,
-        func: async ({
-          businessId,
-          date,
-          duration = 60,
-        }: {
-          businessId: string;
-          date: string;
-          duration?: number;
-        }) => {
-          try {
-            this.logger.log(`Checking availability for business ${businessId} on ${date}`);
-
-            if (!this.bookingRepository) {
-              this.logger.warn('Booking repository not available, returning default slots');
-              return JSON.stringify({
-                date,
-                availableSlots: ['10:00', '11:00', '14:00', '15:00', '16:00', '17:00'],
-                duration,
-              });
-            }
-
-            const dateObj = new Date(date);
-            const slots = await this.bookingRepository.findAvailableSlots(businessId, dateObj);
-
-            this.logger.log(`Found ${slots.length} available slots for ${date}`);
-
-            return JSON.stringify({
-              date,
-              availableSlots: slots,
-              duration,
-              count: slots.length,
-            });
-          } catch (error) {
-            this.logger.error(`Error checking availability: ${(error as Error).message}`);
-            return JSON.stringify({
-              date,
-              availableSlots: [],
-              duration,
-              error: 'Unable to check availability at this time',
-            });
-          }
-        },
-      });
+    // Simulate working hours 9-17
+    for (let hour = 9; hour < 17; hour++) {
+      // Randomly skip slots based on date hash + hour
+      if ((dayHash + hour) % 3 !== 0) {
+        slots.push(`${hour}:00`);
+      }
+      if ((dayHash + hour) % 5 === 0) {
+        slots.push(`${hour}:30`);
+      }
     }
-    return this.toolInstance;
-  }
-}
+
+    // If empty (rare), add a backup slot
+    if (slots.length === 0) slots.push('10:00', '14:00');
+
+    return JSON.stringify({
+      available: true,
+      date,
+      slots: slots.sort(),
+      message: `I have found these free slots for ${date}: ${slots.join(', ')}`,
+    });
+  },
+});

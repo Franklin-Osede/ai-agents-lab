@@ -20,7 +20,7 @@ export interface GenerateVoiceRequest {
 
 /**
  * VoiceAgentService
- * 
+ *
  * Application Service responsible for generating personalized voice/video messages.
  * Follows Single Responsibility Principle - only handles voice message generation.
  * Uses AI Provider and Voice Provider abstractions (Dependency Inversion).
@@ -36,13 +36,11 @@ export class VoiceAgentService {
 
   /**
    * Generate personalized voice message
-   * 
+   *
    * @param request - Request with customer context and preferences
    * @returns Result containing VoiceMessage or error
    */
-  async generateVoiceMessage(
-    request: GenerateVoiceRequest,
-  ): Promise<Result<VoiceMessage>> {
+  async generateVoiceMessage(request: GenerateVoiceRequest): Promise<Result<VoiceMessage>> {
     try {
       this.logger.log(
         `Generating voice message for customer: ${request.customerId}, channel: ${request.channel}`,
@@ -60,13 +58,9 @@ export class VoiceAgentService {
       // Step 3: Generate video if requested
       let videoUrl: string | undefined;
       if (request.includeVideo && request.avatarImageUrl) {
-        videoUrl = await this.voiceProvider.generateVideo(
-          request.avatarImageUrl,
-          audioUrl,
-          {
-            quality: 'high',
-          },
-        );
+        videoUrl = await this.voiceProvider.generateVideo(request.avatarImageUrl, audioUrl, {
+          quality: 'high',
+        });
       }
 
       // Step 4: Estimate duration (average: 150 words per minute = 2.5 words per second)
@@ -130,4 +124,3 @@ Generate ONLY the script text, no additional formatting or explanations.`;
     }
   }
 }
-

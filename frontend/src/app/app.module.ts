@@ -12,6 +12,11 @@ import { ChatInterfaceComponent } from './shared/components/chat-interface/chat-
 import { MetricsPanelComponent } from './shared/components/metrics-panel/metrics-panel.component';
 import { EntityExtractionComponent } from './shared/components/entity-extraction/entity-extraction.component';
 import { VoicePlayerComponent } from './shared/components/voice-player/voice-player.component';
+import { ServiceSelectorComponent } from './shared/components/service-selector/service-selector.component';
+import { CalendarComponent } from './shared/components/calendar/calendar.component';
+import { RoleSelectorComponent } from './shared/components/role-selector/role-selector.component';
+import { LoginComponent } from './shared/components/login/login.component';
+import { RegisterComponent } from './shared/components/register/register.component';
 
 @NgModule({
   declarations: [
@@ -23,10 +28,14 @@ import { VoicePlayerComponent } from './shared/components/voice-player/voice-pla
     MetricsPanelComponent,
     EntityExtractionComponent,
     VoicePlayerComponent,
+    ServiceSelectorComponent,
+    CalendarComponent,
+    RoleSelectorComponent,
+    LoginComponent,
+    RegisterComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule],
   providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
-

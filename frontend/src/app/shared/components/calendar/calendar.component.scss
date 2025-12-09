@@ -1,0 +1,433 @@
+.calendar-container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  max-width: 100%;
+  font-family: "Inter", sans-serif;
+
+  .header {
+    margin-bottom: 16px;
+    h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: #333;
+      text-transform: capitalize;
+    }
+  }
+
+  .grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header-row {
+    display: flex;
+    margin-bottom: 8px;
+  }
+
+  .time-col {
+    width: 50px;
+    flex-shrink: 0;
+  }
+
+  .day-col {
+    flex: 1;
+    text-align: center;
+    padding: 8px 0;
+    border-radius: 8px;
+
+    &.active {
+      background: #eef2ff;
+      color: #4f46e5;
+      font-weight: 600;
+    }
+
+    .day-name {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: #6b7280;
+    }
+    .day-date {
+      font-size: 1.2rem;
+      margin-top: 4px;
+    }
+  }
+
+  .body-rows {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .row {
+    display: flex;
+    height: 48px;
+    border-top: 1px solid #f3f4f6;
+
+    &:last-child {
+      border-bottom: 1px solid #f3f4f6;
+    }
+  }
+
+  .time-label {
+    width: 50px;
+    font-size: 0.75rem;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+  }
+
+  .day-cell {
+    flex: 1;
+    border-left: 1px solid #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+    transition: all 0.2s;
+
+    &.available {
+      cursor: pointer;
+      background: #f0fdf4; // Light green
+      color: #16a34a;
+
+      &:hover {
+        background: #dcfce7;
+      }
+    }
+
+    &.selected {
+      background: #4f46e5;
+      color: white;
+    }
+  }
+}
+
+.calendar-wrapper {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  padding: 1.5rem;
+  font-family: 'Inter', sans-serif;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    
+    h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1f2937;
+    }
+    
+    .check-btn {
+        background: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        
+        &:hover {
+            background: #e5e7eb;
+        }
+    }
+}
+
+.weekdays-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.75rem;
+    color: #9ca3af;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 1.5rem;
+}
+
+.day-cell {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    position: relative;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    
+    &:hover {
+        background: #f9fafb;
+    }
+    
+    &.different-month {
+        opacity: 0.3;
+        pointer-events: none;
+    }
+    
+    &.today {
+        font-weight: bold;
+        color: #4f46e5;
+    }
+    
+    &.selected {
+        background: #4f46e5;
+        color: white;
+        
+        .dot { background: white; }
+    }
+    
+    .mini-indicators {
+        display: flex;
+        gap: 2px;
+        margin-top: 4px;
+        height: 6px;
+    }
+    
+    .dot {
+        width: 4px;
+        height: 4px;
+        background: #10b981; // Green hint
+        border-radius: 50%;
+    }
+}
+
+// Mobile Calendar Theme
+$primary: #13ec5b;
+$primary-dark: #059669;
+$text-dark: #1f2937;
+$bg-light: #f6f8f6;
+
+.calendar-wrapper {
+  background: white;
+  // border-radius: 12px; // Handled by parent container now
+  // box-shadow: ... // Parent handles shadow
+  padding: 0; // Remove padding for edge-to-edge feel
+  font-family: 'Inter', sans-serif;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+    
+    h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: $text-dark;
+        text-transform: capitalize;
+    }
+    
+    .check-btn {
+        background: #ecfdf5;
+        color: $primary-dark;
+        border: 1px solid #d1fae5;
+        border-radius: 20px;
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        
+        &:hover {
+            background: #d1fae5;
+        }
+    }
+}
+
+.weekdays-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.75rem;
+    color: #9ca3af;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 1.5rem;
+    padding: 0 0.5rem;
+}
+
+.day-cell {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px; // Softer corners
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    position: relative;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    color: $text-dark;
+    
+    &:hover {
+        background: $bg-light;
+    }
+    
+    &.different-month {
+        opacity: 0.3;
+        pointer-events: none;
+    }
+    
+    &.today {
+        color: $primary-dark;
+        font-weight: 700;
+    }
+    
+    &.selected {
+        background: $primary;
+        color: #064e3b; // Dark text on green for contrast
+        box-shadow: 0 4px 6px -1px rgba($primary, 0.4);
+        
+        .dot { background: #064e3b; }
+    }
+    
+    .mini-indicators {
+        display: flex;
+        gap: 2px;
+        margin-top: 4px;
+        height: 6px;
+    }
+    
+    .dot {
+        width: 4px;
+        height: 4px;
+        background: $primary;
+        border-radius: 50%;
+    }
+}
+
+// Slot Selection Area (Bottom half)
+.slots-container {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f3f4f6;
+
+    .selected-date-header {
+        margin-bottom: 1rem;
+        
+        h4 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: $text-dark;
+            text-transform: capitalize; // Fixes "9e November" casing if format allows
+        }
+        
+        p {
+            margin: 4px 0 0 0;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+    }
+
+    .slots-group {
+        margin-bottom: 1.5rem;
+        
+        .group-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+        
+        .pills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .time-pill {
+            background: white;
+            border: 1px solid #e5e7eb;
+            color: $text-dark;
+            padding: 0.5rem 1rem; // Pill shape padding
+            border-radius: 9999px; // Full pill radius
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            &:hover {
+                background: #f3f4f6;
+                border-color: #d1d5db;
+                transform: translateY(-1px);
+            }
+            
+            &.selected {
+                background: $primary;
+                border-color: $primary;
+                color: #064e3b;
+                box-shadow: 0 4px 6px -1px rgba($primary, 0.3);
+                font-weight: 600;
+            }
+        }
+    }
+    
+    .confirm-footer {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: flex-end;
+        
+        .confirm-btn {
+            background: $text-dark; // Dark button for contrast
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            }
+            
+            &:disabled {
+                background: #d1d5db;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
+            }
+        }
+    }
+}

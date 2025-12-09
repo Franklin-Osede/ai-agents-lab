@@ -11,6 +11,7 @@ export class ChatInterfaceComponent {
   @Input() isLoading = false;
 
   getMessageClass(message: ChatMessage): string {
+    if (message.isSystem) return 'message-system';
     return message.sender === 'user' ? 'message-user' : 'message-agent';
   }
 }

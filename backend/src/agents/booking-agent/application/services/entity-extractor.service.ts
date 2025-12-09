@@ -16,7 +16,7 @@ import { ConfigService } from '@nestjs/config';
 
 /**
  * EntityExtractorService
- * 
+ *
  * Application Service responsible for extracting booking entities from user messages.
  * Uses LangChain StructuredOutputParser with Zod schema for robust extraction.
  * Follows Single Responsibility Principle - only handles entity extraction.
@@ -50,7 +50,7 @@ export class EntityExtractorService {
   /**
    * Extract booking entities from a user message
    * Uses LangChain StructuredOutputParser if available, otherwise falls back to JSON parsing
-   * 
+   *
    * @param message - User message to extract entities from
    * @returns Result containing BookingEntities or empty entities on failure
    */

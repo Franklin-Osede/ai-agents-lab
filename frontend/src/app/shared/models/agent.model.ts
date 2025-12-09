@@ -29,6 +29,7 @@ export interface AgentResponse {
   entities?: BookingEntities;
   urgency?: 'LOW' | 'MEDIUM' | 'HIGH';
   suggestedNextSteps?: string[];
+  toolCalls?: Array<{ name: string; args: any }>;
 }
 
 export interface ChatMessage {
@@ -40,5 +41,6 @@ export interface ChatMessage {
     type: string;
     confidence: number;
   };
+  isSystem?: boolean;
 }
 

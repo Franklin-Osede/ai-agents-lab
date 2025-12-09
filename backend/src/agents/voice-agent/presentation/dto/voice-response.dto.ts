@@ -25,4 +25,3 @@ export class VoiceResponseDto {
   @ApiProperty({ required: false })
   message?: string;
 }
-

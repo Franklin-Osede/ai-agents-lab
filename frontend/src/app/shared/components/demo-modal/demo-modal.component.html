@@ -1,80 +1,496 @@
 <div class="modal-overlay" (click)="onClose()">
-  <div class="modal-content" (click)="$event.stopPropagation()" [style.border-top-color]="agent.color">
-    <div class="modal-header" [style.border-bottom-color]="agent.color + '30'">
-      <div class="header-info">
-        <span class="agent-icon" [style.background]="getAgentGradient()">{{ agent.icon }}</span>
-        <div>
-          <h2>{{ agent.name }}</h2>
-          <p class="use-case-description">{{ useCaseDescription }}</p>
+  <!-- Mobile Container mimicking the snippet -->
+  <div class="mobile-container" (click)="$event.stopPropagation()">
+      
+      <!-- HEADER (Hidden on Step -1: Role Selector) -->
+      <header class="mobile-header" *ngIf="currentStep >= 0">
+        <button class="icon-btn" (click)="currentStep > 0 ? prevStep() : onClose()">
+            <span class="material-symbols-outlined">arrow_back_ios_new</span>
+        </button>
+        <div class="header-title">
+            <h2>Agente de Reservas</h2>
+            <div class="status-indicator">
+                <span class="dot pulse"></span>
+                <span class="status-text">En línea</span>
+            </div>
         </div>
-      </div>
-      <button class="close-btn" (click)="onClose()">×</button>
-    </div>
+        <button class="icon-btn">
+            <span class="material-symbols-outlined">call</span>
+        </button>
+      </header>
 
-    <div class="modal-body">
-      <div class="chat-section">
-        <!-- Ejemplos rápidos -->
-        <div class="examples-section" *ngIf="exampleMessages.length > 0">
-          <p class="examples-label">💡 Ejemplos para probar:</p>
-          <div class="examples-grid">
-            <button
-              *ngFor="let example of exampleMessages"
-              class="example-btn"
-              [style.border-color]="agent.color"
-              [style.color]="agent.color"
-              (click)="useExample(example)"
-              [disabled]="isLoading"
-            >
-              {{ example }}
+      <!-- MAIN CONTENT AREA SWITCHER -->
+      <main class="mobile-main">
+          
+          <!-- STEP -1: ROLE SELECTOR (New Entry Point) -->
+          <div class="step-view role-selector-view" *ngIf="currentStep === -1">
+            <app-role-selector (roleSelected)="onRoleSelected($event)"></app-role-selector>
+          </div>
+
+          <!-- STEP -0.5: AUTHENTICATION (Login/Register) -->
+          <div class="step-view auth-view" *ngIf="currentStep === -0.5">
+            <app-login 
+              *ngIf="showAuthScreen === 'login'"
+              (loginSuccess)="onLoginSuccess()"
+              (switchToRegister)="switchToRegister()">
+            </app-login>
+            <app-register 
+              *ngIf="showAuthScreen === 'register'"
+              [preselectedRole]="selectedRole"
+              (registerSuccess)="onRegisterSuccess()"
+              (switchToLogin)="switchToLogin()">
+            </app-register>
+          </div>
+
+          <!-- STEP 1: PROFESSIONAL DASHBOARD -->
+          <div class="step-view professional-dashboard-view" *ngIf="currentStep === 1">
+            <!-- Header -->
+            <div class="prof-header">
+              <div class="prof-logo">
+                <div class="logo-icon">
+                  <span class="material-symbols-outlined">health_and_safety</span>
+                </div>
+                <span class="logo-text">MediConnect</span>
+              </div>
+              <div class="prof-actions">
+                <button class="icon-btn">
+                  <span class="material-symbols-outlined">notifications</span>
+                </button>
+                <div class="profile-avatar">
+                  <span class="material-symbols-outlined">person</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="prof-content">
+              <!-- Welcome Section -->
+              <div class="welcome-section">
+                <p class="section-label">Panel de Control</p>
+                <h1 class="welcome-title">Hola, Dr. Ramírez</h1>
+              </div>
+
+              <!-- Appointments Card -->
+              <div class="appointments-card">
+                <div class="card-header">
+                  <div class="icon-badge blue">
+                    <span class="material-symbols-outlined">calendar_today</span>
+                  </div>
+                  <span class="card-date">Hoy</span>
+                </div>
+                <div class="card-content">
+                  <h2 class="card-number">6 Citas</h2>
+                  <p class="card-subtitle">Tienes 2 citas pendientes de confirmar</p>
+                  <button class="link-btn">
+                    Ver agenda completa
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Quick Actions -->
+              <div class="quick-actions">
+                <div class="action-card">
+                  <div class="icon-badge purple">
+                    <span class="material-symbols-outlined">group</span>
+                  </div>
+                  <h3 class="action-title">Gestionar<br/>Pacientes</h3>
+                </div>
+                <div class="action-card">
+                  <div class="icon-badge green">
+                    <span class="material-symbols-outlined">trending_up</span>
+                  </div>
+                  <div class="badge-percent">+12%</div>
+                  <h3 class="action-title">Estadísticas<br/>Generales</h3>
+                </div>
+              </div>
+
+              <!-- Access & Configuration -->
+              <div class="config-section">
+                <h3 class="section-title">Accesos y Configuración</h3>
+                
+                <div class="config-list">
+                  <div class="config-item">
+                    <div class="config-icon">
+                      <span class="material-symbols-outlined">settings</span>
+                    </div>
+                    <div class="config-info">
+                      <h4 class="config-title">Configuración</h4>
+                      <p class="config-subtitle">Perfil, horarios y cuenta</p>
+                    </div>
+                    <span class="material-symbols-outlined arrow">chevron_right</span>
+                  </div>
+
+                  <div class="config-item">
+                    <div class="config-icon avatar">
+                      <span class="material-symbols-outlined">person</span>
+                    </div>
+                    <div class="config-info">
+                      <h4 class="config-title">Última consulta</h4>
+                      <p class="config-subtitle">Ana García · Hace 2 horas</p>
+                    </div>
+                    <span class="material-symbols-outlined arrow">history</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+              <button class="nav-item active">
+                <span class="material-symbols-outlined fill-1">home</span>
+                <span class="nav-label">Inicio</span>
+              </button>
+              <button class="nav-item">
+                <span class="material-symbols-outlined">calendar_today</span>
+                <span class="nav-label">Agenda</span>
+              </button>
+              <button class="nav-item">
+                <span class="material-symbols-outlined">chat</span>
+                <span class="nav-label">Chat</span>
+              </button>
+              <button class="nav-item">
+                <span class="material-symbols-outlined">person</span>
+                <span class="nav-label">Perfil</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- STEP 0: CLIENT PERSONAL DASHBOARD -->
+          <div class="step-view client-dashboard-view" *ngIf="currentStep === 0">
+            <!-- Header -->
+            <div class="client-header">
+              <div class="client-logo">
+                <div class="logo-icon-client">
+                  <span class="material-symbols-outlined">health_and_safety</span>
+                </div>
+                <span class="logo-text">MediConnect</span>
+              </div>
+              <div class="client-avatar">
+                <span class="material-symbols-outlined">person</span>
+              </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="client-content">
+              <!-- Welcome Section -->
+              <div class="client-welcome">
+                <h1 class="client-greeting">Hola, María 👋</h1>
+                <p class="client-subtitle">Gestiona tu bienestar hoy.</p>
+              </div>
+
+              <!-- Book Appointment Card -->
+              <div class="booking-card">
+                <div class="booking-icon">
+                  <span class="material-symbols-outlined">add</span>
+                </div>
+                <div class="booking-content">
+                  <h2 class="booking-title">Reservar<br/>Nueva Cita</h2>
+                  <p class="booking-subtitle">🔍 Busca especialistas y horarios</p>
+                </div>
+                <button class="search-btn">
+                  <span class="material-symbols-outlined">search</span>
+                </button>
+              </div>
+
+              <!-- Next Visit -->
+              <div class="next-visit-section">
+                <div class="section-header">
+                  <h3 class="section-title">Próxima Visita</h3>
+                  <button class="see-all-btn">VER TODO</button>
+                </div>
+
+                <div class="appointment-card">
+                  <div class="doctor-info">
+                    <div class="doctor-avatar">
+                      <span class="material-symbols-outlined">person</span>
+                    </div>
+                    <div class="doctor-details">
+                      <h4 class="doctor-name">Dr. Carlos Mendoza</h4>
+                      <p class="doctor-specialty">CARDIOLOGÍA</p>
+                      <span class="status-badge confirmed">● CONFIRMADA</span>
+                    </div>
+                    <button class="more-btn">
+                      <span class="material-symbols-outlined">more_vert</span>
+                    </button>
+                  </div>
+                  <div class="appointment-time">
+                    <div class="time-item">
+                      <span class="material-symbols-outlined">calendar_today</span>
+                      <div>
+                        <p class="time-label">FECHA</p>
+                        <p class="time-value">15 Oct</p>
+                      </div>
+                    </div>
+                    <div class="time-item">
+                      <span class="material-symbols-outlined">schedule</span>
+                      <div>
+                        <p class="time-label">HORA</p>
+                        <p class="time-value">09:30 AM</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Access -->
+              <div class="quick-access-section">
+                <h3 class="section-title">Acceso Rápido</h3>
+                
+                <div class="access-grid">
+                  <div class="access-card">
+                    <div class="access-icon blue">
+                      <span class="material-symbols-outlined">calendar_month</span>
+                    </div>
+                    <h4 class="access-title">Mis Citas</h4>
+                    <p class="access-subtitle">Historial y Futuras</p>
+                  </div>
+
+                  <div class="access-card">
+                    <div class="access-icon purple">
+                      <span class="material-symbols-outlined">person</span>
+                    </div>
+                    <h4 class="access-title">Mi Perfil</h4>
+                    <p class="access-subtitle">Datos personales</p>
+                  </div>
+
+                  <div class="access-card">
+                    <div class="access-icon orange">
+                      <span class="material-symbols-outlined">notifications</span>
+                    </div>
+                    <h4 class="access-title">Avisos</h4>
+                    <p class="access-subtitle">2 Nuevos</p>
+                  </div>
+
+                  <div class="access-card">
+                    <div class="access-icon green">
+                      <span class="material-symbols-outlined">support_agent</span>
+                    </div>
+                    <h4 class="access-title">Ayuda</h4>
+                    <p class="access-subtitle">Soporte 24/7</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+              <button class="nav-item active">
+                <span class="material-symbols-outlined fill-1">home</span>
+                <span class="nav-label">Inicio</span>
+              </button>
+              <button class="nav-item">
+                <span class="material-symbols-outlined">calendar_today</span>
+                <span class="nav-label">Agenda</span>
+              </button>
+              <button class="nav-item">
+                <span class="material-symbols-outlined">favorite</span>
+                <span class="nav-label">Favs</span>
+              </button>
+              <button class="nav-item">
+                <span class="material-symbols-outlined">person</span>
+                <span class="nav-label">Perfil</span>
+              </button>
+            </div>
+
+            <!-- Floating Action Button -->
+            <button class="fab">
+              <span class="material-symbols-outlined">add</span>
             </button>
           </div>
-        </div>
+          
+          <!-- STEP 1: CHAT (First Screen) -->
+          <div class="step-view chat-view" *ngIf="currentStep === 1">
+               <!-- Timestamp -->
+               <div class="chat-timestamp">
+                   <span>Hoy</span>
+               </div>
+               
+               <app-chat-interface
+                  [messages]="messages"
+                  [isLoading]="isLoading"
+                ></app-chat-interface>
+                
+                <!-- Action to start booking flow if not started -->
+                <div class="chat-actions" style="padding: 1rem; display: flex; justify-content: center;">
+                    <button class="chip-primary" (click)="nextStep()">
+                        📅 Agendar Cita
+                    </button>
+                </div>
+          </div>
 
-        <app-chat-interface
-          [messages]="messages"
-          [isLoading]="isLoading"
-        ></app-chat-interface>
+          <!-- STEP 2: CALENDAR -->
+          <div class="step-view" *ngIf="currentStep === 2">
+              <div class="step-header">
+                  <h3>Selecciona una fecha</h3>
+              </div>
+              <app-calendar 
+                  [currentDate]="calendarData.currentDate"
+                  (slotSelected)="onSlotSelected($event)">
+              </app-calendar>
+          </div>
 
-        <!-- Entity Extraction (only for booking agent) -->
-        <app-entity-extraction
-          *ngIf="agent.id === 'booking' && extractedEntities"
-          [entities]="extractedEntities"
-        ></app-entity-extraction>
+          <!-- STEP 3: PROFESSIONAL SELECTION (New!) -->
+          <div class="step-view professional-view" *ngIf="currentStep === 3">
+              <div class="step-header">
+                  <h3>Elige un Profesional</h3>
+              </div>
+              
+              <div class="professionals-grid">
+                  <!-- Mock Professional 1 -->
+                  <div class="pro-card" (click)="selectProfessional('Juan Pérez')">
+                      <div class="pro-avatar" style="background-image: url('https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80');"></div>
+                      <div class="pro-info">
+                          <h4>Juan Pérez</h4>
+                          <p>Barbero Master</p>
+                          <div class="rating">
+                              <span class="material-symbols-outlined star">star</span>
+                              <span>4.9 (120 reviews)</span>
+                          </div>
+                      </div>
+                      <span class="material-symbols-outlined arrow">chevron_right</span>
+                  </div>
 
-        <!-- Voice Player (only for voice agent) -->
-        <app-voice-player
-          *ngIf="agent.id === 'voice' && voiceMessage"
-          [audioUrl]="voiceMessage.audioUrl"
-          [videoUrl]="voiceMessage.videoUrl"
-          [script]="voiceMessage.script"
-          [duration]="voiceMessage.duration"
-          [estimatedCost]="voiceMessage.estimatedCost"
-        ></app-voice-player>
+                  <!-- Mock Professional 2 -->
+                  <div class="pro-card" (click)="selectProfessional('María García')">
+                      <div class="pro-avatar" style="background-image: url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80');"></div>
+                      <div class="pro-info">
+                          <h4>María García</h4>
+                          <p>Estilista Senior</p>
+                          <div class="rating">
+                              <span class="material-symbols-outlined star">star</span>
+                              <span>4.8 (95 reviews)</span>
+                          </div>
+                      </div>
+                      <span class="material-symbols-outlined arrow">chevron_right</span>
+                  </div>
+              </div>
+          </div>
 
-        <div class="input-section">
-          <input
-            type="text"
-            [(ngModel)]="currentMessage"
-            (keypress)="onKeyPress($event)"
-            [placeholder]="getPlaceholder()"
-            class="message-input"
-            [disabled]="isLoading"
-          />
-          <button
-            class="send-btn"
-            [style.background]="getAgentGradient()"
-            (click)="sendMessage()"
-            [disabled]="isLoading || !currentMessage.trim()"
-          >
-            {{ isLoading ? 'Enviando...' : 'Enviar' }}
-          </button>
-        </div>
+          <!-- STEP 3.5: SERVICE SELECTION (NEW!) -->
+          <div class="step-view service-selection-view" *ngIf="currentStep === 3.5">
+              <app-service-selector 
+                  (serviceSelected)="onServiceSelected($event)"
+                  (back)="onServiceSelectorBack()">
+              </app-service-selector>
+          </div>
+
+          <!-- STEP 4: CONFIRMATION -->
+          <div class="step-view confirmation-view" *ngIf="currentStep === 4">
+               <div class="step-header">
+                  <h3>Confirmar Reserva</h3>
+               </div>
+               
+               <div class="summary-card">
+                   <div class="summary-header">
+                       <h4>Resumen de tu Cita</h4>
+                       <p>Por favor revisa los detalles antes de confirmar.</p>
+                   </div>
+                   
+                   <!-- Service Info -->
+                   <div class="service-info-block">
+                       <span class="service-label">SERVICIO</span>
+                       <h3>Corte de Cabello Premium</h3>
+                       <div class="provider-row">
+                           <span class="material-symbols-outlined user-icon">person</span>
+                           <span>{{ selectedProfessional || 'Profesional Asignado' }}</span>
+                       </div>
+                       <div class="service-img" style="background-image: url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                   </div>
+                   
+                   <!-- Details Grid -->
+                   <div class="details-grid">
+                       <div class="detail-item">
+                           <span class="icon-calendar material-symbols-outlined">calendar_today</span>
+                           <div class="detail-text">
+                               <span class="label">FECHA</span>
+                               <span class="value">{{ calendarData.currentDate | date:'EEEE, d MMM' | titlecase }}</span>
+                           </div>
+                       </div>
+                       <div class="detail-item">
+                           <span class="icon-clock material-symbols-outlined">schedule</span>
+                           <div class="detail-text">
+                               <span class="label">HORA</span>
+                               <span class="value">{{ calendarData.selectedSlot || '10:00' }}</span>
+                           </div>
+                       </div>
+                       <div class="detail-item">
+                           <span class="icon-price material-symbols-outlined">payments</span>
+                           <div class="detail-text">
+                               <span class="label">PRECIO</span>
+                               <span class="value">€25.00</span>
+                           </div>
+                       </div>
+                       <div class="detail-item">
+                           <span class="icon-duration material-symbols-outlined">hourglass_top</span>
+                           <div class="detail-text">
+                               <span class="label">DURACIÓN</span>
+                               <span class="value">45 min</span>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <!-- Location -->
+                   <div class="location-block">
+                       <div class="icon-circle">
+                           <span class="material-symbols-outlined">location_on</span>
+                       </div>
+                       <div class="location-text">
+                           <strong>Barbería Central</strong>
+                           <span>Calle Principal 123, Madrid</span>
+                       </div>
+                       <span class="material-symbols-outlined arrow">chevron_right</span>
+                   </div>
+                   
+                   <p class="disclaimer">
+                       <span class="material-symbols-outlined info-icon">info</span>
+                       Cancelación gratuita hasta 24 horas antes de la cita.
+                   </p>
+                   
+                   <!-- Actions -->
+                   <div class="actions-block">
+                       <button class="confirm-btn-large" (click)="onClose()">
+                           Confirmar Cita <span class="material-symbols-outlined">check_circle</span>
+                       </button>
+                       <button class="cancel-link" (click)="onClose()">Cancelar</button>
+                   </div>
+               </div>
+          </div>
+      </main>
+
+      <!-- BOTTOM INPUT AREA (Only on Chat Step 1) -->
+      <div class="mobile-footer" *ngIf="currentStep === 1">
+          <!-- Chips -->
+          <div class="chips-scroll" *ngIf="exampleMessages.length > 0">
+              <button *ngFor="let ex of exampleMessages" class="chip" (click)="useExample(ex)">
+                  {{ ex }}
+              </button>
+          </div>
+
+          <!-- Input Bar -->
+          <div class="input-bar">
+              <button class="icon-btn-small">
+                  <span class="material-symbols-outlined">add_circle</span>
+              </button>
+              <div class="input-wrapper">
+                  <input 
+                      type="text" 
+                      [(ngModel)]="currentMessage" 
+                      (keypress)="onKeyPress($event)"
+                      placeholder="Escribe un mensaje..."
+                  >
+                  <button class="emoji-btn">
+                      <span class="material-symbols-outlined">sentiment_satisfied</span>
+                  </button>
+              </div>
+              <button 
+                  class="send-btn-circle" 
+                  [disabled]="!currentMessage.trim()"
+                  (click)="sendMessage()">
+                  <span class="material-symbols-outlined">send</span>
+              </button>
+          </div>
       </div>
 
-      <div class="metrics-section">
-        <app-metrics-panel [metrics]="metrics" [agentColor]="agent.color"></app-metrics-panel>
-      </div>
-    </div>
   </div>
 </div>
-

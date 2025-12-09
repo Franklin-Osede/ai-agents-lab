@@ -67,4 +67,3 @@ export class VoiceOutreach extends BaseEntity {
     this.updateTimestamp();
   }
 }
-

@@ -6,10 +6,10 @@ import { DidProvider } from './infrastructure/voice/did.provider';
 
 /**
  * Voice Agent Module
- * 
+ *
  * Independent module for generating personalized voice/video messages.
  * Uses D-ID as the voice/video provider (cheapest option: $5.99/month).
- * 
+ *
  * Structure follows Clean Architecture:
  * - domain/: Entities and Value Objects
  * - application/: Use Cases and Services
@@ -29,4 +29,3 @@ import { DidProvider } from './infrastructure/voice/did.provider';
   exports: [VoiceAgentService],
 })
 export class VoiceAgentModule {}
-

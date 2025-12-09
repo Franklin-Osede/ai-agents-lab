@@ -1,0 +1,102 @@
+<div class="service-selector-container">
+  <!-- Top App Bar -->
+  <div class="top-app-bar">
+    <button class="icon-btn-back" (click)="onBackClick()">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <h2 class="app-bar-title">Nueva Reserva</h2>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Headline -->
+    <h1 class="headline">
+      ¿Qué necesitas <br />
+      <span class="highlight">reservar hoy?</span>
+    </h1>
+
+    <!-- Search Bar -->
+    <div class="search-bar-wrapper">
+      <label class="search-label">
+        <div class="search-icon">
+          <span class="material-symbols-outlined">search</span>
+        </div>
+        <input
+          class="search-input"
+          placeholder="Buscar servicio..."
+          type="text"
+          [(ngModel)]="searchQuery"
+        />
+      </label>
+    </div>
+
+    <!-- Filter Chips (Categories) -->
+    <div class="chips-container">
+      <button
+        *ngFor="let chip of filterChips"
+        class="chip"
+        [class.active]="selectedCategory === chip.id"
+        (click)="selectCategory(chip.id)"
+      >
+        <span class="material-symbols-outlined chip-icon">{{ chip.icon }}</span>
+        <span class="chip-text">{{ chip.name }}</span>
+      </button>
+    </div>
+
+    <!-- Section Label -->
+    <h3 class="section-label">
+      <span>Servicios Populares</span>
+      <div class="divider-line"></div>
+    </h3>
+
+    <!-- Service Cards List -->
+    <div class="services-list">
+      <div
+        *ngFor="let service of filteredCategories"
+        class="service-card"
+        (click)="onServiceClick(service)"
+      >
+        <div class="service-icon" [ngClass]="service.bgColor">
+          <span class="material-symbols-outlined" [ngClass]="service.color">
+            {{ service.icon }}
+          </span>
+        </div>
+        <div class="service-info">
+          <h4 class="service-name">{{ service.name }}</h4>
+          <p class="service-description">{{ service.description }}</p>
+        </div>
+        <div class="chevron-icon">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="filteredCategories.length === 0" class="empty-state">
+        <span class="material-symbols-outlined empty-icon">search_off</span>
+        <p>No se encontraron servicios</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-item active">
+      <span class="material-symbols-outlined filled">home</span>
+      <span class="nav-text">Inicio</span>
+    </button>
+    <button class="nav-item">
+      <span class="material-symbols-outlined">calendar_month</span>
+      <span class="nav-text">Reservas</span>
+    </button>
+    <button class="nav-item">
+      <span class="material-symbols-outlined">notifications</span>
+      <span class="nav-text">Avisos</span>
+    </button>
+    <button class="nav-item">
+      <div class="avatar-circle">
+        <span class="material-symbols-outlined filled">person</span>
+      </div>
+      <span class="nav-text">Perfil</span>
+    </button>
+  </nav>
+</div>

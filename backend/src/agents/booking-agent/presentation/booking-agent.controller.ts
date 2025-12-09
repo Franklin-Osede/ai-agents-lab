@@ -15,14 +15,14 @@ export class BookingAgentController {
   @ApiResponse({ status: 200, type: BookingResponseDto })
   async processBooking(@Body() dto: ProcessBookingRequestDto): Promise<BookingResponseDto> {
     try {
-    const result = await this.bookingAgentService.processBookingRequest({
-      message: dto.message,
-      customerId: dto.customerId,
-      businessId: dto.businessId,
-      context: dto.context,
-    });
+      const result = await this.bookingAgentService.processBookingRequest({
+        message: dto.message,
+        customerId: dto.customerId,
+        businessId: dto.businessId,
+        context: dto.context,
+      });
 
-    if (result.isFailure) {
+      if (result.isFailure) {
         console.error('BookingAgentService error:', result.error);
         return {
           success: false,

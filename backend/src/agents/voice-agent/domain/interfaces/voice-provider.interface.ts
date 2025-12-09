@@ -1,6 +1,6 @@
 /**
  * Voice Provider Interface
- * 
+ *
  * Abstraction for voice/video generation services.
  * Follows Dependency Inversion Principle - depends on abstraction, not concrete implementation.
  */
@@ -36,4 +36,3 @@ export interface IVoiceProvider {
     },
   ): Promise<string>;
 }
-

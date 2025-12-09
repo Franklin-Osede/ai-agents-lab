@@ -9,7 +9,7 @@ export enum VoiceChannel {
 
 /**
  * VoiceMessage Value Object
- * 
+ *
  * Represents a generated voice/video message for customer outreach.
  * Follows DDD principles: immutable, validated, business logic encapsulation.
  */
@@ -119,4 +119,3 @@ export class VoiceMessage {
     }
   }
 }
-

@@ -1,37 +1,47 @@
-<div class="chat-container">
-  <div class="messages-list">
+<div class="chat-messages">
     <div
       *ngFor="let message of messages"
-      [class]="getMessageClass(message)"
-      class="message"
+      class="message-wrapper"
+      [class.user]="message.sender === 'user'"
+      [class.agent]="message.sender === 'agent' && !message.isSystem"
+      [class.system]="message.isSystem"
     >
-      <div class="message-avatar">
-        {{ message.sender === 'user' ? '👤' : '🤖' }}
-      </div>
+      <!-- Agent Avatar (Only for agent messages) -->
+      <div 
+        class="avatar" 
+        *ngIf="message.sender === 'agent' && !message.isSystem"
+        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAJLiRLqi1eaD2iUDLwr5PBlpbmCoOiCZWPqWDh1xKGoNxnLsb4a4_t4xVn21F3dG2o-exhsLLzxcwhyp06o2lLYaiYRuy-m6JuhIy7vKbU_nzoM1XI5mP53ARaNMSOSf1RU9O9_gjlqriwm4o9jW-zFWiM9EDV0C1XW4mhNG13v7qCcR8sWvhdAe5HI_nlYefwxXYTvGoYU-rkSYFdTYSOoBQK7kjggn88Hh6h_338g1dMPeD1vVD7LyZZLgDoPdl_EZgrd4ZjEH4Q");'
+      ></div>
+
       <div class="message-content">
-        <div class="message-text">{{ message.content }}</div>
-        <div class="message-time">
-          {{ message.timestamp | date: 'short' }}
-        </div>
-        <div
-          *ngIf="message.intent"
-          class="message-intent"
-        >
-          Intención: {{ message.intent.type }} ({{ (message.intent.confidence * 100).toFixed(0) }}%)
-        </div>
+          <div class="sender-info" *ngIf="!message.isSystem">
+              {{ message.sender === 'user' ? 'Tú' : 'Agente' }} • {{ message.timestamp | date:'HH:mm' }}
+          </div>
+          
+          <div class="message-bubble" 
+               [class.user]="message.sender === 'user'" 
+               [class.agent]="message.sender === 'agent'"
+               [class.system]="message.isSystem">
+              <p>{{ message.content }}</p>
+          </div>
       </div>
     </div>
 
-    <div *ngIf="isLoading" class="message message-agent">
-      <div class="message-avatar">🤖</div>
+    <!-- Typing Indicator -->
+    <div *ngIf="isLoading" class="message-wrapper agent">
+       <div 
+        class="avatar" 
+        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAJLiRLqi1eaD2iUDLwr5PBlpbmCoOiCZWPqWDh1xKGoNxnLsb4a4_t4xVn21F3dG2o-exhsLLzxcwhyp06o2lLYaiYRuy-m6JuhIy7vKbU_nzoM1XI5mP53ARaNMSOSf1RU9O9_gjlqriwm4o9jW-zFWiM9EDV0C1XW4mhNG13v7qCcR8sWvhdAe5HI_nlYefwxXYTvGoYU-rkSYFdTYSOoBQK7kjggn88Hh6h_338g1dMPeD1vVD7LyZZLgDoPdl_EZgrd4ZjEH4Q");'
+      ></div>
       <div class="message-content">
-        <div class="typing-indicator">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
+          <div class="message-bubble agent">
+            <div class="typing-indicator">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+          </div>
       </div>
     </div>
-  </div>
 </div>
 

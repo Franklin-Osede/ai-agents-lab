@@ -1,0 +1,103 @@
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl bg-background border-x border-gray-100">
+  <!-- Header -->
+  <div class="flex items-center justify-between p-6 pt-8 z-10">
+    <div class="flex items-center gap-3">
+      <div class="relative flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-md shadow-primary/20">
+        <span class="material-symbols-outlined text-2xl">health_and_safety</span>
+      </div>
+      <div>
+        <span class="block text-lg font-bold tracking-tight leading-none text-text-main">MediConnect</span>
+        <span class="text-[10px] font-bold uppercase tracking-widest text-text-muted">Salud 360°</span>
+      </div>
+    </div>
+    <button class="flex h-10 w-10 items-center justify-center rounded-full text-text-muted hover:text-primary hover:bg-surface transition-colors">
+      <span class="material-symbols-outlined">help</span>
+    </button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col relative z-0">
+    <!-- Hero Image -->
+    <div class="px-6 py-2">
+      <div class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden rounded-3xl h-[240px] shadow-sm relative" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBFbBXf_bwgt0Mfijy2SZNoWt46EPZpUhC4L-CYc1zgejH7t0qjiDViJUyYD4iFqls7grVEkNR3XJ4M4CZb34GFfdG9msGK_WoSmgSDPLAy5mD3XwPRzAMDSW4Acsz0UyR5eKZPz4NainyL9WFCKp6PBWX5cG4SHZH9yKzSA6g8di0qdfF019DU9sj-glFMBlRfS8In4oziAHH2j0G9bgcFYSRffwgblGa3XlPPw7l4AfsPsPZdiTXt-WAhZToD2xwmCnCffqvFnpkV");'>
+        <div class="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent opacity-100"></div>
+      </div>
+    </div>
+
+    <!-- Title Card -->
+    <div class="px-6 relative -mt-12 mb-4">
+      <div class="bg-white/90 backdrop-blur-sm border border-gray-100 p-6 rounded-2xl shadow-soft text-center">
+        <h1 class="text-2xl font-extrabold leading-tight tracking-tight mb-2 text-gray-900">
+          Tu Salud, <br/>
+          <span class="text-primary">Sin Complicaciones</span>
+        </h1>
+        <p class="text-text-muted text-sm font-medium leading-relaxed px-4">
+          La plataforma integral para conectar pacientes y especialistas.
+        </p>
+      </div>
+    </div>
+
+    <!-- Role Selection -->
+    <div class="mt-2 mb-2">
+      <div class="flex items-center justify-between px-6 mb-4">
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Selecciona tu perfil</p>
+        <div class="flex gap-1.5">
+          <div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+          <div class="w-1.5 h-1.5 rounded-full bg-gray-200"></div>
+        </div>
+      </div>
+
+      <div class="flex overflow-x-auto gap-4 px-6 pb-6 no-scrollbar snap-x snap-mandatory">
+        <!-- Professional Card -->
+        <div (click)="selectRole('professional')" class="snap-center shrink-0 w-[260px] bg-white p-4 rounded-2xl border border-gray-100 shadow-card flex flex-col gap-4 relative overflow-hidden group hover:border-primary/30 transition-colors cursor-pointer">
+          <div class="w-full h-32 rounded-xl bg-cover bg-center relative overflow-hidden grayscale-[20%] group-hover:grayscale-0 transition-all duration-500" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCTinBiitqgmqSpeFF01g_XZQ79WIVo-UlHk_TxXG37u29_wPccegODGcfQ5T0_vAfFmkKhAz0y-feYRimrRzJdn-S_nq6DWu6dT2tUvvNT6wQzu-z36lHVWi3qfLUAGxeCP5R6raET07SMPFwPRUN_ZGEQ5Jx8d6WiIGy2BjxnNhw5ISgp5IQ0gQ09SBlBRQTVltHHKo5S4Jj5tlNut70k-NXHol80TtAlsUQw9rnDf9gFvCyxYjW6DzrM2toeZMc8nDOfOkUSZ7SV');">
+            <div class="absolute inset-0 bg-primary/5 mix-blend-multiply"></div>
+          </div>
+          <div>
+            <div class="flex items-center gap-3 mb-2">
+              <div class="bg-primary-light p-1.5 rounded-lg text-primary">
+                <span class="material-symbols-outlined text-xl">stethoscope</span>
+              </div>
+              <h3 class="text-base font-bold text-gray-900">Soy Profesional</h3>
+            </div>
+            <p class="text-xs text-gray-500 leading-relaxed">
+              Gestiona tu agenda, pacientes y estadísticas.
+            </p>
+          </div>
+        </div>
+
+        <!-- Client Card -->
+        <div (click)="selectRole('client')" class="snap-center shrink-0 w-[260px] bg-white p-4 rounded-2xl border border-gray-100 shadow-card flex flex-col gap-4 relative overflow-hidden group hover:border-primary/30 transition-colors cursor-pointer">
+          <div class="w-full h-32 rounded-xl bg-cover bg-center relative overflow-hidden grayscale-[20%] group-hover:grayscale-0 transition-all duration-500" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBD-IFZ9utm0_NRnkMSh2zSGQuhw4B1R_XQ8Sbtnz04pn3L7RmPsZOothk9hSCRt8LbfYgDDhcbUmoyl3nSZ8alr71NrH4F8JrBzJ-PVf_xw8o9ZCd48J_puC2CNpvbsAXzzDFDHJEGVRHGBEcu8LqNUcMH9VJabGwdSjvHwmQa4ifQxHY7A0ScLeH0dXNveFdTHjgwFTQtVAnTcZ-LU3T5OXqYbsENqYXXBwqmjSYG4VELOH_Uh_jhzMI1neKG5T9iZfJf3nobxLHy');">
+            <div class="absolute inset-0 bg-primary/5 mix-blend-multiply"></div>
+          </div>
+          <div>
+            <div class="flex items-center gap-3 mb-2">
+              <div class="bg-primary-light p-1.5 rounded-lg text-primary">
+                <span class="material-symbols-outlined text-xl">person</span>
+              </div>
+              <h3 class="text-base font-bold text-gray-900">Soy Cliente</h3>
+            </div>
+            <p class="text-xs text-gray-500 leading-relaxed">
+              Reserva citas y gestiona tu historial de salud.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Info -->
+    <div class="mt-auto px-6 pb-10 pt-6 bg-gradient-to-t from-white via-white/90 to-transparent">
+      <p class="text-center text-xs text-gray-500 leading-relaxed px-4">
+        Selecciona tu perfil para continuar con el registro o inicio de sesión
+      </p>
+      
+      <p class="text-center text-[10px] text-gray-400 mt-4 leading-relaxed px-8">
+        Al continuar, aceptas nuestros 
+        <a class="text-gray-600 font-semibold hover:text-primary transition-colors underline decoration-gray-300 underline-offset-2" href="#">Términos</a> 
+        y nuestra 
+        <a class="text-gray-600 font-semibold hover:text-primary transition-colors underline decoration-gray-300 underline-offset-2" href="#">Política de Privacidad</a>.
+      </p>
+    </div>
+  </div>
+</div>

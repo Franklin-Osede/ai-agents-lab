@@ -8,7 +8,7 @@ import { HealthModule } from './shared/health/health.module';
 /**
  * Core Module - Provides shared infrastructure and domain services
  * This module is Global so all agents can use it without importing
- * 
+ *
  * Supports selecting AI provider via AI_PROVIDER env var:
  * - 'langchain' -> LangChainProvider (with memory and tools support)
  * - 'openai' or default -> OpenAiProvider (simple, backward compatible)
@@ -27,13 +27,17 @@ import { HealthModule } from './shared/health/health.module';
     LangChainProvider,
     {
       provide: AI_PROVIDER_TOKEN,
-      useFactory: (configService: ConfigService, openAiProvider: OpenAiProvider, langChainProvider: LangChainProvider): IAiProvider => {
+      useFactory: (
+        configService: ConfigService,
+        openAiProvider: OpenAiProvider,
+        langChainProvider: LangChainProvider,
+      ): IAiProvider => {
         const providerType = configService.get<string>('AI_PROVIDER', 'openai').toLowerCase();
-        
+
         if (providerType === 'langchain') {
           return langChainProvider;
         }
-        
+
         return openAiProvider;
       },
       inject: [ConfigService, OpenAiProvider, LangChainProvider],

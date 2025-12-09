@@ -6,8 +6,101 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["'Plus Jakarta Sans'", "sans-serif"],
+                        display: ["Manrope", "sans-serif"]
+                    },
+                    colors: {
+                        dark: {
+                            900: '#0B0F19',
+                            800: '#151B2B',
+                            700: '#1F2937',
+                        },
+                        light: {
+                            50: '#F8FAFC',
+                            100: '#F1F5F9',
+                        },
+                        primary: "#4f46e5",
+                        "primary-dark": "#4338ca",
+                        "primary-light": "#e0e7ff",
+                        background: "#ffffff",
+                        surface: "#f9fafb",
+                        "text-main": "#111827",
+                        "text-muted": "#6b7280",
+                    },
+                    boxShadow: {
+                        'glow-blue': '0 0 40px -10px rgba(59, 130, 246, 0.3)',
+                        'glow-emerald': '0 0 40px -10px rgba(16, 185, 129, 0.3)',
+                        'glow-orange': '0 0 40px -10px rgba(249, 115, 22, 0.3)',
+                        'glow-purple': '0 0 40px -10px rgba(168, 85, 247, 0.3)',
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
+                        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", 
+                        "lg": "1.5rem", 
+                        "xl": "2.5rem", 
+                        "2xl": "3rem",
+                        "full": "9999px"
+                    }
+                },
+            },
+        };
+    </script>
+    <style>
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        min-height: max(884px, 100dvh);
+    }
+    .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+    .dark .glass-card {
+        background: rgba(21, 27, 43, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }.text-gradient-main {
+        background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .dark .text-gradient-main {
+        background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }.gradient-blue { background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); }
+    .dark .gradient-blue { background: linear-gradient(135deg, rgba(30, 58, 138, 0.2) 0%, rgba(29, 78, 216, 0.1) 100%); }
+    .gradient-emerald { background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); }
+    .dark .gradient-emerald { background: linear-gradient(135deg, rgba(6, 78, 59, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%); }
+    .gradient-orange { background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%); }
+    .dark .gradient-orange { background: linear-gradient(135deg, rgba(124, 45, 18, 0.2) 0%, rgba(234, 88, 12, 0.1) 100%); }
+    .gradient-purple { background: linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%); }
+    .dark .gradient-purple { background: linear-gradient(135deg, rgba(88, 28, 135, 0.2) 0%, rgba(147, 51, 234, 0.1) 100%); }
+</style>
 </head>
-<body>
+<body class="bg-light-50 dark:bg-dark-900 font-sans transition-colors duration-500 min-h-screen flex flex-col items-center selection:bg-blue-200 dark:selection:bg-blue-900">
   <app-root></app-root>
 </body>
 </html>

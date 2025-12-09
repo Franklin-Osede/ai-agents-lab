@@ -15,7 +15,9 @@ describe('VoiceMessage Value Object', () => {
 
       // Assert
       expect(voiceMessage.isSuccess).toBe(true);
-      expect(voiceMessage.value.script).toBe('Hola María, te escribo para seguir con tu consulta sobre botox.');
+      expect(voiceMessage.value.script).toBe(
+        'Hola María, te escribo para seguir con tu consulta sobre botox.',
+      );
       expect(voiceMessage.value.audioUrl).toBe('https://example.com/audio.mp3');
       expect(voiceMessage.value.videoUrl).toBe('https://example.com/video.mp4');
       expect(voiceMessage.value.duration).toBe(30);
@@ -110,7 +112,7 @@ describe('VoiceMessage Value Object', () => {
       const cost = voiceMessage.getEstimatedCost();
 
       // Assert - D-ID audio: ~$0.01 per second
-      expect(cost).toBeCloseTo(0.30, 2);
+      expect(cost).toBeCloseTo(0.3, 2);
     });
 
     it('should calculate cost for video', () => {
@@ -126,8 +128,7 @@ describe('VoiceMessage Value Object', () => {
       const cost = voiceMessage.getEstimatedCost();
 
       // Assert - D-ID video: ~$0.06 per second
-      expect(cost).toBeCloseTo(1.80, 2);
+      expect(cost).toBeCloseTo(1.8, 2);
     });
   });
 });
-

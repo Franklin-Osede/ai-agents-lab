@@ -1,30 +1,122 @@
-<div class="landing-page">
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1 class="hero-title">AI Agents Lab</h1>
-      <p class="hero-subtitle">
-        Agentes de IA profesionales para automatizar tu negocio. Haz clic en cualquier agente para verlo en acción y replicar cómo funcionaría en tu negocio.
-      </p>
-    </div>
-  </section>
-
-  <!-- Agents Grid -->
-  <section class="agents-section">
-    <div class="agents-grid">
-      <app-agent-card
-        *ngFor="let agent of agents"
-        [agent]="agent"
-        (tryIt)="openDemo(agent)"
-      ></app-agent-card>
-    </div>
-  </section>
-
-  <!-- Demo Modal -->
-  <app-demo-modal
-    *ngIf="showModal && selectedAgent"
-    [agent]="selectedAgent"
-    (close)="closeModal()"
-  ></app-demo-modal>
+<div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/10 blur-[100px]"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-400/10 blur-[100px]"></div>
 </div>
 
+<header class="w-full max-w-7xl mx-auto px-6 pt-16 pb-12 text-center md:text-left md:flex md:justify-between md:items-end animate-fade-in-up">
+    <div class="md:max-w-2xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-300 text-xs font-semibold mb-6 tracking-wide uppercase">
+            <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+            Inteligencia Artificial Avanzada
+        </div>
+        <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-gradient-main" style="line-height: 1.15;">
+            AI Agents Lab
+        </h1>
+        <p class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed font-light">
+            Potencia tu negocio con agentes autónomos diseñados para la excelencia. Descubre cómo la IA puede transformar tus operaciones hoy mismo.
+        </p>
+    </div>
+    <div class="hidden md:block">
+        <button class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-xl font-medium hover:opacity-90 transition-opacity">
+            Ver Demo General
+        </button>
+    </div>
+</header>
+
+<main class="w-full max-w-7xl mx-auto px-4 pb-24 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+    <!-- Booking Agent Card -->
+    <div class="group relative rounded-[2rem] p-1 gradient-blue border border-blue-100 dark:border-blue-900/50 hover:shadow-glow-blue transition-all duration-500 hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.1s;">
+        <div class="absolute inset-0 bg-white/40 dark:bg-dark-800/40 rounded-[2rem] backdrop-blur-sm -z-10"></div>
+        <div class="h-full rounded-[1.8rem] bg-white/60 dark:bg-dark-900/80 p-6 md:p-8 flex flex-col relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
+                <span class="material-symbols-outlined text-9xl text-blue-600 dark:text-blue-400 rotate-12 transform translate-x-4 -translate-y-4">calendar_month</span>
+            </div>
+            <div class="relative z-10 flex flex-col h-full justify-between">
+                <div>
+                    <div class="w-14 h-14 rounded-2xl bg-blue-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/30 mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <span class="material-symbols-outlined text-3xl">calendar_month</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">Booking Agent</h2>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-8">
+                        Gestión de citas autónoma 24/7. Elimina la fricción en tus reservas y optimiza tu calendario sin esfuerzo manual.
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
+                            <span class="material-symbols-outlined text-blue-500 text-[20px]">check_circle</span>
+                            <span>Detección de intención nativa</span>
+                        </div>
+                    </div>
+                </div>
+                <button (click)="openDemo('booking')" class="w-full group/btn relative overflow-hidden rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold py-4 px-6 transition-all duration-300 hover:shadow-lg mt-8">
+                    <span class="relative z-10 flex items-center justify-center gap-2">
+                        Probar Demo
+                        <span class="material-symbols-outlined text-lg transition-transform group-hover/btn:translate-x-1">arrow_forward</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DM Responder Card -->
+    <div class="group relative rounded-[2rem] p-1 gradient-emerald border border-emerald-100 dark:border-emerald-900/50 hover:shadow-glow-emerald transition-all duration-500 hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.2s;">
+        <div class="absolute inset-0 bg-white/40 dark:bg-dark-800/40 rounded-[2rem] backdrop-blur-sm -z-10"></div>
+        <div class="h-full rounded-[1.8rem] bg-white/60 dark:bg-dark-900/80 p-6 md:p-8 flex flex-col relative overflow-hidden">
+             <!-- ... content same as provided, just binding click ... -->
+             <div class="relative z-10 flex flex-col h-full justify-between">
+                <div>
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <span class="material-symbols-outlined text-3xl">chat_bubble</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">DM Responder</h2>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                        Atención inmediata en redes sociales.
+                    </p>
+                </div>
+                <button (click)="openDemo('dm-response')" class="w-full group/btn relative overflow-hidden rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold py-4 px-6 transition-all duration-300 hover:shadow-lg mt-8">
+                    <span class="relative z-10 flex items-center justify-center gap-2">
+                        Probar Demo
+                        <span class="material-symbols-outlined text-lg transition-transform group-hover/btn:translate-x-1">arrow_forward</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Follow Up Agent -->
+     <div class="group relative rounded-[2rem] p-1 gradient-orange border border-orange-100 dark:border-orange-900/50 hover:shadow-glow-orange transition-all duration-500 hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.3s;">
+        <div class="absolute inset-0 bg-white/40 dark:bg-dark-800/40 rounded-[2rem] backdrop-blur-sm -z-10"></div>
+        <div class="h-full rounded-[1.8rem] bg-white/60 dark:bg-dark-900/80 p-6 md:p-8 flex flex-col relative overflow-hidden">
+             <div class="relative z-10 flex flex-col h-full justify-between">
+                <div>
+                    <div class="w-14 h-14 rounded-2xl bg-orange-500 text-white flex items-center justify-center shadow-lg shadow-orange-500/30 mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <span class="material-symbols-outlined text-3xl">sync</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">Follow-up Agent</h2>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                        Reactiva leads dormidos automáticamente.
+                    </p>
+                </div>
+                <button (click)="openDemo('follow-up')" class="w-full group/btn relative overflow-hidden rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold py-4 px-6 transition-all duration-300 hover:shadow-lg mt-8">
+                    <span class="relative z-10 flex items-center justify-center gap-2">
+                        Probar Demo
+                        <span class="material-symbols-outlined text-lg transition-transform group-hover/btn:translate-x-1">arrow_forward</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div class="fixed bottom-8 right-8 z-50">
+    <button class="w-12 h-12 flex items-center justify-center bg-white/90 dark:bg-dark-800/90 text-slate-800 dark:text-white rounded-full shadow-lg backdrop-blur-md hover:scale-110 transition-transform focus:outline-none border border-slate-200 dark:border-slate-700" (click)="toggleDarkMode()">
+        <span class="material-symbols-outlined block dark:hidden">dark_mode</span>
+        <span class="material-symbols-outlined hidden dark:block">light_mode</span>
+    </button>
+</div>
+
+<!-- Modal Container -->
+<app-demo-modal 
+  *ngIf="selectedAgent" 
+  [agent]="selectedAgent" 
+  (close)="closeDemo()">
+</app-demo-modal>

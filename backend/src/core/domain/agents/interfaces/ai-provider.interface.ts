@@ -1,5 +1,5 @@
 export interface IAiProvider {
-  generateResponse(prompt: string, context?: Record<string, any>): Promise<string>;
+  generateResponse(prompt: string, context?: Record<string, unknown>): Promise<string>;
   classifyIntent(
     message: string,
     intents: string[],

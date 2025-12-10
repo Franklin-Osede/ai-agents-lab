@@ -3,23 +3,77 @@
     <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-400/10 blur-[100px]"></div>
 </div>
 
-<header class="w-full max-w-7xl mx-auto px-6 pt-16 pb-12 text-center md:text-left md:flex md:justify-between md:items-end animate-fade-in-up">
-    <div class="md:max-w-2xl">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-300 text-xs font-semibold mb-6 tracking-wide uppercase">
-            <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-            Inteligencia Artificial Avanzada
-        </div>
-        <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-gradient-main" style="line-height: 1.15;">
+<header class="w-full max-w-7xl mx-auto px-6 pt-6 pb-12 animate-fade-in-up">
+    <!-- Top Navigation -->
+    <div class="flex justify-between items-center mb-20">
+        <div class="text-xl font-semibold tracking-tight flex items-center gap-2 text-slate-900 dark:text-white">
             AI Agents Lab
-        </h1>
-        <p class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed font-light">
-            Potencia tu negocio con agentes autónomos diseñados para la excelencia. Descubre cómo la IA puede transformar tus operaciones hoy mismo.
-        </p>
+        </div>
+        <div class="flex items-center gap-3">
+             <button (click)="navigateToProfessional()" class="text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors px-4 py-2">
+                Soy Profesional
+            </button>
+            <button class="px-5 py-2.5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-sm font-medium hover:opacity-90 transition-opacity">
+                Soy Cliente
+            </button>
+        </div>
     </div>
-    <div class="hidden md:block">
-        <button class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-xl font-medium hover:opacity-90 transition-opacity">
-            Ver Demo General
-        </button>
+
+    <!-- Hero Section -->
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <!-- Text Content -->
+        <div class="md:max-w-2xl text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 text-indigo-600 dark:text-indigo-300 text-xs font-semibold mb-6 tracking-wide uppercase">
+                <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                Inteligencia Artificial Avanzada
+            </div>
+            <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-gradient-main" style="line-height: 1.15;">
+                Revoluciona tu Negocio con <br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600">Agentes IA</span>
+            </h1>
+            <p class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed font-light mb-8">
+                Automatiza citas, atención al cliente y seguimiento de leads con agentes autónomos diseñados para la excelencia operativa.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <button class="px-8 py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90 transition-all shadow-xl hover:translate-y-[-2px]">
+                    Ver Demo General
+                </button>
+                <button class="px-8 py-4 rounded-xl bg-transparent border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+                    Conocer más
+                </button>
+            </div>
+        </div>
+
+        <!-- Hero Image -->
+        <div class="relative group">
+            <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-[2rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+            <div class="relative rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl bg-slate-900 aspect-video">
+                <!-- Using version 2 (simple/clean) as requested -->
+                <img src="assets/hero-image-v2.png" alt="AI Agents Lab Dashboard" class="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity duration-700 scale-105 hover:scale-100 transform transition-transform duration-700">
+                
+                <!-- Floating Badge 1 -->
+                <div class="absolute top-6 right-6 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl flex items-center gap-3 animate-fade-in-up" style="animation-delay: 0.5s;">
+                    <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+                        <span class="material-symbols-outlined text-sm">check</span>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-300">Estado</div>
+                        <div class="text-sm font-bold text-white">Sistema Activo</div>
+                    </div>
+                </div>
+
+                 <!-- Floating Badge 2 -->
+                 <div class="absolute bottom-6 left-6 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl flex items-center gap-3 animate-fade-in-up" style="animation-delay: 0.8s;">
+                    <div class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+                        <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-300">Eficiencia</div>
+                        <div class="text-sm font-bold text-white">+85% Automatizado</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </header>
 
@@ -57,22 +111,21 @@
         </div>
     </div>
 
-    <!-- DM Responder Card -->
-    <div class="group relative rounded-[2rem] p-1 gradient-emerald border border-emerald-100 dark:border-emerald-900/50 hover:shadow-glow-emerald transition-all duration-500 hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.2s;">
+    <!-- Abandoned Cart Agent Card -->
+    <div class="group relative rounded-[2rem] p-1 gradient-rose border border-rose-100 dark:border-rose-900/50 hover:shadow-glow-rose transition-all duration-500 hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.2s;">
         <div class="absolute inset-0 bg-white/40 dark:bg-dark-800/40 rounded-[2rem] backdrop-blur-sm -z-10"></div>
         <div class="h-full rounded-[1.8rem] bg-white/60 dark:bg-dark-900/80 p-6 md:p-8 flex flex-col relative overflow-hidden">
-             <!-- ... content same as provided, just binding click ... -->
              <div class="relative z-10 flex flex-col h-full justify-between">
                 <div>
-                    <div class="w-14 h-14 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <span class="material-symbols-outlined text-3xl">chat_bubble</span>
+                    <div class="w-14 h-14 rounded-2xl bg-rose-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <span class="material-symbols-outlined text-3xl">shopping_cart_checkout</span>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">DM Responder</h2>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">Abandoned Cart</h2>
                     <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                        Atención inmediata en redes sociales.
+                        Recupera ventas perdidas enviando notas de voz personalizadas por WhatsApp.
                     </p>
                 </div>
-                <button (click)="openDemo('dm-response')" class="w-full group/btn relative overflow-hidden rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold py-4 px-6 transition-all duration-300 hover:shadow-lg mt-8">
+                <button (click)="openDemo('cart-recovery')" class="w-full group/btn relative overflow-hidden rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold py-4 px-6 transition-all duration-300 hover:shadow-lg mt-8">
                     <span class="relative z-10 flex items-center justify-center gap-2">
                         Probar Demo
                         <span class="material-symbols-outlined text-lg transition-transform group-hover/btn:translate-x-1">arrow_forward</span>
@@ -82,21 +135,68 @@
         </div>
     </div>
 
-    <!-- Follow Up Agent -->
-     <div class="group relative rounded-[2rem] p-1 gradient-orange border border-orange-100 dark:border-orange-900/50 hover:shadow-glow-orange transition-all duration-500 hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.3s;">
+    <!-- Webinar Recovery Agent -->
+     <div class="group relative rounded-[2rem] p-1 gradient-purple border border-purple-100 dark:border-purple-900/50 hover:shadow-glow-purple transition-all duration-500 hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.3s;">
         <div class="absolute inset-0 bg-white/40 dark:bg-dark-800/40 rounded-[2rem] backdrop-blur-sm -z-10"></div>
         <div class="h-full rounded-[1.8rem] bg-white/60 dark:bg-dark-900/80 p-6 md:p-8 flex flex-col relative overflow-hidden">
              <div class="relative z-10 flex flex-col h-full justify-between">
                 <div>
-                    <div class="w-14 h-14 rounded-2xl bg-orange-500 text-white flex items-center justify-center shadow-lg shadow-orange-500/30 mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <span class="material-symbols-outlined text-3xl">sync</span>
+                    <div class="w-14 h-14 rounded-2xl bg-purple-500 text-white flex items-center justify-center shadow-lg shadow-purple-500/30 mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <span class="material-symbols-outlined text-3xl">video_camera_front</span>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">Follow-up Agent</h2>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">Webinar Recovery</h2>
                     <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                        Reactiva leads dormidos automáticamente.
+                        Reactiva leads que no asistieron con resúmenes de video personalizados.
                     </p>
                 </div>
-                <button (click)="openDemo('follow-up')" class="w-full group/btn relative overflow-hidden rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold py-4 px-6 transition-all duration-300 hover:shadow-lg mt-8">
+                <button (click)="openDemo('webinar-recovery')" class="w-full group/btn relative overflow-hidden rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold py-4 px-6 transition-all duration-300 hover:shadow-lg mt-8">
+                    <span class="relative z-10 flex items-center justify-center gap-2">
+                        Probar Demo
+                        <span class="material-symbols-outlined text-lg transition-transform group-hover/btn:translate-x-1">arrow_forward</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Invoice Chaser Agent -->
+     <div class="group relative rounded-[2rem] p-1 gradient-amber border border-amber-100 dark:border-amber-900/50 hover:shadow-glow-amber transition-all duration-500 hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.4s;">
+        <div class="absolute inset-0 bg-white/40 dark:bg-dark-800/40 rounded-[2rem] backdrop-blur-sm -z-10"></div>
+        <div class="h-full rounded-[1.8rem] bg-white/60 dark:bg-dark-900/80 p-6 md:p-8 flex flex-col relative overflow-hidden">
+             <div class="relative z-10 flex flex-col h-full justify-between">
+                <div>
+                    <div class="w-14 h-14 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-lg shadow-amber-500/30 mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <span class="material-symbols-outlined text-3xl">receipt_long</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">Invoice Chaser</h2>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                        Gestiona el cobro de facturas vencidas de forma amable y automática.
+                    </p>
+                </div>
+                <button (click)="openDemo('invoice-chaser')" class="w-full group/btn relative overflow-hidden rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold py-4 px-6 transition-all duration-300 hover:shadow-lg mt-8">
+                    <span class="relative z-10 flex items-center justify-center gap-2">
+                        Probar Demo
+                        <span class="material-symbols-outlined text-lg transition-transform group-hover/btn:translate-x-1">arrow_forward</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Brand Agent -->
+     <div class="group relative rounded-[2rem] p-1 gradient-emerald border border-emerald-100 dark:border-emerald-900/50 hover:shadow-glow-emerald transition-all duration-500 hover:-translate-y-1 animate-fade-in-up" style="animation-delay: 0.5s;">
+        <div class="absolute inset-0 bg-white/40 dark:bg-dark-800/40 rounded-[2rem] backdrop-blur-sm -z-10"></div>
+        <div class="h-full rounded-[1.8rem] bg-white/60 dark:bg-dark-900/80 p-6 md:p-8 flex flex-col relative overflow-hidden">
+             <div class="relative z-10 flex flex-col h-full justify-between">
+                <div>
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <span class="material-symbols-outlined text-3xl">graphic_eq</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">Voice Brand</h2>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                        Tu identidad de marca en voz. Mensajes y saludos personalizados.
+                    </p>
+                </div>
+                <button (click)="openDemo('voice')" class="w-full group/btn relative overflow-hidden rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold py-4 px-6 transition-all duration-300 hover:shadow-lg mt-8">
                     <span class="relative z-10 flex items-center justify-center gap-2">
                         Probar Demo
                         <span class="material-symbols-outlined text-lg transition-transform group-hover/btn:translate-x-1">arrow_forward</span>

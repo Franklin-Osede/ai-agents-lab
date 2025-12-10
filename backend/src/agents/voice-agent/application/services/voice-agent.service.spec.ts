@@ -5,8 +5,7 @@ import {
   IAiProvider,
   AI_PROVIDER_TOKEN,
 } from '../../../../core/domain/agents/interfaces/ai-provider.interface';
-import { VoiceMessage, VoiceChannel } from '../../domain/value-objects/voice-message';
-import { Result } from '../../../../core/domain/shared/value-objects/result';
+import { VoiceChannel } from '../../domain/value-objects/voice-message';
 
 describe('VoiceAgentService', () => {
   let service: VoiceAgentService;

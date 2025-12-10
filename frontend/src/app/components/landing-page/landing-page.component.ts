@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { Agent } from '../../shared/models/agent.model';
 
 @Component({
@@ -20,36 +21,55 @@ export class LandingPageComponent {
         endpoint: '/agents/booking',
         color: 'blue'
       },
-      'dm-response': { 
-        id: 'dm-response', 
-        name: 'DM Responder', 
-        description: 'Atención inmediata',
-        icon: 'chat_bubble',
-        features: ['Respuestas Instantáneas', 'Calif. de Leads', 'Multicanal'],
-        endpoint: '/agents/dm',
-        color: 'emerald'
+      'cart-recovery': { 
+        id: 'cart-recovery', 
+        name: 'Abandoned Cart', 
+        description: 'Recupera ventas perdidas',
+        icon: 'shopping_cart_checkout',
+        features: ['Notas de Voz WhatsApp', 'Disparador Automático', 'Reportes de ROI'],
+        endpoint: '/agents/cart',
+        color: 'rose'
       },
-      'follow-up': { 
-        id: 'follow-up', 
-        name: 'Follow-up Agent', 
-        description: 'Reactiva leads',
-        icon: 'sync',
-        features: ['Secuencias Inteligentes', 'Personalización', 'Reactivación'],
-        endpoint: '/agents/followup',
-        color: 'orange'
+      'webinar-recovery': { 
+        id: 'webinar-recovery', 
+        name: 'Webinar Recovery', 
+        description: 'Reactiva leads perdidos',
+        icon: 'video_camera_front',
+        features: ['Video Personalizado', 'Resumen AI', 'Call-to-Action'],
+        endpoint: '/agents/webinar',
+        color: 'purple'
+      },
+      'invoice-chaser': {
+        id: 'invoice-chaser',
+        name: 'Invoice Chaser',
+        description: 'Cobranza sin fricción',
+        icon: 'receipt_long',
+        features: ['Escalamiento Inteligente', 'Multicanal', 'Amigable'],
+        endpoint: '/agents/invoice',
+        color: 'amber'
       },
       'voice': { 
         id: 'voice', 
-        name: 'Voice Agent', 
-        description: 'Mensajes de voz',
-        icon: 'mic',
-        features: ['Voz Natural', 'Llamadas Salientes', 'Transcripción'],
+        name: 'Voice Brand', 
+        description: 'Identidad vocal',
+        icon: 'graphic_eq',
+        features: ['Voz Natural', 'Personalización', 'Multilenguaje'],
         endpoint: '/agents/voice',
-        color: 'purple'
+        color: 'emerald'
       }
   };
 
-  constructor() {}
+  constructor(private router: Router) {}
+
+  navigateToProfessional(): void {
+    console.log('Navigating to professional dashboard...');
+    this.router.navigate(['/professional']).then(success => {
+        console.log('Navigation result:', success);
+        if (!success) {
+            console.error('Navigation failed!');
+        }
+    });
+  }
 
   openDemo(agentId: string): void {
     if (this.agentsMap[agentId]) {

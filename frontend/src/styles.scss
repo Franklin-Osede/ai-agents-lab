@@ -12,8 +12,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+
 html,
 body {
   height: 100%;
+}
+
+app-root {
+  display: block;
+  width: 100%;
 }
 

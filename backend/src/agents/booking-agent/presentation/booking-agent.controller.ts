@@ -4,10 +4,26 @@ import { BookingAgentService } from '../application/services/booking-agent.servi
 import { ProcessBookingRequestDto } from './dto/process-booking-request.dto';
 import { BookingResponseDto } from './dto/booking-response.dto';
 
+import { BookingAgentChainService } from '../application/services/booking-agent-chain.service';
+
 @ApiTags('Booking Agent')
 @Controller('agents/booking')
 export class BookingAgentController {
-  constructor(private readonly bookingAgentService: BookingAgentService) {}
+  constructor(
+    private readonly bookingAgentService: BookingAgentService,
+    private readonly chainService: BookingAgentChainService,
+  ) {}
+
+  @Post('chat')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Chat with the booking agent (N8N compatible)' })
+  async chat(@Body() body: { message: string; sessionId: string; businessId: string }) {
+    const response = await this.chainService.processRequest(body.message, {
+      businessId: body.businessId || 'default-business',
+      customerId: body.sessionId,
+    });
+    return { response };
+  }
 
   @Post('process')
   @HttpCode(HttpStatus.OK)

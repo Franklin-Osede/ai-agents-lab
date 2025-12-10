@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CoreModule } from './core/core.module';
 import { BookingAgentModule } from './agents/booking-agent/booking-agent.module';
-import { DmResponseAgentModule } from './agents/dm-response-agent/dm-response-agent.module';
-import { FollowUpAgentModule } from './agents/follow-up-agent/follow-up-agent.module';
 import { VoiceAgentModule } from './agents/voice-agent/voice-agent.module';
+import { AbandonedCartModule } from './agents/abandoned-cart-agent/abandoned-cart.module';
+import { WebinarRecoveryModule } from './agents/webinar-recovery-agent/webinar-recovery.module';
+import { InvoiceChaserModule } from './agents/invoice-chaser-agent/invoice-chaser.module';
 
 /**
  * Main Application Module
@@ -26,9 +27,10 @@ import { VoiceAgentModule } from './agents/voice-agent/voice-agent.module';
     }),
     CoreModule, // Shared infrastructure
     BookingAgentModule,
-    DmResponseAgentModule,
-    FollowUpAgentModule,
     VoiceAgentModule,
+    AbandonedCartModule,
+    WebinarRecoveryModule,
+    InvoiceChaserModule,
   ],
 })
 export class AppModule {}

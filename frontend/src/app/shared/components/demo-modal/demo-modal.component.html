@@ -53,8 +53,9 @@
                 <span class="logo-text">MediConnect</span>
               </div>
               <div class="prof-actions">
-                <button class="icon-btn">
-                  <span class="material-symbols-outlined">notifications</span>
+                <!-- Logout Button -->
+                <button class="icon-btn" (click)="onLogout()" title="Cerrar Sesión">
+                    <span class="material-symbols-outlined" style="color: #ef4444;">logout</span>
                 </button>
                 <div class="profile-avatar">
                   <span class="material-symbols-outlined">person</span>
@@ -166,8 +167,13 @@
                 </div>
                 <span class="logo-text">MediConnect</span>
               </div>
-              <div class="client-avatar">
-                <span class="material-symbols-outlined">person</span>
+              <div class="client-actions" style="display: flex; gap: 10px;">
+                 <button class="icon-btn" (click)="onLogout()" title="Cerrar Sesión" style="border: none; background: none; cursor: pointer;">
+                    <span class="material-symbols-outlined" style="color: #ef4444;">logout</span>
+                </button>
+                <div class="client-avatar">
+                    <span class="material-symbols-outlined">person</span>
+                </div>
               </div>
             </div>
 

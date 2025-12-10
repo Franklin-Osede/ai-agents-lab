@@ -91,7 +91,8 @@ REGLAS:
 
         // Add AI response to history
         history.push(response);
-        toolCalls = calls || [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        toolCalls = (calls as any[]) || [];
 
         // 5. Handle Tool Execution (if any)
         if (toolCalls && toolCalls.length > 0) {

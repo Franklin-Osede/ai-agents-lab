@@ -1,5 +1,4 @@
 import { VoiceMessage, VoiceChannel } from './voice-message';
-import { Result } from '../../../../core/domain/shared/value-objects/result';
 
 describe('VoiceMessage Value Object', () => {
   describe('create', () => {

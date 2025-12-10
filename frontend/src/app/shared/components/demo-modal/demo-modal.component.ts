@@ -208,6 +208,14 @@ export class DemoModalComponent implements OnInit {
       console.log('=======================');
   }
 
+  onLogout() {
+      console.log('Logging out...');
+      this.authService.logout();
+      this.currentStep = -1; // Go back to Role Selector
+      this.selectedRole = null;
+      this.showAuthScreen = null;
+  }
+
   switchToRegister() {
       this.showAuthScreen = 'register';
   }

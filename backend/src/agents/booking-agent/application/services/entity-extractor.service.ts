@@ -24,15 +24,17 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class EntityExtractorService {
   private readonly logger = new Logger(EntityExtractorService.name);
-  private readonly parser: StructuredOutputParser<typeof BookingEntitiesSchema>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private readonly parser: StructuredOutputParser<any>;
   private readonly llm: ChatOpenAI | null = null;
 
   constructor(
     @Inject(AI_PROVIDER_TOKEN) private readonly aiProvider: IAiProvider,
     private readonly configService: ConfigService,
   ) {
-    // Initialize parser with Zod schema
-    this.parser = StructuredOutputParser.fromZodSchema(BookingEntitiesSchema);
+    // Initialize parser with Zod schema (cast to any to resolve InteropZodType mismatch)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.parser = StructuredOutputParser.fromZodSchema(BookingEntitiesSchema as any);
 
     // If using LangChainProvider, get the LLM directly for better structured output
     if (this.configService.get<string>('AI_PROVIDER', 'openai').toLowerCase() === 'langchain') {
@@ -92,7 +94,7 @@ ${formatInstructions}`;
       const parsed = await this.parser.parse(response.content as string);
 
       // Normalize dates and times
-      const normalized = this.normalizeEntities(parsed);
+      const normalized = this.normalizeEntities(parsed as BookingEntitiesInput);
 
       return BookingEntities.create(normalized);
     } catch (error) {
@@ -120,7 +122,9 @@ ${formatInstructions}`;
    * Normalize extracted entities (dates, times, etc.)
    */
   private normalizeEntities(parsed: BookingEntitiesInput): Partial<BookingEntities> {
-    const normalized: Partial<BookingEntities> = {
+    // Create a mutable object first to avoid readonly errors
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const normalized: any = {
       dates: [],
       times: [],
       services: parsed.services || [],

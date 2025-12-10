@@ -3,9 +3,9 @@ import { ConfigService } from '@nestjs/config';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { createReactAgent } = require('@langchain/langgraph/prebuilt');
 import { LangChainProvider } from '../../../../core/infrastructure/ai/langchain.provider';
-import { CheckAvailabilityTool } from '../tools/check-availability.tool';
+import { checkAvailabilityTool } from '../tools/check-availability.tool';
 import { SuggestTimesTool } from '../tools/suggest-times.tool';
-import { ConfirmBookingTool } from '../tools/confirm-booking.tool';
+import { confirmBookingTool } from '../tools/confirm-booking.tool';
 import { InMemoryChatMessageHistory } from '@langchain/core/chat_history';
 
 /**
@@ -23,9 +23,7 @@ export class BookingAgentChainService {
 
   constructor(
     private readonly langChainProvider: LangChainProvider,
-    private readonly checkAvailabilityTool: CheckAvailabilityTool,
     private readonly suggestTimesTool: SuggestTimesTool,
-    private readonly confirmBookingTool: ConfirmBookingTool,
     private readonly configService: ConfigService,
   ) {}
 
@@ -40,11 +38,7 @@ export class BookingAgentChainService {
 
     try {
       const llm = this.langChainProvider.getLLM();
-      const tools = [
-        this.checkAvailabilityTool.getTool(),
-        this.suggestTimesTool.getTool(),
-        this.confirmBookingTool.getTool(),
-      ];
+      const tools = [checkAvailabilityTool, this.suggestTimesTool.getTool(), confirmBookingTool];
 
       // Simple system prompt for createReactAgent (it handles the conversation flow automatically)
       const systemPrompt = `You are a professional booking assistant for a business.

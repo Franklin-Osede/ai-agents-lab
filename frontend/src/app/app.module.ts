@@ -17,6 +17,7 @@ import { CalendarComponent } from './shared/components/calendar/calendar.compone
 import { RoleSelectorComponent } from './shared/components/role-selector/role-selector.component';
 import { LoginComponent } from './shared/components/login/login.component';
 import { RegisterComponent } from './shared/components/register/register.component';
+import { ProfessionalDashboardComponent } from './components/professional-dashboard/professional-dashboard.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { RegisterComponent } from './shared/components/register/register.compone
     RoleSelectorComponent,
     LoginComponent,
     RegisterComponent,
+    ProfessionalDashboardComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule],
   providers: [],

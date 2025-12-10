@@ -80,7 +80,8 @@ export class DidProvider implements IVoiceProvider {
   async generateVideo(
     imageUrl: string,
     audioUrl: string,
-    options?: {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _options?: {
       style?: string;
       quality?: 'low' | 'medium' | 'high';
     },

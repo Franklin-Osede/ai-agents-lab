@@ -1,17 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BookingAgentController } from './booking-agent.controller';
 import { BookingAgentService } from '../application/services/booking-agent.service';
+import { BookingAgentChainService } from '../application/services/booking-agent-chain.service';
 import { Result } from '@core/domain/shared/value-objects/result';
 import { IntentType } from '@core/domain/agents/entities/agent-intent.entity';
-import { BookingResponseDto } from './dto/booking-response.dto';
 
 describe('BookingAgentController', () => {
   let controller: BookingAgentController;
   let service: BookingAgentService;
+  let chainService: BookingAgentChainService;
 
   const mockService = {
     processBookingRequest: jest.fn(),
     confirmBooking: jest.fn(),
+  };
+
+  const mockChainService = {
+    processRequest: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -22,15 +27,45 @@ describe('BookingAgentController', () => {
           provide: BookingAgentService,
           useValue: mockService,
         },
+        {
+          provide: BookingAgentChainService,
+          useValue: mockChainService,
+        },
       ],
     }).compile();
 
     controller = module.get<BookingAgentController>(BookingAgentController);
     service = module.get<BookingAgentService>(BookingAgentService);
+    chainService = module.get<BookingAgentChainService>(BookingAgentChainService);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('chat', () => {
+    it('should return chat response from chain service', async () => {
+      const body = {
+        message: 'Hello',
+        sessionId: 'session-1',
+        businessId: 'business-1',
+      };
+      const expectedResponse = 'Hello! How can I help?';
+      mockChainService.processRequest.mockResolvedValue(expectedResponse);
+
+      const result = await controller.chat(body);
+
+      expect(result).toEqual({ response: expectedResponse });
+      expect(mockChainService.processRequest).toHaveBeenCalledWith(
+        body.message,
+        expect.objectContaining({
+          businessId: body.businessId,
+          customerId: body.sessionId,
+        }),
+      );
+      // Use chainService to satisfy linter if needed, or just keep it for completeness
+      expect(chainService).toBeDefined();
+    });
   });
 
   describe('processBooking', () => {
@@ -40,6 +75,7 @@ describe('BookingAgentController', () => {
         message: 'I want to book an appointment',
         businessId: 'business-123',
         customerId: 'customer-456',
+        context: {},
       };
 
       const expectedResponse = {
@@ -64,7 +100,7 @@ describe('BookingAgentController', () => {
         message: dto.message,
         customerId: dto.customerId,
         businessId: dto.businessId,
-        context: undefined,
+        context: dto.context,
       });
     });
 
@@ -73,6 +109,8 @@ describe('BookingAgentController', () => {
       const dto = {
         message: 'Book appointment',
         businessId: 'business-123',
+        customerId: 'customer-456',
+        context: {},
       };
 
       jest

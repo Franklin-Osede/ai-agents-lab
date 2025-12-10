@@ -1,17 +1,23 @@
 import { DynamicStructuredTool } from '@langchain/core/tools';
 import { z } from 'zod';
 
+const confirmBookingSchema = z.object({
+  date: z.string().describe('Date in YYYY-MM-DD format'),
+  time: z.string().describe('Time in HH:MM format'),
+  name: z.string().describe('Name of the person booking'),
+  email: z.string().optional().describe('Email for confirmation'),
+});
+
 export const confirmBookingTool = new DynamicStructuredTool({
   name: 'confirm_booking',
   description:
     'Confirms a booking for a specific date and time. Use this when the user explicitly agrees to a slot.',
-  schema: z.object({
-    date: z.string().describe('Date in YYYY-MM-DD format'),
-    time: z.string().describe('Time in HH:MM format'),
-    name: z.string().describe('Name of the person booking'),
-    email: z.string().optional().describe('Email for confirmation'),
-  }),
-  func: async ({ date, time, name, email }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  schema: confirmBookingSchema as any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  func: async (input: any) => {
+    const { date, time, name } = input as { date: string; time: string; name: string };
+
     console.log(`[Tool] Confirming booking for ${name} on ${date} at ${time}`);
 
     // Mock "Saving" to DB

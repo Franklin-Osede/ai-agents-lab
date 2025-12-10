@@ -1,14 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ChatOpenAI } from '@langchain/openai';
-import { HumanMessage, SystemMessage, AIMessage, BaseMessage } from '@langchain/core/messages';
+import { HumanMessage, SystemMessage, BaseMessage } from '@langchain/core/messages';
 
 export interface IAiProvider {
-  generateResponse(prompt: string, context?: any): Promise<string>;
+  generateResponse(prompt: string, context?: { systemPrompt?: string }): Promise<string>;
   generateResponseWithTools(
     messages: BaseMessage[],
-    tools: any[],
-  ): Promise<{ response: BaseMessage; toolCalls?: any[] }>;
+    tools: unknown[],
+  ): Promise<{ response: BaseMessage; toolCalls?: unknown[] }>;
 }
 
 @Injectable()
@@ -29,7 +29,7 @@ export class LangChainProvider implements IAiProvider {
     });
   }
 
-  async generateResponse(prompt: string, context?: any): Promise<string> {
+  async generateResponse(prompt: string, context?: { systemPrompt?: string }): Promise<string> {
     try {
       const response = await this.model.invoke([
         new SystemMessage(context?.systemPrompt || 'You are a helpful assistant.'),
@@ -42,7 +42,7 @@ export class LangChainProvider implements IAiProvider {
       } else {
         // If content is an array (e.g. multimodal), join text parts
         return Array.isArray(response.content)
-          ? response.content.map((c: any) => c.text || '').join('')
+          ? response.content.map((c: any): string => c.text || '').join('') // eslint-disable-line @typescript-eslint/no-explicit-any
           : JSON.stringify(response.content);
       }
     } catch (error) {
@@ -53,10 +53,11 @@ export class LangChainProvider implements IAiProvider {
 
   async generateResponseWithTools(
     messages: BaseMessage[],
-    tools: any[],
-  ): Promise<{ response: BaseMessage; toolCalls?: any[] }> {
+    tools: unknown[],
+  ): Promise<{ response: BaseMessage; toolCalls?: unknown[] }> {
     try {
-      const modelWithTools = this.model.bindTools(tools);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const modelWithTools = this.model.bindTools(tools as any[]);
       const response = await modelWithTools.invoke(messages);
 
       return {
@@ -67,5 +68,28 @@ export class LangChainProvider implements IAiProvider {
       this.logger.error('Error generating AI response with tools:', error);
       throw error;
     }
+  }
+  async classifyIntent(
+    message: string,
+    intents: string[],
+  ): Promise<{ intent: string; confidence: number }> {
+    const prompt = `Classify the following message into one of these intents: ${intents.join(', ')}.
+Message: "${message}"
+Return ONLY a valid JSON object like: {"intent": "selected_intent", "confidence": 0.9}`;
+
+    const response = await this.generateResponse(prompt);
+    try {
+      // Clean up response if it contains markdown code blocks
+      const cleanResponse = response.replace(/```json\n?|\n?```/g, '').trim();
+      return JSON.parse(cleanResponse);
+    } catch (error) {
+      this.logger.error('Error parsing intent classification response:', error);
+      // Fallback
+      return { intent: intents[0], confidence: 0.0 };
+    }
+  }
+
+  getLLM(): ChatOpenAI {
+    return this.model;
   }
 }

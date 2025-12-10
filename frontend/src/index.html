@@ -84,11 +84,13 @@
     }.text-gradient-main {
         background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
     }
     .dark .text-gradient-main {
         background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
     }.gradient-blue { background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); }
     .dark .gradient-blue { background: linear-gradient(135deg, rgba(30, 58, 138, 0.2) 0%, rgba(29, 78, 216, 0.1) 100%); }
@@ -100,7 +102,7 @@
     .dark .gradient-purple { background: linear-gradient(135deg, rgba(88, 28, 135, 0.2) 0%, rgba(147, 51, 234, 0.1) 100%); }
 </style>
 </head>
-<body class="bg-light-50 dark:bg-dark-900 font-sans transition-colors duration-500 min-h-screen flex flex-col items-center selection:bg-blue-200 dark:selection:bg-blue-900">
+<body class="bg-light-50 dark:bg-dark-900 font-sans transition-colors duration-500 min-h-screen selection:bg-blue-200 dark:selection:bg-blue-900">
   <app-root></app-root>
 </body>
 </html>

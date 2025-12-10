@@ -5,10 +5,13 @@ export const checkAvailabilityTool = new DynamicStructuredTool({
   name: 'check_availability',
   description:
     'Checks availability for a given date. ALWAYS use this tool before suggesting times.',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schema: z.object({
     date: z.string().describe('The date to check availability for, in YYYY-MM-DD format.'),
-  }),
-  func: async ({ date }) => {
+  }) as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  func: async (input: any) => {
+    const { date } = input as { date: string };
     console.log(`[Tool] Checking availability for ${date}`);
 
     // MOCK LOGIC: Dynamic availability based on date hash

@@ -72,8 +72,12 @@ export class LandingPageComponent {
   }
 
   openDemo(agentId: string): void {
+    console.log('openDemo called with agentId:', agentId);
     if (this.agentsMap[agentId]) {
         this.selectedAgent = this.agentsMap[agentId];
+        console.log('Selected agent:', this.selectedAgent);
+    } else {
+        console.error('Agent not found:', agentId);
     }
   }
 

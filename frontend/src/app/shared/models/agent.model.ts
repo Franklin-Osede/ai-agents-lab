@@ -30,6 +30,12 @@ export interface AgentResponse {
   urgency?: 'LOW' | 'MEDIUM' | 'HIGH';
   suggestedNextSteps?: string[];
   toolCalls?: Array<{ name: string; args: any }>;
+  // Voice agent specific fields
+  script?: string;
+  audioUrl?: string;
+  videoUrl?: string;
+  duration?: number;
+  estimatedCost?: number;
 }
 
 export interface ChatMessage {

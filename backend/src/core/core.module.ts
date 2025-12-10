@@ -4,6 +4,8 @@ import { OpenAiProvider } from './infrastructure/ai/openai.provider';
 import { LangChainProvider } from './infrastructure/ai/langchain.provider';
 import { IAiProvider, AI_PROVIDER_TOKEN } from './domain/agents/interfaces/ai-provider.interface';
 import { HealthModule } from './shared/health/health.module';
+import { SecurityModule } from './security/security.module';
+import { IntegrationsModule } from './integrations/integrations.module';
 
 /**
  * Core Module - Provides shared infrastructure and domain services
@@ -21,6 +23,8 @@ import { HealthModule } from './shared/health/health.module';
       envFilePath: ['.env.local', '.env'],
     }),
     HealthModule,
+    SecurityModule,
+    IntegrationsModule,
   ],
   providers: [
     OpenAiProvider,
@@ -43,6 +47,6 @@ import { HealthModule } from './shared/health/health.module';
       inject: [ConfigService, OpenAiProvider, LangChainProvider],
     },
   ],
-  exports: [AI_PROVIDER_TOKEN],
+  exports: [AI_PROVIDER_TOKEN, LangChainProvider, OpenAiProvider],
 })
 export class CoreModule {}

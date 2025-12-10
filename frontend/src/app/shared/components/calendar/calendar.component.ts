@@ -14,6 +14,7 @@ interface DaySlot {
 })
 export class CalendarComponent implements OnInit, OnChanges {
   @Input() currentDate: Date = new Date();
+  @Input() availableSlots: string[] = []; // Slots from agent availability check
   @Output() slotSelected = new EventEmitter<string>();
   @Output() checkAvailability = new EventEmitter<Date>();
   @Output() confirm = new EventEmitter<void>(); // New event for button
@@ -36,6 +37,25 @@ export class CalendarComponent implements OnInit, OnChanges {
     if (changes['currentDate']) {
       this.generateCalendar();
     }
+    if (changes['availableSlots'] && this.selectedDay) {
+      // Update slots when availableSlots change
+      this.updateSlotsFromAvailable();
+    }
+  }
+  
+  /**
+   * Update slots for selected day based on availableSlots from agent
+   */
+  private updateSlotsFromAvailable(): void {
+    if (!this.selectedDay || this.availableSlots.length === 0) {
+      return;
+    }
+    
+    // Convert availableSlots (strings like "10:00") to slot format
+    this.selectedDay.slots = this.availableSlots.map(time => ({
+      time,
+      status: 'available' as const,
+    }));
   }
 
   generateCalendar() {
@@ -54,7 +74,6 @@ export class CalendarComponent implements OnInit, OnChanges {
     this.calendarDays = [];
 
     // Padding for previous month
-    // Angular's DatePipe might default to Sunday start, let's assume Sunday start for grid
     for (let i = 0; i < startingDayOfWeek; i++) {
         const prevDate = new Date(year, month, -startingDayOfWeek + 1 + i);
         this.calendarDays.push({ 
@@ -75,9 +94,15 @@ export class CalendarComponent implements OnInit, OnChanges {
             slots: []
         };
         
-        // Auto-select today if matches
-        if (this.isSameDate(date, new Date())) {
-            // this.selectedDay = daySlot; // Optional: don't auto select to let user choose
+        // Mark as available if it's in the future and not weekend (for demo)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const slotDate = new Date(date);
+        slotDate.setHours(0, 0, 0, 0);
+        
+        // Mark days as available if they're in the future and not weekends
+        if (slotDate >= today && date.getDay() !== 0 && date.getDay() !== 6) {
+          daySlot.status = 'partial'; // Available day
         }
         
         this.calendarDays.push(daySlot);
@@ -87,13 +112,24 @@ export class CalendarComponent implements OnInit, OnChanges {
     const found = this.calendarDays.find(d => this.isSameDate(d.date, this.currentDate));
     if (found) {
         this.selectedDay = found;
-        this.generateMockSlotsForDay(found);
+        if (this.availableSlots.length > 0) {
+          this.updateSlotsFromAvailable();
+        } else {
+          this.generateMockSlotsForDay(found);
+        }
     }
   }
   
   onDayClick(day: DaySlot) {
       this.selectedDay = day;
-      this.generateMockSlotsForDay(day);
+      
+      // If we have availableSlots from agent, use them
+      if (this.availableSlots.length > 0 && this.isSameDate(day.date, this.currentDate)) {
+        this.updateSlotsFromAvailable();
+      } else {
+        // Otherwise generate mock slots
+        this.generateMockSlotsForDay(day);
+      }
   }
 
   generateMockSlotsForDay(day: DaySlot) {
@@ -121,6 +157,10 @@ export class CalendarComponent implements OnInit, OnChanges {
       return d1.getDate() === d2.getDate() && 
              d1.getMonth() === d2.getMonth() && 
              d1.getFullYear() === d2.getFullYear();
+  }
+
+  isToday(date: Date): boolean {
+      return this.isSameDate(date, new Date());
   }
 
   onSlotClick(time: string, status: string): void {

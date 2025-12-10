@@ -12,12 +12,48 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  processBooking(message: string, businessId: string = 'demo-business'): Observable<AgentResponse> {
-    return this.http.post<any>(`${this.baseUrl}/agents/booking/process`, {
-      message,
-      businessId,
-    }).pipe(
-      map(response => response.data || response)
+  processBooking(message: string, businessId: string = 'demo-business', useDemo: boolean = true, serviceContext?: any): Observable<AgentResponse> {
+    // Use demo endpoint if useDemo is true (no API key required)
+    const endpoint = useDemo 
+      ? `${this.baseUrl}/demo/booking/chat`
+      : `${this.baseUrl}/agents/booking/process`;
+    
+    const body = useDemo
+      ? { 
+          message, 
+          sessionId: `demo_${Date.now()}`,
+          serviceContext: serviceContext || null, // Include service context
+        }
+      : { message, businessId };
+    
+    return this.http.post<any>(endpoint, body).pipe(
+      map(response => {
+        // Handle demo response format
+        if (useDemo && response.response) {
+          // Try to parse as JSON if it's an enhanced response
+          try {
+            const parsed = JSON.parse(response.response);
+            return {
+              success: true,
+              message: parsed.response || response.response,
+              intent: { type: 'BOOKING', confidence: 0.9 },
+              entities: { dates: [], times: [], services: [] },
+              toolCalls: parsed.toolCalls || [],
+              bookingStatus: parsed.bookingStatus,
+              bookingId: parsed.bookingId,
+            } as AgentResponse;
+          } catch {
+            // Not JSON, return as string
+            return {
+              success: true,
+              message: response.response,
+              intent: { type: 'BOOKING', confidence: 0.9 },
+              entities: { dates: [], times: [], services: [] },
+            } as AgentResponse;
+          }
+        }
+        return response.data || response;
+      })
     );
   }
 
@@ -66,6 +102,14 @@ export class ApiService {
     }).pipe(
       map(response => (response as any).data || response)
     );
+  }
+
+  captureLead(email: string, name: string, agentId?: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/marketing/capture-lead`, {
+      email,
+      name,
+      agentId,
+    });
   }
 }
 

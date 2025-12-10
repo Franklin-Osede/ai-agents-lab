@@ -1,12 +1,21 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 
-export interface ServiceCategory {
+export interface Service {
   id: string;
   name: string;
   description: string;
+  businessType: string;
+  tone?: string;
+}
+
+export interface ServiceCategory {
+  id: string;
+  name: string;
   icon: string;
   color: string;
   bgColor: string;
+  services: Service[];
+  expanded: boolean;
 }
 
 @Component({
@@ -15,90 +24,233 @@ export interface ServiceCategory {
   styleUrls: ['./service-selector.component.scss'],
 })
 export class ServiceSelectorComponent {
-  @Output() serviceSelected = new EventEmitter<ServiceCategory>();
+  @Output() serviceSelected = new EventEmitter<any>();
   @Output() back = new EventEmitter<void>();
 
   searchQuery = '';
-  selectedCategory = 'all';
 
   categories: ServiceCategory[] = [
     {
       id: 'salud',
-      name: 'Salud',
-      description: 'Medicina general, dentistas y terapia',
+      name: 'Salud y Bienestar',
       icon: 'medical_services',
-      color: 'text-green-600 dark:text-primary',
-      bgColor: 'bg-green-50 dark:bg-green-500/10',
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+      expanded: false,
+      services: [
+        {
+          id: 'clinica',
+          name: 'Clínica Médica',
+          description: 'Consultas médicas, exámenes y seguimientos',
+          businessType: 'salud',
+          tone: 'profesional, empático y tranquilizador',
+        },
+        {
+          id: 'dentista',
+          name: 'Clínica Dental',
+          description: 'Limpiezas dentales, consultas y tratamientos',
+          businessType: 'dentista',
+          tone: 'profesional, tranquilizador y comprensivo',
+        },
+        {
+          id: 'fisioterapia',
+          name: 'Fisioterapia',
+          description: 'Rehabilitación, masajes y terapias',
+          businessType: 'salud',
+          tone: 'profesional y motivador',
+        },
+        {
+          id: 'veterinaria',
+          name: 'Veterinaria',
+          description: 'Consultas, vacunaciones y emergencias',
+          businessType: 'salud',
+          tone: 'amigable, empático y profesional',
+        },
+      ],
     },
     {
       id: 'belleza',
-      name: 'Belleza',
-      description: 'Peluquería, manicura y tratamientos',
+      name: 'Belleza y Estética',
       icon: 'spa',
-      color: 'text-purple-600 dark:text-purple-400',
-      bgColor: 'bg-purple-50 dark:bg-purple-500/10',
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      expanded: false,
+      services: [
+        {
+          id: 'peluqueria',
+          name: 'Peluquería',
+          description: 'Cortes, peinados y coloración',
+          businessType: 'belleza',
+          tone: 'amigable, acogedor y entusiasta',
+        },
+        {
+          id: 'estetica',
+          name: 'Centro de Estética',
+          description: 'Tratamientos faciales, corporales y depilación',
+          businessType: 'belleza',
+          tone: 'amigable, acogedor y entusiasta',
+        },
+        {
+          id: 'spa',
+          name: 'Spa y Bienestar',
+          description: 'Masajes, relajación y tratamientos',
+          businessType: 'belleza',
+          tone: 'tranquilo, relajante y profesional',
+        },
+        {
+          id: 'unas',
+          name: 'Manicura y Pedicura',
+          description: 'Uñas, esmaltados y tratamientos',
+          businessType: 'belleza',
+          tone: 'amigable y acogedor',
+        },
+      ],
     },
     {
-      id: 'automovil',
-      name: 'Automóvil',
-      description: 'Mantenimiento, lavado y reparación',
-      icon: 'car_repair',
-      color: 'text-blue-600 dark:text-blue-400',
-      bgColor: 'bg-blue-50 dark:bg-blue-500/10',
+      id: 'restaurantes',
+      name: 'Restaurantes y Eventos',
+      icon: 'restaurant',
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50',
+      expanded: false,
+      services: [
+        {
+          id: 'restaurante',
+          name: 'Restaurante',
+          description: 'Reservas de mesa y eventos',
+          businessType: 'restaurante',
+          tone: 'cordial, profesional y acogedor',
+        },
+        {
+          id: 'catering',
+          name: 'Catering',
+          description: 'Servicios de catering para eventos',
+          businessType: 'restaurante',
+          tone: 'profesional y detallado',
+        },
+        {
+          id: 'eventos',
+          name: 'Salón de Eventos',
+          description: 'Reservas para fiestas y celebraciones',
+          businessType: 'restaurante',
+          tone: 'entusiasta y profesional',
+        },
+      ],
     },
     {
-      id: 'hogar',
-      name: 'Hogar',
-      description: 'Limpieza, fontanería y jardinería',
-      icon: 'cleaning_services',
-      color: 'text-orange-600 dark:text-orange-400',
-      bgColor: 'bg-orange-50 dark:bg-orange-500/10',
+      id: 'profesionales',
+      name: 'Servicios Profesionales',
+      icon: 'business_center',
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      expanded: false,
+      services: [
+        {
+          id: 'abogado',
+          name: 'Despacho de Abogados',
+          description: 'Consultas legales y asesoramiento',
+          businessType: 'profesional',
+          tone: 'profesional, formal y confiable',
+        },
+        {
+          id: 'contador',
+          name: 'Contador/Asesor Fiscal',
+          description: 'Asesoría contable y fiscal',
+          businessType: 'profesional',
+          tone: 'profesional, preciso y confiable',
+        },
+        {
+          id: 'consultor',
+          name: 'Consultoría',
+          description: 'Consultoría empresarial y estratégica',
+          businessType: 'profesional',
+          tone: 'profesional y estratégico',
+        },
+        {
+          id: 'coach',
+          name: 'Coaching Personal',
+          description: 'Sesiones de coaching y desarrollo',
+          businessType: 'profesional',
+          tone: 'motivador y empático',
+        },
+      ],
     },
     {
-      id: 'mascotas',
-      name: 'Mascotas',
-      description: 'Veterinaria, paseos y cuidado',
-      icon: 'pets',
-      color: 'text-rose-600 dark:text-rose-400',
-      bgColor: 'bg-rose-50 dark:bg-rose-500/10',
+      id: 'otros',
+      name: 'Otros Negocios',
+      icon: 'more_horiz',
+      color: 'text-gray-600',
+      bgColor: 'bg-gray-50',
+      expanded: false,
+      services: [
+        {
+          id: 'fontanero',
+          name: 'Fontanería',
+          description: 'Reparaciones e instalaciones',
+          businessType: 'servicio',
+          tone: 'práctico, eficiente y profesional',
+        },
+        {
+          id: 'electricista',
+          name: 'Electricista',
+          description: 'Instalaciones y reparaciones eléctricas',
+          businessType: 'servicio',
+          tone: 'práctico, eficiente y profesional',
+        },
+        {
+          id: 'fitness',
+          name: 'Gimnasio',
+          description: 'Clases grupales, entrenadores y uso de equipos',
+          businessType: 'fitness',
+          tone: 'motivador, energético y positivo',
+        },
+        {
+          id: 'educacion',
+          name: 'Academia/Tutorías',
+          description: 'Clases particulares y cursos',
+          businessType: 'educacion',
+          tone: 'educativo, paciente y motivador',
+        },
+        {
+          id: 'reparaciones',
+          name: 'Reparaciones',
+          description: 'Reparación de electrodomésticos y más',
+          businessType: 'servicio',
+          tone: 'práctico y eficiente',
+        },
+      ],
     },
-  ];
-
-  filterChips = [
-    { id: 'all', name: 'Todos', icon: 'grid_view' },
-    { id: 'salud', name: 'Salud', icon: 'stethoscope' },
-    { id: 'belleza', name: 'Belleza', icon: 'content_cut' },
-    { id: 'automovil', name: 'Automóvil', icon: 'directions_car' },
-    { id: 'hogar', name: 'Hogar', icon: 'home_repair_service' },
   ];
 
   get filteredCategories(): ServiceCategory[] {
-    let filtered = this.categories;
-
-    // Filter by selected category chip
-    if (this.selectedCategory !== 'all') {
-      filtered = filtered.filter((cat) => cat.id === this.selectedCategory);
+    if (!this.searchQuery.trim()) {
+      return this.categories;
     }
 
-    // Filter by search query
-    if (this.searchQuery.trim()) {
-      const query = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (cat) =>
-          cat.name.toLowerCase().includes(query) ||
-          cat.description.toLowerCase().includes(query)
-      );
-    }
-
-    return filtered;
+    const query = this.searchQuery.toLowerCase();
+    return this.categories
+      .map(category => ({
+        ...category,
+        services: category.services.filter(
+          service =>
+            service.name.toLowerCase().includes(query) ||
+            service.description.toLowerCase().includes(query)
+        ),
+      }))
+      .filter(category => category.services.length > 0);
   }
 
-  selectCategory(categoryId: string): void {
-    this.selectedCategory = categoryId;
+  toggleCategory(category: ServiceCategory): void {
+    category.expanded = !category.expanded;
   }
 
-  onServiceClick(service: ServiceCategory): void {
-    this.serviceSelected.emit(service);
+  onServiceClick(service: Service, category: ServiceCategory): void {
+    // Emit service with full context
+    this.serviceSelected.emit({
+      ...service,
+      categoryId: category.id,
+      categoryName: category.name,
+    });
   }
 
   onBackClick(): void {

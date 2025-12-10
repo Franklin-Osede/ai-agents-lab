@@ -22,7 +22,15 @@ export class BookingAgentController {
       businessId: body.businessId || 'default-business',
       customerId: body.sessionId,
     });
-    return { response };
+    
+    // Try to parse as JSON (if enhanced response) or return as string
+    try {
+      const parsed = JSON.parse(response);
+      return parsed; // Return enhanced response with bookingStatus, etc.
+    } catch {
+      // If not JSON, return as simple response
+      return { response };
+    }
   }
 
   @Post('process')

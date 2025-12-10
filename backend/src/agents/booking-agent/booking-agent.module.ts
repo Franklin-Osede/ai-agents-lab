@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { BookingAgentController } from './presentation/booking-agent.controller';
 import { BookingAgentService } from './application/services/booking-agent.service';
+import { BookingAgentChainService } from './application/services/booking-agent-chain.service';
+import { SuggestTimesTool } from './application/tools/suggest-times.tool';
 import { IntentClassifierService } from '@shared/services/intent-classifier.service';
 import { CoreModule } from '../../core/core.module';
 import { ConfigModule } from '@nestjs/config';
@@ -20,6 +22,8 @@ import { InMemoryBookingRepository } from './infrastructure/repositories/in-memo
   controllers: [BookingAgentController],
   providers: [
     BookingAgentService,
+    BookingAgentChainService,
+    SuggestTimesTool,
     IntentClassifierService,
     // Repository - Use InMemoryBookingRepository for demos
     // In production, replace with real database repository
@@ -29,6 +33,6 @@ import { InMemoryBookingRepository } from './infrastructure/repositories/in-memo
       useClass: InMemoryBookingRepository,
     },
   ],
-  exports: [BookingAgentService],
+  exports: [BookingAgentService, BookingAgentChainService],
 })
 export class BookingAgentModule {}

@@ -8,9 +8,22 @@
 
 ---
 
-## 🐳 Docker Compose - ¿Qué Hace?
+## 🚀 Inicio Rápido - Opciones Disponibles
 
-### Resumen Simple:
+### Opción 1: Inicio Unificado (Desarrollo Local - Recomendado)
+
+**Inicia backend y frontend simultáneamente con un solo comando:**
+
+```bash
+# Desde la raíz del proyecto
+npm start
+```
+
+Esto iniciará:
+- ✅ Backend en http://localhost:3000
+- ✅ Frontend en http://localhost:4200
+
+### Opción 2: Docker Compose
 
 **Docker Compose levanta backend y frontend juntos con un solo comando.**
 

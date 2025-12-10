@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Backend Service - NestJS API (Development)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: ai-agents-backend-dev
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DID_API_KEY=${DID_API_KEY}
+      - CORS_ORIGIN=http://localhost:4200
+    env_file:
+      - ./backend/.env
+    volumes:
+      # Mount source for hot reload
+      - ./backend/src:/app/src
+      - ./backend:/app
+      - /app/node_modules
+    restart: unless-stopped
+    networks:
+      - ai-agents-network
+    command: npm run start:dev
+
+  # Frontend Service - Angular App (Development)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: ai-agents-frontend-dev
+    ports:
+      - "4200:4200"
+    environment:
+      - API_URL=http://localhost:3001
+      - NODE_ENV=development
+    volumes:
+      # Mount source for hot reload
+      - ./frontend/src:/app/src
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - ai-agents-network
+    command: npm start
+
+networks:
+  ai-agents-network:
+    driver: bridge

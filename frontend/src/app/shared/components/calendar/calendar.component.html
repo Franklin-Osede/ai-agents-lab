@@ -21,12 +21,13 @@
             *ngFor="let day of calendarDays"
             [class.different-month]="!day.isCurrentMonth"
             [class.selected]="selectedDay === day"
-            [class.today]="isSameDate(day.date, currentDate)"
+            [class.today]="isToday(day.date)"
+            [class.available]="day.status === 'partial' && day.isCurrentMonth"
             (click)="onDayClick(day)"
         >
             <span class="day-number">{{ day.date | date:'d' }}</span>
-            <div class="mini-indicators" *ngIf="day.isCurrentMonth && !selectedDay">
-                <span class="dot" *ngIf="day.date.getDay() !== 0 && day.date.getDay() !== 6"></span>
+            <div class="availability-indicator" *ngIf="day.status === 'partial' && day.isCurrentMonth && selectedDay !== day">
+                <span class="available-dot"></span>
             </div>
         </div>
     </div>

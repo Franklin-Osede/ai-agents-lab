@@ -4,6 +4,10 @@
   height: 100%;
   background: var(--background-light, #f6f8f6);
   overflow: hidden;
+  max-width: 28rem;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Top App Bar */
@@ -62,6 +66,7 @@
   max-width: 28rem;
   margin: 0 auto;
   width: 100%;
+  box-sizing: border-box;
 }
 
 /* Headline */
@@ -129,68 +134,159 @@
   box-shadow: 0 0 0 2px #13ec5b, 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* Filter Chips */
-.chips-container {
+/* Category Accordions */
+.categories-list {
   display: flex;
+  flex-direction: column;
   gap: 0.75rem;
-  padding-bottom: 1.5rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 }
 
-.chips-container::-webkit-scrollbar {
-  display: none;
+.category-accordion {
+  border-radius: 1rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
-.chip {
-  scroll-snap-align: start;
-  flex-shrink: 0;
+.category-accordion.expanded {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.category-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  border-radius: 9999px;
-  border: 1px solid #e5e7eb;
+  gap: 1rem;
+  padding: 1rem;
+  width: 100%;
+  border: none;
   background: white;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  transition: all 0.15s;
-  font-size: 0.875rem;
-  font-weight: 600;
+  transition: all 0.2s;
+  text-align: left;
 }
 
-.chip:hover {
+.category-header:hover {
   background: #f9fafb;
 }
 
-.chip:active {
-  transform: scale(0.95);
+.category-icon-wrapper {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
 }
 
-.chip.active {
-  background: #0f172a;
-  border-color: #0f172a;
+.category-info {
+  flex: 1;
+  min-width: 0;
 }
 
-.chip-icon {
-  font-size: 20px;
+.category-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.25rem 0;
+}
+
+.category-count {
+  font-size: 0.75rem;
   color: #64748b;
+  margin: 0;
 }
 
-.chip.active .chip-icon {
-  color: white;
+.category-chevron {
+  flex-shrink: 0;
+  color: #9ca3af;
+  transition: transform 0.3s ease, color 0.2s;
 }
 
-.chip-text {
-  color: #334155;
-  font-weight: 500;
+.category-chevron .material-symbols-outlined {
+  font-size: 24px;
 }
 
-.chip.active .chip-text {
-  color: white;
+.category-chevron .material-symbols-outlined.rotated {
+  transform: rotate(180deg);
+}
+
+.category-header:hover .category-chevron {
+  color: #13ec5b;
+}
+
+/* Services Dropdown */
+.services-dropdown {
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}
+
+.service-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1rem 1rem 3.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.service-item:last-child {
+  border-bottom: none;
+}
+
+.service-item:hover {
+  background: #f0fdf4;
+  padding-left: 4rem;
+}
+
+.service-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.service-item-name {
+  font-size: 0.9375rem;
   font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 0.25rem 0;
+}
+
+.service-item-description {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.service-item-arrow {
+  flex-shrink: 0;
+  color: #d1d5db;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.service-item:hover .service-item-arrow {
+  color: #13ec5b;
+  transform: translateX(4px);
+}
+
+.service-item-arrow .material-symbols-outlined {
+  font-size: 18px;
 }
 
 /* Section Label */
@@ -319,8 +415,8 @@
 .bottom-nav {
   position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 40;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(16px);
@@ -330,7 +426,6 @@
   justify-content: space-between;
   align-items: center;
   max-width: 28rem;
-  margin: 0 auto;
   width: 100%;
 }
 

@@ -327,7 +327,17 @@ API_URL=http://localhost:3000
 
 ### Local Development
 
-**Option 1: Docker Compose (Recommended)**
+**Option 1: Unified Start (Recommended for Development)**
+
+```bash
+# From project root - starts both backend and frontend simultaneously
+npm start
+
+# Backend: http://localhost:3000
+# Frontend: http://localhost:4200
+```
+
+**Option 2: Docker Compose**
 
 ```bash
 # From project root
@@ -337,7 +347,7 @@ docker-compose up
 # Frontend: http://localhost:4200
 ```
 
-**Option 2: Manual Start**
+**Option 3: Manual Start (Separate Terminals)**
 
 ```bash
 # Terminal 1 - Backend

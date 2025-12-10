@@ -1,0 +1,20 @@
+{
+  "name": "ai-agents-lab",
+  "version": "1.0.0",
+  "description": "AI Agents Lab - Unified development scripts",
+  "private": true,
+  "scripts": {
+    "start": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,green\" \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend && npm run start:dev",
+    "start:frontend": "cd frontend && npm start",
+    "start:docker": "docker-compose -f docker-compose.dev.yml up",
+    "start:docker:build": "docker-compose -f docker-compose.dev.yml up --build",
+    "stop:docker": "docker-compose -f docker-compose.dev.yml down",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "build": "cd backend && npm run build && cd ../frontend && npm run build",
+    "test": "cd backend && npm test && cd ../frontend && npm test"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

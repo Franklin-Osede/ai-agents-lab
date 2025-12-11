@@ -3,16 +3,24 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AgentResponse } from '../models/agent.model';
 import { map } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  private readonly baseUrl = 'http://localhost:3001/api/v1';
+  private readonly baseUrl =
+    environment.apiBaseUrl || 'http://localhost:3000/api/v1';
 
   constructor(private http: HttpClient) {}
 
-  processBooking(message: string, businessId: string = 'demo-business', useDemo: boolean = true, serviceContext?: any): Observable<AgentResponse> {
+  processBooking(
+    message: string,
+    businessId: string = 'demo-business',
+    useDemo: boolean = true,
+    serviceContext?: any,
+    sessionId?: string,
+  ): Observable<AgentResponse> {
     // Use demo endpoint if useDemo is true (no API key required)
     const endpoint = useDemo 
       ? `${this.baseUrl}/demo/booking/chat`
@@ -21,10 +29,15 @@ export class ApiService {
     const body = useDemo
       ? { 
           message, 
-          sessionId: `demo_${Date.now()}`,
+          sessionId: sessionId || `demo_${Date.now()}`,
           serviceContext: serviceContext || null, // Include service context
         }
-      : { message, businessId };
+      : { 
+          message, 
+          businessId,
+          customerId: sessionId,
+          context: serviceContext || null,
+        };
     
     return this.http.post<any>(endpoint, body).pipe(
       map(response => {
@@ -112,4 +125,3 @@ export class ApiService {
     });
   }
 }
-

@@ -42,3 +42,5 @@ fi
 echo "🚀 Iniciando servidor..."
 echo ""
 npm run start:dev
+
+

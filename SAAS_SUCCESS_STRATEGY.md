@@ -420,3 +420,5 @@ POST /api/v1/agents/booking/chat
 
 **Última actualización:** 2024-12-10
 **Prioridad:** ALTA - Implementar esta semana
+
+

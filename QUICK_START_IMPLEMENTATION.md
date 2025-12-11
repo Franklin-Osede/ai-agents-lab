@@ -188,3 +188,5 @@ npm start  # Inicia backend + frontend
 
 **Última actualización:** 2024-12-10
 **Estado:** ✅ Semana 1 completada, listo para Semana 2
+
+

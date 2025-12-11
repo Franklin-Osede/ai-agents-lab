@@ -4,6 +4,8 @@
 
 export const environment = {
   production: false,
+  apiBaseUrl: 'http://localhost:3000/api/v1',
+  googleMapsApiKey: 'AIzaSyAkqMXaq13jJWUMaUAJAtQniiAOmNyh2BA',
   firebase: {
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_PROJECT.firebaseapp.com",

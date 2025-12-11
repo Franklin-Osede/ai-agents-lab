@@ -18,6 +18,7 @@ import { RoleSelectorComponent } from './shared/components/role-selector/role-se
 import { LoginComponent } from './shared/components/login/login.component';
 import { RegisterComponent } from './shared/components/register/register.component';
 import { ProfessionalDashboardComponent } from './components/professional-dashboard/professional-dashboard.component';
+import { GoogleMapsAutocompleteComponent } from './shared/components/google-maps-autocomplete/google-maps-autocomplete.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { ProfessionalDashboardComponent } from './components/professional-dashbo
     LoginComponent,
     RegisterComponent,
     ProfessionalDashboardComponent,
+    GoogleMapsAutocompleteComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule],
   providers: [],

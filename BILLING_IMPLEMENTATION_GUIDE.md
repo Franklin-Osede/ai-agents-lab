@@ -341,3 +341,5 @@ curl -X POST http://localhost:3000/api/v1/billing/create-checkout \
 
 **Última actualización:** 2024-12-10
 **Estado:** ✅ Estructura lista, configuración pendiente
+
+

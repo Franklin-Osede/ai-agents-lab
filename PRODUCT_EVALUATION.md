@@ -404,3 +404,5 @@ Paso 2: (Según elección, mostrar instrucciones específicas)
 
 **Última actualización:** 2024-12-10
 **Veredicto:** Buena idea, pero ajustar prioridades de integración
+
+

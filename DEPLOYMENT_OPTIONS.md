@@ -395,3 +395,5 @@ pm2 monit                     # Monitor visual
 
 **Última actualización:** 2024-12-10
 **Estado:** ✅ Puerto cambiado, PM2 recomendado para local
+
+

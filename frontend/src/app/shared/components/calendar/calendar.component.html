@@ -1,83 +1,99 @@
-<div class="calendar-wrapper">
-    <!-- Header -->
-    <div class="calendar-header simple-header">
+<div class="calendar-wrapper-new">
+    <!-- Month Navigator -->
+    <div class="month-navigator">
         <button class="nav-btn" (click)="changeMonth(-1)">
             <span class="material-symbols-outlined">chevron_left</span>
         </button>
-        <h3>{{ currentMonthName }} {{ currentYear }}</h3>
+        <p class="month-year">{{ currentMonthName | titlecase }} {{ currentYear }}</p>
         <button class="nav-btn" (click)="changeMonth(1)">
             <span class="material-symbols-outlined">chevron_right</span>
         </button>
     </div>
 
-    <!-- Month Grid -->
-    <div class="weekdays-row">
-        <span>DOM</span><span>LUN</span><span>MAR</span><span>MIÉ</span><span>JUE</span><span>VIE</span><span>SÁB</span>
+    <!-- Days of Week -->
+    <div class="weekdays-row-new">
+        <p class="weekday">Dom</p>
+        <p class="weekday">Lun</p>
+        <p class="weekday">Mar</p>
+        <p class="weekday">Mié</p>
+        <p class="weekday">Jue</p>
+        <p class="weekday">Vie</p>
+        <p class="weekday">Sáb</p>
     </div>
-    
-    <div class="days-grid">
-        <div 
-            class="day-cell" 
+
+    <!-- Calendar Grid -->
+    <div class="days-grid-new">
+        <button 
+            class="day-cell-new"
             *ngFor="let day of calendarDays"
-            [class.different-month]="!day.isCurrentMonth"
-            [class.selected]="selectedDay === day"
-            [class.today]="isToday(day.date)"
-            [class.available]="day.status === 'partial' && day.isCurrentMonth"
+            [class.empty-slot]="!day.isCurrentMonth"
+            [class.disabled-day]="day.status === 'none' && day.isCurrentMonth"
+            [class.available-day]="day.status === 'partial' && day.isCurrentMonth && selectedDay !== day"
+            [class.selected-day]="selectedDay === day"
+            [disabled]="day.status === 'none' && day.isCurrentMonth"
             (click)="onDayClick(day)"
         >
             <span class="day-number">{{ day.date | date:'d' }}</span>
-            <div class="availability-indicator" *ngIf="day.status === 'partial' && day.isCurrentMonth && selectedDay !== day">
-                <span class="available-dot"></span>
+            <span class="available-dot" *ngIf="day.status === 'partial' && day.isCurrentMonth && selectedDay !== day"></span>
+        </button>
+    </div>
+
+    <!-- Separator -->
+    <div class="separator"></div>
+
+    <!-- Time Slots Section -->
+    <div class="time-slots-section" *ngIf="selectedDay">
+        <h3 class="selected-date-title">{{ selectedDay.date | date:'EEEE, d' | titlecase }} de {{ selectedDay.date | date:'MMMM' | titlecase }}</h3>
+        <p class="select-time-label">Selecciona una hora de inicio</p>
+
+        <!-- Morning Slots -->
+        <div class="time-group">
+            <h4 class="time-group-label">Mañana</h4>
+            <div class="time-slots-grid">
+                <button 
+                    class="time-slot-btn"
+                    *ngFor="let slot of getMorningSlots(selectedDay.slots)"
+                    [class.selected-slot]="calendarData.selectedSlot === slot.time"
+                    [class.disabled-slot]="slot.status === 'busy'"
+                    [disabled]="slot.status === 'busy'"
+                    (click)="onSlotClick(slot.time, slot.status)"
+                >
+                    <span class="material-symbols-outlined check-icon" *ngIf="calendarData.selectedSlot === slot.time">check_circle</span>
+                    <span class="slot-time">{{ slot.time }}</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Afternoon Slots -->
+        <div class="time-group">
+            <h4 class="time-group-label">Tarde</h4>
+            <div class="time-slots-grid">
+                <button 
+                    class="time-slot-btn"
+                    *ngFor="let slot of getAfternoonSlots(selectedDay.slots)"
+                    [class.selected-slot]="calendarData.selectedSlot === slot.time"
+                    [class.disabled-slot]="slot.status === 'busy'"
+                    [disabled]="slot.status === 'busy'"
+                    (click)="onSlotClick(slot.time, slot.status)"
+                >
+                    <span class="material-symbols-outlined check-icon" *ngIf="calendarData.selectedSlot === slot.time">check_circle</span>
+                    <span class="slot-time">{{ slot.time }}</span>
+                </button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Selected Day Slots -->
-    <div class="slots-container" *ngIf="selectedDay">
-        <div class="selected-date-header">
-            <h4>{{ selectedDay.date | date:'EEEE, d' | titlecase }} de {{ selectedDay.date | date:'MMMM' | titlecase }}</h4>
-            <p>Selecciona una hora de inicio</p>
+<!-- Fixed Bottom CTA -->
+<div class="fixed-bottom-cta" *ngIf="calendarData.selectedSlot && selectedDay">
+    <div class="cta-content">
+        <div class="selected-info">
+            <span class="selected-label">Seleccionado:</span>
+            <span class="selected-value">{{ selectedDay.date | date:'d MMM' }}, {{ calendarData.selectedSlot }}</span>
         </div>
-        
-        <div class="slots-scroll">
-            <!-- Morning Slots -->
-            <div class="slots-group">
-                <span class="group-label">MAÑANA</span>
-                <div class="pills-grid">
-                    <button 
-                         class="time-pill" 
-                         *ngFor="let slot of getMorningSlots(selectedDay.slots)"
-                         [class.selected]="calendarData.selectedSlot === slot.time"
-                         [disabled]="slot.status === 'busy'"
-                         (click)="onSlotClick(slot.time, slot.status)">
-                         {{ slot.time }}
-                    </button>
-                    <span *ngIf="getMorningSlots(selectedDay.slots).length === 0" class="empty-msg">No hay huecos</span>
-                </div>
-            </div>
-
-            <!-- Afternoon Slots -->
-            <div class="slots-group">
-                <span class="group-label">TARDE</span>
-                 <div class="pills-grid">
-                    <button 
-                         class="time-pill" 
-                         *ngFor="let slot of getAfternoonSlots(selectedDay.slots)"
-                         [class.selected]="calendarData.selectedSlot === slot.time"
-                         [disabled]="slot.status === 'busy'"
-                         (click)="onSlotClick(slot.time, slot.status)">
-                         {{ slot.time }}
-                    </button>
-                     <span *ngIf="getAfternoonSlots(selectedDay.slots).length === 0" class="empty-msg">No hay huecos</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Confirm Footer (aligned right) -->
-        <div class="confirm-footer" *ngIf="calendarData.selectedSlot">
-            <button class="confirm-btn" (click)="confirmSelection()">
-                Confirmar Cita
-            </button>
-        </div>
+        <button class="confirm-btn-new" (click)="confirmSelection()">
+            <span>Confirmar</span>
+            <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
     </div>
 </div>

@@ -298,3 +298,5 @@ npm start
 
 **Última actualización:** 2024-12-10
 **Método recomendado:** `npm start` (concurrently)
+
+

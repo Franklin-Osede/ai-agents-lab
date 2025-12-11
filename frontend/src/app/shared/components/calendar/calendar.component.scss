@@ -1,469 +1,413 @@
-.calendar-container {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  padding: 16px;
-  max-width: 100%;
-  font-family: "Inter", sans-serif;
+// Modern Calendar Styles - Based on new design
+$primary: #13ec5b;
+$primary-dark: #0ea341;
+$background-light: #f8fcf9;
+$text-light: #0d1b12;
+$text-dark: #e0e7e3;
+$secondary-bg-light: #e7f3eb;
+$secondary-bg-dark: #1a3524;
 
-  .header {
-    margin-bottom: 16px;
-    h3 {
-      margin: 0;
-      font-size: 1.1rem;
-      color: #333;
-      text-transform: capitalize;
-    }
-  }
+.calendar-wrapper-new {
+  background: white;
+  font-family: 'Inter', 'Noto Sans', sans-serif;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100vh;
+  overflow: hidden;
+  padding: 0;
+  position: relative; // Para que sticky funcione dentro
+}
 
-  .grid {
-    display: flex;
-    flex-direction: column;
-  }
+// Month Navigator
+.month-navigator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
 
-  .header-row {
-    display: flex;
-    margin-bottom: 8px;
-  }
-
-  .time-col {
-    width: 50px;
-    flex-shrink: 0;
-  }
-
-  .day-col {
-    flex: 1;
-    text-align: center;
-    padding: 8px 0;
-    border-radius: 8px;
-
-    &.active {
-      background: #eef2ff;
-      color: #4f46e5;
-      font-weight: 600;
-    }
-
-    .day-name {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      color: #6b7280;
-    }
-    .day-date {
-      font-size: 1.2rem;
-      margin-top: 4px;
-    }
-  }
-
-  .body-rows {
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  .row {
-    display: flex;
-    height: 48px;
-    border-top: 1px solid #f3f4f6;
-
-    &:last-child {
-      border-bottom: 1px solid #f3f4f6;
-    }
-  }
-
-  .time-label {
-    width: 50px;
-    font-size: 0.75rem;
-    color: #9ca3af;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 8px;
-  }
-
-  .day-cell {
-    flex: 1;
-    border-left: 1px solid #f3f4f6;
+  .nav-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: default;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
     transition: all 0.2s;
+    color: $text-light;
 
-    &.available {
-      cursor: pointer;
-      background: #f0fdf4; // Light green
-      color: #16a34a;
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
 
-      &:hover {
-        background: #dcfce7;
+    &:active {
+      transform: scale(0.95);
+    }
+
+    .material-symbols-outlined {
+      font-size: 1.5rem;
+    }
+  }
+
+  .month-year {
+    font-size: 1.375rem;
+    font-weight: 800;
+    color: $text-light;
+    margin: 0;
+    text-transform: capitalize;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #13ec5b 0%, #0ea341 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+// Weekdays Row
+.weekdays-row-new {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 0 1rem;
+  margin-bottom: 0.5rem;
+
+  .weekday {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+  }
+}
+
+// Days Grid
+.days-grid-new {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  padding: 0 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.day-cell-new {
+  height: 2.5rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $text-light;
+
+  &.empty-slot {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &.disabled-day {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: #9ca3af;
+
+    .day-number {
+      color: #ef4444;
+      font-weight: 600;
+      text-decoration: line-through;
+      text-decoration-thickness: 2px;
+      text-decoration-color: #ef4444;
+      position: relative;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #ef4444;
+        transform: translateY(-50%);
+      }
+    }
+  }
+
+  &.available-day {
+    color: $text-light;
+
+    &:hover {
+      background: $secondary-bg-light;
+      transform: scale(1.05);
+    }
+
+    .day-number {
+      color: #059669;
+      font-weight: 600;
+      position: relative;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        bottom: -0.25rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0.375rem;
+        height: 0.375rem;
+        background: #13ec5b;
+        border-radius: 50%;
+        box-shadow: 0 0 0 2px rgba(19, 236, 91, 0.2);
       }
     }
 
-    &.selected {
-      background: #4f46e5;
-      color: white;
+    .available-dot {
+      position: absolute;
+      bottom: 0.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0.375rem;
+      height: 0.375rem;
+      background: #13ec5b;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px rgba(19, 236, 91, 0.2);
+    }
+  }
+
+  &.selected-day {
+    background: linear-gradient(135deg, #13ec5b 0%, #0ea341 100%);
+    color: #0d1b12;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(19, 236, 91, 0.4), 0 0 0 3px rgba(19, 236, 91, 0.2);
+    transform: scale(1.1);
+    
+    .day-number {
+      color: #0d1b12;
+      font-size: 0.9375rem;
+    }
+  }
+
+  .day-number {
+    font-size: 0.875rem;
+    font-weight: inherit;
+    transition: all 0.2s ease;
+  }
+}
+
+// Separator
+.separator {
+  height: 1px;
+  width: 100%;
+  background: #e5e7eb;
+  margin: 0.5rem 0;
+}
+
+// Time Slots Section
+.time-slots-section {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.5rem;
+  padding-bottom: 1rem; // Reducido - el botón sticky no necesita tanto espacio
+  -webkit-overflow-scrolling: touch;
+
+  .selected-date-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $text-light;
+    margin: 0 0 0.25rem 0;
+    text-transform: capitalize;
+  }
+
+  .select-time-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0 0 1rem 0;
+  }
+}
+
+.time-group {
+  margin-bottom: 1.5rem;
+
+  .time-group-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9ca3af;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+.time-slot-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  padding: 0 0.5rem;
+
+  .slot-time {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $text-light;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: $primary;
+    background: $secondary-bg-light;
+    color: $primary-dark;
+
+    .slot-time {
+      color: $primary-dark;
+    }
+  }
+
+  &.selected-slot {
+    background: $secondary-bg-light;
+    border-color: rgba($primary, 0.3);
+    box-shadow: 0 0 0 1px $primary;
+
+    .check-icon {
+      position: absolute;
+      left: 0.5rem;
+      font-size: 1.125rem;
+      color: $primary;
+    }
+
+    .slot-time {
+      font-weight: 700;
+      color: $primary-dark;
+      padding-left: 1.5rem;
+    }
+  }
+
+  &.disabled-slot {
+    background: #f3f4f6;
+    border-color: transparent;
+    cursor: not-allowed;
+    opacity: 0.6;
+
+    .slot-time {
+      color: #9ca3af;
+      text-decoration: line-through;
     }
   }
 }
 
-.calendar-wrapper {
+// Fixed Bottom CTA (ahora sticky - funciona aunque esté fuera del wrapper)
+.fixed-bottom-cta {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  padding: 1.5rem;
-  font-family: 'Inter', sans-serif;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  border-top: 1px solid #e5e7eb;
+  padding: 1rem;
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-top: 0; // No necesita margin-top porque está fuera del flex container
+
+  .cta-content {
+    max-width: 28rem;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .selected-info {
+    display: flex;
+    flex-direction: column;
+
+    .selected-label {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+
+    .selected-value {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: $text-light;
+    }
+  }
+
+  .confirm-btn-new {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: $primary;
+    color: black;
+    font-weight: 700;
+    padding: 0.75rem 2rem;
+    border-radius: 0.75rem;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba($primary, 0.25);
+    transition: all 0.2s;
+
+    &:hover {
+      background: $primary-dark;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 8px -1px rgba($primary, 0.3);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+
+    .material-symbols-outlined {
+      font-size: 1.25rem;
+    }
+  }
+}
+
+// Legacy styles (keep for backward compatibility)
+.calendar-wrapper {
+  @extend .calendar-wrapper-new;
 }
 
 .calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    
-    h3 {
-        margin: 0;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #1f2937;
-    }
-    
-    .check-btn {
-        background: #f3f4f6;
-        border: 1px solid #e5e7eb;
-        border-radius: 6px;
-        padding: 0.5rem 0.75rem;
-        font-size: 0.8rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        
-        &:hover {
-            background: #e5e7eb;
-        }
-    }
+  @extend .month-navigator;
 }
 
 .weekdays-row {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-    font-size: 0.75rem;
-    color: #9ca3af;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
+  @extend .weekdays-row-new;
 }
 
 .days-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    margin-bottom: 1.5rem;
+  @extend .days-grid-new;
 }
 
 .day-cell {
-    aspect-ratio: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    position: relative;
-    border: 1px solid transparent;
-    transition: all 0.2s;
-    
-    &:hover {
-        background: #f9fafb;
-    }
-    
-    &.different-month {
-        opacity: 0.3;
-        pointer-events: none;
-    }
-    
-    &.today {
-        font-weight: bold;
-        color: #4f46e5;
-    }
-    
-    &.selected {
-        background: #4f46e5;
-        color: white;
-        
-        .dot { background: white; }
-    }
-    
-    .mini-indicators {
-        display: flex;
-        gap: 2px;
-        margin-top: 4px;
-        height: 6px;
-    }
-    
-    .dot {
-        width: 4px;
-        height: 4px;
-        background: #10b981; // Green hint
-        border-radius: 50%;
-    }
+  @extend .day-cell-new;
 }
 
-// Mobile Calendar Theme
-$primary: #13ec5b;
-$primary-dark: #059669;
-$text-dark: #1f2937;
-$bg-light: #f6f8f6;
-
-.calendar-wrapper {
-  background: white;
-  // border-radius: 12px; // Handled by parent container now
-  // box-shadow: ... // Parent handles shadow
-  padding: 0; // Remove padding for edge-to-edge feel
-  font-family: 'Inter', sans-serif;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    padding: 0 0.5rem;
-    
-    h3 {
-        margin: 0;
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: $text-dark;
-        text-transform: capitalize;
-    }
-    
-    .check-btn {
-        background: #ecfdf5;
-        color: $primary-dark;
-        border: 1px solid #d1fae5;
-        border-radius: 20px;
-        padding: 0.5rem 1rem;
-        font-size: 0.8rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        
-        &:hover {
-            background: #d1fae5;
-        }
-    }
-}
-
-.weekdays-row {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-    font-size: 0.75rem;
-    color: #9ca3af;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-}
-
-.days-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    margin-bottom: 1.5rem;
-    padding: 0 0.5rem;
-}
-
-.day-cell {
-    aspect-ratio: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: 500;
-    position: relative;
-    border: 2px solid transparent;
-    transition: all 0.2s;
-    color: $text-dark;
-    background: white;
-    
-    &:hover {
-        background: #f0fdf4;
-        border-color: #d1fae5;
-    }
-    
-    &.different-month {
-        opacity: 0.3;
-        pointer-events: none;
-    }
-    
-    &.today {
-        color: $primary-dark;
-        font-weight: 700;
-        border-color: $primary;
-    }
-    
-    &.available {
-        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-        border-color: #86efac;
-        
-        &:hover {
-            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-            border-color: $primary;
-            transform: scale(1.05);
-        }
-        
-        .day-number {
-            color: #059669;
-            font-weight: 600;
-        }
-    }
-    
-    &.selected {
-        background: $primary;
-        color: white;
-        border-color: $primary-dark;
-        box-shadow: 0 4px 12px rgba($primary, 0.4);
-        transform: scale(1.05);
-        
-        .day-number {
-            color: white;
-            font-weight: 700;
-        }
-    }
-    
-    .availability-indicator {
-        position: absolute;
-        bottom: 4px;
-        display: flex;
-        justify-content: center;
-        
-        .available-dot {
-            width: 6px;
-            height: 6px;
-            background: $primary;
-            border-radius: 50%;
-            box-shadow: 0 0 4px rgba($primary, 0.6);
-        }
-    }
-}
-
-// Slot Selection Area (Bottom half)
 .slots-container {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #f3f4f6;
+  @extend .time-slots-section;
+}
 
-    .selected-date-header {
-        margin-bottom: 1rem;
-        
-        h4 {
-            margin: 0;
-            font-size: 1rem;
-            font-weight: 700;
-            color: $text-dark;
-            text-transform: capitalize; // Fixes "9e November" casing if format allows
-        }
-        
-        p {
-            margin: 4px 0 0 0;
-            font-size: 0.85rem;
-            color: #6b7280;
-        }
-    }
-
-    .slots-group {
-        margin-bottom: 1.5rem;
-        
-        .group-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.75rem;
-            display: block;
-        }
-        
-        .pills-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-        }
-
-        .time-pill {
-            background: white;
-            border: 2px solid #e5e7eb;
-            color: $text-dark;
-            padding: 0.6rem 1.2rem;
-            border-radius: 9999px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            min-width: 70px;
-            text-align: center;
-            
-            &:hover:not(:disabled) {
-                background: #f0fdf4;
-                border-color: $primary;
-                transform: translateY(-2px);
-                box-shadow: 0 2px 8px rgba($primary, 0.2);
-            }
-            
-            &:disabled {
-                opacity: 0.4;
-                cursor: not-allowed;
-                background: #f9fafb;
-                border-color: #e5e7eb;
-            }
-            
-            &.selected {
-                background: $primary;
-                border-color: $primary-dark;
-                color: white;
-                box-shadow: 0 4px 12px rgba($primary, 0.4);
-                font-weight: 700;
-                transform: scale(1.05);
-            }
-        }
-    }
-    
-    .confirm-footer {
-        margin-top: 1rem;
-        display: flex;
-        justify-content: flex-end;
-        
-        .confirm-btn {
-            background: $text-dark; // Dark button for contrast
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            transition: all 0.2s;
-            
-            &:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            }
-            
-            &:disabled {
-                background: #d1d5db;
-                cursor: not-allowed;
-                transform: none;
-                box-shadow: none;
-            }
-        }
-    }
+.confirm-footer {
+  display: none; // Hidden, using fixed-bottom-cta instead
 }

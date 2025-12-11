@@ -62,7 +62,7 @@ export class CalendarComponent implements OnInit, OnChanges {
     const year = this.currentDate.getFullYear();
     const month = this.currentDate.getMonth();
     
-    this.currentMonthName = this.currentDate.toLocaleString('default', { month: 'long' });
+    this.currentMonthName = this.currentDate.toLocaleString('es-ES', { month: 'long' });
     this.currentYear = year;
 
     const firstDay = new Date(year, month, 1);
@@ -85,6 +85,9 @@ export class CalendarComponent implements OnInit, OnChanges {
     }
 
     // Days of current month
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
     for (let i = 1; i <= daysInMonth; i++) {
         const date = new Date(year, month, i);
         const daySlot: DaySlot = {
@@ -94,14 +97,20 @@ export class CalendarComponent implements OnInit, OnChanges {
             slots: []
         };
         
-        // Mark as available if it's in the future and not weekend (for demo)
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
         const slotDate = new Date(date);
         slotDate.setHours(0, 0, 0, 0);
         
         // Mark days as available if they're in the future and not weekends
-        if (slotDate >= today && date.getDay() !== 0 && date.getDay() !== 6) {
+        // For demo: randomly mark some days as disabled (30% chance)
+        const isPast = slotDate < today;
+        const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+        const isDisabled = Math.random() < 0.3; // 30% chance of being disabled
+        
+        if (isPast || isWeekend) {
+          daySlot.status = 'none'; // Disabled (past or weekend)
+        } else if (isDisabled) {
+          daySlot.status = 'none'; // Randomly disabled
+        } else {
           daySlot.status = 'partial'; // Available day
         }
         
@@ -121,7 +130,13 @@ export class CalendarComponent implements OnInit, OnChanges {
   }
   
   onDayClick(day: DaySlot) {
+      // Don't allow clicking on disabled days
+      if (day.status === 'none' && day.isCurrentMonth) {
+          return;
+      }
+      
       this.selectedDay = day;
+      this.currentDate = new Date(day.date);
       
       // If we have availableSlots from agent, use them
       if (this.availableSlots.length > 0 && this.isSameDate(day.date, this.currentDate)) {

@@ -237,3 +237,5 @@ Demo → Chat Directo → Captura Lead → Dashboard
 ---
 
 **¿Te parece bien este flujo? ¿Quieres que continúe implementando?**
+
+

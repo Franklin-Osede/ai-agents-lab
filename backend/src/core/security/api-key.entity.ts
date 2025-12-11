@@ -39,3 +39,5 @@ export class ApiKey extends BaseEntity {
     return this.scopes.includes(scope) || this.scopes.includes('*');
   }
 }
+
+

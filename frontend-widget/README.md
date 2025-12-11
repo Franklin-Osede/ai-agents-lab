@@ -40,3 +40,5 @@ npm run build  # Build para producción
 - `data-api-url`: URL del API (default: https://api.agentslab.ai/api/v1)
 - `data-theme`: Tema (`light` o `dark`)
 - `data-primary-color`: Color principal (hex)
+
+

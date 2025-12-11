@@ -340,3 +340,5 @@ Condition: {{$json.bookingStatus}} === "confirmed"
 ---
 
 **Última actualización:** 2024-12-10
+
+

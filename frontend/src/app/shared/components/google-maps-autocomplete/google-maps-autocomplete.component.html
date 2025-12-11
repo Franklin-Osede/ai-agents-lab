@@ -1,0 +1,47 @@
+<div class="google-maps-autocomplete">
+  <label *ngIf="label" class="autocomplete-label">{{ label }}</label>
+  
+  <div class="input-wrapper">
+    <input
+      #inputElement
+      type="text"
+      [value]="addressValue"
+      [placeholder]="placeholder"
+      class="autocomplete-input"
+      (input)="onInputChange($any($event.target).value)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      autocomplete="off"
+    />
+    
+    <div class="input-icons">
+      <span *ngIf="isLoading" class="material-symbols-outlined loading-icon">sync</span>
+      <span *ngIf="!isLoading && addressValue" 
+            class="material-symbols-outlined clear-icon" 
+            (click)="clear()">close</span>
+      <span *ngIf="!isLoading && !addressValue" 
+            class="material-symbols-outlined search-icon">location_on</span>
+    </div>
+  </div>
+
+  <!-- Predictions Dropdown -->
+  <div class="predictions-container" *ngIf="showPredictions && predictions.length > 0">
+    <div 
+      class="prediction-item" 
+      *ngFor="let prediction of predictions"
+      (mousedown)="selectPrediction(prediction)"
+    >
+      <span class="material-symbols-outlined prediction-icon">place</span>
+      <div class="prediction-content">
+        <div class="prediction-main-text">{{ prediction.structured_formatting.main_text }}</div>
+        <div class="prediction-secondary-text">{{ prediction.structured_formatting.secondary_text }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Selected Place Info -->
+  <div class="selected-place-info" *ngIf="selectedPlace && !showPredictions">
+    <span class="material-symbols-outlined check-icon">check_circle</span>
+    <span class="selected-address">{{ selectedPlace.formatted_address }}</span>
+  </div>
+</div>

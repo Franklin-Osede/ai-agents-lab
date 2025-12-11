@@ -2,8 +2,8 @@
   <!-- Mobile Container mimicking the snippet -->
   <div class="mobile-container" (click)="$event.stopPropagation()">
       
-      <!-- HEADER (Hidden on Step -1: Role Selector) -->
-      <header class="mobile-header" *ngIf="currentStep >= 0">
+      <!-- HEADER (Hidden on Step -1: Role Selector, Step 3: Professional Selection, Step 9: Payment) -->
+      <header class="mobile-header" *ngIf="currentStep >= 0 && currentStep !== 3 && currentStep !== 9">
         <button class="icon-btn" (click)="currentStep > 0 ? prevStep() : onClose()">
             <span class="material-symbols-outlined">arrow_back_ios_new</span>
         </button>
@@ -301,8 +301,24 @@
             </button>
           </div>
           
-          <!-- STEP 1: CHAT (First Screen) -->
+          <!-- STEP 1: CHAT (After Professional Selection) -->
           <div class="step-view chat-view" *ngIf="currentStep === 1">
+              <!-- Calendar Modal Overlay -->
+              <div class="calendar-modal-overlay" *ngIf="showCalendarModal" (click)="showCalendarModal = false">
+                  <div class="calendar-modal-content" (click)="$event.stopPropagation()">
+                      <div class="calendar-modal-header">
+                          <h3>Selecciona Fecha y Hora</h3>
+                          <button class="close-calendar-btn" (click)="showCalendarModal = false">
+                              <span class="material-symbols-outlined">close</span>
+                          </button>
+                      </div>
+                      <app-calendar 
+                          [currentDate]="calendarData.currentDate"
+                          [availableSlots]="availableSlots"
+                          (slotSelected)="onSlotSelected($event)">
+                      </app-calendar>
+                  </div>
+              </div>
                <!-- Timestamp -->
                <div class="chat-timestamp">
                    <span>Hoy</span>
@@ -344,12 +360,42 @@
                            {{ slot }}
                        </button>
                    </div>
+                   <button class="open-calendar-btn" (click)="openCalendarModal()">
+                       <span class="material-symbols-outlined">calendar_today</span>
+                       Ver calendario completo
+                   </button>
                </div>
                
                <!-- Loading indicator for availability check -->
                <div class="availability-loading" *ngIf="checkingAvailability">
                    <span class="material-symbols-outlined spin">sync</span>
                    <span>Verificando disponibilidad en tiempo real...</span>
+               </div>
+               
+               <!-- Button to open calendar if no availability shown yet -->
+               <div class="calendar-cta" *ngIf="availableSlots.length === 0 && !checkingAvailability && messages.length > 2">
+                   <button class="open-calendar-btn-large" (click)="openCalendarModal()">
+                       <span class="material-symbols-outlined">calendar_today</span>
+                       Ver Calendario de Disponibilidad
+                   </button>
+               </div>
+
+               <!-- Restaurant Delivery Option Buttons (in chat) -->
+               <div class="delivery-options" *ngIf="selectedRestaurant && selectedMenuType && !deliveryOption && messages.length > 0">
+                   <button class="delivery-option-btn dine-in" (click)="selectDeliveryOption('dine-in')">
+                       <span class="material-symbols-outlined">restaurant</span>
+                       <div>
+                           <strong>Comer Aquí</strong>
+                           <span>Reservar mesa en el restaurante</span>
+                       </div>
+                   </button>
+                   <button class="delivery-option-btn delivery" (click)="selectDeliveryOption('delivery')">
+                       <span class="material-symbols-outlined">delivery_dining</span>
+                       <div>
+                           <strong>Pedir a Domicilio</strong>
+                           <span>Entrega en tu dirección</span>
+                       </div>
+                   </button>
                </div>
           </div>
 
@@ -384,39 +430,88 @@
               </app-calendar>
           </div>
 
-          <!-- STEP 3: PROFESSIONAL SELECTION (New!) -->
-          <div class="step-view professional-view" *ngIf="currentStep === 3">
-              <div class="step-header">
-                  <h3>Elige un Profesional</h3>
+          <!-- STEP 3: PROFESSIONAL SELECTION (Based on provided HTML design) -->
+          <div class="step-view professional-view-new" 
+               *ngIf="currentStep === 3"
+               [style.--filter-active-bg]="getCategoryColor()"
+               [style.--filter-active-bg-hover]="getCategoryColorHover()"
+               [style.--professional-title-color]="getCategoryColor()">
+              <!-- Header -->
+              <div class="professional-header">
+                  <button class="back-btn" (click)="goToStep(0)">
+                      <span class="material-symbols-outlined">arrow_back_ios_new</span>
+                  </button>
+                  <h2>Elige tu Experto</h2>
               </div>
               
-              <div class="professionals-grid">
-                  <!-- Mock Professional 1 -->
-                  <div class="pro-card" (click)="selectProfessional('Juan Pérez')">
-                      <div class="pro-avatar" style="background-image: url('https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80');"></div>
-                      <div class="pro-info">
-                          <h4>Juan Pérez</h4>
-                          <p>Barbero Master</p>
-                          <div class="rating">
-                              <span class="material-symbols-outlined star">star</span>
-                              <span>4.9 (120 reviews)</span>
+              <!-- Filter Chips -->
+              <div class="filter-chips">
+                  <button 
+                      class="filter-chip active" 
+                      [class.active]="selectedFilter === 'best-rated'"
+                      (click)="selectedFilter = 'best-rated'">
+                      <span class="material-symbols-outlined">star</span>
+                      <p>Mejor Valorados</p>
+                  </button>
+                  <button 
+                      class="filter-chip" 
+                      [class.active]="selectedFilter === 'nearest'"
+                      (click)="selectedFilter = 'nearest'">
+                      <span class="material-symbols-outlined">location_on</span>
+                      <p>Más Cercanos</p>
+                  </button>
+                  <button 
+                      class="filter-chip" 
+                      [class.active]="selectedFilter === 'price-low'"
+                      (click)="selectedFilter = 'price-low'">
+                      <span class="material-symbols-outlined">attach_money</span>
+                      <p>Precio Bajo</p>
+                  </button>
+                  <button 
+                      class="filter-chip" 
+                      [class.active]="selectedFilter === 'availability'"
+                      (click)="selectedFilter = 'availability'">
+                      <span class="material-symbols-outlined">calendar_today</span>
+                      <p>Disponibilidad</p>
+                  </button>
                           </div>
-                      </div>
-                      <span class="material-symbols-outlined arrow">chevron_right</span>
-                  </div>
 
-                  <!-- Mock Professional 2 -->
-                  <div class="pro-card" (click)="selectProfessional('María García')">
-                      <div class="pro-avatar" style="background-image: url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80');"></div>
-                      <div class="pro-info">
-                          <h4>María García</h4>
-                          <p>Estilista Senior</p>
-                          <div class="rating">
-                              <span class="material-symbols-outlined star">star</span>
-                              <span>4.8 (95 reviews)</span>
+              <!-- Professional List -->
+              <div class="professionals-list">
+                  <!-- Dynamic Professional Cards -->
+                  <div class="professional-card" *ngFor="let prof of getProfessionalsForService()">
+                      <div class="professional-main">
+                          <div class="professional-avatar" 
+                               [style.background-image]="'url(' + prof.image + ')'">
+                      </div>
+                          <div class="professional-info">
+                              <div class="professional-header-info">
+                                  <div>
+                                      <h3>{{ prof.name }}</h3>
+                                      <p class="professional-title">{{ prof.title }}</p>
+                  </div>
+                                  <div class="rating-badge">
+                                      <span class="material-symbols-outlined filled">star</span>
+                                      <span>{{ prof.rating }}</span>
                           </div>
                       </div>
-                      <span class="material-symbols-outlined arrow">chevron_right</span>
+                              <p class="professional-description">
+                                  {{ prof.description }}
+                              </p>
+                          </div>
+                      </div>
+                      <div class="professional-footer">
+                          <span class="professional-meta">{{ prof.reviews }} Reseñas • A {{ prof.distance }}</span>
+                          <button class="select-btn" (click)="selectProfessional({
+                              name: prof.name,
+                              image: prof.image,
+                              title: prof.title,
+                              rating: prof.rating,
+                              reviews: prof.reviews
+                          })">
+                              Seleccionar
+                          </button>
+                      </div>
                   </div>
               </div>
           </div>
@@ -437,85 +532,395 @@
               </app-service-selector>
           </div>
 
-          <!-- STEP 4: CONFIRMATION -->
-          <div class="step-view confirmation-view" *ngIf="currentStep === 4">
-               <div class="step-header">
-                  <h3>Confirmar Reserva</h3>
+          <!-- STEP 4: CONFIRMATION (Based on provided HTML design) -->
+          <!-- STEP 9: PAYMENT -->
+          <div class="step-view payment-view" *ngIf="currentStep === 9">
+              <!-- Top App Bar -->
+              <div class="payment-header">
+                  <button class="back-btn" (click)="goToStep(2)">
+                      <span class="material-symbols-outlined">arrow_back_ios_new</span>
+                  </button>
+                  <h2>Pago</h2>
+              </div>
+
+              <!-- Main Content - Sin contenedor scrollable, todo en una pantalla -->
+              <div class="payment-content">
+                  <!-- Test Environment Banner -->
+                  <div class="test-banner">
+                      <div class="test-banner-content">
+                          <span class="material-symbols-outlined">science</span>
+                          <div class="test-banner-text">
+                              <p class="test-banner-title">Entorno de Prueba</p>
+                              <p class="test-banner-message">No se realizará ningún cobro real. Esta es una simulación para demostración.</p>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- Booking Summary - Sin div separado, directamente en el fondo -->
+                  <div class="booking-summary-section">
+                      <h3>Resumen de la Reserva</h3>
+                      <div class="summary-item">
+                          <span class="summary-label">Servicio:</span>
+                          <span class="summary-value">{{ selectedService?.name || 'Servicio' }}</span>
+                      </div>
+                      <div class="summary-item" *ngIf="selectedProfessionalData">
+                          <span class="summary-label">Profesional:</span>
+                          <span class="summary-value">{{ selectedProfessionalData.name }}</span>
+                      </div>
+                      <div class="summary-item" *ngIf="selectedRestaurant">
+                          <span class="summary-label">Restaurante:</span>
+                          <span class="summary-value">{{ selectedRestaurant.name }}</span>
+                      </div>
+                      <div class="summary-item">
+                          <span class="summary-label">Fecha:</span>
+                          <span class="summary-value">{{ calendarData.currentDate | date:'EEEE, d \'de\' MMMM' | titlecase }}</span>
+                      </div>
+                      <div class="summary-item">
+                          <span class="summary-label">Hora:</span>
+                          <span class="summary-value">{{ calendarData.selectedSlot }}</span>
+                      </div>
+                      <div class="summary-item total">
+                          <span class="summary-label">Total:</span>
+                          <span class="summary-value">€{{ getBookingPrice() }}.00</span>
+                      </div>
+                  </div>
+
+                  <!-- Payment Method - Sin div separado, directamente en el fondo -->
+                  <div class="payment-method-section">
+                      <h3>Método de Pago</h3>
+                      <div class="stripe-container">
+                          <!-- Stripe Elements will be injected here -->
+                          <div class="stripe-placeholder" *ngIf="!paymentProcessing && !paymentError">
+                              <div class="card-element-placeholder">
+                                  <div class="card-icon-wrapper">
+                                      <span class="material-symbols-outlined">credit_card</span>
+                                  </div>
+                                  <p class="stripe-label">Pago seguro con Stripe</p>
+                                  <div class="test-card-info">
+                                      <span class="material-symbols-outlined">info</span>
+                                      <p>Modo de prueba: Usa la tarjeta de prueba <strong>4242 4242 4242 4242</strong></p>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="payment-loading" *ngIf="paymentProcessing">
+                              <div class="spinner"></div>
+                              <p>Procesando pago...</p>
+                          </div>
+                          <div class="payment-error" *ngIf="paymentError">
+                              <span class="material-symbols-outlined">error</span>
+                              <p>{{ paymentError }}</p>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- Security Notice -->
+                  <div class="security-notice">
+                      <span class="material-symbols-outlined">verified</span>
+                      <p>Tu información está protegida. Este es un entorno de prueba y no se procesarán pagos reales.</p>
+                  </div>
+
+                  <!-- Payment Button - Dentro del contenido, sticky al final -->
+                  <div class="payment-actions">
+                      <button 
+                          class="pay-button" 
+                          [disabled]="paymentProcessing"
+                          (click)="initializePayment()"
+                          *ngIf="!paymentProcessing && !paymentError">
+                          <span class="material-symbols-outlined">lock</span>
+                          <span>Pagar €{{ getBookingPrice() }}.00</span>
+                          <span class="test-badge">PRUEBA</span>
+                      </button>
+                      <button 
+                          class="pay-button retry-button" 
+                          [disabled]="paymentProcessing"
+                          (click)="initializePayment()"
+                          *ngIf="paymentError">
+                          <span class="material-symbols-outlined">refresh</span>
+                          Reintentar Pago
+                      </button>
+                  </div>
+              </div>
+          </div>
+
+          <div class="step-view confirmation-view-new" *ngIf="currentStep === 4">
+              <!-- Top App Bar -->
+              <div class="confirmation-header">
+                  <button class="back-btn" (click)="goToStep(1)">
+                      <span class="material-symbols-outlined">arrow_back_ios_new</span>
+                  </button>
+                  <h2>Detalles de la Cita</h2>
                </div>
                
-               <div class="summary-card">
-                   <div class="summary-header">
-                       <h4>Resumen de tu Cita</h4>
-                       <p>Por favor revisa los detalles antes de confirmar.</p>
+              <!-- Main Content - Sin contenedor scrollable, todo en una pantalla -->
+              <div class="confirmation-content">
+                  <!-- Status Card -->
+                  <div class="status-card">
+                      <div class="status-icon-wrapper">
+                          <span class="material-symbols-outlined status-icon">check</span>
+                      </div>
+                      <h3>Reservación Confirmada</h3>
+                      <p>Tu cita ha sido programada exitosamente.</p>
+                      <div class="add-calendar-btn-wrapper">
+                          <button class="add-calendar-btn">
+                              <span class="material-symbols-outlined">calendar_add_on</span>
+                              Añadir a Calendario
+                          </button>
+                      </div>
                    </div>
                    
-                   <!-- Service Info -->
-                   <div class="service-info-block">
-                       <span class="service-label">SERVICIO</span>
-                       <h3>Corte de Cabello Premium</h3>
-                       <div class="provider-row">
-                           <span class="material-symbols-outlined user-icon">person</span>
-                           <span>{{ selectedProfessional || 'Profesional Asignado' }}</span>
+                  <!-- Details List -->
+                  <div class="details-section">
+                      <h4>Información</h4>
+                      <div class="details-list">
+                          <!-- Date -->
+                          <div class="detail-row">
+                              <div class="detail-icon">
+                                  <span class="material-symbols-outlined">calendar_today</span>
                        </div>
-                       <div class="service-img" style="background-image: url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                              <div class="detail-content">
+                                  <p class="detail-label">Fecha</p>
+                                  <p class="detail-value">{{ calendarData.currentDate | date:'EEEE, d \'de\' MMMM' | titlecase }}</p>
+                              </div>
                    </div>
                    
-                   <!-- Details Grid -->
-                   <div class="details-grid">
-                       <div class="detail-item">
-                           <span class="icon-calendar material-symbols-outlined">calendar_today</span>
-                           <div class="detail-text">
-                               <span class="label">FECHA</span>
-                               <span class="value">{{ calendarData.currentDate | date:'EEEE, d MMM' | titlecase }}</span>
+                          <!-- Time -->
+                          <div class="detail-row">
+                              <div class="detail-icon">
+                                  <span class="material-symbols-outlined">schedule</span>
+                           </div>
+                              <div class="detail-content">
+                                  <p class="detail-label">Hora</p>
+                                  <p class="detail-value">{{ calendarData.selectedSlot || '10:00' }} - {{ getEndTime(calendarData.selectedSlot || '10:00') }} <span class="duration">(1h)</span></p>
+                       </div>
+                           </div>
+
+                          <!-- Service / Restaurant -->
+                          <div class="detail-row" *ngIf="!selectedRestaurant">
+                              <div class="detail-icon">
+                                  <span class="material-symbols-outlined">content_cut</span>
+                       </div>
+                              <div class="detail-content">
+                                  <p class="detail-label">Servicio</p>
+                                  <p class="detail-value">{{ selectedService?.name || 'Corte de Cabello y Barba' }}</p>
                            </div>
                        </div>
-                       <div class="detail-item">
-                           <span class="icon-clock material-symbols-outlined">schedule</span>
-                           <div class="detail-text">
-                               <span class="label">HORA</span>
-                               <span class="value">{{ calendarData.selectedSlot || '10:00' }}</span>
+                          <div class="detail-row" *ngIf="selectedRestaurant">
+                              <div class="detail-icon">
+                                  <span class="material-symbols-outlined">restaurant</span>
                            </div>
-                       </div>
-                       <div class="detail-item">
-                           <span class="icon-price material-symbols-outlined">payments</span>
-                           <div class="detail-text">
-                               <span class="label">PRECIO</span>
-                               <span class="value">€25.00</span>
-                           </div>
-                       </div>
-                       <div class="detail-item">
-                           <span class="icon-duration material-symbols-outlined">hourglass_top</span>
-                           <div class="detail-text">
-                               <span class="label">DURACIÓN</span>
-                               <span class="value">45 min</span>
-                           </div>
+                              <div class="detail-content">
+                                  <p class="detail-label">Restaurante</p>
+                                  <p class="detail-value">{{ selectedRestaurant.name }}</p>
+                              </div>
+                          </div>
+                          <div class="detail-row" *ngIf="selectedRestaurant && selectedMenuType">
+                              <div class="detail-icon">
+                                  <span class="material-symbols-outlined">restaurant_menu</span>
+                              </div>
+                              <div class="detail-content">
+                                  <p class="detail-label">Tipo de Menú</p>
+                                  <p class="detail-value">{{ getSelectedMenuTypeName() }}</p>
                        </div>
                    </div>
                    
-                   <!-- Location -->
-                   <div class="location-block">
-                       <div class="icon-circle">
-                           <span class="material-symbols-outlined">location_on</span>
+                          <!-- Professional -->
+                          <div class="detail-row" *ngIf="selectedProfessionalData">
+                              <div class="detail-icon professional-avatar">
+                                  <img *ngIf="selectedProfessionalData.image" [src]="selectedProfessionalData.image" [alt]="selectedProfessionalData.name + ' profile'">
+                                  <span *ngIf="!selectedProfessionalData.image" class="material-symbols-outlined">person</span>
                        </div>
-                       <div class="location-text">
-                           <strong>Barbería Central</strong>
-                           <span>Calle Principal 123, Madrid</span>
+                              <div class="detail-content">
+                                  <p class="detail-label">Profesional</p>
+                                  <p class="detail-value">{{ selectedProfessionalData.name || selectedProfessional || 'Profesional Asignado' }}</p>
                        </div>
+                          </div>
+                          <div class="detail-row" *ngIf="!selectedProfessionalData">
+                              <div class="detail-icon professional-avatar">
+                                  <span class="material-symbols-outlined">person</span>
+                              </div>
+                              <div class="detail-content">
+                                  <p class="detail-label">Profesional</p>
+                                  <p class="detail-value">{{ selectedProfessional || 'Profesional Asignado' }}</p>
+                              </div>
+                          </div>
+
+                          <!-- Cost -->
+                          <div class="detail-row cost-row">
+                              <div class="detail-icon cost-icon">
+                                  <span class="material-symbols-outlined">payments</span>
+                              </div>
+                              <div class="detail-content cost-content">
+                                  <div class="cost-header">
+                                      <p class="detail-label">Costo Total</p>
+                                      <span class="paid-badge">Pagado</span>
+                                  </div>
+                                  <p class="cost-value">€{{ getBookingPrice() }}.00</p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- Location Section -->
+                  <div class="location-section">
+                      <h4>Ubicación</h4>
+                      <div class="location-card">
+                          <div class="location-map">
+                              <div class="map-placeholder">
+                                  <div class="map-marker">
+                                      <span class="material-symbols-outlined">storefront</span>
+                                  </div>
+                              </div>
+                          </div>
+                              <div class="location-info">
+                              <div>
+                                  <p class="location-name">{{ selectedRestaurant?.name || selectedService?.name || 'Barbería The Gentlemen' }}</p>
+                                  <p class="location-address" *ngIf="deliveryAddress">{{ deliveryAddress.formatted_address }}</p>
+                                  <p class="location-address" *ngIf="!deliveryAddress">Av. Reforma 222, CDMX</p>
+                              </div>
+                              <button class="location-btn">
+                                  <span class="material-symbols-outlined">near_me</span>
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- Bottom Action Bar - Dentro del contenido, sticky al final -->
+                  <div class="confirmation-actions">
+                      <button class="reschedule-btn" (click)="goToStep(1)">
+                          Reagendar
+                      </button>
+                      <button class="cancel-btn" (click)="goToStep(1)">
+                          Cancelar Cita
+                      </button>
+                  </div>
+              </div>
+          </div>
+
+          <!-- STEP 6: RESTAURANT SELECTION -->
+          <div class="step-view restaurant-selection-view" *ngIf="currentStep === 6">
+              <div class="restaurant-header">
+                  <button class="back-btn" (click)="goToStep(0)">
+                      <span class="material-symbols-outlined">arrow_back_ios_new</span>
+                  </button>
+                  <h2>Elige un Restaurante</h2>
+              </div>
+
+              <div class="restaurants-list">
+                  <div class="restaurant-card" *ngFor="let restaurant of getRestaurants()" (click)="selectRestaurant(restaurant)">
+                      <div class="restaurant-image" [style.background-image]="'url(' + restaurant.image + ')'"></div>
+                      <div class="restaurant-info">
+                          <div class="restaurant-header-info">
+                              <div>
+                                  <h3>{{ restaurant.name }}</h3>
+                                  <p class="restaurant-cuisine">{{ restaurant.cuisine }}</p>
+                              </div>
+                              <div class="rating-badge">
+                                  <span class="material-symbols-outlined filled">star</span>
+                                  <span>{{ restaurant.rating }}</span>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="restaurant-footer">
+                          <span class="restaurant-meta">{{ restaurant.reviews }} Reseñas • A {{ restaurant.distance }}</span>
                        <span class="material-symbols-outlined arrow">chevron_right</span>
+                      </div>
+                  </div>
+              </div>
                    </div>
                    
-                   <p class="disclaimer">
-                       <span class="material-symbols-outlined info-icon">info</span>
-                       Cancelación gratuita hasta 24 horas antes de la cita.
-                   </p>
+          <!-- STEP 7: MENU TYPE SELECTION -->
+          <div class="step-view menu-selection-view" *ngIf="currentStep === 7">
+              <div class="menu-header">
+                  <button class="back-btn" (click)="goToStep(6)">
+                      <span class="material-symbols-outlined">arrow_back_ios_new</span>
+                  </button>
+                  <h2>Elige Tipo de Menú</h2>
+                  <p class="restaurant-name" *ngIf="selectedRestaurant">{{ selectedRestaurant.name }}</p>
+              </div>
+
+              <div class="menu-types-list">
+                  <div class="menu-type-card" *ngFor="let menuType of getMenuTypes()" (click)="selectMenuType(menuType.id)">
+                      <div class="menu-icon">
+                          <span class="material-symbols-outlined">{{ menuType.icon }}</span>
+                      </div>
+                      <div class="menu-info">
+                          <h3>{{ menuType.name }}</h3>
+                          <p>{{ menuType.description }}</p>
+                      </div>
+                      <span class="material-symbols-outlined arrow">chevron_right</span>
+                  </div>
+              </div>
+          </div>
                    
-                   <!-- Actions -->
-                   <div class="actions-block">
-                       <button class="confirm-btn-large" (click)="onClose()">
-                           Confirmar Cita <span class="material-symbols-outlined">check_circle</span>
+          <!-- STEP 8: DELIVERY ADDRESS SELECTION -->
+          <div class="step-view delivery-address-view" *ngIf="currentStep === 8">
+              <div class="delivery-header">
+                  <button class="back-btn" (click)="goToStep(1)">
+                      <span class="material-symbols-outlined">arrow_back_ios_new</span>
                        </button>
-                       <button class="cancel-link" (click)="onClose()">Cancelar</button>
+                  <h2>Dirección de Entrega</h2>
+                  <p class="delivery-subtitle">Selecciona la dirección donde quieres recibir tu pedido</p>
                    </div>
+
+              <div class="delivery-content">
+                  <app-google-maps-autocomplete
+                      [placeholder]="'Buscar dirección de entrega...'"
+                      [label]="'Dirección de Entrega'"
+                      (placeSelected)="onAddressSelected($event)">
+                  </app-google-maps-autocomplete>
+
+                  <div class="delivery-info" *ngIf="deliveryAddress">
+                      <div class="info-card">
+                          <span class="material-symbols-outlined">location_on</span>
+                          <div>
+                              <p class="info-label">Dirección confirmada</p>
+                              <p class="info-value">{{ deliveryAddress.formatted_address }}</p>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="delivery-actions" *ngIf="deliveryAddress">
+                      <button class="continue-btn" (click)="goToStep(2)">
+                          Continuar con la Reserva
+                          <span class="material-symbols-outlined">arrow_forward</span>
+                      </button>
+                  </div>
+              </div>
+          </div>
+
+          <!-- STEP 5: SUCCESS MESSAGE -->
+          <div class="step-view success-view" *ngIf="currentStep === 5 && showSuccessMessage">
+              <div class="success-container">
+                  <div class="success-icon">
+                      <span class="material-symbols-outlined">check_circle</span>
+                  </div>
+                  <h2 class="success-title">¡Cita Confirmada!</h2>
+                  <p class="success-message">
+                      Tu cita ha sido confirmada exitosamente. Recibirás un recordatorio antes de tu cita.
+                  </p>
+                  
+                  <div class="success-details">
+                      <div class="detail-row">
+                          <span class="material-symbols-outlined">person</span>
+                          <span>{{ selectedProfessional || 'Profesional Asignado' }}</span>
+                      </div>
+                      <div class="detail-row">
+                          <span class="material-symbols-outlined">calendar_today</span>
+                          <span>{{ calendarData.currentDate | date:'EEEE, d MMMM' | titlecase }}</span>
+                      </div>
+                      <div class="detail-row">
+                          <span class="material-symbols-outlined">schedule</span>
+                          <span>{{ calendarData.selectedSlot || '10:00' }}</span>
+                      </div>
+                      <div class="detail-row">
+                          <span class="material-symbols-outlined">spa</span>
+                          <span>{{ selectedService?.name || 'Servicio' }}</span>
+                      </div>
+                  </div>
+                  
+                  <button class="success-btn" (click)="onSuccessClose()">
+                      Cerrar
+                  </button>
                </div>
           </div>
       </main>

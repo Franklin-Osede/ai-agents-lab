@@ -130,3 +130,5 @@ El frontend ya está configurado para usar `http://localhost:3001`.
 ---
 
 **Última actualización:** 2024-12-10
+
+

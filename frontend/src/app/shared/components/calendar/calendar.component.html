@@ -20,7 +20,7 @@
         <p class="weekday">Vie</p>
         <p class="weekday">Sáb</p>
     </div>
-
+    
     <!-- Calendar Grid -->
     <div class="days-grid-new">
         <button 
@@ -46,43 +46,43 @@
         <h3 class="selected-date-title">{{ selectedDay.date | date:'EEEE, d' | titlecase }} de {{ selectedDay.date | date:'MMMM' | titlecase }}</h3>
         <p class="select-time-label">Selecciona una hora de inicio</p>
 
-        <!-- Morning Slots -->
+            <!-- Morning Slots -->
         <div class="time-group">
             <h4 class="time-group-label">Mañana</h4>
             <div class="time-slots-grid">
-                <button 
+                    <button 
                     class="time-slot-btn"
-                    *ngFor="let slot of getMorningSlots(selectedDay.slots)"
+                         *ngFor="let slot of getMorningSlots(selectedDay.slots)"
                     [class.selected-slot]="calendarData.selectedSlot === slot.time"
                     [class.disabled-slot]="slot.status === 'busy'"
-                    [disabled]="slot.status === 'busy'"
+                         [disabled]="slot.status === 'busy'"
                     (click)="onSlotClick(slot.time, slot.status)"
                 >
                     <span class="material-symbols-outlined check-icon" *ngIf="calendarData.selectedSlot === slot.time">check_circle</span>
                     <span class="slot-time">{{ slot.time }}</span>
-                </button>
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <!-- Afternoon Slots -->
+            <!-- Afternoon Slots -->
         <div class="time-group">
             <h4 class="time-group-label">Tarde</h4>
             <div class="time-slots-grid">
-                <button 
+                    <button 
                     class="time-slot-btn"
-                    *ngFor="let slot of getAfternoonSlots(selectedDay.slots)"
+                         *ngFor="let slot of getAfternoonSlots(selectedDay.slots)"
                     [class.selected-slot]="calendarData.selectedSlot === slot.time"
                     [class.disabled-slot]="slot.status === 'busy'"
-                    [disabled]="slot.status === 'busy'"
+                         [disabled]="slot.status === 'busy'"
                     (click)="onSlotClick(slot.time, slot.status)"
                 >
                     <span class="material-symbols-outlined check-icon" *ngIf="calendarData.selectedSlot === slot.time">check_circle</span>
                     <span class="slot-time">{{ slot.time }}</span>
-                </button>
+                    </button>
+            </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
 <!-- Fixed Bottom CTA -->
 <div class="fixed-bottom-cta" *ngIf="calendarData.selectedSlot && selectedDay">

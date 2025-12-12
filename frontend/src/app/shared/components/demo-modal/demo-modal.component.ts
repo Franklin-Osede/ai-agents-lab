@@ -203,17 +203,17 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       });
       
       // Store service context for the agent
-      this.selectedService = {
-        ...serviceContext,
-        name: serviceName || serviceContext.name,
-      };
-      
-      // Clear any previous day options when selecting a new service
-      this.detectedDayOptions = [];
-      this.selectedDayOption = null;
-      
-      // Update example messages based on selected service
-      this.exampleMessages = this.getExamples();
+    this.selectedService = {
+      ...serviceContext,
+      name: serviceName || serviceContext.name,
+    };
+    
+    // Clear any previous day options when selecting a new service
+    this.detectedDayOptions = [];
+    this.selectedDayOption = null;
+    
+    // Update example messages based on selected service
+    this.exampleMessages = this.getExamples();
     } else {
       // Fallback for other agents
       const welcomeMessages: Record<string, string> = {
@@ -1216,7 +1216,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         // For other services, go to professional selection
         this.currentStep = 3; // Professional selection step
         console.log('🔵 Going to PROFESSIONAL selection (step 3)');
-        
+      
         // Wait a tick for Angular change detection, then test
         this.safeSetTimeout(() => {
           const professionals = this.getProfessionalsForService();
@@ -1667,7 +1667,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   }
   
   // Booking management
-  cancelBooking(bookingId: string): void {
+  cancelBookingById(bookingId: string): void {
     const booking = this.bookings.find(b => b.id === bookingId);
     if (booking) {
       booking.status = 'cancelled';
@@ -1766,9 +1766,92 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     return `${endHour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   }
   
-  addToCalendar(): void {
-    // Simulate adding to calendar
-    alert('Añadido a tu calendario');
+  async addToCalendar(): Promise<void> {
+    try {
+      // Get current booking data
+      const bookingDate = this.calendarData.currentDate;
+      const bookingTime = this.calendarData.selectedSlot || '10:00';
+      const serviceName = this.selectedService?.name || 'Servicio';
+      const professionalName = this.selectedProfessional || this.selectedProfessionalData?.name || 'Profesional';
+      const location = this.selectedRestaurant?.name || this.selectedService?.name || 'Ubicación';
+      
+      // Parse time
+      const timeParts = bookingTime.split(':');
+      const startHour = parseInt(timeParts[0]);
+      const startMin = parseInt(timeParts[1]);
+      
+      // Create start and end dates
+      const startDate = new Date(bookingDate);
+      startDate.setHours(startHour, startMin, 0, 0);
+      const endDate = new Date(startDate);
+      endDate.setHours(startHour + 1, startMin, 0, 0); // 1 hour duration
+      
+      // Format dates for Google Calendar (YYYYMMDDTHHmmssZ)
+      const formatDate = (date: Date): string => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        return `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
+      };
+      
+      const startDateStr = formatDate(startDate);
+      const endDateStr = formatDate(endDate);
+      
+      // Create Google Calendar URL
+      const calendarTitle = encodeURIComponent(`Cita: ${serviceName} con ${professionalName}`);
+      const calendarDetails = encodeURIComponent(
+        `Servicio: ${serviceName}\n` +
+        `Profesional: ${professionalName}\n` +
+        `Precio: €${this.getBookingPrice()}.00\n` +
+        (this.selectedRestaurant ? `Restaurante: ${this.selectedRestaurant.name}\n` : '') +
+        (this.deliveryAddress ? `Dirección de entrega: ${this.deliveryAddress.formatted_address}\n` : '')
+      );
+      const calendarLocation = encodeURIComponent(location);
+      
+      const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calendarTitle}&dates=${startDateStr}/${endDateStr}&details=${calendarDetails}&location=${calendarLocation}`;
+      
+      // Open Google Calendar in new tab
+      window.open(googleCalendarUrl, '_blank');
+      
+      // Find the current booking to send to webhook
+      const currentBooking = this.bookings.find(b => 
+        b.date === bookingDate.toISOString().split('T')[0] &&
+        b.time === bookingTime
+      ) || {
+        id: `booking_${Date.now()}`,
+        date: bookingDate.toISOString().split('T')[0],
+        time: bookingTime,
+        service: serviceName,
+        professional: professionalName,
+        status: 'confirmed' as const,
+        amount: this.getBookingPrice(),
+        paymentStatus: 'paid' as const,
+      };
+      
+      // Call n8n webhook when adding to calendar
+      await this.callN8nWebhook(currentBooking);
+      
+      // Show success message
+      this.addNotification({
+        type: 'action',
+        title: 'Añadido a Calendario',
+        message: 'El evento se ha añadido a tu Google Calendar. El webhook de n8n ha sido activado.',
+        icon: 'check_circle',
+        color: 'green',
+      });
+    } catch (error) {
+      console.error('Error adding to calendar:', error);
+      this.addNotification({
+        type: 'action',
+        title: 'Error',
+        message: 'No se pudo añadir al calendario. Por favor, inténtalo de nuevo.',
+        icon: 'error',
+        color: 'red',
+      });
+    }
   }
   
   reagendarBooking(bookingId: string): void {
@@ -1777,6 +1860,42 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       this.selectedBooking = booking;
       this.currentStep = 2; // Go to calendar
     }
+  }
+  
+  // Reschedule current booking - go to calendar to select new date
+  rescheduleBooking(): void {
+    // Go to calendar step to select a new date
+    this.goToStep(2);
+  }
+  
+  // Cancel current booking
+  cancelBooking(): void {
+    const bookingDate = this.calendarData.currentDate;
+    const bookingTime = this.calendarData.selectedSlot || '10:00';
+    
+    // Find and remove the booking
+    const bookingIndex = this.bookings.findIndex(b => 
+      b.date === bookingDate.toISOString().split('T')[0] &&
+      b.time === bookingTime
+    );
+    
+    if (bookingIndex !== -1) {
+      const cancelledBooking = this.bookings[bookingIndex];
+      this.bookings.splice(bookingIndex, 1);
+      
+      // Show cancellation notification
+      this.addNotification({
+        type: 'action',
+        title: 'Cita Cancelada',
+        message: `Tu cita del ${this.formatDate(cancelledBooking.date)} a las ${cancelledBooking.time} ha sido cancelada.`,
+        icon: 'cancel',
+        color: 'orange',
+      });
+    }
+    
+    // Reset and go back to service selection
+    this.goToStep(0);
+    this.calendarData.selectedSlot = null;
   }
   
   viewBookingDetails(booking: any): void {
@@ -1866,8 +1985,8 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     
     this.bookings.push(newBooking);
     
-    // Call n8n webhook after successful payment
-    this.callN8nWebhook(newBooking);
+    // Don't call n8n webhook here - it will be called when user adds to calendar
+    // The webhook should be triggered when the user explicitly adds the event to their calendar
     
     // Go to confirmation screen (step 4)
     this.currentStep = 4;

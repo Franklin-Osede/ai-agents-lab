@@ -422,3 +422,4 @@ POST /api/v1/agents/booking/chat
 **Prioridad:** ALTA - Implementar esta semana
 
 
+

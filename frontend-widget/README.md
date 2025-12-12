@@ -42,3 +42,4 @@ npm run build  # Build para producción
 - `data-primary-color`: Color principal (hex)
 
 
+

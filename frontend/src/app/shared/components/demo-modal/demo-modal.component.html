@@ -541,8 +541,8 @@
                       <span class="material-symbols-outlined">arrow_back_ios_new</span>
                   </button>
                   <h2>Pago</h2>
-              </div>
-
+               </div>
+               
               <!-- Main Content - Sin contenedor scrollable, todo en una pantalla -->
               <div class="payment-content">
                   <!-- Test Environment Banner -->
@@ -554,15 +554,15 @@
                               <p class="test-banner-message">No se realizará ningún cobro real. Esta es una simulación para demostración.</p>
                           </div>
                       </div>
-                  </div>
-
+                   </div>
+                   
                   <!-- Booking Summary - Sin div separado, directamente en el fondo -->
                   <div class="booking-summary-section">
                       <h3>Resumen de la Reserva</h3>
                       <div class="summary-item">
                           <span class="summary-label">Servicio:</span>
                           <span class="summary-value">{{ selectedService?.name || 'Servicio' }}</span>
-                      </div>
+                       </div>
                       <div class="summary-item" *ngIf="selectedProfessionalData">
                           <span class="summary-label">Profesional:</span>
                           <span class="summary-value">{{ selectedProfessionalData.name }}</span>
@@ -583,8 +583,8 @@
                           <span class="summary-label">Total:</span>
                           <span class="summary-value">€{{ getBookingPrice() }}.00</span>
                       </div>
-                  </div>
-
+                   </div>
+                   
                   <!-- Payment Method - Sin div separado, directamente en el fondo -->
                   <div class="payment-method-section">
                       <h3>Método de Pago</h3>
@@ -594,31 +594,31 @@
                               <div class="card-element-placeholder">
                                   <div class="card-icon-wrapper">
                                       <span class="material-symbols-outlined">credit_card</span>
-                                  </div>
+                           </div>
                                   <p class="stripe-label">Pago seguro con Stripe</p>
                                   <div class="test-card-info">
                                       <span class="material-symbols-outlined">info</span>
                                       <p>Modo de prueba: Usa la tarjeta de prueba <strong>4242 4242 4242 4242</strong></p>
-                                  </div>
-                              </div>
-                          </div>
+                       </div>
+                           </div>
+                       </div>
                           <div class="payment-loading" *ngIf="paymentProcessing">
                               <div class="spinner"></div>
                               <p>Procesando pago...</p>
-                          </div>
+                           </div>
                           <div class="payment-error" *ngIf="paymentError">
                               <span class="material-symbols-outlined">error</span>
                               <p>{{ paymentError }}</p>
-                          </div>
-                      </div>
-                  </div>
+                       </div>
+                           </div>
+                       </div>
 
                   <!-- Security Notice -->
                   <div class="security-notice">
                       <span class="material-symbols-outlined">verified</span>
                       <p>Tu información está protegida. Este es un entorno de prueba y no se procesarán pagos reales.</p>
-                  </div>
-
+                   </div>
+                   
                   <!-- Payment Button - Dentro del contenido, sticky al final -->
                   <div class="payment-actions">
                       <button 
@@ -638,8 +638,8 @@
                           <span class="material-symbols-outlined">refresh</span>
                           Reintentar Pago
                       </button>
-                  </div>
-              </div>
+                       </div>
+                       </div>
           </div>
 
           <div class="step-view confirmation-view-new" *ngIf="currentStep === 4">
@@ -661,7 +661,7 @@
                       <h3>Reservación Confirmada</h3>
                       <p>Tu cita ha sido programada exitosamente.</p>
                       <div class="add-calendar-btn-wrapper">
-                          <button class="add-calendar-btn">
+                          <button class="add-calendar-btn" (click)="addToCalendar()">
                               <span class="material-symbols-outlined">calendar_add_on</span>
                               Añadir a Calendario
                           </button>
@@ -786,10 +786,10 @@
 
                   <!-- Bottom Action Bar - Dentro del contenido, sticky al final -->
                   <div class="confirmation-actions">
-                      <button class="reschedule-btn" (click)="goToStep(1)">
+                      <button class="reschedule-btn" (click)="rescheduleBooking()">
                           Reagendar
                       </button>
-                      <button class="cancel-btn" (click)="goToStep(1)">
+                      <button class="cancel-btn" (click)="cancelBooking()">
                           Cancelar Cita
                       </button>
                   </div>
@@ -1048,7 +1048,7 @@
               <!-- Bottom Actions -->
               <div class="bottom-actions">
                   <button class="btn-secondary" (click)="reagendarBooking(selectedBooking.id)">Reagendar</button>
-                  <button class="btn-danger" (click)="cancelBooking(selectedBooking.id)">Cancelar Cita</button>
+                  <button class="btn-danger" (click)="cancelBookingById(selectedBooking.id)">Cancelar Cita</button>
               </div>
           </div>
 
@@ -1089,7 +1089,7 @@
                       </div>
                       <div class="booking-actions">
                           <button class="btn-view" (click)="viewBookingDetails(booking)">Ver Detalles</button>
-                          <button class="btn-cancel" (click)="cancelBooking(booking.id)" *ngIf="booking.status === 'confirmed'">Cancelar</button>
+                          <button class="btn-cancel" (click)="cancelBookingById(booking.id)" *ngIf="booking.status === 'confirmed'">Cancelar</button>
                           <button class="btn-delete" (click)="deleteBooking(booking.id)">Eliminar</button>
                       </div>
                   </div>

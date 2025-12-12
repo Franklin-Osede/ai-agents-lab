@@ -208,3 +208,4 @@ open example.html
 **Estado:** ✅ Semana 1 completada, listo para continuar
 
 
+

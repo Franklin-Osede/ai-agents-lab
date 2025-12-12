@@ -190,3 +190,4 @@ npm start  # Inicia backend + frontend
 **Estado:** ✅ Semana 1 completada, listo para Semana 2
 
 
+

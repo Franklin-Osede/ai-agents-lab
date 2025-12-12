@@ -320,3 +320,4 @@ curl -X POST http://localhost:3000/api/v1/demo/booking/chat \
 **Estado:** ✅ Flujo implementado, mejoras pendientes
 
 
+

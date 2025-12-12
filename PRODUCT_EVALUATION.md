@@ -406,3 +406,4 @@ Paso 2: (Según elección, mostrar instrucciones específicas)
 **Veredicto:** Buena idea, pero ajustar prioridades de integración
 
 
+

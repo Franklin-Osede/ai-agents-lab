@@ -397,3 +397,4 @@ pm2 monit                     # Monitor visual
 **Estado:** ✅ Puerto cambiado, PM2 recomendado para local
 
 
+

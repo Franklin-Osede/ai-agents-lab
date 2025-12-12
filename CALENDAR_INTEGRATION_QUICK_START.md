@@ -256,3 +256,4 @@ export class Tenant {
 **Estado:** ✅ Listo para implementar
 
 
+

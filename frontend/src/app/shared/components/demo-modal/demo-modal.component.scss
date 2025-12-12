@@ -116,9 +116,9 @@
   
   // Solo aplicar padding-bottom extra cuando NO hay views con scroll propio
   &:not(:has(.payment-view)):not(:has(.confirmation-view-new)) {
-    padding-bottom: calc(
+  padding-bottom: calc(
       var(--footer-height) + var(--bottom-nav-height) + var(--safe-area-bottom) + 2rem
-    );
+  );
   }
 }
 

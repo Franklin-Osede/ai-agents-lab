@@ -74,3 +74,4 @@ npm run install:all
 **Recomendación:** Usa `npm start` o `./start-dev.sh` (más rápido que Docker)
 
 
+

@@ -10,8 +10,8 @@ $secondary-bg-dark: #1a3524;
 .calendar-wrapper-new {
   background: white;
   font-family: 'Inter', 'Noto Sans', sans-serif;
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
   height: 100%;
   max-height: 100vh;
   overflow: hidden;
@@ -21,8 +21,8 @@ $secondary-bg-dark: #1a3524;
 
 // Month Navigator
 .month-navigator {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1rem;
   margin-bottom: 0.5rem;
@@ -40,37 +40,37 @@ $secondary-bg-dark: #1a3524;
     transition: all 0.2s;
     color: $text-light;
 
-    &:hover {
+      &:hover {
       background: rgba(0, 0, 0, 0.05);
     }
 
     &:active {
       transform: scale(0.95);
-    }
+}
 
     .material-symbols-outlined {
       font-size: 1.5rem;
     }
-  }
+}
 
   .month-year {
     font-size: 1.375rem;
     font-weight: 800;
     color: $text-light;
-    margin: 0;
+        margin: 0;
     text-transform: capitalize;
     letter-spacing: -0.02em;
     background: linear-gradient(135deg, #13ec5b 0%, #0ea341 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-  }
-}
+        }
+    }
 
 // Weekdays Row
 .weekdays-row-new {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
   padding: 0 1rem;
   margin-bottom: 0.5rem;
 
@@ -87,8 +87,8 @@ $secondary-bg-dark: #1a3524;
 
 // Days Grid
 .days-grid-new {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
   gap: 0.25rem;
   padding: 0 1rem;
   margin-bottom: 0.5rem;
@@ -97,16 +97,16 @@ $secondary-bg-dark: #1a3524;
 .day-cell-new {
   height: 2.5rem;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   border-radius: 50%;
   border: none;
   background: transparent;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
   font-size: 0.875rem;
   font-weight: 500;
   color: $text-light;
@@ -144,12 +144,12 @@ $secondary-bg-dark: #1a3524;
 
   &.available-day {
     color: $text-light;
-
+    
     &:hover {
       background: $secondary-bg-light;
       transform: scale(1.05);
     }
-
+    
     .day-number {
       color: #059669;
       font-weight: 600;
@@ -166,8 +166,8 @@ $secondary-bg-dark: #1a3524;
         background: #13ec5b;
         border-radius: 50%;
         box-shadow: 0 0 0 2px rgba(19, 236, 91, 0.2);
-      }
     }
+}
 
     .available-dot {
       position: absolute;
@@ -220,17 +220,17 @@ $secondary-bg-dark: #1a3524;
 
   .selected-date-title {
     font-size: 1.25rem;
-    font-weight: 700;
+        font-weight: 700;
     color: $text-light;
     margin: 0 0 0.25rem 0;
-    text-transform: capitalize;
-  }
-
+        text-transform: capitalize;
+    }
+    
   .select-time-label {
     font-size: 0.875rem;
     color: #6b7280;
     margin: 0 0 1rem 0;
-  }
+    }
 }
 
 .time-group {
@@ -243,7 +243,7 @@ $secondary-bg-dark: #1a3524;
     letter-spacing: 0.05em;
     color: #9ca3af;
     margin: 0 0 0.75rem 0;
-  }
+}
 
   .time-slots-grid {
     display: grid;
@@ -253,15 +253,15 @@ $secondary-bg-dark: #1a3524;
 }
 
 .time-slot-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   height: 2.5rem;
   width: 100%;
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
   background: transparent;
-  cursor: pointer;
+    cursor: pointer;
   transition: all 0.2s;
   position: relative;
   padding: 0 0.5rem;
@@ -278,10 +278,10 @@ $secondary-bg-dark: #1a3524;
     color: $primary-dark;
 
     .slot-time {
-      color: $primary-dark;
+        color: $primary-dark;
     }
-  }
-
+    }
+    
   &.selected-slot {
     background: $secondary-bg-light;
     border-color: rgba($primary, 0.3);
@@ -295,12 +295,12 @@ $secondary-bg-dark: #1a3524;
     }
 
     .slot-time {
-      font-weight: 700;
+            font-weight: 700;
       color: $primary-dark;
       padding-left: 1.5rem;
+        }
     }
-  }
-
+    
   &.disabled-slot {
     background: #f3f4f6;
     border-color: transparent;
@@ -343,18 +343,18 @@ $secondary-bg-dark: #1a3524;
 
     .selected-label {
       font-size: 0.75rem;
-      color: #6b7280;
-    }
+            color: #6b7280;
+        }
 
     .selected-value {
       font-size: 0.875rem;
-      font-weight: 700;
+            font-weight: 700;
       color: $text-light;
     }
-  }
-
+        }
+        
   .confirm-btn-new {
-    display: flex;
+            display: flex;
     align-items: center;
     gap: 0.5rem;
     background: $primary;
@@ -363,31 +363,31 @@ $secondary-bg-dark: #1a3524;
     padding: 0.75rem 2rem;
     border-radius: 0.75rem;
     border: none;
-    cursor: pointer;
+            cursor: pointer;
     box-shadow: 0 4px 6px -1px rgba($primary, 0.25);
     transition: all 0.2s;
-
+            
     &:hover {
       background: $primary-dark;
       transform: translateY(-1px);
       box-shadow: 0 6px 8px -1px rgba($primary, 0.3);
-    }
-
+            }
+            
     &:active {
       transform: scale(0.95);
     }
 
     .material-symbols-outlined {
       font-size: 1.25rem;
-    }
+            }
   }
 }
 
 // Legacy styles (keep for backward compatibility)
 .calendar-wrapper {
   @extend .calendar-wrapper-new;
-}
-
+    }
+    
 .calendar-header {
   @extend .month-navigator;
 }

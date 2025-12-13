@@ -113,14 +113,15 @@ Return ONLY a valid JSON object like: {"intent": "selected_intent", "confidence"
 
   async generateAudio(text: string): Promise<Buffer> {
     try {
-      // Random gender selection for Spanish (Spain) voices
-      // alloy = female voice, onyx = male voice
-      const spanishVoices: Array<'alloy' | 'onyx'> = ['alloy', 'onyx'];
+      // Use more natural and cheerful Spanish voices
+      // nova = female, warm, natural
+      // shimmer = female, expressive, cheerful
+      const spanishVoices: Array<'nova' | 'shimmer'> = ['nova', 'shimmer'];
       const randomVoice = spanishVoices[Math.floor(Math.random() * spanishVoices.length)];
 
       const mp3 = await this.openaiClient.audio.speech.create({
         model: 'tts-1',
-        voice: randomVoice, // Random Spanish (Spain) voice
+        voice: randomVoice,
         input: text,
       });
       const buffer = Buffer.from(await mp3.arrayBuffer());

@@ -1537,7 +1537,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         
         // Play audio for booking agent responses
         if (this.agent.id === 'booking' && this.enableVoice && agentMessage.content) {
-          this.playMessageAudio(agentMessage.content);
+          this.playMessageAudio(agentMessage); // Pass the whole message object
         }
         
         // Generate contextual suggestions AFTER agent message is added
@@ -2485,8 +2485,37 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     this.currentStep = 1;
   }
 
-  async playMessageAudio(message: string): Promise<void> {
+  async playMessageAudio(messageOrText: ChatMessage | string): Promise<void> {
     try {
+      // Handle both ChatMessage object and plain string
+      let message: ChatMessage;
+      let textContent: string;
+      
+      if (typeof messageOrText === 'string') {
+        // Find the message in the messages array or create a temporary one
+        const foundMessage = this.messages.find(m => m.content === messageOrText && m.sender === 'agent');
+        if (foundMessage) {
+          message = foundMessage;
+        } else {
+          // Temporary message for backward compatibility
+          message = {
+            id: 'temp',
+            content: messageOrText,
+            sender: 'agent',
+            timestamp: new Date(),
+          };
+        }
+        textContent = messageOrText;
+      } else {
+        message = messageOrText;
+        textContent = message.content;
+      }
+
+      // Mark as audio message and set playing state
+      message.isAudioMessage = true;
+      message.audioPlaying = true;
+      message.showTranscript = false; // Hide transcript while playing
+
       this.isPlayingAudio = true;
 
       // Stop any current audio
@@ -2496,18 +2525,25 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       }
 
       // Generate and play audio
-      const audioBuffer = await this.voiceService.generateGreeting(message);
+      const audioBuffer = await this.voiceService.generateGreeting(textContent);
       this.currentAudio = this.voiceService.playAudioBlob(audioBuffer);
 
       // Handle audio end
       if (this.currentAudio) {
         this.currentAudio.onended = () => {
           this.isPlayingAudio = false;
+          message.audioPlaying = false;
+          message.showTranscript = true; // Show transcript after audio finishes
         };
       }
     } catch (error) {
       console.error('Error playing message audio:', error);
       this.isPlayingAudio = false;
+      // Show transcript on error
+      if (typeof messageOrText !== 'string') {
+        messageOrText.audioPlaying = false;
+        messageOrText.showTranscript = true;
+      }
     }
   }
 

@@ -48,5 +48,10 @@ export interface ChatMessage {
     confidence: number;
   };
   isSystem?: boolean;
+  // Audio message properties (WhatsApp-style)
+  isAudioMessage?: boolean;
+  audioPlaying?: boolean;
+  audioDuration?: number;
+  showTranscript?: boolean;
 }
 

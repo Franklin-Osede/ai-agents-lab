@@ -1,0 +1,42 @@
+{
+  "COMMON": {
+    "APP_NAME": "AI Agents Lab",
+    "WELCOME": "Willkommen",
+    "LOADING": "Laden...",
+    "ERROR": "Fehler",
+    "SUCCESS": "Erfolg",
+    "SAVE": "Speichern",
+    "CANCEL": "Abbrechen",
+    "DELETE": "Löschen",
+    "EDIT": "Bearbeiten",
+    "BACK": "Zurück",
+    "NEXT": "Weiter",
+    "PREVIOUS": "Vorherige",
+    "CLOSE": "Schließen"
+  },
+  "NAV": {
+    "HOME": "Startseite",
+    "AGENTS": "Agenten",
+    "DASHBOARD": "Dashboard",
+    "SETTINGS": "Einstellungen"
+  },
+  "ABANDONED_CART": {
+    "TITLE": "KI-Warenkorb-Wiederherstellungsagent",
+    "SUBTITLE": "Ihr Experte für Verkaufswiederherstellung",
+    "GREETING": "Hallo, ich bin Ihr Wiederherstellungsagent. Möchten Sie wissen, wie viele abgebrochene Warenkörbe Sie haben?",
+    "PRESS_TO_RESPOND": "Drücken Sie, um zu antworten",
+    "RECORDING": "Aufnahme...",
+    "STOP_RECORDING": "Aufnahme stoppen",
+    "PROCESSING": "Verarbeitung Ihrer Stimme...",
+    "YOUR_RESPONSE": "Ihre Antwort",
+    "AI_RESPONSE": "KI-Antwort",
+    "GO_TO_DASHBOARD": "Zum Dashboard gehen",
+    "BACK_TO_AGENTS": "Zurück zu Agenten"
+  },
+  "VOICE": {
+    "GREETING_LABEL": "Begrüßung",
+    "PLAY": "Abspielen",
+    "PAUSE": "Pause",
+    "REPLAY": "Wiederholen"
+  }
+}

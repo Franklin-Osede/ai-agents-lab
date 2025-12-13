@@ -1,0 +1,42 @@
+{
+  "COMMON": {
+    "APP_NAME": "AI Agents Lab",
+    "WELCOME": "Bienvenido",
+    "LOADING": "Cargando...",
+    "ERROR": "Error",
+    "SUCCESS": "Éxito",
+    "SAVE": "Guardar",
+    "CANCEL": "Cancelar",
+    "DELETE": "Eliminar",
+    "EDIT": "Editar",
+    "BACK": "Volver",
+    "NEXT": "Siguiente",
+    "PREVIOUS": "Anterior",
+    "CLOSE": "Cerrar"
+  },
+  "NAV": {
+    "HOME": "Inicio",
+    "AGENTS": "Agentes",
+    "DASHBOARD": "Panel",
+    "SETTINGS": "Configuración"
+  },
+  "ABANDONED_CART": {
+    "TITLE": "Agente Recuperador IA",
+    "SUBTITLE": "Tu experto en recuperación de ventas",
+    "GREETING": "Hola, soy tu Agente Recuperador. ¿Te gustaría saber cuántos carritos abandonados tienes pendientes?",
+    "PRESS_TO_RESPOND": "Presiona para responder",
+    "RECORDING": "Grabando...",
+    "STOP_RECORDING": "Detener Grabación",
+    "PROCESSING": "Procesando tu voz...",
+    "YOUR_RESPONSE": "Tu respuesta",
+    "AI_RESPONSE": "Respuesta IA",
+    "GO_TO_DASHBOARD": "Ir al Dashboard",
+    "BACK_TO_AGENTS": "Volver a Agentes"
+  },
+  "VOICE": {
+    "GREETING_LABEL": "Saludo",
+    "PLAY": "Reproducir",
+    "PAUSE": "Pausar",
+    "REPLAY": "Repetir"
+  }
+}

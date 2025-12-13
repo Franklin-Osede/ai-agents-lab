@@ -1,0 +1,42 @@
+{
+  "COMMON": {
+    "APP_NAME": "AI Agents Lab",
+    "WELCOME": "Bienvenue",
+    "LOADING": "Chargement...",
+    "ERROR": "Erreur",
+    "SUCCESS": "Succès",
+    "SAVE": "Enregistrer",
+    "CANCEL": "Annuler",
+    "DELETE": "Supprimer",
+    "EDIT": "Modifier",
+    "BACK": "Retour",
+    "NEXT": "Suivant",
+    "PREVIOUS": "Précédent",
+    "CLOSE": "Fermer"
+  },
+  "NAV": {
+    "HOME": "Accueil",
+    "AGENTS": "Agents",
+    "DASHBOARD": "Tableau de bord",
+    "SETTINGS": "Paramètres"
+  },
+  "ABANDONED_CART": {
+    "TITLE": "Agent IA de Récupération de Panier",
+    "SUBTITLE": "Votre expert en récupération des ventes",
+    "GREETING": "Bonjour, je suis votre Agent de Récupération. Souhaitez-vous savoir combien de paniers abandonnés vous avez en attente?",
+    "PRESS_TO_RESPOND": "Appuyez pour répondre",
+    "RECORDING": "Enregistrement...",
+    "STOP_RECORDING": "Arrêter l'enregistrement",
+    "PROCESSING": "Traitement de votre voix...",
+    "YOUR_RESPONSE": "Votre réponse",
+    "AI_RESPONSE": "Réponse IA",
+    "GO_TO_DASHBOARD": "Aller au tableau de bord",
+    "BACK_TO_AGENTS": "Retour aux agents"
+  },
+  "VOICE": {
+    "GREETING_LABEL": "Salutation",
+    "PLAY": "Jouer",
+    "PAUSE": "Pause",
+    "REPLAY": "Rejouer"
+  }
+}

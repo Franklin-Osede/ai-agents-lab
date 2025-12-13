@@ -1,0 +1,42 @@
+{
+  "COMMON": {
+    "APP_NAME": "AI Agents Lab",
+    "WELCOME": "Welcome",
+    "LOADING": "Loading...",
+    "ERROR": "Error",
+    "SUCCESS": "Success",
+    "SAVE": "Save",
+    "CANCEL": "Cancel",
+    "DELETE": "Delete",
+    "EDIT": "Edit",
+    "BACK": "Back",
+    "NEXT": "Next",
+    "PREVIOUS": "Previous",
+    "CLOSE": "Close"
+  },
+  "NAV": {
+    "HOME": "Home",
+    "AGENTS": "Agents",
+    "DASHBOARD": "Dashboard",
+    "SETTINGS": "Settings"
+  },
+  "ABANDONED_CART": {
+    "TITLE": "Cart Recovery AI Agent",
+    "SUBTITLE": "Your sales recovery expert",
+    "GREETING": "Hello, I'm your Recovery Agent. Would you like to know how many abandoned carts you have pending?",
+    "PRESS_TO_RESPOND": "Press to respond",
+    "RECORDING": "Recording...",
+    "STOP_RECORDING": "Stop Recording",
+    "PROCESSING": "Processing your voice...",
+    "YOUR_RESPONSE": "Your response",
+    "AI_RESPONSE": "AI Response",
+    "GO_TO_DASHBOARD": "Go to Dashboard",
+    "BACK_TO_AGENTS": "Back to Agents"
+  },
+  "VOICE": {
+    "GREETING_LABEL": "Greeting",
+    "PLAY": "Play",
+    "PAUSE": "Pause",
+    "REPLAY": "Replay"
+  }
+}

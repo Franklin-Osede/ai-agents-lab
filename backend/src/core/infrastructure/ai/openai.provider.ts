@@ -86,9 +86,14 @@ Respond with JSON format: {"intent": "INTENT_NAME", "confidence": 0.0-1.0}`;
 
   async generateAudio(text: string): Promise<Buffer> {
     try {
+      // Random gender selection for Spanish (Spain) voices
+      // alloy = female voice, onyx = male voice
+      const spanishVoices: Array<'alloy' | 'onyx'> = ['alloy', 'onyx'];
+      const randomVoice = spanishVoices[Math.floor(Math.random() * spanishVoices.length)];
+
       const mp3 = await this.client.audio.speech.create({
         model: 'tts-1',
-        voice: 'alloy', // Neutral/Professional voice
+        voice: randomVoice, // Random Spanish (Spain) voice
         input: text,
       });
 

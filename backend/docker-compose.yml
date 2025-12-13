@@ -1,24 +1,30 @@
 version: '3.8'
 
 services:
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: ai-agents-lab-api
+  postgres:
+    image: postgres:15-alpine
+    container_name: ai_agents_lab_db
     ports:
-      - "3001:3001"
+      - "5432:5432"
     environment:
-      - NODE_ENV=production
-      - PORT=3001
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-    env_file:
-      - .env
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
+      POSTGRES_DB: ${POSTGRES_DB:-ai_agents_lab}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: ai_agents_lab_pgadmin
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
+    depends_on:
+      - postgres
+    restart: always
+
+volumes:
+  postgres_data:

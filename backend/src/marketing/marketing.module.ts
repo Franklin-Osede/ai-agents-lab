@@ -6,7 +6,7 @@ import { SecurityModule } from '../core/security/security.module';
 
 /**
  * Marketing Module
- * 
+ *
  * Handles lead capture, email marketing, follow-ups, etc.
  */
 @Module({
@@ -16,6 +16,3 @@ import { SecurityModule } from '../core/security/security.module';
   exports: [LeadCaptureService, EmailService],
 })
 export class MarketingModule {}
-
-
-

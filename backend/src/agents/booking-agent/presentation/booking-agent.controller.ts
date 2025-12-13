@@ -22,7 +22,7 @@ export class BookingAgentController {
       businessId: body.businessId || 'default-business',
       customerId: body.sessionId,
     });
-    
+
     // Try to parse as JSON (if enhanced response) or return as string
     try {
       const parsed = JSON.parse(response);

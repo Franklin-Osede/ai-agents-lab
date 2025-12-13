@@ -1,0 +1,273 @@
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-y-auto max-w-md mx-auto shadow-2xl bg-background-light dark:bg-background-dark pb-24">
+  @if (toastMessage()) {
+    <div class="fixed top-4 left-1/2 -translate-x-1/2 z-50 rounded-full bg-gray-900 text-white px-4 py-2 text-sm shadow-lg">
+      {{ toastMessage() }}
+    </div>
+  }
+  <!-- Top App Bar -->
+  <header class="sticky top-0 z-20 bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-md px-4 py-3 shadow-sm border-b border-gray-100 dark:border-gray-800">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button class="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" type="button" (click)="goBack()">
+          <span class="material-symbols-outlined text-slate-700 dark:text-slate-200">arrow_back_ios_new</span>
+        </button>
+        <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Carritos Abandonados</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="relative notifications-dropdown-container">
+          <button class="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-slate-600 dark:text-slate-300" type="button" (click)="toggleNotificationsDropdown()">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-surface-dark"></span>
+          </button>
+          @if (showNotificationsDropdown()) {
+            <div class="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-96 overflow-hidden flex flex-col">
+              <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <h3 class="text-sm font-bold text-gray-900 dark:text-white">Notificaciones</h3>
+                <button class="text-xs text-primary hover:underline" type="button" (click)="showNotificationsDropdown.set(false)">Cerrar</button>
+              </div>
+              <div class="overflow-y-auto flex-1">
+                @for (notification of getMockNotifications(); track notification.id) {
+                  <div class="p-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer" [class.bg-blue-50]="!notification.read">
+                    <p class="text-sm text-gray-900 dark:text-white mb-1">{{ notification.message }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ notification.time }}</p>
+                  </div>
+                } @empty {
+                  <div class="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                    No hay notificaciones
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+        <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-gray-700">
+          <img alt="Profile" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQ7z53XkKPtcdivazeZCJWXPJ2J8qG8Uph6lZpA2_t_bQ4zQhCZuCUO407dFTwp3V0BxyWXSQkOxgL5-X6Utse9ylcx6jyd4T5XDFRCItUQcljKIyV7AqxEcQuSSKYWU2EaZ9QR-9rJe664WQSD_SV3hh36NUV8wiRa4akypShzZbPH-IIXLhj5Sutzt-LugxXbw6IIYNefByIDJfO4krSX23UuBw-wadMPMTVtClqNvRFWV3_b95wl6kJBCpgx-978GE2HO899tQ"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mt-4">
+      <div class="relative group">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <span class="material-symbols-outlined text-gray-400">search</span>
+        </div>
+        <input 
+          class="block w-full rounded-xl border-0 bg-gray-100 dark:bg-gray-800 py-3 pl-10 pr-4 text-slate-900 dark:text-white ring-1 ring-inset ring-transparent placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 transition-all" 
+          placeholder="Buscar cliente, email, producto..." 
+          type="text"
+          [value]="searchTerm()"
+          (input)="searchTerm.set($any($event.target).value)"
+        />
+      </div>
+    </div>
+
+    <!-- Filter Chips -->
+    <div class="mt-3 -mx-4 overflow-x-auto no-scrollbar pb-1 px-4 flex gap-2">
+      <button 
+        [ngClass]="{
+          'bg-primary text-white shadow-lg': activeFilter() === 'all',
+          'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-slate-700 dark:text-slate-200': activeFilter() !== 'all'
+        }"
+        class="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap shadow-sm transition-all active:scale-95"
+        type="button"
+        (click)="setFilter('all')">
+        <span>Todos</span>
+      </button>
+      <button 
+        [ngClass]="{
+          'bg-primary text-white shadow-lg': activeFilter() === 'today',
+          'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-slate-700 dark:text-slate-200': activeFilter() !== 'today'
+        }"
+        class="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap shadow-sm transition-all active:scale-95"
+        type="button"
+        (click)="setFilter('today')">
+        <span>Hoy</span>
+      </button>
+      <button 
+        [ngClass]="{
+          'bg-primary text-white shadow-lg': activeFilter() === 'value',
+          'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-slate-700 dark:text-slate-200': activeFilter() !== 'value'
+        }"
+        class="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap shadow-sm transition-all active:scale-95"
+        type="button"
+        (click)="setFilter('value')">
+        <span>Valor &gt; $500</span>
+      </button>
+      <div class="relative status-dropdown-container">
+        <button 
+          [ngClass]="{
+            'bg-primary text-white shadow-lg': statusFilter() !== 'all',
+            'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-slate-700 dark:text-slate-200': statusFilter() === 'all'
+          }"
+          class="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap shadow-sm transition-all active:scale-95"
+          type="button"
+          (click)="toggleStatusDropdown()">
+          <span>{{ getStatusLabel(statusFilter()) }}</span>
+          <span class="material-symbols-outlined text-[16px] transition-transform" [class.rotate-180]="showStatusDropdown()">expand_more</span>
+        </button>
+        @if (showStatusDropdown()) {
+          <div class="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 min-w-[180px] overflow-hidden">
+            <button 
+              [ngClass]="{
+                'status-filter-active': statusFilter() === 'all',
+                'status-filter-inactive': statusFilter() !== 'all'
+              }"
+              class="w-full text-left px-4 py-2 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              type="button"
+              (click)="setStatusFilter('all')">
+              Todos
+            </button>
+            <button 
+              [ngClass]="{
+                'status-filter-active': statusFilter() === 'ABANDONED',
+                'status-filter-inactive': statusFilter() !== 'ABANDONED'
+              }"
+              class="w-full text-left px-4 py-2 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              type="button"
+              (click)="setStatusFilter('ABANDONED')">
+              Abandonados
+            </button>
+            <button 
+              [ngClass]="{
+                'status-filter-active': statusFilter() === 'RECOVERED',
+                'status-filter-inactive': statusFilter() !== 'RECOVERED'
+              }"
+              class="w-full text-left px-4 py-2 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              type="button"
+              (click)="setStatusFilter('RECOVERED')">
+              Recuperados
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content List -->
+  <main class="flex-1 px-4 py-4 flex flex-col gap-4">
+    @if (loading()) {
+      <div class="flex items-center justify-center py-12">
+        <p class="text-gray-500">Cargando carritos...</p>
+      </div>
+    } @else {
+      @for (cart of carts(); track cart.id) {
+        <div class="group relative rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-md transition-shadow" [ngClass]="{'bg-blue-50 dark:bg-blue-900/10': selectedCarts().has(cart.id), 'bg-surface-light dark:bg-surface-dark': !selectedCarts().has(cart.id)}">
+          <!-- Selection Checkbox (Simulated Mass Action) -->
+          <div class="absolute top-4 right-4 z-10">
+            @if (selectedCarts().has(cart.id)) {
+              <div class="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-white shadow-sm">
+                <span class="material-symbols-outlined text-[16px] font-bold">check</span>
+              </div>
+            } @else {
+              <button class="text-gray-400 hover:text-primary transition-colors" type="button" (click)="toggleSelection(cart.id)">
+                <span class="material-symbols-outlined">more_horiz</span>
+              </button>
+            }
+          </div>
+
+          <!-- Header -->
+          <div class="flex items-start gap-3 mb-3">
+            <div class="relative">
+              <img alt="{{ cart.customer?.name }} Avatar" class="h-10 w-10 rounded-full object-cover border-2 border-white dark:border-gray-600 shadow-sm" [src]="getCustomerAvatar(cart)" (error)="handleImageError($event)" />
+            </div>
+            <div class="flex-1 min-w-0 pr-6">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ cart.customer?.name || 'Cliente' }}</h3>
+                <!-- Estado Badge -->
+                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap"
+                      [ngClass]="{
+                        'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400': cart.status === 'ABANDONED',
+                        'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400': cart.status === 'RECOVERED'
+                      }">
+                  {{ getStatusLabel(cart.status) }}
+                </span>
+              </div>
+              <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ getCustomerInfo(cart) }}</p>
+              <p class="text-[10px] font-medium text-orange-600 mt-0.5 flex items-center gap-1">
+                <span class="material-symbols-outlined text-[12px] filled">schedule</span>
+                Hace {{ getTimeAgo(cart.lastModifiedAt) }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Products Preview - Solo 1 imagen para reducir saturación -->
+          <div class="flex items-center gap-2 mb-4 overflow-hidden">
+            @if (cart.items.length > 0) {
+              <div class="h-12 w-12 shrink-0 rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden border border-gray-100 dark:border-gray-700">
+                <img alt="{{ cart.items[0].name }}" class="h-full w-full object-cover" [src]="cart.items[0].imageUrl || 'https://via.placeholder.com/48'" />
+              </div>
+              @if (cart.items.length > 1) {
+                <div class="h-12 w-12 shrink-0 rounded-lg bg-gray-50 dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center">
+                  <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">+{{ cart.items.length - 1 }}</span>
+                </div>
+              }
+            }
+          </div>
+
+          <!-- Stats & Probability -->
+          <div class="grid grid-cols-2 gap-4 mb-4 items-end">
+            <div>
+              <p class="text-xs text-gray-500 mb-1">Total del carrito</p>
+              <p class="text-xl font-bold text-primary tracking-tight">${{ cart.totalValue | number:'1.2-2' }}</p>
+            </div>
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-xs text-gray-500">Probabilidad</span>
+                <span class="text-xs font-bold" [class.text-green-600]="(cart.recoveryProbability || 0) >= 70" [class.text-yellow-600]="(cart.recoveryProbability || 0) >= 40 && (cart.recoveryProbability || 0) < 70" [class.text-red-600]="(cart.recoveryProbability || 0) < 40">
+                  {{ cart.recoveryProbability || 0 }}%
+                </span>
+              </div>
+              <div class="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all" 
+                     [class.bg-green-500]="(cart.recoveryProbability || 0) >= 70"
+                     [class.bg-yellow-500]="(cart.recoveryProbability || 0) >= 40 && (cart.recoveryProbability || 0) < 70"
+                     [class.bg-red-400]="(cart.recoveryProbability || 0) < 40"
+                     [style.width.%]="cart.recoveryProbability || 0"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex gap-2">
+            <button class="flex-1 h-9 flex items-center justify-center rounded-lg bg-primary text-white text-xs font-semibold shadow-sm shadow-primary/30 hover:bg-primary/90 transition-colors" type="button" (click)="recoverCart(cart.id)">
+              <span class="material-symbols-outlined text-[16px] mr-1.5">send</span>
+              Recuperar
+            </button>
+            <a [routerLink]="['/abandoned-cart', cart.id]" class="px-3 h-9 flex items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-800 text-slate-700 dark:text-slate-200 border border-gray-200 dark:border-gray-700 text-xs font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+              Ver detalles
+            </a>
+          </div>
+        </div>
+      } @empty {
+        <div class="flex items-center justify-center py-12">
+          <p class="text-gray-500">No hay carritos abandonados</p>
+        </div>
+      }
+    }
+
+    <button class="w-full py-3 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors mt-2 disabled:opacity-60" type="button" (click)="loadMoreCarts()" [disabled]="loadingMore()">
+      @if (loadingMore()) { Cargando... } @else { Cargar más carritos }
+    </button>
+  </main>
+
+  <!-- Sticky Bottom Action Bar (Simulating selection state) -->
+  @if (selectedCarts().size > 0) {
+    <div class="fixed bottom-0 left-0 right-0 p-4 z-30 max-w-md mx-auto">
+      <div class="bg-slate-900 dark:bg-primary text-white rounded-xl shadow-xl p-4 flex items-center justify-between backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 transform transition-transform translate-y-0">
+        <div class="flex flex-col">
+          <span class="text-xs font-medium text-slate-300 dark:text-blue-100">{{ selectedCarts().size }} seleccionado</span>
+          <span class="text-sm font-bold">Acciones masivas</span>
+        </div>
+        <div class="flex gap-2">
+          <button class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors" type="button" title="Delete">
+            <span class="material-symbols-outlined text-[20px]">delete</span>
+          </button>
+          <button class="h-9 px-4 rounded-lg bg-white text-slate-900 text-xs font-bold shadow-sm hover:bg-gray-100 transition-colors flex items-center" type="button">
+            Recuperar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

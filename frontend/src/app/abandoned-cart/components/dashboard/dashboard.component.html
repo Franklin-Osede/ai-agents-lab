@@ -1,0 +1,251 @@
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-y-auto pb-20">
+  <!-- Header Section -->
+  <header class="sticky top-0 z-50 bg-background-light dark:bg-surface-dark border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex items-center justify-between shadow-sm">
+    <button class="icon-btn p-2 text-gray-500 hover:text-primary transition-colors" type="button" (click)="goBack()">
+      <span class="material-symbols-outlined">arrow_back_ios_new</span>
+    </button>
+    <div class="flex items-center gap-3 flex-1 justify-center">
+      <div class="flex items-center justify-center size-10 rounded-xl bg-primary/10 text-primary">
+        <span class="material-symbols-outlined text-2xl">shopping_cart_checkout</span>
+      </div>
+      <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">RecoverPRO</h1>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="relative p-2 text-gray-500 hover:text-primary transition-colors" type="button" (click)="themeService.toggleTheme()">
+        <span class="material-symbols-outlined">{{ themeService.isDarkMode() ? 'light_mode' : 'dark_mode' }}</span>
+      </button>
+      <button class="relative p-2 text-gray-500 hover:text-primary transition-colors" type="button">
+        <span class="material-symbols-outlined">notifications</span>
+        <span class="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full border-2 border-white dark:border-surface-dark"></span>
+      </button>
+      <div class="size-9 rounded-full bg-gray-200 dark:bg-gray-700 bg-center bg-cover border-2 border-white dark:border-gray-600 shadow-sm" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDvOTaeSwdurT82bt6piAj9WHJ8k910M0wGspPMhO5USwWyBnK2XZMwTuUxpt8XFb7YZYxnvdAJttUE7ji9U44gCySUhB95aQUUXK4CbyPNhlcy4s-O8IgySoOobWGL-F8hurMQO8S9PFUwDeJuUJ7wbGhVweRAApwlrlGJZxXw5qjRxJCxxsvOhlwkuuYikuo-ZJmhCwWe2ZdqAPZ8XkTxUhy76K5GlkQwUzHGekytIGNy73n4GMV3DqAdsmJUUQmPkOp8o0UBZ3I');"></div>
+    </div>
+  </header>
+
+  <!-- Welcome Message -->
+  <div class="px-4 py-6 bg-background-light dark:bg-background-dark">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Bienvenido de vuelta</h2>
+    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Esto es lo que está pasando con tu tienda hoy.</p>
+  </div>
+
+  <!-- Metrics Grid -->
+  <section class="px-4 pb-4 grid grid-cols-2 gap-3">
+    <!-- Metric 1: Abandoned Today -->
+    <div class="bg-background-light dark:bg-surface-dark p-4 rounded-xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-100 dark:border-gray-800 flex flex-col justify-between h-[140px] cursor-pointer hover:shadow-md transition-all active:scale-[0.98] group" (click)="onMetricClick('abandoned-today')">
+      <div class="flex justify-between items-start">
+        <div class="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-orange-600 dark:text-orange-400 group-hover:scale-110 transition-transform">
+          <span class="material-symbols-outlined text-xl">remove_shopping_cart</span>
+        </div>
+        <span class="flex items-center text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 px-1.5 py-0.5 rounded">+{{ metrics()?.abandonedTodayChange || 12 }}%</span>
+      </div>
+      <div>
+        <p class="text-gray-500 dark:text-gray-400 text-xs font-medium mb-1">Abandonados Hoy</p>
+        <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ metrics()?.abandonedToday || 142 }}</p>
+      </div>
+    </div>
+
+    <!-- Metric 2: Total Value -->
+    <div class="bg-background-light dark:bg-surface-dark p-4 rounded-xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-100 dark:border-gray-800 flex flex-col justify-between h-[140px] cursor-pointer hover:shadow-md transition-all active:scale-[0.98] group" (click)="onMetricClick('total-value')">
+      <div class="flex justify-between items-start">
+        <div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-primary group-hover:scale-110 transition-transform">
+          <span class="material-symbols-outlined text-xl">payments</span>
+        </div>
+        <span class="flex items-center text-xs font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 px-1.5 py-0.5 rounded">+{{ metrics()?.totalValueChange || 5 }}%</span>
+      </div>
+      <div>
+        <p class="text-gray-500 dark:text-gray-400 text-xs font-medium mb-1">Valor Total</p>
+        <p class="text-2xl font-bold text-gray-900 dark:text-white">${{ ((metrics()?.totalValue || 12400) / 1000) | number:'1.1-1' }}k</p>
+      </div>
+    </div>
+
+    <!-- Metric 3: Recovery Rate -->
+    <div class="bg-background-light dark:bg-surface-dark p-4 rounded-xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-100 dark:border-gray-800 flex flex-col justify-between h-[140px] cursor-pointer hover:shadow-md transition-all active:scale-[0.98] group" (click)="onMetricClick('recovery-rate')">
+      <div class="flex justify-between items-start">
+        <div class="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+          <span class="material-symbols-outlined text-xl">trending_up</span>
+        </div>
+        <span class="flex items-center text-xs font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 px-1.5 py-0.5 rounded">+{{ metrics()?.recoveryRateChange || 2.1 }}%</span>
+      </div>
+      <div>
+        <p class="text-gray-500 dark:text-gray-400 text-xs font-medium mb-1">Tasa de Recuperación</p>
+        <p class="text-2xl font-bold text-primary">{{ metrics()?.recoveryRate || 18.5 }}%</p>
+      </div>
+    </div>
+
+    <!-- Metric 4: Recovered Rev -->
+    <div class="bg-background-light dark:bg-surface-dark p-4 rounded-xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-100 dark:border-gray-800 flex flex-col justify-between h-[140px] cursor-pointer hover:shadow-md transition-all active:scale-[0.98] group" (click)="onMetricClick('recovered-revenue')">
+      <div class="flex justify-between items-start">
+        <div class="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+          <span class="material-symbols-outlined text-xl">savings</span>
+        </div>
+        <span class="flex items-center text-xs font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 px-1.5 py-0.5 rounded">+{{ metrics()?.recoveredRevenueChange || 8 }}%</span>
+      </div>
+      <div>
+        <p class="text-gray-500 dark:text-gray-400 text-xs font-medium mb-1">Ingresos Recuperados</p>
+        <p class="text-2xl font-bold text-gray-900 dark:text-white">${{ (metrics()?.recoveredRevenue || 2300) | number:'1.0-0' }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Actions -->
+  <section class="px-4 py-2">
+    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Acciones Rápidas</h3>
+    <div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+      <a routerLink="/abandoned-cart/list" class="flex flex-col items-center justify-center min-w-[100px] p-4 bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm active:scale-95 transition-all hover:shadow-md hover:border-primary/30 group">
+        <div class="p-3 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl mb-2.5 text-primary group-hover:scale-110 transition-transform shadow-sm">
+          <span class="material-symbols-outlined text-2xl">list_alt</span>
+        </div>
+        <span class="text-xs font-semibold text-center text-gray-700 dark:text-gray-200">Ver Carritos</span>
+      </a>
+      <a routerLink="/abandoned-cart/campaign/new" class="flex flex-col items-center justify-center min-w-[100px] p-4 bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm active:scale-95 transition-all hover:shadow-md hover:border-primary/30 group">
+        <div class="p-3 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl mb-2.5 text-primary group-hover:scale-110 transition-transform shadow-sm">
+          <span class="material-symbols-outlined text-2xl">add_circle</span>
+        </div>
+        <span class="text-xs font-semibold text-center text-gray-700 dark:text-gray-200">Nueva Campaña</span>
+      </a>
+      <button class="flex flex-col items-center justify-center min-w-[100px] p-4 bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm active:scale-95 transition-all hover:shadow-md hover:border-primary/30 group" type="button" (click)="onQuickActionClick('automation')">
+        <div class="p-3 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl mb-2.5 text-primary group-hover:scale-110 transition-transform shadow-sm">
+          <span class="material-symbols-outlined text-2xl">settings_suggest</span>
+        </div>
+        <span class="text-xs font-semibold text-center text-gray-700 dark:text-gray-200">Automatización</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Charts Section -->
+  <section class="px-4 py-4 space-y-6">
+    <!-- Main Trend Chart -->
+    <div class="bg-background-light dark:bg-surface-dark p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+      <div class="flex justify-between items-end mb-6">
+        <div>
+          <h3 class="text-base font-semibold text-gray-900 dark:text-white">Tendencia de Carritos Abandonados</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Últimos 7 Días</p>
+        </div>
+        <div class="text-right">
+          <p class="text-xl font-bold text-gray-900 dark:text-white">{{ metrics()?.abandonedToday || 142 }}</p>
+          <p class="text-xs font-medium text-emerald-600 dark:text-emerald-400">+12% vs semana pasada</p>
+        </div>
+      </div>
+      <div class="h-[180px] w-full relative">
+        <svg fill="none" height="100%" preserveAspectRatio="none" viewBox="0 0 400 150" width="100%" xmlns="http://www.w3.org/2000/svg">
+          <!-- Grid Lines -->
+          <line class="dark:stroke-gray-700" stroke="#e5e7eb" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="400" y1="149" y2="149"></line>
+          <line class="dark:stroke-gray-700" stroke="#e5e7eb" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="400" y1="100" y2="100"></line>
+          <line class="dark:stroke-gray-700" stroke="#e5e7eb" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="400" y1="50" y2="50"></line>
+          <!-- Area Gradient -->
+          <path d="M0 110 C50 110, 50 60, 100 60 C150 60, 150 90, 200 80 C250 70, 250 40, 300 40 C350 40, 350 100, 400 30 V150 H0 Z" fill="url(#blueGradient)" opacity="0.15"></path>
+          <!-- Line -->
+          <path d="M0 110 C50 110, 50 60, 100 60 C150 60, 150 90, 200 80 C250 70, 250 40, 300 40 C350 40, 350 100, 400 30" fill="none" stroke="#135bec" stroke-linecap="round" stroke-width="3"></path>
+          <!-- Data Point -->
+          <circle cx="400" cy="30" fill="#135bec" r="4" stroke="white" stroke-width="2"></circle>
+          <defs>
+            <linearGradient id="blueGradient" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="#135bec"></stop>
+              <stop offset="100%" stop-color="#135bec" stop-opacity="0"></stop>
+            </linearGradient>
+          </defs>
+        </svg>
+        <!-- X Axis Labels -->
+        <div class="flex justify-between mt-2 text-[10px] text-gray-400 font-medium px-1">
+          <span>Lun</span>
+          <span>Mar</span>
+          <span>Mié</span>
+          <span>Jue</span>
+          <span>Vie</span>
+          <span>Sáb</span>
+          <span>Dom</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary Charts Grid -->
+    <div class="grid grid-cols-1 gap-4">
+      <!-- Recovery Rate Bar Chart -->
+      <div class="bg-background-light dark:bg-surface-dark p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+        <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Tasa de Recuperación por Campaña</h3>
+        <div class="space-y-4">
+          <div class="relative">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="font-medium text-gray-700 dark:text-gray-300">Flash Sale 24h</span>
+              <span class="font-bold text-gray-900 dark:text-white">32%</span>
+            </div>
+            <div class="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div class="h-full bg-primary rounded-full" style="width: 32%"></div>
+            </div>
+          </div>
+          <div class="relative">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="font-medium text-gray-700 dark:text-gray-300">Welcome Series</span>
+              <span class="font-bold text-gray-900 dark:text-white">24%</span>
+            </div>
+            <div class="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div class="h-full bg-primary/70 rounded-full" style="width: 24%"></div>
+            </div>
+          </div>
+          <div class="relative">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="font-medium text-gray-700 dark:text-gray-300">VIP Recovery</span>
+              <span class="font-bold text-gray-900 dark:text-white">18%</span>
+            </div>
+            <div class="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div class="h-full bg-primary/40 rounded-full" style="width: 18%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recovered vs Lost Donut -->
+      <div class="bg-background-light dark:bg-surface-dark p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2">Estado del Valor</h3>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <div class="size-2 rounded-full bg-primary"></div>
+              <span class="text-xs text-gray-500 dark:text-gray-400">Recuperado ($2.3k)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="size-2 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+              <span class="text-xs text-gray-500 dark:text-gray-400">Perdido ($10.1k)</span>
+            </div>
+          </div>
+        </div>
+        <div class="relative size-24 flex items-center justify-center">
+          <svg class="size-full -rotate-90" viewBox="0 0 36 36">
+            <!-- Background Circle -->
+            <path class="text-gray-100 dark:text-gray-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4"></path>
+            <!-- Foreground Circle (18.5% recovery approx) -->
+            <path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="18.5, 100" stroke-linecap="round" stroke-width="4"></path>
+          </svg>
+          <div class="absolute flex flex-col items-center">
+            <span class="text-xs font-bold text-gray-900 dark:text-white">{{ metrics()?.recoveryRate || 18.5 }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 w-full bg-background-light dark:bg-surface-dark border-t border-gray-100 dark:border-gray-800 pb-safe pt-2 px-6 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50">
+    <div class="flex justify-between items-center pb-2 max-w-xs mx-auto">
+      <a routerLink="/abandoned-cart" routerLinkActive="active" class="flex flex-col items-center gap-1 w-12 text-primary">
+        <span class="material-symbols-outlined filled">dashboard</span>
+        <span class="text-[10px] font-medium">Inicio</span>
+      </a>
+      <a routerLink="/abandoned-cart/list" routerLinkActive="active" class="flex flex-col items-center gap-1 w-12 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span class="text-[10px] font-medium">Carritos</span>
+      </a>
+      <a routerLink="/abandoned-cart/campaigns" routerLinkActive="active" class="flex flex-col items-center gap-1 w-12 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+        <span class="material-symbols-outlined">campaign</span>
+        <span class="text-[10px] font-medium">Campañas</span>
+      </a>
+      <a routerLink="/abandoned-cart/campaigns" routerLinkActive="active" class="flex flex-col items-center gap-1 w-12 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+        <span class="material-symbols-outlined">bar_chart</span>
+        <span class="text-[10px] font-medium">Resultados</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Safe area spacing for bottom nav -->
+  <div class="h-20"></div>
+</div>

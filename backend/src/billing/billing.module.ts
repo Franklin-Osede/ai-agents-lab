@@ -4,7 +4,7 @@ import { StripeWebhookController } from './stripe-webhook.controller';
 
 /**
  * Billing Module
- * 
+ *
  * Handles subscriptions, payments, and Stripe integration
  */
 @Module({
@@ -13,6 +13,3 @@ import { StripeWebhookController } from './stripe-webhook.controller';
   exports: [BillingService],
 })
 export class BillingModule {}
-
-
-

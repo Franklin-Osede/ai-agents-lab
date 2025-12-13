@@ -1,6 +1,7 @@
 import { applyDecorators, Type } from '@nestjs/common';
 import { ApiResponse, ApiExtraModels, getSchemaPath } from '@nestjs/swagger';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const ApiResponseWrapper = <TModel extends Type<any>>(
   model: TModel,
   status: number = 200,

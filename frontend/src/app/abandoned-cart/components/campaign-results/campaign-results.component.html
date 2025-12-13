@@ -1,0 +1,285 @@
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden bg-background-light dark:bg-background-dark pb-24">
+  <!-- Toast -->
+  @if (toastMessage()) {
+    <div class="fixed top-4 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-gray-900 text-white px-4 py-2 shadow-lg text-sm">
+      {{ toastMessage() }}
+    </div>
+  }
+
+  <!-- TopAppBar -->
+  <header class="sticky top-0 z-50 flex items-center justify-between bg-white/90 dark:bg-background-dark/90 backdrop-blur-md px-4 py-3 border-b border-gray-200 dark:border-gray-800">
+    <div class="flex size-10 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-900 dark:text-white transition-colors" (click)="goBack()">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </div>
+    <h2 class="text-base font-bold leading-tight flex-1 text-center">Resultados de Campaña</h2>
+    <div class="flex size-10 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-900 dark:text-white transition-colors">
+      <span class="material-symbols-outlined">more_horiz</span>
+    </div>
+  </header>
+
+  @if (error()) {
+    <div class="mx-4 mt-4 rounded-xl border border-red-200 bg-red-50 text-red-800 px-4 py-3 text-sm flex items-start gap-2">
+      <span class="material-symbols-outlined text-[18px]">error</span>
+      <div class="flex-1">
+        <p class="font-semibold mb-1">Algo salió mal</p>
+        <p class="text-red-700 text-xs">{{ error() }}</p>
+      </div>
+      <button class="text-red-700 text-xs font-semibold" type="button" (click)="loadResults()">Reintentar</button>
+    </div>
+  }
+
+  <!-- Campaign Summary Header -->
+  <section class="px-4 pt-6 pb-2">
+    <div class="flex flex-col gap-2">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="inline-flex items-center rounded-full bg-green-100 dark:bg-green-900/30 px-2.5 py-0.5 text-xs font-medium text-green-700 dark:text-green-400 mb-2">
+            Completada
+          </span>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white leading-tight">{{ campaignName() }}</h1>
+        </div>
+        @if (lastUpdated()) {
+          <div class="text-[11px] text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-full px-3 py-1">
+            Act. {{ lastUpdated() | date:'shortTime' }}
+          </div>
+        }
+      </div>
+      <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <div class="flex items-center gap-1">
+          <span class="material-symbols-outlined text-[18px]">calendar_today</span>
+          <span>Enviado: 12 Oct, 10:30 AM</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main KPI Stats -->
+  <section class="p-4 grid gap-4">
+    <!-- Hero Stat: Recovered Value -->
+    <div class="col-span-1 rounded-xl bg-white dark:bg-gray-800 p-5 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between relative overflow-hidden group">
+      <div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-primary/5 to-transparent"></div>
+      <div class="relative z-10">
+        <p class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Valor Total Recuperado</p>
+        <div class="flex items-baseline gap-2">
+          <h3 class="text-3xl font-bold text-primary tracking-tight">
+            @if (loading()) {
+              <span class="inline-flex h-7 w-24 animate-pulse rounded bg-gray-100 dark:bg-gray-700"></span>
+            } @else if (results()) {
+              ${{ results()?.totalValue | number:'1.0-0' }}
+            }
+          </h3>
+          <span class="flex items-center text-xs font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded">
+            +12% <span class="material-symbols-outlined text-[12px] ml-0.5">trending_up</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary Stats Grid -->
+    <div class="grid grid-cols-2 gap-4">
+      <!-- ROI -->
+      <div class="rounded-xl bg-white dark:bg-gray-800 p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+        <div class="flex items-center gap-2 mb-2 text-gray-500 dark:text-gray-400">
+          <span class="material-symbols-outlined text-primary text-[20px]">monetization_on</span>
+          <span class="text-xs font-medium uppercase tracking-wider">ROI</span>
+        </div>
+        <p class="text-2xl font-bold text-gray-900 dark:text-white">
+          @if (loading()) { <span class="inline-flex h-6 w-14 animate-pulse rounded bg-gray-100 dark:bg-gray-700"></span> }
+          @else if (results()) { {{ results()?.roi }}% }
+        </p>
+        <p class="text-xs text-green-600 font-medium mt-1">+5% vs mes anterior</p>
+      </div>
+
+      <!-- Recovery Rate -->
+      <div class="rounded-xl bg-white dark:bg-gray-800 p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+        <div class="flex items-center gap-2 mb-2 text-gray-500 dark:text-gray-400">
+          <span class="material-symbols-outlined text-primary text-[20px]">percent</span>
+          <span class="text-xs font-medium uppercase tracking-wider">Tasa Recup.</span>
+        </div>
+        <p class="text-2xl font-bold text-gray-900 dark:text-white">
+          @if (loading()) { <span class="inline-flex h-6 w-12 animate-pulse rounded bg-gray-100 dark:bg-gray-700"></span> }
+          @else if (results()) { {{ results()?.recoveryRate }}% }
+        </p>
+        <p class="text-xs text-green-600 font-medium mt-1">+2.4% vs promedio</p>
+      </div>
+    </div>
+
+    <!-- Funnel Metrics -->
+    <div class="grid grid-cols-3 gap-3">
+      <div class="flex flex-col items-center justify-center bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Enviados</p>
+        <p class="text-lg font-bold text-gray-900 dark:text-white">
+          @if (loading()) { <span class="inline-flex h-5 w-10 animate-pulse rounded bg-gray-100 dark:bg-gray-700"></span> }
+          @else if (results()) { {{ results()?.totalSent }} }
+        </p>
+      </div>
+      <div class="flex flex-col items-center justify-center bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Abiertos</p>
+        <p class="text-lg font-bold text-gray-900 dark:text-white">
+          @if (loading()) { <span class="inline-flex h-5 w-10 animate-pulse rounded bg-gray-100 dark:bg-gray-700"></span> }
+          @else if (results()) { {{ results()?.totalOpened }} }
+        </p>
+      </div>
+      <div class="flex flex-col items-center justify-center bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm relative overflow-hidden">
+        <div class="absolute inset-0 bg-primary/5"></div>
+        <p class="text-xs text-primary font-medium mb-1">Recuperados</p>
+        <p class="text-lg font-bold text-primary">
+          @if (loading()) { <span class="inline-flex h-5 w-10 animate-pulse rounded bg-primary/20"></span> }
+          @else if (results()) { {{ results()?.totalRecovered }} }
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Charts Section -->
+  <section class="px-4 pb-4">
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white">Evolución de Recuperación</h3>
+        <select class="bg-gray-50 dark:bg-gray-700 border-none text-xs rounded-md py-1 px-2 text-gray-600 dark:text-gray-300 focus:ring-0 cursor-pointer">
+          <option>Últimos 7 días</option>
+          <option>Últimas 24 horas</option>
+        </select>
+      </div>
+
+      <!-- CSS Chart Placeholder -->
+      <div class="flex items-end justify-between h-32 gap-2 w-full px-2">
+        <!-- Bar 1 -->
+        <div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+          <div class="w-full bg-primary/20 group-hover:bg-primary/40 rounded-t-sm h-[40%] relative transition-all">
+            <div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] px-2 py-1 rounded shadow transition-opacity">$4k</div>
+          </div>
+          <span class="text-[10px] text-gray-400">Lun</span>
+        </div>
+
+        <!-- Bar 2 -->
+        <div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+          <div class="w-full bg-primary/20 group-hover:bg-primary/40 rounded-t-sm h-[65%] relative transition-all"></div>
+          <span class="text-[10px] text-gray-400">Mar</span>
+        </div>
+
+        <!-- Bar 3 -->
+        <div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+          <div class="w-full bg-primary/20 group-hover:bg-primary/40 rounded-t-sm h-[30%] relative transition-all"></div>
+          <span class="text-[10px] text-gray-400">Mié</span>
+        </div>
+
+        <!-- Bar 4 -->
+        <div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+          <div class="w-full bg-primary rounded-t-sm h-[85%] relative shadow-lg shadow-primary/20 transition-all">
+            <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] px-2 py-1 rounded shadow">$12k</div>
+          </div>
+          <span class="text-[10px] text-gray-900 dark:text-white font-bold">Jue</span>
+        </div>
+
+        <!-- Bar 5 -->
+        <div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+          <div class="w-full bg-primary/20 group-hover:bg-primary/40 rounded-t-sm h-[50%] relative transition-all"></div>
+          <span class="text-[10px] text-gray-400">Vie</span>
+        </div>
+
+        <!-- Bar 6 -->
+        <div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+          <div class="w-full bg-primary/20 group-hover:bg-primary/40 rounded-t-sm h-[20%] relative transition-all"></div>
+          <span class="text-[10px] text-gray-400">Sáb</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Detailed List Section -->
+  <section class="flex flex-col flex-1 bg-white dark:bg-gray-800 rounded-t-3xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] mt-2">
+    <!-- Filters & Search -->
+    <div class="p-5 border-b border-gray-100 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10 rounded-t-3xl">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Detalle por Cliente</h3>
+        <button class="text-primary text-sm font-medium" type="button">Exportar</button>
+      </div>
+      <div class="flex gap-3">
+        <div class="relative flex-1">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-[20px]">search</span>
+          <input class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/20 text-gray-900 dark:text-white placeholder-gray-400" placeholder="Buscar cliente..." type="text" aria-label="Buscar cliente"/>
+        </div>
+        <button class="flex items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600" type="button">
+          <span class="material-symbols-outlined text-[20px]">filter_list</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- List Items -->
+    <div class="flex flex-col">
+      @if (loading()) {
+        <div class="flex flex-col gap-2 p-4">
+          <div class="h-16 rounded-xl bg-gray-100 dark:bg-gray-700 animate-pulse"></div>
+          <div class="h-16 rounded-xl bg-gray-100 dark:bg-gray-700 animate-pulse"></div>
+          <div class="h-16 rounded-xl bg-gray-100 dark:bg-gray-700 animate-pulse"></div>
+        </div>
+      } @else if ((results()?.details?.length ?? 0) === 0) {
+        <div class="flex flex-col items-center justify-center py-16 text-center gap-3">
+          <div class="size-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500">
+            <span class="material-symbols-outlined">inbox</span>
+          </div>
+          <p class="text-sm font-semibold text-gray-900 dark:text-white">Sin resultados todavía</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 max-w-[220px]">Cuando enviemos la campaña, verás los clientes y su estado aquí.</p>
+          <button class="mt-2 px-3 py-2 bg-primary text-white text-xs font-semibold rounded-lg" type="button">Crear otra campaña</button>
+        </div>
+      } @else {
+        @for (detail of results()?.details ?? []; track detail.customerId) {
+          <div class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer group">
+            <div class="flex items-center gap-4">
+              <div class="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm uppercase">
+                {{ getInitials(detail.customerName) }}
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ detail.customerName }}</p>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  <span class="material-symbols-outlined text-[14px]" [ngClass]="{
+                    'text-green-500': detail.status === 'RECOVERED',
+                    'text-blue-500': detail.status === 'PENDING' || detail.status === 'SENT',
+                    'text-gray-400': detail.status === 'IGNORED'
+                  }">
+                    {{ detail.status === 'RECOVERED' ? 'check_circle' : (detail.status === 'PENDING' ? 'pending_actions' : (detail.status === 'SENT' ? 'schedule' : 'remove_circle')) }}
+                  </span>
+                  <p class="text-xs text-gray-500">
+                    {{ detail.status === 'RECOVERED' ? 'Recuperado' : detail.status === 'PENDING' ? 'Pendiente' : detail.status === 'SENT' ? 'Enviado' : 'Sin abrir' }}
+                    • {{ detail.timestamp | date:'shortTime' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="text-right">
+                <p class="text-sm font-bold text-gray-900 dark:text-white">${{ detail.value | number:'1.2-2' }}</p>
+                <p class="text-xs" [ngClass]="{
+                  'text-green-600 font-medium': detail.status === 'RECOVERED',
+                  'text-gray-400': detail.status !== 'RECOVERED'
+                }">
+                  {{ detail.status === 'RECOVERED' ? 'Completado' : 'Seguimiento' }}
+                </p>
+              </div>
+              <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button class="rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" type="button">
+                  Ver
+                </button>
+                <button class="rounded-full bg-primary text-white px-3 py-1 text-xs hover:bg-blue-700 active:scale-95 transition" type="button" (click)="resendSingle(detail)">
+                  Reenviar
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+    <!-- Spacer for sticky footer -->
+    <div class="h-24"></div>
+  </section>
+
+  <!-- Sticky Footer Action -->
+  <div class="fixed bottom-0 left-0 w-full p-4 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 z-40">
+    <button class="w-full bg-primary hover:bg-blue-700 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 transition-all active:scale-[0.98]" type="button" (click)="resendToNonResponded()">
+      <span class="material-symbols-outlined">send</span>
+      Reenviar a no respondidos ({{ pendingCount() }})
+    </button>
+  </div>
+</div>

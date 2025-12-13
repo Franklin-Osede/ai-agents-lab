@@ -4,6 +4,7 @@ import { DomainWhitelistService } from './domain-whitelist.service';
 import { Tenant } from './tenant.entity';
 
 // Extend Express Request type
+/* eslint-disable @typescript-eslint/no-namespace */
 declare global {
   namespace Express {
     interface Request {
@@ -21,7 +22,7 @@ declare global {
 
 /**
  * Tenant Isolation Middleware
- * 
+ *
  * Ensures tenant is injected in request and validates domain whitelist
  * This should run AFTER ApiKeyGuard
  */
@@ -33,13 +34,13 @@ export class TenantIsolationMiddleware implements NestMiddleware {
 
   use(req: Request, res: Response, next: NextFunction) {
     const tenant = req['tenant'];
-    
+
     if (!tenant) {
       // If no tenant, might be a public endpoint (like demo)
       // Let it pass, guards will handle authorization
       return next();
     }
-    
+
     // Validate domain whitelist (for widget requests)
     const origin = req.headers['origin'];
     try {
@@ -50,22 +51,19 @@ export class TenantIsolationMiddleware implements NestMiddleware {
         throw error;
       }
     }
-    
+
     // Ensure tenantId is always available in request
     if (!req['tenantId']) {
       req['tenantId'] = tenant.id;
     }
-    
+
     // Add tenant context to request for logging
     req['tenantContext'] = {
       tenantId: tenant.id,
       tenantName: tenant.name,
       plan: tenant.plan,
     };
-    
+
     next();
   }
 }
-
-
-

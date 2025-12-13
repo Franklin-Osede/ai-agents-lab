@@ -1,0 +1,188 @@
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-y-auto pb-32 overflow-x-hidden">
+  <!-- Header -->
+  <header class="sticky top-0 z-20 flex items-center bg-background-light/95 backdrop-blur-sm p-4 pb-2 justify-between border-b border-slate-200/60 dark:bg-background-dark/95 dark:border-slate-800">
+    <button class="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-200/50 transition-colors" type="button" (click)="goBack()">
+      <span class="material-symbols-outlined" style="font-size: 24px;">arrow_back_ios_new</span>
+    </button>
+    <h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center">Detalle del Carrito</h2>
+    <div class="flex w-10 items-center justify-end">
+      <button class="flex size-10 items-center justify-center rounded-full text-slate-900 dark:text-white hover:bg-slate-200/50 transition-colors" type="button">
+        <span class="material-symbols-outlined" style="font-size: 24px;">more_horiz</span>
+      </button>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="flex items-center justify-center py-12">
+      <p class="text-gray-500">Cargando...</p>
+    </div>
+  } @else if (error()) {
+    <div class="flex items-center justify-center py-12">
+      <p class="text-red-500">{{ error() }}</p>
+    </div>
+  } @else if (cart()) {
+    <main class="flex-1 p-4 flex flex-col gap-5">
+      <!-- Summary Card -->
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 relative overflow-hidden group">
+        <!-- Decorative background elements -->
+        <div class="absolute -right-6 -top-6 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all duration-500"></div>
+        <div class="flex justify-between items-start mb-2 relative z-10">
+          <div class="flex flex-col gap-1">
+            <span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Orden #{{ cart()!.id.slice(-4) }}</span>
+          </div>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-orange-600 border border-orange-100 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800">
+            <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+            Abandonado
+          </span>
+        </div>
+        <div class="flex flex-col gap-1 relative z-10">
+          <h1 class="text-4xl font-bold tracking-tight text-slate-900 dark:text-white">${{ cart()!.totalValue | number:'1.2-2' }}</h1>
+          <p class="text-slate-500 dark:text-slate-400 text-sm">Valor Total</p>
+        </div>
+      </div>
+
+      <!-- AI Insight (Collapsible style) -->
+      <div class="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-slate-800 dark:to-slate-800 border border-indigo-100 dark:border-slate-700 rounded-xl p-4 flex gap-3 items-start">
+        <div class="bg-white dark:bg-slate-700 p-1.5 rounded-lg shadow-sm shrink-0 text-primary">
+          <span class="material-symbols-outlined filled" style="font-size: 20px;">auto_awesome</span>
+        </div>
+        <div class="flex-1">
+          <div class="flex justify-between items-center mb-1">
+            <p class="text-xs font-bold text-indigo-900 dark:text-indigo-200 uppercase tracking-wide">Probabilidad de Recuperación</p>
+            <span class="text-sm font-bold text-green-600 dark:text-green-400">{{ cart()!.recoveryProbability || 0 }}%</span>
+          </div>
+          <p class="text-sm text-slate-700 dark:text-slate-300 leading-snug">
+            El cliente visitó el checkout 2 veces. Sugerimos ofrecer <strong>Envío Gratis</strong> para cerrar la venta.
+          </p>
+        </div>
+      </div>
+
+      <!-- Customer Section -->
+      <div class="flex flex-col gap-4">
+        <h3 class="text-slate-900 dark:text-white text-base font-bold px-1">Cliente</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+          <div class="p-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-700">
+            <div class="flex items-center gap-3">
+              <div class="bg-cover bg-center rounded-full h-12 w-12 border-2 border-white shadow-sm" [style.background-image]="'url(' + (cart()!.customer?.imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAJl13bEQy9PeFyCOCK_gRlIz90JZiyqfrwx4OlICYLN7JKLnYc0699BBNnHF-lPkk8QaBTaRIQPMHUsEz4cIlCeZGhM2EXeC_2uzjfj6i-dNWq6iYMD8z2Vhs8mLt3NjkvBwlwFSmN5Z8WI4LL86wW9EZmCDCJY_WgooQzoHWIa4Bgt1Dwyc_tG33apVLhp81Xg7coRJPNSmYOgP-he5xCaq3c_Mnf_ZzzVLYFFIprg_pNZDgVbFuok-IdTR-He6A1kATgTj9h_AU') + ')'"></div>
+              <div>
+                <p class="text-slate-900 dark:text-white text-base font-semibold leading-tight">{{ cart()!.customer?.name || 'Cliente' }}</p>
+                <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{{ cart()!.customer?.company || 'Sin empresa' }}</p>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button class="size-9 flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-700 text-primary hover:bg-primary/10 transition-colors" type="button">
+                <span class="material-symbols-outlined" style="font-size: 20px;">call</span>
+              </button>
+              <button class="size-9 flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-700 text-primary hover:bg-primary/10 transition-colors" type="button">
+                <span class="material-symbols-outlined" style="font-size: 20px;">mail</span>
+              </button>
+            </div>
+          </div>
+          <!-- Mini Stats -->
+          <div class="grid grid-cols-2 divide-x divide-slate-100 dark:divide-slate-700">
+            <div class="p-3 flex flex-col items-center justify-center text-center hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+              <span class="text-slate-900 dark:text-white text-lg font-bold">{{ cart()!.customer?.totalOrders || 12 }}</span>
+              <span class="text-slate-500 dark:text-slate-400 text-xs">Órdenes Previas</span>
+            </div>
+            <div class="p-3 flex flex-col items-center justify-center text-center hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+              <span class="text-slate-900 dark:text-white text-lg font-bold">${{ ((cart()!.customer?.totalSpent || 14000) / 1000) | number:'1.1-1' }}k</span>
+              <span class="text-slate-500 dark:text-slate-400 text-xs">Valor Histórico</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart Contents -->
+      <div class="flex flex-col gap-3">
+        <div class="flex items-center justify-between px-1">
+          <h3 class="text-slate-900 dark:text-white text-base font-bold">Productos ({{ cart()!.items.length }})</h3>
+        </div>
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm divide-y divide-slate-100 dark:divide-slate-700">
+          <!-- Item 1 -->
+          @if (cart()!.items.length > 0) {
+            <div class="p-4 flex gap-4 items-start">
+              <div class="h-16 w-16 shrink-0 rounded-lg bg-slate-100 dark:bg-slate-700 bg-cover bg-center border border-slate-100 dark:border-slate-600" [style.background-image]="'url(' + (cart()!.items[0].imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuDz7g5y5Wail2pGEapSoXhlgRNGTGXBL7K6HaE9QSOfdezWVa46IA0GOhDRtafqWE6hhRhuLE63sfB1yx-F1d9cnvlm4VT4SaCq9snvd1but-XQUYk2iVVbLWGsabSXCL58f0P6n7qvsyHDCNhXRfh5lCnszoBElbw7wZl6hHi3cxMRcJN7mBgwto5TMh2PRO0hlpJ5TZd5RXlZOisieE_EhqQuEKLGNQxTiuRbhh4kOpZ32VCdS6roFPC65RIo5g-Uc0yudDxeNCA') + ')'"></div>
+              <div class="flex-1 min-w-0">
+                <div class="flex justify-between items-start mb-1">
+                  <p class="text-slate-900 dark:text-white font-medium text-sm line-clamp-2 pr-2">{{ cart()!.items[0].name }}</p>
+                  <p class="text-slate-900 dark:text-white font-bold text-sm shrink-0">${{ cart()!.items[0].totalPrice | number:'1.2-2' }}</p>
+                </div>
+                <div class="flex justify-between items-end">
+                  <p class="text-slate-500 dark:text-slate-400 text-xs">SKU: {{ cart()!.items[0].sku || 'N/A' }}</p>
+                  <div class="text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded">{{ cart()!.items[0].quantity }} x ${{ cart()!.items[0].unitPrice | number:'1.2-2' }}</div>
+                </div>
+              </div>
+            </div>
+          }
+          <!-- Item 2 -->
+          @if (cart()!.items.length > 1) {
+            <div class="p-4 flex gap-4 items-start">
+              <div class="h-16 w-16 shrink-0 rounded-lg bg-slate-100 dark:bg-slate-700 bg-cover bg-center border border-slate-100 dark:border-slate-600" [style.background-image]="'url(' + (cart()!.items[1].imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCOcqrTsns8RBwGQKsNDuxuvGe7M2p1mtnjFbzNFWqAGmiaytSCEInpznTkL4M38UY29G3UkCdK7UQ01thpTo_yejX-f_8okoA5sCvf7ybgQg5JPFTD6oOd87VU_OZ2zUrfvjVDfD2TW7zCmyUt4NSdexSvpN0ftuz67phjDsD9o5f6JWkmE7fdCxswAWJqqYAEx8JIPoyRUyQOun5eQKbBEfsr7rfoPhRCeNQiucjhn7IBiFZDX81jMroOUs-AvuH-VMsBruIBRpo') + ')'"></div>
+              <div class="flex-1 min-w-0">
+                <div class="flex justify-between items-start mb-1">
+                  <p class="text-slate-900 dark:text-white font-medium text-sm line-clamp-2 pr-2">{{ cart()!.items[1].name }}</p>
+                  <p class="text-slate-900 dark:text-white font-bold text-sm shrink-0">${{ cart()!.items[1].totalPrice | number:'1.2-2' }}</p>
+                </div>
+                <div class="flex justify-between items-end">
+                  <p class="text-slate-500 dark:text-slate-400 text-xs">SKU: {{ cart()!.items[1].sku || 'N/A' }}</p>
+                  <div class="text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded">{{ cart()!.items[1].quantity }} x ${{ cart()!.items[1].unitPrice | number:'1.2-2' }}</div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Timeline Section -->
+      <div class="flex flex-col gap-4 pt-2">
+        <h3 class="text-slate-900 dark:text-white text-base font-bold px-1">Línea de Tiempo</h3>
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <div class="relative pl-2">
+            <!-- Vertical line -->
+            <div class="absolute left-[7px] top-2 bottom-4 w-0.5 bg-slate-200 dark:bg-slate-600"></div>
+            <!-- Step 1 -->
+            <div class="relative pl-8 pb-8 group">
+              <div class="absolute left-0 top-1.5 w-[15px] h-[15px] rounded-full border-2 border-primary bg-white dark:bg-slate-800 box-content z-10">
+                <div class="w-full h-full rounded-full bg-primary transform scale-50"></div>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-xs text-slate-400 font-medium mb-0.5">Hoy, {{ getTimeString(cart()!.lastModifiedAt) }}</span>
+                <span class="text-slate-900 dark:text-white text-sm font-semibold">Abandono en Checkout</span>
+                <span class="text-slate-500 dark:text-slate-400 text-xs mt-1">El usuario cerró la sesión en la pantalla de pago.</span>
+              </div>
+            </div>
+            <!-- Step 2 -->
+            <div class="relative pl-8 pb-8">
+              <div class="absolute left-0 top-1.5 w-[15px] h-[15px] rounded-full border-2 border-slate-300 dark:border-slate-500 bg-white dark:bg-slate-800 box-content z-10"></div>
+              <div class="flex flex-col">
+                <span class="text-xs text-slate-400 font-medium mb-0.5">Hoy, {{ getTimeString(cart()!.createdAt) }}</span>
+                <span class="text-slate-900 dark:text-white text-sm font-medium">{{ cart()!.items.length }} productos añadidos</span>
+              </div>
+            </div>
+            <!-- Step 3 -->
+            <div class="relative pl-8">
+              <div class="absolute left-0 top-1.5 w-[15px] h-[15px] rounded-full border-2 border-slate-300 dark:border-slate-500 bg-white dark:bg-slate-800 box-content z-10"></div>
+              <div class="flex flex-col">
+                <span class="text-xs text-slate-400 font-medium mb-0.5">Hoy, {{ getTimeString(cart()!.createdAt) }}</span>
+                <span class="text-slate-900 dark:text-white text-sm font-medium">Carrito Creado</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Sticky Bottom Action Bar -->
+    <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-30 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 p-4 pb-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+      <div class="flex gap-3 w-full">
+        <button class="flex-1 h-12 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-200 font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors focus:ring-2 focus:ring-slate-200" type="button" (click)="markAsLost()">
+          Marcar Perdido
+        </button>
+        <button class="flex-[2] h-12 rounded-lg bg-primary text-white font-bold text-sm shadow-lg shadow-primary/25 hover:bg-blue-600 transition-all active:scale-[0.98] flex items-center justify-center gap-2" type="button" (click)="recoverCart()">
+          <span class="material-symbols-outlined" style="font-size: 20px;">send</span>
+          Recuperar Carrito
+        </button>
+      </div>
+    </div>
+  }
+</div>

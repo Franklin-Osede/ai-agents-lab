@@ -2,7 +2,7 @@ import { BaseEntity } from '../domain/shared/entities/base.entity';
 
 /**
  * API Key Entity
- * 
+ *
  * Represents an API key for a tenant with security features:
  * - Hash stored (never plain text)
  * - Scopes for granular permissions
@@ -18,12 +18,12 @@ export class ApiKey extends BaseEntity {
   expiresAt: Date | null;
   lastUsedAt: Date | null;
   isActive: boolean;
-  
+
   constructor(partial: Partial<ApiKey>) {
     super();
     Object.assign(this, partial);
   }
-  
+
   /**
    * Check if API key is expired
    */
@@ -31,7 +31,7 @@ export class ApiKey extends BaseEntity {
     if (!this.expiresAt) return false;
     return this.expiresAt < new Date();
   }
-  
+
   /**
    * Check if API key has access to a specific scope
    */
@@ -39,6 +39,3 @@ export class ApiKey extends BaseEntity {
     return this.scopes.includes(scope) || this.scopes.includes('*');
   }
 }
-
-
-

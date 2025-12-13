@@ -1,0 +1,7 @@
+<div class="mobile-overlay" (click)="close()">
+  <div class="mobile-container" (click)="$event.stopPropagation()">
+    <div class="mobile-scroll-area">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

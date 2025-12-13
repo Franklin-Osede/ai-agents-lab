@@ -12,14 +12,14 @@ export enum IntentType {
 export class AgentIntent extends BaseEntity {
   type: IntentType;
   confidence: number;
-  entities: Record<string, any>;
+  entities: Record<string, unknown>;
   originalMessage: string;
 
   constructor(
     type: IntentType,
     confidence: number,
     originalMessage: string,
-    entities: Record<string, any> = {},
+    entities: Record<string, unknown> = {},
   ) {
     super();
     this.type = type;

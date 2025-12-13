@@ -1,0 +1,142 @@
+// Dashboard uses Tailwind classes, minimal custom styles needed
+// Dark mode is handled via Tailwind dark: classes
+
+// Smooth scrolling for mobile
+.mobile-content {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  
+  // Better scrollbar on desktop
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
+  
+  // Hide scrollbar on mobile
+  @media (max-width: 768px) {
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// Active state for bottom nav
+a.active {
+  color: #135bec;
+  
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1;
+  }
+}
+
+// Material Icons filled variant
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1;
+}
+
+// Safe area for bottom nav (iOS)
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+// Size utilities (Tailwind-like)
+.size-2 {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+.size-9 {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.size-10 {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.size-24 {
+  width: 6rem;
+  height: 6rem;
+}
+
+// Primary color
+.text-primary {
+  color: #135bec;
+}
+
+.bg-primary {
+  background-color: #135bec;
+}
+
+.bg-primary\/10 {
+  background-color: rgba(19, 91, 236, 0.1);
+}
+
+.text-primary\/70 {
+  color: rgba(19, 91, 236, 0.7);
+}
+
+.bg-primary\/70 {
+  background-color: rgba(19, 91, 236, 0.7);
+}
+
+.bg-primary\/40 {
+  background-color: rgba(19, 91, 236, 0.4);
+}
+
+// Bottom navigation - fixed within mobile container
+nav.fixed.bottom-0 {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  max-width: 428px;
+  margin: 0 auto;
+  
+  @media (max-width: 428px) {
+    max-width: 100%;
+  }
+}
+
+// Icon button style
+.icon-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #374151;
+  border-radius: 8px;
+  transition: background 0.2s;
+  
+  &:hover {
+    background: #f3f4f6;
+  }
+}

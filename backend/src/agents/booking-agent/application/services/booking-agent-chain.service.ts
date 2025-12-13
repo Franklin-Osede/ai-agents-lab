@@ -42,63 +42,63 @@ export class BookingAgentChainService {
         services: 'servicios',
       };
     }
-    
+
     const businessTypeLower = businessType.toLowerCase();
-    
+
     // Define base contexts first
     const baseContexts: Record<string, { name: string; tone: string; services: string }> = {
-      'salud': {
+      salud: {
         name: 'nuestra clínica médica',
         tone: 'profesional, empático y tranquilizador',
         services: 'consultas médicas, exámenes, seguimientos',
       },
-      'belleza': {
+      belleza: {
         name: 'nuestro salón de belleza',
         tone: 'amigable, acogedor y entusiasta',
         services: 'cortes de pelo, coloración, manicura, tratamientos estéticos',
       },
-      'dentista': {
+      dentista: {
         name: 'nuestra clínica dental',
         tone: 'profesional, tranquilizador y comprensivo',
         services: 'limpiezas dentales, consultas, tratamientos',
       },
-      'restaurante': {
+      restaurante: {
         name: 'nuestro restaurante',
         tone: 'cordial, profesional y acogedor',
         services: 'reservas de mesa, eventos, cenas especiales',
       },
-      'fitness': {
+      fitness: {
         name: 'nuestro gimnasio',
         tone: 'motivador, energético y positivo',
         services: 'clases grupales, entrenadores personales, uso de equipos',
       },
-      'profesional': {
+      profesional: {
         name: 'nuestro despacho',
         tone: 'profesional, formal y confiable',
         services: 'consultas, asesorías, servicios profesionales',
       },
-      'servicio': {
+      servicio: {
         name: 'nuestro servicio',
         tone: 'práctico, eficiente y profesional',
         services: 'reparaciones, instalaciones, servicios técnicos',
       },
-      'educacion': {
+      educacion: {
         name: 'nuestra academia',
         tone: 'educativo, paciente y motivador',
         services: 'clases, tutorías, cursos',
       },
     };
-    
+
     // Add fallbacks for variations
     const contexts: Record<string, { name: string; tone: string; services: string }> = {
       ...baseContexts,
       'clínica médica': baseContexts['salud'],
       'salón de belleza': baseContexts['belleza'],
       'clínica dental': baseContexts['dentista'],
-      'gimnasio': baseContexts['fitness'],
-      'despacho': baseContexts['profesional'],
-      'taller': baseContexts['servicio'],
-      'academia': baseContexts['educacion'],
+      gimnasio: baseContexts['fitness'],
+      despacho: baseContexts['profesional'],
+      taller: baseContexts['servicio'],
+      academia: baseContexts['educacion'],
     };
 
     // Try to find exact match first
@@ -129,7 +129,7 @@ export class BookingAgentChainService {
     // Create unique key for agent with context
     const contextKey = context?.businessType || 'default';
     const agentKey = `agent_${contextKey}`;
-    
+
     if (this.agentExecutor && this.agentExecutor._contextKey === agentKey) {
       return;
     }
@@ -141,16 +141,29 @@ export class BookingAgentChainService {
       // Get business context for personalized prompt
       const businessType = context?.businessType || 'business';
       const businessContext = this.getBusinessContext(businessType);
-      
+
       // Get current date information
       const now = new Date();
       const daysOfWeek = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-      const months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+      const months = [
+        'enero',
+        'febrero',
+        'marzo',
+        'abril',
+        'mayo',
+        'junio',
+        'julio',
+        'agosto',
+        'septiembre',
+        'octubre',
+        'noviembre',
+        'diciembre',
+      ];
       const today = daysOfWeek[now.getDay()];
       const tomorrow = daysOfWeek[(now.getDay() + 1) % 7];
       const dayAfterTomorrow = daysOfWeek[(now.getDay() + 2) % 7];
       const currentDate = `${now.getDate()} de ${months[now.getMonth()]}`;
-      
+
       // Calculate next few days for suggestions
       const nextDays: string[] = [];
       for (let i = 1; i <= 7; i++) {
@@ -263,7 +276,7 @@ Recuerda: Eres INTELIGENTE, CONVERSACIONAL y tu objetivo es crear una experienci
         tools,
         prompt: systemPrompt,
       });
-      
+
       // Store context key for caching
       agent._contextKey = agentKey;
       this.agentExecutor = agent;
@@ -321,32 +334,34 @@ Recuerda: Eres INTELIGENTE, CONVERSACIONAL y tu objetivo es crear una experienci
 
       // Extract all messages from result to find tool calls
       const resultMessages = result.messages || [];
-      
+
       // Find tool calls for availability checking
-      const toolCalls: any[] = [];
-      resultMessages.forEach((msg: any) => {
-        if (msg._getType && msg._getType() === 'tool') {
-          toolCalls.push({
-            name: msg.name,
-            args: msg.args || {},
-            content: msg.content,
-          });
-        }
-      });
-      
+      const toolCalls: Array<{ name: string; args: Record<string, unknown> }> = [];
+      resultMessages.forEach(
+        (msg: { _getType?: () => string; name?: string; args?: Record<string, unknown> }) => {
+          if (msg._getType && msg._getType() === 'tool') {
+            toolCalls.push({
+              name: msg.name,
+              args: msg.args || {},
+              content: msg.content,
+            });
+          }
+        },
+      );
+
       // Extract the last AI message from the result
       const lastAIMessage = resultMessages
         .slice()
         .reverse()
         .find((msg: { _getType: () => string }) => msg._getType() === 'ai');
-      
-      let responseText =
+
+      const responseText =
         lastAIMessage?.content || result.output || 'Lo siento, no pude procesar tu solicitud.';
 
       // Check if booking was confirmed (look for confirm_booking tool call in messages)
       let bookingStatus: 'pending' | 'confirmed' | 'cancelled' = 'pending';
       let bookingId: string | undefined;
-      let bookingDetails: {
+      const bookingDetails: {
         date?: string;
         time?: string;
         service?: string;
@@ -355,7 +370,7 @@ Recuerda: Eres INTELIGENTE, CONVERSACIONAL y tu objetivo es crear una experienci
 
       // Check tool calls in result messages for booking confirmation
       const toolMessages = resultMessages.filter(
-        (msg: { _getType: () => string; name?: string; content?: string }) => 
+        (msg: { _getType: () => string; name?: string; content?: string }) =>
           msg._getType() === 'tool' && msg.name === 'confirm_booking',
       );
 
@@ -384,20 +399,24 @@ Recuerda: Eres INTELIGENTE, CONVERSACIONAL y tu objetivo es crear una experienci
       this.logger.log(`Agent processed request successfully for conversation: ${conversationKey}`);
 
       // Return enhanced response with tool calls for frontend
-      const response: any = {
+      const response: {
+        response: string;
+        toolCalls?: Array<{ name: string; args: Record<string, unknown> }>;
+      } = {
         response: responseText,
         toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
       };
-      
+
       // Add booking status if confirmed
       if (bookingStatus === 'confirmed') {
         response.bookingStatus = bookingStatus;
         response.bookingId = bookingId;
-        response.bookingDetails = Object.keys(bookingDetails).length > 0 ? bookingDetails : undefined;
+        response.bookingDetails =
+          Object.keys(bookingDetails).length > 0 ? bookingDetails : undefined;
         response.nextAction = 'send_confirmation';
         return JSON.stringify(response);
       }
-      
+
       // Return JSON string for consistency (frontend can parse it)
       return JSON.stringify(response);
     } catch (error) {

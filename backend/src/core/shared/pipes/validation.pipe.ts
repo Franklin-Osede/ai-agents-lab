@@ -3,8 +3,8 @@ import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
-export class ValidationPipe implements PipeTransform<any> {
-  async transform(value: any, { metatype }: ArgumentMetadata) {
+export class ValidationPipe implements PipeTransform {
+  async transform(value: unknown, { metatype }: ArgumentMetadata) {
     if (!metatype || !this.toValidate(metatype)) {
       return value;
     }
@@ -30,7 +30,9 @@ export class ValidationPipe implements PipeTransform<any> {
     return !types.includes(metatype);
   }
 
-  private formatErrors(errors: any[]): Record<string, string[]> {
+  private formatErrors(
+    errors: Array<{ property: string; constraints?: Record<string, string> }>,
+  ): Record<string, string[]> {
     const formatted: Record<string, string[]> = {};
 
     errors.forEach((error) => {

@@ -5,7 +5,7 @@ import { BookingAgentChainService } from '../agents/booking-agent/application/se
 
 /**
  * Demo Controller
- * 
+ *
  * Public endpoints for trying agents without API key
  * Limited to 10 requests per IP/session
  */
@@ -13,23 +13,21 @@ import { BookingAgentChainService } from '../agents/booking-agent/application/se
 @Controller('demo')
 export class DemoController {
   private readonly logger = new Logger(DemoController.name);
-  
+
   // Simple rate limiting by IP (in production, use Redis)
   private requestCounts: Map<string, { count: number; resetAt: number }> = new Map();
   private readonly MAX_REQUESTS = 10;
   private readonly RESET_INTERVAL = 60 * 60 * 1000; // 1 hour
-  
-  constructor(
-    private readonly bookingChainService: BookingAgentChainService,
-  ) {}
-  
+
+  constructor(private readonly bookingChainService: BookingAgentChainService) {}
+
   /**
    * Check rate limit for IP
    */
   private checkRateLimit(ip: string): boolean {
     const now = Date.now();
     const record = this.requestCounts.get(ip);
-    
+
     if (!record || now > record.resetAt) {
       // Reset or create new record
       this.requestCounts.set(ip, {
@@ -38,16 +36,16 @@ export class DemoController {
       });
       return true;
     }
-    
+
     if (record.count >= this.MAX_REQUESTS) {
       return false;
     }
-    
+
     record.count++;
     this.requestCounts.set(ip, record);
     return true;
   }
-  
+
   @Post('booking/chat')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Try Booking Agent (no API key required, 10 requests max)' })
@@ -56,35 +54,37 @@ export class DemoController {
     @Req() req: Request,
   ) {
     const ip = req.ip || req.socket.remoteAddress || 'unknown';
-    
+
     // Check rate limit
     if (!this.checkRateLimit(ip)) {
       return {
-        response: 'Has alcanzado el límite de 10 interacciones. Regístrate para obtener acceso ilimitado.',
+        response:
+          'Has alcanzado el límite de 10 interacciones. Regístrate para obtener acceso ilimitado.',
         limitReached: true,
         upgradeUrl: 'https://agentslab.ai/signup',
       };
     }
-    
+
     try {
       const sessionId = body.sessionId || `demo_${ip}_${Date.now()}`;
-      
+
       // Extract service context from request if provided
-      const serviceContext = (body as any).serviceContext;
+      const serviceContext = (body as { serviceContext?: { id?: string; businessType?: string } })
+        .serviceContext;
       // Map service ID to business type
       const serviceId = serviceContext?.id || serviceContext?.businessType;
       const businessType = this.mapServiceToBusinessType(serviceId);
-      
+
       const response = await this.bookingChainService.processRequest(body.message, {
         businessId: 'demo-business',
         customerId: sessionId,
         businessType, // Pass business type for personalized prompt
         serviceContext, // Pass full context
       });
-      
+
       // Parse response to extract tool calls
-      let parsedResponse: any = { response };
-      
+      let parsedResponse: { response: string; toolCalls?: unknown } = { response };
+
       try {
         // Try to parse as JSON (for enhanced responses with tool calls)
         const jsonResponse = JSON.parse(response);
@@ -93,7 +93,7 @@ export class DemoController {
         // If not JSON, it's a simple string response
         parsedResponse = { response };
       }
-      
+
       return {
         ...parsedResponse,
         limitReached: false,
@@ -107,62 +107,59 @@ export class DemoController {
       };
     }
   }
-  
+
   /**
    * Map service ID to business type for context
    */
   private mapServiceToBusinessType(serviceId?: string): string {
     if (!serviceId) return 'salud'; // Default
-    
+
     const serviceIdLower = serviceId.toLowerCase();
-    
+
     // Map all services to their business types
     const mapping: Record<string, string> = {
       // Salud y Bienestar
-      'clinica': 'salud',
-      'dentista': 'dentista',
-      'fisioterapia': 'salud',
-      'veterinaria': 'salud',
+      clinica: 'salud',
+      dentista: 'dentista',
+      fisioterapia: 'salud',
+      veterinaria: 'salud',
       // Belleza y Estética
-      'peluqueria': 'belleza',
-      'estetica': 'belleza',
-      'spa': 'belleza',
-      'unas': 'belleza',
+      peluqueria: 'belleza',
+      estetica: 'belleza',
+      spa: 'belleza',
+      unas: 'belleza',
       // Restaurantes y Eventos
-      'restaurante': 'restaurante',
-      'catering': 'restaurante',
-      'eventos': 'restaurante',
+      restaurante: 'restaurante',
+      catering: 'restaurante',
+      eventos: 'restaurante',
       // Servicios Profesionales
-      'abogado': 'profesional',
-      'contador': 'profesional',
-      'consultor': 'profesional',
-      'coach': 'profesional',
+      abogado: 'profesional',
+      contador: 'profesional',
+      consultor: 'profesional',
+      coach: 'profesional',
       // Otros Negocios
-      'fontanero': 'servicio',
-      'electricista': 'servicio',
-      'fitness': 'fitness',
-      'educacion': 'educacion',
-      'reparaciones': 'servicio',
+      fontanero: 'servicio',
+      electricista: 'servicio',
+      fitness: 'fitness',
+      educacion: 'educacion',
+      reparaciones: 'servicio',
       // Fallbacks
-      'salud': 'salud',
-      'belleza': 'belleza',
+      salud: 'salud',
+      belleza: 'belleza',
     };
-    
+
     // Try exact match first
     if (mapping[serviceIdLower]) {
       return mapping[serviceIdLower];
     }
-    
+
     // Try partial match
     for (const [key, value] of Object.entries(mapping)) {
       if (serviceIdLower.includes(key) || key.includes(serviceIdLower)) {
         return value;
       }
     }
-    
+
     return 'salud'; // Default
   }
 }
-
-
-

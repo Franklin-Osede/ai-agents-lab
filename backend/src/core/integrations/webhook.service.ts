@@ -1,11 +1,11 @@
-import { Injectable, Logger, Module } from '@nestjs/common';
-import { HttpModule, HttpService } from '@nestjs/axios';
+import { Injectable, Logger } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import * as crypto from 'crypto';
 
 /**
  * Webhook Service
- * 
+ *
  * Sends webhooks with HMAC signature for security
  */
 @Injectable()
@@ -17,7 +17,7 @@ export class WebhookService {
   /**
    * Sign payload with HMAC SHA256
    */
-  private signPayload(payload: any, secret: string): string {
+  private signPayload(payload: unknown, secret: string): string {
     const hmac = crypto.createHmac('sha256', secret);
     hmac.update(JSON.stringify(payload));
     return hmac.digest('hex');
@@ -28,7 +28,7 @@ export class WebhookService {
    */
   async sendWebhook(
     url: string,
-    payload: any,
+    payload: unknown,
     secret?: string,
   ): Promise<{ success: boolean; error?: string }> {
     try {
@@ -49,9 +49,7 @@ export class WebhookService {
         headers['X-Timestamp'] = timestamp.toString();
       }
 
-      const response = await firstValueFrom(
-        this.httpService.post(url, body, { headers, timeout: 5000 }),
-      );
+      await firstValueFrom(this.httpService.post(url, body, { headers, timeout: 5000 }));
 
       this.logger.log(`Webhook sent successfully to ${url}`);
       return { success: true };
@@ -67,18 +65,8 @@ export class WebhookService {
   /**
    * Verify webhook signature (for incoming webhooks)
    */
-  verifySignature(
-    payload: any,
-    signature: string,
-    secret: string,
-  ): boolean {
+  verifySignature(payload: unknown, signature: string, secret: string): boolean {
     const expectedSignature = this.signPayload(payload, secret);
-    return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature),
-    );
+    return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
   }
 }
-
-
-

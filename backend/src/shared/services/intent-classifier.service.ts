@@ -32,8 +32,8 @@ export class IntentClassifierService implements IIntentClassifier {
     );
   }
 
-  private extractEntities(message: string, intent: IntentType): Record<string, any> {
-    const entities: Record<string, any> = {};
+  private extractEntities(message: string, intent: IntentType): Record<string, unknown> {
+    const entities: Record<string, unknown> = {};
 
     if (intent === IntentType.BOOKING) {
       const timePattern = /\b(\d{1,2}):?(\d{2})?\s*(am|pm|AM|PM)?\b/gi;

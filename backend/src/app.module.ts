@@ -1,5 +1,6 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoreModule } from './core/core.module';
 import { BookingAgentModule } from './agents/booking-agent/booking-agent.module';
 import { VoiceAgentModule } from './agents/voice-agent/voice-agent.module';
@@ -29,6 +30,20 @@ import { TenantIsolationMiddleware } from './core/security/tenant.middleware';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('POSTGRES_HOST'),
+        port: configService.get<number>('POSTGRES_PORT'),
+        username: configService.get<string>('POSTGRES_USER'),
+        password: configService.get<string>('POSTGRES_PASSWORD'),
+        database: configService.get<string>('POSTGRES_DB'),
+        autoLoadEntities: true,
+        synchronize: true, // Only for development/MVP
+      }),
+    }),
     CoreModule, // Shared infrastructure
     BookingAgentModule,
     VoiceAgentModule,
@@ -43,9 +58,6 @@ import { TenantIsolationMiddleware } from './core/security/tenant.middleware';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     // Apply tenant isolation middleware to all routes except demo
-    consumer
-      .apply(TenantIsolationMiddleware)
-      .exclude('demo/(.*)', 'health/(.*)')
-      .forRoutes('*');
+    consumer.apply(TenantIsolationMiddleware).exclude('demo/(.*)', 'health/(.*)').forRoutes('*');
   }
 }

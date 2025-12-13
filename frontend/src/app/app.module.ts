@@ -17,8 +17,10 @@ import { CalendarComponent } from './shared/components/calendar/calendar.compone
 import { RoleSelectorComponent } from './shared/components/role-selector/role-selector.component';
 import { LoginComponent } from './shared/components/login/login.component';
 import { RegisterComponent } from './shared/components/register/register.component';
-import { ProfessionalDashboardComponent } from './components/professional-dashboard/professional-dashboard.component';
 import { GoogleMapsAutocompleteComponent } from './shared/components/google-maps-autocomplete/google-maps-autocomplete.component';
+
+// Note: Abandoned Cart components are standalone and don't need to be declared here
+// They are imported directly in routes
 
 @NgModule({
   declarations: [
@@ -35,7 +37,6 @@ import { GoogleMapsAutocompleteComponent } from './shared/components/google-maps
     RoleSelectorComponent,
     LoginComponent,
     RegisterComponent,
-    ProfessionalDashboardComponent,
     GoogleMapsAutocompleteComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule],

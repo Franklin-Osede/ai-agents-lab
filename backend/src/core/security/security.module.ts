@@ -5,23 +5,12 @@ import { DomainWhitelistService } from './domain-whitelist.service';
 
 /**
  * Security Module
- * 
+ *
  * Provides security services: API key management, domain whitelisting, tenant isolation
  */
 @Global()
 @Module({
-  providers: [
-    ApiKeyService,
-    ApiKeyGuard,
-    DomainWhitelistService,
-  ],
-  exports: [
-    ApiKeyService,
-    ApiKeyGuard,
-    DomainWhitelistService,
-  ],
+  providers: [ApiKeyService, ApiKeyGuard, DomainWhitelistService],
+  exports: [ApiKeyService, ApiKeyGuard, DomainWhitelistService],
 })
 export class SecurityModule {}
-
-
-

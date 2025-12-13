@@ -12,7 +12,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
     let code = 'INTERNAL_ERROR';
-    let errors: Record<string, any> | undefined;
+    let errors: Record<string, unknown> | undefined;
 
     if (exception instanceof BusinessException) {
       status = exception.statusCode;
@@ -24,9 +24,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
     } else if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
-      if (typeof exceptionResponse === 'object') {
-        message = (exceptionResponse as any).message || message;
-        errors = (exceptionResponse as any).errors;
+      if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+        const responseObj = exceptionResponse as {
+          message?: string;
+          errors?: Record<string, unknown>;
+        };
+        message = responseObj.message || message;
+        errors = responseObj.errors;
       } else {
         message = exceptionResponse as string;
       }

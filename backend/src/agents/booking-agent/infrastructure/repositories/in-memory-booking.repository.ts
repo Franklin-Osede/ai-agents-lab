@@ -127,6 +127,7 @@ export class InMemoryBookingRepository implements IBookingRepository {
     try {
       // Ensure ID is set (BaseEntity should handle this, but double-check)
       if (!booking.id) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (booking as any).id = `BK-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       }
 

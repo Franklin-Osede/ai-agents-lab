@@ -1,0 +1,324 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+$primary: #135bec;
+$background-light: #ffffff;
+$background-subtle: #f8f9fc;
+$text-primary: #0d121b;
+$text-secondary: #4b5563;
+$border-light: #e5e7eb;
+
+.customer-activity-container {
+  min-height: 100%;
+  background: $background-light;
+  font-family: 'Inter', sans-serif;
+}
+
+.activity-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba($background-light, 0.95);
+  backdrop-filter: blur(12px);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid $border-light;
+
+  .back-button,
+  .edit-button {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: $primary;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba($primary, 0.1);
+    }
+  }
+
+  h2 {
+    font-size: 17px;
+    font-weight: 600;
+    color: $text-primary;
+    margin: 0;
+    flex: 1;
+    text-align: center;
+  }
+}
+
+.profile-header {
+  padding: 24px 20px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+
+  .profile-avatar {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid $border-light;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .online-badge {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 20px;
+      height: 20px;
+      background: #10b981;
+      border: 3px solid $background-light;
+      border-radius: 50%;
+    }
+  }
+
+  .profile-info {
+    flex: 1;
+    min-width: 0;
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: $text-primary;
+      margin: 0 0 4px 0;
+    }
+
+    p {
+      font-size: 14px;
+      color: $text-secondary;
+      margin: 0 0 8px 0;
+    }
+
+    .profile-badges {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+
+      .badge {
+        padding: 4px 8px;
+        border-radius: 9999px;
+        font-size: 12px;
+        font-weight: 500;
+
+        &.vip {
+          background: rgba(59, 130, 246, 0.1);
+          color: #3b82f6;
+          border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        &:not(.vip) {
+          color: $text-secondary;
+        }
+      }
+    }
+  }
+}
+
+.insights-panel {
+  padding: 0 20px 16px;
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+
+  .insight-card {
+    min-width: 140px;
+    padding: 16px;
+    background: $background-subtle;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .material-symbols-outlined {
+      font-size: 20px;
+      color: $primary;
+    }
+
+    .insight-label {
+      font-size: 12px;
+      color: $text-secondary;
+      margin: 0;
+    }
+
+    .insight-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: $text-primary;
+      margin: 0;
+    }
+  }
+}
+
+.tabs {
+  display: flex;
+  padding: 8px 16px;
+  border-bottom: 1px solid $border-light;
+  gap: 8px;
+
+  button {
+    flex: 1;
+    padding: 12px 0;
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: $text-secondary;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+
+    &.active {
+      color: $primary;
+      font-weight: 700;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: $primary;
+        border-radius: 3px 3px 0 0;
+      }
+    }
+  }
+}
+
+.carts-list {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: $background-subtle;
+  min-height: 400px;
+
+  .cart-card {
+    background: $background-light;
+    border: 1px solid $border-light;
+    border-radius: 16px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+
+    .cart-status-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+
+      &.status-abandoned {
+        background: #f97316;
+      }
+
+      &.status-recovered {
+        background: #10b981;
+      }
+    }
+
+    .cart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+      padding-left: 8px;
+
+      h3 {
+        font-size: 16px;
+        font-weight: 600;
+        color: $text-primary;
+        margin: 0 0 4px 0;
+      }
+
+      .status-badge {
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+
+        &.status-abandoned {
+          background: rgba(249, 115, 22, 0.1);
+          color: #f97316;
+        }
+
+        &.status-recovered {
+          background: rgba(16, 185, 129, 0.1);
+          color: #10b981;
+        }
+      }
+
+      .cart-value {
+        font-size: 18px;
+        font-weight: 700;
+        color: $text-primary;
+        margin: 0;
+      }
+    }
+
+    .cart-meta {
+      font-size: 12px;
+      color: $text-secondary;
+      margin: 0 0 12px 0;
+      padding-left: 8px;
+    }
+
+    .cart-items-preview {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-left: 8px;
+
+      .item-thumb {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        overflow: hidden;
+        background: rgba($text-secondary, 0.1);
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+
+    .recover-button {
+      width: 100%;
+      padding: 8px;
+      background: $primary;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+
+      &:hover {
+        background: darken($primary, 10%);
+      }
+    }
+  }
+}
+

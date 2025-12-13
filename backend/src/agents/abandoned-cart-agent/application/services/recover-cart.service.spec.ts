@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RecoverCartService } from './recover-cart.service';
 import { VoiceAgentService } from '../../../voice-agent/application/services/voice-agent.service';
-// import { ICartRepository } from '../../domain/interfaces/cart-repository.interface';
+import { WhatsAppService } from '../../../../core/integrations/whatsapp.service';
+import { EmailPreviewService } from '../../../../core/integrations/email-preview.service';
 import { Cart } from '../../domain/entities/cart.entity';
+import { CartItem } from '../../domain/value-objects/cart-item.vo';
 import { Result } from '../../../../core/domain/shared/value-objects/result';
 
 describe('RecoverCartService', () => {
@@ -11,10 +13,21 @@ describe('RecoverCartService', () => {
   const mockCartRepository = {
     findAbandonedCarts: jest.fn(),
     save: jest.fn(),
+    findById: jest.fn(),
   };
 
   const mockVoiceAgentService = {
     generateVoiceMessage: jest.fn(),
+  };
+
+  const mockWhatsAppService = {
+    sendMediaMessage: jest.fn(),
+    sendTextMessage: jest.fn(),
+    isServiceEnabled: jest.fn(),
+  };
+
+  const mockEmailPreviewService = {
+    generateCartRecoveryEmail: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -29,11 +42,18 @@ describe('RecoverCartService', () => {
           provide: VoiceAgentService,
           useValue: mockVoiceAgentService,
         },
+        {
+          provide: WhatsAppService,
+          useValue: mockWhatsAppService,
+        },
+        {
+          provide: EmailPreviewService,
+          useValue: mockEmailPreviewService,
+        },
       ],
     }).compile();
 
     service = module.get<RecoverCartService>(RecoverCartService);
-    // Service is retrieved, mocks are used directly in tests
   });
 
   afterEach(() => {
@@ -42,13 +62,23 @@ describe('RecoverCartService', () => {
 
   it('should process abandoned carts correctly', async () => {
     // Arrange
-    const cart = Cart.create('cart-1', 'customer-1', ['Item A'], 100).value;
+    const item = CartItem.create('prod-1', 'Item A', 1, 100.0).value;
+    const cart = Cart.create('cart-1', 'customer-1', [item]).value;
     cart.markAsAbandoned();
 
     mockCartRepository.findAbandonedCarts.mockResolvedValue([cart]);
     mockVoiceAgentService.generateVoiceMessage.mockResolvedValue(
-      Result.ok({ audioUrl: 'http://audio.url' }),
+      Result.ok({
+        audioUrl: 'http://audio.url',
+        script: 'Test script',
+        duration: 10,
+        channel: 'WHATSAPP',
+      }),
     );
+    mockWhatsAppService.sendMediaMessage.mockResolvedValue({
+      success: true,
+      messageId: 'msg-123',
+    });
 
     // Act
     const result = await service.processAbandonedCarts(60);
@@ -57,6 +87,7 @@ describe('RecoverCartService', () => {
     expect(result.isSuccess).toBe(true);
     expect(mockCartRepository.findAbandonedCarts).toHaveBeenCalledWith(60);
     expect(mockVoiceAgentService.generateVoiceMessage).toHaveBeenCalled();
+    expect(mockWhatsAppService.sendMediaMessage).toHaveBeenCalled();
     expect(cart.recoveryAttempts).toBe(1);
     expect(mockCartRepository.save).toHaveBeenCalledWith(cart);
   });
@@ -76,7 +107,8 @@ describe('RecoverCartService', () => {
 
   it('should handle voice generation failure gracefully', async () => {
     // Arrange
-    const cart = Cart.create('cart-1', 'cust-1', ['A'], 100).value;
+    const item = CartItem.create('prod-1', 'Item A', 1, 100.0).value;
+    const cart = Cart.create('cart-1', 'cust-1', [item]).value;
     cart.markAsAbandoned();
 
     mockCartRepository.findAbandonedCarts.mockResolvedValue([cart]);
@@ -88,10 +120,54 @@ describe('RecoverCartService', () => {
     await service.processAbandonedCarts();
 
     // Assert
-    // Should verify it logged error but didn't crash
-    expect(mockCartRepository.save).not.toHaveBeenCalled(); // Should assume it doesn't increment attempts if failed?
-    // Wait, implementation:
-    // if (voiceResult.isSuccess) { ... save ... } else { log error }
-    // So save should NOT be called. Correct.
+    expect(mockCartRepository.save).not.toHaveBeenCalled();
+    expect(mockWhatsAppService.sendMediaMessage).not.toHaveBeenCalled();
+  });
+
+  it('should not recover cart if it cannot be recovered', async () => {
+    // Arrange
+    const item = CartItem.create('prod-1', 'Item A', 1, 100.0).value;
+    const cart = Cart.create('cart-1', 'cust-1', [item]).value;
+    cart.markAsAbandoned();
+    cart.incrementRecoveryAttempts();
+    cart.incrementRecoveryAttempts();
+    cart.incrementRecoveryAttempts(); // 3 attempts - cannot be recovered
+
+    mockCartRepository.findAbandonedCarts.mockResolvedValue([cart]);
+
+    // Act
+    await service.processAbandonedCarts();
+
+    // Assert
+    expect(mockVoiceAgentService.generateVoiceMessage).not.toHaveBeenCalled();
+    expect(mockWhatsAppService.sendMediaMessage).not.toHaveBeenCalled();
+  });
+
+  it('should handle WhatsApp send failure gracefully', async () => {
+    // Arrange
+    const item = CartItem.create('prod-1', 'Item A', 1, 100.0).value;
+    const cart = Cart.create('cart-1', 'customer-1', [item]).value;
+    cart.markAsAbandoned();
+
+    mockCartRepository.findAbandonedCarts.mockResolvedValue([cart]);
+    mockVoiceAgentService.generateVoiceMessage.mockResolvedValue(
+      Result.ok({
+        audioUrl: 'http://audio.url',
+        script: 'Test',
+        duration: 10,
+        channel: 'WHATSAPP',
+      }),
+    );
+    mockWhatsAppService.sendMediaMessage.mockResolvedValue({
+      success: false,
+      error: 'WhatsApp send failed',
+    });
+
+    // Act
+    await service.processAbandonedCarts();
+
+    // Assert
+    expect(mockWhatsAppService.sendMediaMessage).toHaveBeenCalled();
+    expect(mockCartRepository.save).not.toHaveBeenCalled(); // Should not save if WhatsApp failed
   });
 });

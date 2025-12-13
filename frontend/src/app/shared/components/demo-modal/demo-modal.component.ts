@@ -111,6 +111,14 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       console.error('No agent provided to DemoModalComponent!');
       return;
     }
+
+    // Special handling for abandoned cart - redirect to dashboard
+    if (this.agent.id === 'cart-recovery' || this.agent.id === 'abandoned-cart') {
+      this.router.navigate(['/abandoned-cart']);
+      this.close.emit();
+      return;
+    }
+
     this.sessionId = this.generateSessionId();
     this.setupAgentSpecificContent();
     // For demo: start at service selector (step 0), then go to chat (step 1)
@@ -147,6 +155,16 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         '¿Tienen disponibilidad esta semana?',
         'Me gustaría reservar'
       ],
+      'cart-recovery': [
+        'Ver carritos abandonados',
+        'Enviar WhatsApp de recuperación',
+        'Generar preview de email'
+      ],
+      'abandoned-cart': [
+        'Ver carritos abandonados',
+        'Enviar WhatsApp de recuperación',
+        'Generar preview de email'
+      ],
       'dm-response': [
         '¿Cuál es el horario de apertura?',
         '¿Hacéis envíos a Canarias?',
@@ -170,6 +188,12 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     const content: Record<string, { description: string }> = {
       booking: {
         description: 'Simula cómo tus clientes pueden reservar citas automáticamente. El agente detecta la intención, sugiere horarios disponibles y confirma la reserva.',
+      },
+      'cart-recovery': {
+        description: 'Recupera carritos abandonados con mensajes personalizados por WhatsApp y email. El agente genera ofertas inteligentes basadas en el valor del carrito y el historial del cliente.',
+      },
+      'abandoned-cart': {
+        description: 'Recupera carritos abandonados con mensajes personalizados por WhatsApp y email. El agente genera ofertas inteligentes basadas en el valor del carrito y el historial del cliente.',
       },
       'dm-response': {
         description: 'Simula respuestas automáticas a mensajes directos de Instagram/WhatsApp. El agente responde preguntas comunes sobre precios, servicios y disponibilidad.',

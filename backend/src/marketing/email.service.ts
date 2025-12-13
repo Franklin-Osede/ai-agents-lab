@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 /**
  * Email Service
- * 
+ *
  * Sends transactional emails (welcome, follow-ups, etc.)
  * Uses SendGrid (can be swapped for Mailchimp, etc.)
  */
@@ -31,13 +31,13 @@ export class EmailService {
       // TODO: Implement SendGrid integration
       // For now, just log
       this.logger.log(`Would send welcome email to ${data.to} with API key`);
-      
+
       if (this.sendGridApiKey) {
         // const sgMail = require('@sendgrid/mail');
         // sgMail.setApiKey(this.sendGridApiKey);
         // await sgMail.send({...});
       }
-      
+
       return { success: true };
     } catch (error) {
       this.logger.error('Error sending welcome email:', error);
@@ -102,11 +102,11 @@ export class EmailService {
         },
       };
 
-      const template = templates[data.type];
-      
       // TODO: Implement SendGrid
-      this.logger.log(`Would send ${data.type} follow-up to ${data.to}`);
-      
+      this.logger.log(`Would send ${data.type} follow-up to ${data.to}`, {
+        template: templates[data.type],
+      });
+
       return { success: true };
     } catch (error) {
       this.logger.error('Error sending follow-up email:', error);
@@ -117,6 +117,3 @@ export class EmailService {
     }
   }
 }
-
-
-

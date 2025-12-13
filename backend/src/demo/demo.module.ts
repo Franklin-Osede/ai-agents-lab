@@ -4,7 +4,7 @@ import { BookingAgentModule } from '../agents/booking-agent/booking-agent.module
 
 /**
  * Demo Module
- * 
+ *
  * Provides public demo endpoints for trying agents without registration
  */
 @Module({
@@ -12,6 +12,3 @@ import { BookingAgentModule } from '../agents/booking-agent/booking-agent.module
   controllers: [DemoController],
 })
 export class DemoModule {}
-
-
-

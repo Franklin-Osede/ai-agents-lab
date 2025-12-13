@@ -13,7 +13,7 @@ export class OpenAiProvider implements IAiProvider {
     });
   }
 
-  async generateResponse(prompt: string, context?: Record<string, any>): Promise<string> {
+  async generateResponse(prompt: string, context?: Record<string, unknown>): Promise<string> {
     const systemPrompt = context?.systemPrompt || 'You are a helpful AI assistant.';
     const userPrompt = context?.userPrompt || prompt;
 

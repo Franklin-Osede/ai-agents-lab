@@ -4,7 +4,7 @@ import Stripe from 'stripe';
 
 /**
  * Billing Service
- * 
+ *
  * Handles Stripe integration for subscriptions and payments
  */
 @Injectable()
@@ -118,6 +118,3 @@ export class BillingService {
     // TODO: Update tenant status to 'suspended' or 'inactive'
   }
 }
-
-
-

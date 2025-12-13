@@ -4,6 +4,8 @@ import { ICartRepository } from '../../domain/interfaces/cart-repository.interfa
 import { VoiceAgentService } from '../../../voice-agent/application/services/voice-agent.service';
 import { VoiceChannel } from '../../../voice-agent/domain/value-objects/voice-message';
 import { Cart } from '../../domain/entities/cart.entity';
+import { WhatsAppService } from '../../../../core/integrations/whatsapp.service';
+import { EmailPreviewService } from '../../../../core/integrations/email-preview.service';
 
 @Injectable()
 export class RecoverCartService {
@@ -12,6 +14,8 @@ export class RecoverCartService {
   constructor(
     @Inject('ICartRepository') private readonly cartRepository: ICartRepository,
     private readonly voiceAgentService: VoiceAgentService,
+    private readonly whatsappService: WhatsAppService,
+    private readonly emailPreviewService: EmailPreviewService,
   ) {}
 
   /**
@@ -39,20 +43,34 @@ export class RecoverCartService {
   }
 
   private async recoverCart(cart: Cart): Promise<void> {
-    this.logger.log(`Recovering cart ${cart.id} for customer ${cart.customerId}`);
+    if (!cart.canBeRecovered()) {
+      this.logger.warn(
+        `Cart ${cart.id} cannot be recovered (status: ${cart.status}, attempts: ${cart.recoveryAttempts})`,
+      );
+      return;
+    }
 
-    // Context for AI to generate script
+    this.logger.log(`Recovering cart ${cart.id} for customer ${cart.customerId}`);
+    const probability = cart.calculateRecoveryProbability();
+    this.logger.log(`Recovery probability: ${probability}%`);
+
+    // Build context for AI to generate script
+    const itemsDescription = cart.items
+      .map((item) => `${item.name} (x${item.quantity})`)
+      .join(', ');
     const context = `
-      Customer abandoned cart with items: ${cart.items.join(', ')}.
-      Total value: $${cart.totalValue}.
+      Customer abandoned cart with items: ${itemsDescription}.
+      Total value: $${cart.totalValue.toFixed(2)}.
+      Recovery probability: ${probability}%.
+      Time since abandonment: ${Math.round((Date.now() - cart.lastModifiedAt.getTime()) / (1000 * 60 * 60))} hours.
       Offer: Free shipping if purchased today.
-      Goal: Friendly reminder, not pushy.
+      Goal: Friendly reminder, not pushy. Personalize based on cart value and customer history.
     `;
 
-    // Agent-to-Agent call
+    // Agent-to-Agent call to generate voice message
     const voiceResult = await this.voiceAgentService.generateVoiceMessage({
       customerId: cart.customerId,
-      businessId: 'cosmetics-shop', // Context
+      businessId: 'agentics', // Company name from user
       context,
       channel: VoiceChannel.WHATSAPP,
       includeVideo: false,
@@ -61,11 +79,25 @@ export class RecoverCartService {
     if (voiceResult.isSuccess) {
       this.logger.log(`Voice note generated for cart ${cart.id}: ${voiceResult.value.audioUrl}`);
 
-      // In a real app, we would send this URL via WhatsApp API here.
-      // For now, we update the cart state.
+      // Send WhatsApp message with audio
+      // Note: In production, you'd get the customer's phone number from the database
+      const customerPhone = `+34612345678`; // TODO: Get from customer data
 
-      cart.incrementRecoveryAttempts();
-      await this.cartRepository.save(cart);
+      const whatsappResult = await this.whatsappService.sendMediaMessage({
+        to: customerPhone,
+        message: `Hola! Notamos que dejaste productos en tu carrito. Escucha este mensaje personalizado:`,
+        mediaUrl: voiceResult.value.audioUrl,
+      });
+
+      if (whatsappResult.success) {
+        this.logger.log(
+          `WhatsApp message sent successfully. Message ID: ${whatsappResult.messageId}`,
+        );
+        cart.incrementRecoveryAttempts();
+        await this.cartRepository.save(cart);
+      } else {
+        this.logger.warn(`WhatsApp message failed: ${whatsappResult.error}`);
+      }
     } else {
       this.logger.error(`Failed to generate voice note for cart ${cart.id}: ${voiceResult.error}`);
     }

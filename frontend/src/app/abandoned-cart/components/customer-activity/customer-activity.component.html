@@ -1,0 +1,167 @@
+<div class="relative flex h-full min-h-screen w-full max-w-md mx-auto flex-col bg-background-light dark:bg-background-dark border-x border-border-light dark:border-gray-800 shadow-xl">
+  <!-- TopAppBar -->
+  <header class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-border-light dark:border-gray-800 transition-colors">
+    <div class="flex items-center px-4 py-3 justify-between h-14">
+      <button class="text-primary flex size-10 items-center justify-center -ml-2 rounded-full hover:bg-background-subtle dark:hover:bg-gray-800 transition-colors" type="button" (click)="goBack()">
+        <span class="material-symbols-outlined text-[28px]">chevron_left</span>
+      </button>
+      <h2 class="text-text-primary dark:text-white text-[17px] font-semibold leading-tight flex-1 text-center">Actividad del Cliente</h2>
+      <button class="flex w-10 items-center justify-center rounded-full hover:bg-background-subtle dark:hover:bg-gray-800 transition-colors" type="button">
+        <span class="material-symbols-outlined text-primary text-[20px]">edit</span>
+      </button>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="flex items-center justify-center py-12">
+      <p class="text-gray-500">Cargando...</p>
+    </div>
+  } @else if (error()) {
+    <div class="flex items-center justify-center py-12">
+      <p class="text-red-500">{{ error() }}</p>
+    </div>
+  } @else if (customer()) {
+    <!-- ProfileHeader -->
+    <div class="flex flex-col bg-background-light dark:bg-background-dark px-5 pt-6 pb-2">
+      <div class="flex items-center gap-5">
+        <div class="relative shrink-0">
+          <div class="bg-center bg-no-repeat bg-cover rounded-full h-20 w-20 shadow-sm border border-border-light dark:border-gray-700" [style.background-image]="'url(' + (customer()!.imageUrl || 'https://via.placeholder.com/80') + ')'"></div>
+          <div class="absolute bottom-0 right-0 h-5 w-5 bg-green-500 border-2 border-white dark:border-background-dark rounded-full"></div>
+        </div>
+        <div class="flex flex-col justify-center flex-1 min-w-0">
+          <h1 class="text-text-primary dark:text-white text-2xl font-bold leading-tight tracking-tight truncate">{{ customer()!.name }}</h1>
+          <p class="text-text-secondary dark:text-gray-400 text-sm font-medium leading-normal truncate">{{ customer()!.email }}</p>
+          <div class="flex items-center gap-1 mt-1">
+            @if (customer()!.isVip) {
+              <span class="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10">VIP</span>
+            }
+            <span class="text-text-tertiary text-xs">•</span>
+            <p class="text-text-tertiary text-xs">Unida en 2021</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insights Panel (Stats) -->
+    <div class="px-5 py-4">
+      <div class="flex gap-3 overflow-x-auto hide-scrollbar pb-1">
+        <div class="flex min-w-[140px] flex-col gap-1 rounded-xl p-4 bg-background-subtle dark:bg-gray-800/50 border border-transparent dark:border-gray-700 hover:border-primary/20 transition-all">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="material-symbols-outlined text-primary text-[20px]">category</span>
+            <p class="text-text-secondary dark:text-gray-400 text-xs font-medium">Categoría Top</p>
+          </div>
+          <p class="text-text-primary dark:text-white text-lg font-bold leading-tight">Electrónica</p>
+        </div>
+        <div class="flex min-w-[140px] flex-col gap-1 rounded-xl p-4 bg-background-subtle dark:bg-gray-800/50 border border-transparent dark:border-gray-700 hover:border-primary/20 transition-all">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="material-symbols-outlined text-green-600 text-[20px]">attach_money</span>
+            <p class="text-text-secondary dark:text-gray-400 text-xs font-medium">Valor Prom.</p>
+          </div>
+          <p class="text-text-primary dark:text-white text-lg font-bold leading-tight">${{ ((customer()!.totalSpent || 0) / (customer()!.totalOrders || 1)) | number:'1.2-2' }}</p>
+        </div>
+        <div class="flex min-w-[140px] flex-col gap-1 rounded-xl p-4 bg-background-subtle dark:bg-gray-800/50 border border-transparent dark:border-gray-700 hover:border-primary/20 transition-all">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="material-symbols-outlined text-orange-500 text-[20px]">schedule</span>
+            <p class="text-text-secondary dark:text-gray-400 text-xs font-medium">Actividad</p>
+          </div>
+          <p class="text-text-primary dark:text-white text-lg font-bold leading-tight">Hace 2h</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Tabs -->
+    <div class="sticky top-14 z-40 bg-background-light dark:bg-background-dark pt-2 shadow-[0_1px_2px_0_rgba(0,0,0,0.05)]">
+      <div class="flex px-4 justify-between gap-2 overflow-x-auto hide-scrollbar">
+        <button class="group flex flex-col items-center justify-center min-w-[60px] pb-3 flex-1 relative" type="button">
+          <p class="text-text-secondary dark:text-gray-400 group-hover:text-primary transition-colors text-sm font-medium leading-normal">Vistos</p>
+        </button>
+        <button class="group flex flex-col items-center justify-center min-w-[60px] pb-3 flex-1 relative" type="button">
+          <p class="text-primary dark:text-blue-400 text-sm font-bold leading-normal">Carritos</p>
+          <div class="absolute bottom-0 h-[3px] w-full rounded-t-full bg-primary"></div>
+        </button>
+        <button class="group flex flex-col items-center justify-center min-w-[60px] pb-3 flex-1 relative" type="button">
+          <p class="text-text-secondary dark:text-gray-400 group-hover:text-primary transition-colors text-sm font-medium leading-normal">Compras</p>
+        </button>
+        <button class="group flex flex-col items-center justify-center min-w-[60px] pb-3 flex-1 relative" type="button">
+          <p class="text-text-secondary dark:text-gray-400 group-hover:text-primary transition-colors text-sm font-medium leading-normal">Interacciones</p>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters (Chips) -->
+    <div class="bg-background-light dark:bg-background-dark py-4 px-5 border-b border-border-light dark:border-gray-800">
+      <div class="flex gap-3 overflow-x-auto hide-scrollbar">
+        <button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-background-subtle dark:bg-gray-800 border border-border-light dark:border-gray-700 pl-4 pr-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" type="button">
+          <span class="text-text-primary dark:text-gray-200 text-xs font-medium">Últimos 30 días</span>
+          <span class="material-symbols-outlined text-text-secondary text-[16px]">keyboard_arrow_down</span>
+        </button>
+        <button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-background-subtle dark:bg-gray-800 border border-border-light dark:border-gray-700 pl-4 pr-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" type="button">
+          <span class="text-text-primary dark:text-gray-200 text-xs font-medium">Estado: Todos</span>
+          <span class="material-symbols-outlined text-text-secondary text-[16px]">keyboard_arrow_down</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab Content: Carritos (Active) -->
+    <div class="flex flex-col flex-1 bg-background-subtle dark:bg-gray-900/30 p-5 gap-4 min-h-[400px]">
+      @for (cart of customerCarts(); track cart.id) {
+        <div class="flex flex-col rounded-xl bg-white dark:bg-gray-800 p-4 shadow-sm border border-border-light dark:border-gray-700 relative overflow-hidden group">
+          <div class="absolute left-0 top-0 bottom-0 w-1" [class.bg-orange-500]="cart.status === 'ABANDONED'" [class.bg-green-500]="cart.status === 'RECOVERED'"></div>
+          <div class="flex justify-between items-start mb-3 pl-2">
+            <div class="flex flex-col">
+              <div class="flex items-center gap-2">
+                <h3 class="text-text-primary dark:text-white font-semibold text-base">Carrito #{{ cart.id.slice(-4) }}</h3>
+                <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset" 
+                      [ngClass]="{
+                        'bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 ring-orange-600/10': cart.status === 'ABANDONED',
+                        'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300 ring-green-600/20': cart.status === 'RECOVERED'
+                      }">
+                  {{ cart.status === 'ABANDONED' ? 'Abandonado' : cart.status === 'RECOVERED' ? 'Recuperado' : cart.status }}
+                </span>
+              </div>
+              <p class="text-text-tertiary text-xs mt-1">Hace {{ getTimeAgo(cart.lastModifiedAt) }} • {{ cart.items.length }} items</p>
+            </div>
+            <p class="text-text-primary dark:text-white font-bold text-lg">${{ cart.totalValue | number:'1.2-2' }}</p>
+          </div>
+
+          <!-- Items Preview -->
+          <div class="flex gap-3 mb-4 pl-2 overflow-hidden">
+            @for (item of cart.items.slice(0, 2); track item.productId) {
+              <div class="relative h-12 w-12 shrink-0 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden border border-border-light dark:border-gray-600">
+                <img class="h-full w-full object-cover" [alt]="item.name" [src]="item.imageUrl || 'https://via.placeholder.com/48'" />
+              </div>
+            }
+            @if (cart.items.length > 2) {
+              <div class="flex items-center justify-center h-12 w-12 shrink-0 rounded-lg bg-background-subtle dark:bg-gray-700 border border-border-light dark:border-gray-600 text-xs text-text-secondary font-medium">
+                +{{ cart.items.length - 2 }}
+              </div>
+            }
+          </div>
+
+          <!-- Actions -->
+          @if (cart.status === 'ABANDONED') {
+            <div class="flex gap-3 pl-2 mt-auto">
+              <button class="flex-1 flex items-center justify-center gap-2 bg-primary hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors shadow-sm shadow-blue-200 dark:shadow-none" type="button">
+                <span class="material-symbols-outlined text-[18px]">mail</span>
+                Recuperar
+              </button>
+              <button class="flex items-center justify-center w-10 h-10 rounded-lg border border-border-light dark:border-gray-600 text-text-secondary hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" type="button">
+                <span class="material-symbols-outlined text-[20px]">content_copy</span>
+              </button>
+            </div>
+          } @else {
+            <div class="pl-2">
+              <button class="w-full flex items-center justify-center gap-2 bg-white dark:bg-gray-700 border border-primary text-primary dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-600 py-2 px-4 rounded-lg text-sm font-medium transition-colors" type="button">
+                Ver Detalles
+              </button>
+            </div>
+          }
+        </div>
+      } @empty {
+        <div class="flex items-center justify-center py-6">
+          <p class="text-sm text-text-tertiary">No hay carritos recientes</p>
+        </div>
+      }
+    </div>
+  }
+</div>

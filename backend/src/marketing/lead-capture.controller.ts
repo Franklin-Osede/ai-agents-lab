@@ -4,7 +4,7 @@ import { LeadCaptureService } from './lead-capture.service';
 
 /**
  * Lead Capture Controller
- * 
+ *
  * Handles lead capture from demos and generates API keys
  */
 @ApiTags('Marketing')
@@ -54,6 +54,3 @@ export class LeadCaptureController {
     }
   }
 }
-
-
-

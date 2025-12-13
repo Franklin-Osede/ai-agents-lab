@@ -1152,24 +1152,25 @@
 
       <!-- Bottom Navigation (Fixed) -->
       <nav class="bottom-nav-fixed" *ngIf="currentStep >= 0 && currentStep < 10">
-          <button class="nav-item" [class.active]="activeTab === 'inicio'" (click)="navigateToTab('inicio')">
-              <span class="material-symbols-outlined" [class.filled]="activeTab === 'inicio'">home</span>
-              <span class="nav-text">Inicio</span>
-          </button>
-          <button class="nav-item" [class.active]="activeTab === 'reservas'" (click)="navigateToTab('reservas')">
-              <span class="material-symbols-outlined" [class.filled]="activeTab === 'reservas'">calendar_today</span>
-              <span class="nav-text">Reservas</span>
-          </button>
-          <div class="nav-spacer"></div>
-          <button class="nav-item" [class.active]="activeTab === 'avisos'" (click)="navigateToTab('avisos')">
-              <span class="material-symbols-outlined" [class.filled]="activeTab === 'avisos'">notifications</span>
-              <span class="nav-text">Avisos</span>
-              <span class="nav-badge" *ngIf="unreadNotificationsCount > 0">{{ unreadNotificationsCount }}</span>
-          </button>
-          <button class="nav-item" [class.active]="activeTab === 'perfil'" (click)="navigateToTab('perfil')">
-              <span class="material-symbols-outlined" [class.filled]="activeTab === 'perfil'">person</span>
-              <span class="nav-text">Perfil</span>
-          </button>
+          <div class="flex justify-between items-center max-w-xs mx-auto w-full">
+            <button class="nav-item" [class.active]="activeTab === 'inicio'" (click)="navigateToTab('inicio')">
+                <span class="material-symbols-outlined" [class.filled]="activeTab === 'inicio'">home</span>
+                <span class="nav-text">Inicio</span>
+            </button>
+            <button class="nav-item" [class.active]="activeTab === 'reservas'" (click)="navigateToTab('reservas')">
+                <span class="material-symbols-outlined" [class.filled]="activeTab === 'reservas'">calendar_today</span>
+                <span class="nav-text">Reservas</span>
+            </button>
+            <button class="nav-item" [class.active]="activeTab === 'avisos'" (click)="navigateToTab('avisos')">
+                <span class="material-symbols-outlined" [class.filled]="activeTab === 'avisos'">notifications</span>
+                <span class="nav-text">Avisos</span>
+                <span class="nav-badge" *ngIf="unreadNotificationsCount > 0">{{ unreadNotificationsCount }}</span>
+            </button>
+            <button class="nav-item" [class.active]="activeTab === 'perfil'" (click)="navigateToTab('perfil')">
+                <span class="material-symbols-outlined" [class.filled]="activeTab === 'perfil'">person</span>
+                <span class="nav-text">Perfil</span>
+            </button>
+          </div>
       </nav>
 
   </div>

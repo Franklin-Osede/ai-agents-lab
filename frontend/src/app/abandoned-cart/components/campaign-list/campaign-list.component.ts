@@ -50,6 +50,42 @@ export class CampaignListComponent implements OnInit {
         }
       },
       {
+        id: 'campaign-completed-2',
+        name: 'Black Friday Anticipado',
+        status: 'COMPLETED',
+        audience: { type: 'high_value', count: 1200 },
+        message: { type: 'whatsapp', content: 'Acceso anticipado a ofertas Black Friday' },
+        offer: { type: 'percentage', value: 25, code: 'BFVIP', expirationHours: 24 },
+        sentAt: new Date('2024-11-20'),
+        results: {
+          totalSent: 1200,
+          totalOpened: 1100,
+          totalRecovered: 450,
+          totalValue: 85000,
+          roi: 1200,
+          recoveryRate: 37.5,
+          details: []
+        }
+      },
+      {
+        id: 'campaign-completed-3',
+        name: 'Mid-Season Sale',
+        status: 'COMPLETED',
+        audience: { type: 'all_abandoned', count: 350 },
+        message: { type: 'email', content: 'Última oportunidad: Rebajas de mitad de temporada' },
+        offer: { type: 'fixed', value: 20, code: 'MID20', expirationHours: 72 },
+        sentAt: new Date('2024-06-15'),
+        results: {
+          totalSent: 350,
+          totalOpened: 120,
+          totalRecovered: 30,
+          totalValue: 3200,
+          roi: 250,
+          recoveryRate: 8.5,
+          details: []
+        }
+      },
+      {
         id: 'campaign-2',
         name: 'Flash Sale 24h',
         status: 'ACTIVE',
@@ -73,6 +109,22 @@ export class CampaignListComponent implements OnInit {
         audience: { type: 'vip', count: 50 },
         message: { type: 'email', content: 'Oferta exclusiva para VIP' },
         offer: { type: 'percentage', value: 25, code: 'VIP25', expirationHours: 96 }
+      },
+      {
+        id: 'campaign-draft-2',
+        name: 'Retargeting Zapatillas',
+        status: 'DRAFT',
+        audience: { type: 'product_category', count: 85 },
+        message: { type: 'whatsapp', content: 'Vimos que te gustaron estas zapatillas' },
+        offer: { type: 'free_shipping', value: 0, code: 'SNEAKERS', expirationHours: 48 }
+      },
+      {
+        id: 'campaign-draft-3',
+        name: 'Cyber Monday Prep',
+        status: 'DRAFT',
+        audience: { type: 'all_users', count: 5000 },
+        message: { type: 'email', content: 'Prepárate para el Cyber Monday' },
+        offer: { type: 'percentage', value: 10, code: 'CYBER10', expirationHours: 24 }
       }
     ]);
     this.loading.set(false);

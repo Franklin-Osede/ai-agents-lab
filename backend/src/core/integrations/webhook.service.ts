@@ -34,7 +34,7 @@ export class WebhookService {
     try {
       const timestamp = Date.now();
       const body = {
-        ...payload,
+        ...(payload as object),
         timestamp,
       };
 

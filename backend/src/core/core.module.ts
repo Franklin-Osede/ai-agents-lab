@@ -11,7 +11,7 @@ import { IntegrationsModule } from './integrations/integrations.module';
  * Core Module - Provides shared infrastructure and domain services
  * This module is Global so all agents can use it without importing
  *
- * Supports selecting AI provider via AI_PROVIDER env var:
+ * Supports selecting AI provider via AI_PROVIDER_TOKEN env var:
  * - 'langchain' -> LangChainProvider (with memory and tools support)
  * - 'openai' or default -> OpenAiProvider (simple, backward compatible)
  */
@@ -46,7 +46,24 @@ import { IntegrationsModule } from './integrations/integrations.module';
       },
       inject: [ConfigService, OpenAiProvider, LangChainProvider],
     },
+    {
+      provide: 'IAiProvider',
+      useFactory: (
+        configService: ConfigService,
+        openAiProvider: OpenAiProvider,
+        langChainProvider: LangChainProvider,
+      ): IAiProvider => {
+        const providerType = configService.get<string>('AI_PROVIDER', 'openai').toLowerCase();
+
+        if (providerType === 'langchain') {
+          return langChainProvider;
+        }
+
+        return openAiProvider;
+      },
+      inject: [ConfigService, OpenAiProvider, LangChainProvider],
+    },
   ],
-  exports: [AI_PROVIDER_TOKEN, LangChainProvider, OpenAiProvider],
+  exports: [AI_PROVIDER_TOKEN, 'IAiProvider', LangChainProvider, OpenAiProvider],
 })
 export class CoreModule {}

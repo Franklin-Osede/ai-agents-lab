@@ -38,7 +38,7 @@ export class InMemoryCartRepository implements ICartRepository {
       'LC-003',
       'https://lh3.googleusercontent.com/aida-public/AB6AXuA4E7vtj1buiR582vECaOUjlgsn-yXQW3euBGqUXlu4MQJV7ytaUcj-hbSuOtCz9BHaSfO32y5joj1Mpb4-s6G04m50nxPEwVai6ZT3CY2ZgzPvHhP8mSfi1_3NZDqVZolvidFqw3xoxNDvgVSrSK7P10qx9pVDq_XfVmy5sVH52IHHVMv8Bz0V_VhKgTKiHMvTQ3Pnokp1XFw2GbGeRQ4GO3RqIqHcNXfeawkMqA-U5aLwFpdsGKi41L4UKtpxYRxnbin-0jhy9yo',
     ).value;
-    const cart1 = Cart.create('cart-1', 'customer-1', [item1, item2, item3]).value;
+    const cart1 = Cart.create('cart-1', 'customer-1', 'demo-tenant', [item1, item2, item3]).value;
     cart1.markAsAbandoned();
     cart1.lastModifiedAt = new Date(Date.now() - 4 * 60 * 60 * 1000); // 4 hours ago
 
@@ -59,7 +59,7 @@ export class InMemoryCartRepository implements ICartRepository {
       'VLV-COP-99',
       'https://lh3.googleusercontent.com/aida-public/AB6AXuCOcqrTsns8RBwGQKsNDuxuvGe7M2p1mtnjFbzNFWqAGmiaytSCEInpznTkL4M38UY29G3UkCdK7UQ01thpTo_yejX-f_8okoA5sCvf7ybgQg5JPFTD6oOd87VU_OZ2zUrfvjVDfD2TW7zCmyUt4NSdexSvpN0ftuz67phjDsD9o5f6JWkmE7fdCxswAWJqqYAEx8JIPoyRUyQOun5eQKbBEfsr7rfoPhRCeNQiucjhn7IBiFZDX81jMroOUs-AvuH-VMsBruIBRpo',
     ).value;
-    const cart2 = Cart.create('cart-2', 'customer-2', [item4, item5]).value;
+    const cart2 = Cart.create('cart-2', 'customer-2', 'demo-tenant', [item4, item5]).value;
     cart2.markAsAbandoned();
     cart2.lastModifiedAt = new Date(Date.now() - 24 * 60 * 60 * 1000); // 1 day ago
 
@@ -72,7 +72,7 @@ export class InMemoryCartRepository implements ICartRepository {
       'WM-2023-SL',
       'https://lh3.googleusercontent.com/aida-public/AB6AXuBS09iIG9VZluIDNjhwi3i0n6SVtkNGshLQ7mtzq77ymeLGLmC8kRia8AoJEokWJnJHtCWFQ1D8p5vnrcAT1SK5bAQJsgq8X7OyOV4o89AAORrkXPN7CGlFI_Pw1eVrhF0CjscyzdOWPJ3-JaxddqSFbnxrAVVmpj90xN3ROdGbMZ4KSL2e71rmp2fGYIl2O1m_i8zjfDSqHQXDQRWOGCFuKISVvE204wIQfHRb90CFcyOV2_SNqVqj8PZbX6CFzv2uwA91H-NGLik',
     ).value;
-    const cart3 = Cart.create('cart-3', 'customer-3', [item6]).value;
+    const cart3 = Cart.create('cart-3', 'customer-3', 'demo-tenant', [item6]).value;
     cart3.markAsAbandoned();
     cart3.lastModifiedAt = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000); // 3 days ago
 

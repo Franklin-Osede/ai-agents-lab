@@ -5,7 +5,7 @@ services:
     image: postgres:15-alpine
     container_name: ai_agents_lab_db
     ports:
-      - "5432:5432"
+      - '5434:5432'
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
@@ -18,7 +18,7 @@ services:
     image: dpage/pgadmin4
     container_name: ai_agents_lab_pgadmin
     ports:
-      - "5050:80"
+      - '5050:80'
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@admin.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}

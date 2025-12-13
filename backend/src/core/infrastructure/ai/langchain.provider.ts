@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ChatOpenAI } from '@langchain/openai';
 import { HumanMessage, SystemMessage, BaseMessage } from '@langchain/core/messages';
+import OpenAI from 'openai';
 
 export interface IAiProvider {
   generateResponse(prompt: string, context?: { systemPrompt?: string }): Promise<string>;
@@ -15,6 +16,7 @@ export interface IAiProvider {
 export class LangChainProvider implements IAiProvider {
   private readonly logger = new Logger(LangChainProvider.name);
   private model: ChatOpenAI;
+  private openaiClient: OpenAI;
 
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
@@ -27,6 +29,9 @@ export class LangChainProvider implements IAiProvider {
       modelName: 'gpt-4o', // Or gpt-3.5-turbo if cost is a concern
       temperature: 0.7,
     });
+
+    // Initialize OpenAI client for audio features
+    this.openaiClient = new OpenAI({ apiKey });
   }
 
   async generateResponse(prompt: string, context?: { systemPrompt?: string }): Promise<string> {
@@ -69,6 +74,7 @@ export class LangChainProvider implements IAiProvider {
       throw error;
     }
   }
+
   async classifyIntent(
     message: string,
     intents: string[],
@@ -86,6 +92,37 @@ Return ONLY a valid JSON object like: {"intent": "selected_intent", "confidence"
       this.logger.error('Error parsing intent classification response:', error);
       // Fallback
       return { intent: intents[0], confidence: 0.0 };
+    }
+  }
+
+  // Audio methods - delegate to OpenAI client
+  async transcribeAudio(fileBuffer: Buffer): Promise<string> {
+    try {
+      const file = await OpenAI.toFile(fileBuffer, 'voice_input.webm', { type: 'audio/webm' });
+      const transcription = await this.openaiClient.audio.transcriptions.create({
+        file: file,
+        model: 'whisper-1',
+        language: 'es',
+      });
+      return transcription.text;
+    } catch (error) {
+      this.logger.error('Error transcribing audio:', error);
+      throw new Error('Failed to transcribe audio');
+    }
+  }
+
+  async generateAudio(text: string): Promise<Buffer> {
+    try {
+      const mp3 = await this.openaiClient.audio.speech.create({
+        model: 'tts-1',
+        voice: 'alloy',
+        input: text,
+      });
+      const buffer = Buffer.from(await mp3.arrayBuffer());
+      return buffer;
+    } catch (error) {
+      this.logger.error('Error generating audio:', error);
+      throw new Error('Failed to generate audio');
     }
   }
 

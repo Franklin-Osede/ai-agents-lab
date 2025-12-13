@@ -11,9 +11,13 @@
         <button class="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" type="button" (click)="goBack()">
           <span class="material-symbols-outlined text-slate-700 dark:text-slate-200">arrow_back_ios_new</span>
         </button>
-        <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Carritos Abandonados</h1>
+        <div class="flex flex-col">
+          <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">{{ getHeaderTitle() }}</h1>
+          <p class="text-xs text-gray-500">{{ carts().length }} {{ carts().length === 1 ? 'carrito encontrado' : 'carritos encontrados' }}</p>
+        </div>
       </div>
       <div class="flex items-center gap-2">
+        <!-- ... existing notification code ... -->
         <div class="relative notifications-dropdown-container">
           <button class="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-slate-600 dark:text-slate-300" type="button" (click)="toggleNotificationsDropdown()">
             <span class="material-symbols-outlined">notifications</span>
@@ -152,7 +156,7 @@
       </div>
     } @else {
       @for (cart of carts(); track cart.id) {
-        <div class="group relative rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-md transition-shadow" [ngClass]="{'bg-blue-50 dark:bg-blue-900/10': selectedCarts().has(cart.id), 'bg-surface-light dark:bg-surface-dark': !selectedCarts().has(cart.id)}">
+        <div class="group relative rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-md transition-shadow" [ngClass]="{'bg-blue-50 dark:bg-blue-900/10': selectedCarts().has(cart.id), 'bg-surface-light dark:bg-surface-dark': !selectedCarts().has(cart.id), 'border-l-4 border-l-green-500': cart.status === 'RECOVERED'}">
           <!-- Selection Checkbox (Simulated Mass Action) -->
           <div class="absolute top-4 right-4 z-10">
             @if (selectedCarts().has(cart.id)) {
@@ -174,24 +178,35 @@
             <div class="flex-1 min-w-0 pr-6">
               <div class="flex items-center gap-2 mb-1">
                 <h3 class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ cart.customer?.name || 'Cliente' }}</h3>
-                <!-- Estado Badge -->
-                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap"
-                      [ngClass]="{
-                        'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400': cart.status === 'ABANDONED',
-                        'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400': cart.status === 'RECOVERED'
-                      }">
-                  {{ getStatusLabel(cart.status) }}
-                </span>
+                <!-- Estado Badge (Conditionally hidden if we are in strict recovered view to reduce noise, or keep for clarity) -->
+                @if (!isRecoveredView()) {
+                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap"
+                        [ngClass]="{
+                          'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400': cart.status === 'ABANDONED',
+                          'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400': cart.status === 'RECOVERED'
+                        }">
+                    {{ getStatusLabel(cart.status) }}
+                  </span>
+                }
               </div>
               <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ getCustomerInfo(cart) }}</p>
-              <p class="text-[10px] font-medium text-orange-600 mt-0.5 flex items-center gap-1">
-                <span class="material-symbols-outlined text-[12px] filled">schedule</span>
-                Hace {{ getTimeAgo(cart.lastModifiedAt) }}
-              </p>
+              
+              <!-- Conditional Subtitle: Recovered Date vs Time Ago -->
+              @if (cart.status === 'RECOVERED') {
+                 <p class="text-[10px] font-medium text-green-600 mt-0.5 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[12px] filled">check_circle</span>
+                  Recuperado hace {{ getTimeAgo(cart.lastModifiedAt) }}
+                </p>
+              } @else {
+                <p class="text-[10px] font-medium text-orange-600 mt-0.5 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[12px] filled">schedule</span>
+                  Abandonado hace {{ getTimeAgo(cart.lastModifiedAt) }}
+                </p>
+              }
             </div>
           </div>
 
-          <!-- Products Preview - Solo 1 imagen para reducir saturación -->
+          <!-- Products Preview -->
           <div class="flex items-center gap-2 mb-4 overflow-hidden">
             @if (cart.items.length > 0) {
               <div class="h-12 w-12 shrink-0 rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden border border-gray-100 dark:border-gray-700">
@@ -205,43 +220,76 @@
             }
           </div>
 
-          <!-- Stats & Probability -->
+          <!-- Stats & Probability / Recovery Info -->
           <div class="grid grid-cols-2 gap-4 mb-4 items-end">
             <div>
-              <p class="text-xs text-gray-500 mb-1">Total del carrito</p>
-              <p class="text-xl font-bold text-primary tracking-tight">${{ cart.totalValue | number:'1.2-2' }}</p>
+              <p class="text-xs text-gray-500 mb-1">
+                {{ cart.status === 'RECOVERED' ? 'Monto Recuperado' : 'Total del carrito' }}
+              </p>
+              <p class="text-xl font-bold tracking-tight" [class.text-green-600]="cart.status === 'RECOVERED'" [class.text-primary]="cart.status !== 'RECOVERED'">
+                ${{ cart.totalValue | number:'1.2-2' }}
+              </p>
             </div>
-            <div>
-              <div class="flex justify-between items-center mb-1">
-                <span class="text-xs text-gray-500">Probabilidad</span>
-                <span class="text-xs font-bold" [class.text-green-600]="(cart.recoveryProbability || 0) >= 70" [class.text-yellow-600]="(cart.recoveryProbability || 0) >= 40 && (cart.recoveryProbability || 0) < 70" [class.text-red-600]="(cart.recoveryProbability || 0) < 40">
-                  {{ cart.recoveryProbability || 0 }}%
-                </span>
+            
+            @if (cart.status !== 'RECOVERED') {
+              <!-- Standard Probability for Abandoned -->
+              <div>
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-xs text-gray-500">Probabilidad</span>
+                  <span class="text-xs font-bold" [class.text-green-600]="(cart.recoveryProbability || 0) >= 70" [class.text-yellow-600]="(cart.recoveryProbability || 0) >= 40 && (cart.recoveryProbability || 0) < 70" [class.text-red-600]="(cart.recoveryProbability || 0) < 40">
+                    {{ cart.recoveryProbability || 0 }}%
+                  </span>
+                </div>
+                <div class="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full transition-all" 
+                       [class.bg-green-500]="(cart.recoveryProbability || 0) >= 70"
+                       [class.bg-yellow-500]="(cart.recoveryProbability || 0) >= 40 && (cart.recoveryProbability || 0) < 70"
+                       [class.bg-red-400]="(cart.recoveryProbability || 0) < 40"
+                       [style.width.%]="cart.recoveryProbability || 0"></div>
+                </div>
               </div>
-              <div class="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                <div class="h-full rounded-full transition-all" 
-                     [class.bg-green-500]="(cart.recoveryProbability || 0) >= 70"
-                     [class.bg-yellow-500]="(cart.recoveryProbability || 0) >= 40 && (cart.recoveryProbability || 0) < 70"
-                     [class.bg-red-400]="(cart.recoveryProbability || 0) < 40"
-                     [style.width.%]="cart.recoveryProbability || 0"></div>
+            } @else {
+              <!-- Channel Info for Recovered -->
+              <div class="flex flex-col items-end">
+                 <p class="text-xs text-gray-500 mb-1">Recuperado por</p>
+                 <div class="flex items-center gap-1 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded text-green-700 dark:text-green-400 text-xs font-bold">
+                   <span class="material-symbols-outlined text-[14px]">chat</span>
+                   WhatsApp
+                 </div>
               </div>
-            </div>
+            }
           </div>
 
           <!-- Actions -->
           <div class="flex gap-2">
-            <button class="flex-1 h-9 flex items-center justify-center rounded-lg bg-primary text-white text-xs font-semibold shadow-sm shadow-primary/30 hover:bg-primary/90 transition-colors" type="button" (click)="recoverCart(cart.id)">
-              <span class="material-symbols-outlined text-[16px] mr-1.5">send</span>
-              Recuperar
-            </button>
+            @if (cart.status !== 'RECOVERED') {
+              <button class="flex-1 h-9 flex items-center justify-center rounded-lg bg-primary text-white text-xs font-semibold shadow-sm shadow-primary/30 hover:bg-primary/90 transition-colors" type="button" (click)="recoverCart(cart.id)">
+                <span class="material-symbols-outlined text-[16px] mr-1.5">send</span>
+                Recuperar
+              </button>
+            } @else {
+              <!-- Mock "View Order" for recovered -->
+               <button class="flex-1 h-9 flex items-center justify-center rounded-lg bg-emerald-600 text-white text-xs font-semibold shadow-sm shadow-emerald-600/30 hover:bg-emerald-700 transition-colors" type="button" (click)="viewOrder(cart.id)">
+                <span class="material-symbols-outlined text-[16px] mr-1.5">receipt_long</span>
+                Ver Orden
+              </button>
+            }
             <a [routerLink]="['/abandoned-cart', cart.id]" class="px-3 h-9 flex items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-800 text-slate-700 dark:text-slate-200 border border-gray-200 dark:border-gray-700 text-xs font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-              Ver detalles
+              Info
             </a>
           </div>
         </div>
       } @empty {
-        <div class="flex items-center justify-center py-12">
-          <p class="text-gray-500">No hay carritos abandonados</p>
+        <div class="flex items-center justify-center py-12 flex-col gap-3">
+          <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-full">
+            <span class="material-symbols-outlined text-4xl text-gray-300">shopping_cart_off</span>
+          </div>
+          <p class="text-gray-500 font-medium">No se encontraron carritos</p>
+          @if (activeFilter() !== 'all' || statusFilter() !== 'all') {
+            <button class="text-primary text-sm font-bold hover:underline" (click)="setFilter('all'); setStatusFilter('all')">
+              Borrar filtros
+            </button>
+          }
         </div>
       }
     }

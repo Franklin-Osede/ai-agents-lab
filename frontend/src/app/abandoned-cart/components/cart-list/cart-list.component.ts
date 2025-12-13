@@ -151,6 +151,14 @@ export class CartListComponent implements OnInit {
     this.showToast('Recuperación iniciada');
   }
 
+  viewOrder(cartId: string): void {
+    this.showToast(`Abriendo orden asociada al carrito...`);
+    // Mock navigation or modal
+    setTimeout(() => {
+       alert('Detalle de orden simulado:\n\nOrden #9283\nEstado: Completado\nTotal: $1,240\nItems: 1');
+    }, 300);
+  }
+
   getTimeAgo(date: Date): string {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
@@ -235,6 +243,12 @@ export class CartListComponent implements OnInit {
     }
   }
 
+  isRecoveredView = computed(() => this.statusFilter() === 'RECOVERED');
+  
+  getHeaderTitle = computed(() => {
+    return this.isRecoveredView() ? 'Ingresos Recuperados' : 'Carritos Abandonados';
+  });
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
@@ -278,6 +292,15 @@ export class CartListComponent implements OnInit {
     const name = names[(seed + Math.floor(Math.random() * names.length)) % names.length];
     const product = products[(seed + Math.floor(Math.random() * products.length)) % products.length];
     const value = Number((Math.random() * 900 + 80).toFixed(2));
+    
+    // Random date generation logic
+    let created = new Date(Date.now() - this.getRandomInt(1, 48) * 60 * 60 * 1000);
+    // Force 30% of generateMockCart to be today (very recent)
+    if (seed % 3 === 0) {
+       created = new Date();
+       created.setHours(new Date().getHours() - this.getRandomInt(0, 5));
+    }
+
     return {
       id: `cart-extra-${Date.now()}-${seed}`,
       customerId: `customer-extra-${seed}`,
@@ -300,8 +323,8 @@ export class CartListComponent implements OnInit {
       ],
       totalValue: value,
       status: CartStatus.ABANDONED,
-      createdAt: new Date(Date.now() - this.getRandomInt(1, 48) * 60 * 60 * 1000),
-      lastModifiedAt: new Date(),
+      createdAt: created,
+      lastModifiedAt: created,
       recoveryAttempts: 0,
       recoveryProbability: this.getRandomInt(10, 95),
     };

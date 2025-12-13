@@ -32,9 +32,22 @@ export class AbandonedCartDashboardComponent implements OnInit {
   metrics = signal<CartMetrics | null>(null);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
+  greeting = signal<string>('Bienvenido de vuelta');
 
   ngOnInit(): void {
+    this.updateWelcomeMessage();
     this.loadMetrics();
+  }
+
+  private updateWelcomeMessage(): void {
+    const hour = new Date().getHours();
+    if (hour < 12) {
+      this.greeting.set('Buenos días');
+    } else if (hour < 18) {
+      this.greeting.set('Buenas tardes');
+    } else {
+      this.greeting.set('Buenas noches');
+    }
   }
 
   private loadMetrics(): void {
@@ -51,7 +64,7 @@ export class AbandonedCartDashboardComponent implements OnInit {
         this.loading.set(false);
         // Set mock data for development
         this.metrics.set({
-          abandonedToday: 142,
+          abandonedToday: Math.floor(Math.random() * (200 - 100 + 1)) + 100,
           totalValue: 12400,
           recoveryRate: 18.5,
           recoveredRevenue: 2300,
@@ -94,16 +107,14 @@ export class AbandonedCartDashboardComponent implements OnInit {
         break;
       
       case 'recovery-rate':
-        // Navigate to campaigns/results to see detailed recovery analytics
-        this.router.navigate(['/abandoned-cart/campaigns'], {
-          queryParams: { view: 'analytics' }
-        });
+        // Navigate to new performance analytics view
+        this.router.navigate(['/abandoned-cart/performance']);
         break;
       
       case 'recovered-revenue':
         // Navigate to cart list filtered by recovered status
         this.router.navigate(['/abandoned-cart/list'], {
-          queryParams: { status: 'recovered' }
+          queryParams: { status: 'RECOVERED' }
         });
         break;
     }

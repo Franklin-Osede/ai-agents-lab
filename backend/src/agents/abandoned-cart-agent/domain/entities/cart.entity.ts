@@ -1,3 +1,4 @@
+import { Entity, Column, PrimaryColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Result } from '../../../../core/domain/shared/value-objects/result';
 import { CartItem } from '../value-objects/cart-item.vo';
 
@@ -8,22 +9,69 @@ export enum CartStatus {
   LOST = 'LOST',
 }
 
+@Entity('carts')
 export class Cart {
-  constructor(
-    public readonly id: string,
-    public readonly customerId: string,
-    public readonly items: CartItem[], // Now using CartItem value objects
-    public readonly totalValue: number,
-    public status: CartStatus,
-    public readonly createdAt: Date,
-    public lastModifiedAt: Date,
-    public recoveryAttempts: number = 0,
-    public readonly orderId?: string, // If recovered and converted to order
-  ) {}
+  @PrimaryColumn('uuid')
+  public readonly id: string;
 
-  static create(id: string, customerId: string, items: CartItem[]): Result<Cart> {
-    if (!id || !customerId) {
-      return Result.fail(new Error('Cart ID and Customer ID are required'));
+  @Column()
+  public readonly customerId: string;
+
+  @Column()
+  public readonly tenantId: string; // Tenant Isolation
+
+  @Column('jsonb')
+  public readonly items: CartItem[]; // Now using CartItem value objects
+
+  @Column('decimal')
+  public readonly totalValue: number;
+
+  @Column({
+    type: 'enum',
+    enum: CartStatus,
+    default: CartStatus.OPEN
+  })
+  public status: CartStatus;
+
+  @CreateDateColumn()
+  public readonly createdAt: Date;
+
+  @UpdateDateColumn()
+  public lastModifiedAt: Date;
+
+  @Column({ default: 0 })
+  public recoveryAttempts: number = 0;
+
+  @Column({ nullable: true })
+  public readonly orderId?: string; // If recovered and converted to order
+
+  constructor(
+    id: string,
+    customerId: string,
+    tenantId: string,
+    items: CartItem[],
+    totalValue: number,
+    status: CartStatus,
+    createdAt: Date,
+    lastModifiedAt: Date,
+    recoveryAttempts: number = 0,
+    orderId?: string,
+  ) {
+    this.id = id;
+    this.customerId = customerId;
+    this.tenantId = tenantId;
+    this.items = items;
+    this.totalValue = totalValue;
+    this.status = status;
+    this.createdAt = createdAt;
+    this.lastModifiedAt = lastModifiedAt;
+    this.recoveryAttempts = recoveryAttempts;
+    this.orderId = orderId;
+  }
+
+  static create(id: string, customerId: string, tenantId: string, items: CartItem[]): Result<Cart> {
+    if (!id || !customerId || !tenantId) {
+      return Result.fail(new Error('Cart ID, Customer ID and Tenant ID are required'));
     }
     if (!items || items.length === 0) {
       return Result.fail(new Error('Cart must have at least one item'));
@@ -37,7 +85,7 @@ export class Cart {
     }
 
     return Result.ok(
-      new Cart(id, customerId, items, totalValue, CartStatus.OPEN, new Date(), new Date()),
+      new Cart(id, customerId, tenantId, items, totalValue, CartStatus.OPEN, new Date(), new Date()),
     );
   }
 

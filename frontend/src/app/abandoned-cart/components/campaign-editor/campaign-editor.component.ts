@@ -14,8 +14,24 @@ import { AbandonedCartService } from '../../services/abandoned-cart.service';
 export class CampaignEditorComponent {
   private readonly cartService = inject(AbandonedCartService);
 
-  currentStep = signal<number>(3);
+  currentStep = signal<number>(1);
   offerType = signal<'percentage' | 'fixed' | 'free-shipping'>('percentage');
+  showLeadGenModal = signal<boolean>(false);
+
+  simulateCampaign(): void {
+    // Instead of just an alert, we can show the lead gen modal as the "end of demo" hook
+    this.showLeadGenModal.set(true);
+  }
+
+  closeLeadGenModal(): void {
+    this.showLeadGenModal.set(false);
+  }
+
+  submitLeadGen(event: Event): void {
+    event.preventDefault();
+    this.showLeadGenModal.set(false);
+    alert('¡Gracias! Tus datos han sido guardados. Pronto te contactaremos.');
+  }
   discountValue = signal<number>(15);
   expirationHours = signal<number>(48);
 

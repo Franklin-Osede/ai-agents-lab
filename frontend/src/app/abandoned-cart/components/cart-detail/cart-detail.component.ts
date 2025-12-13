@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { AbandonedCartService } from '../../services/abandoned-cart.service';
 import { Cart } from '../../models/cart.model';
+import { EmailPreviewModalComponent } from '../email-preview-modal/email-preview-modal.component';
 
 /**
  * Cart Detail Component
@@ -12,7 +13,7 @@ import { Cart } from '../../models/cart.model';
 @Component({
   selector: 'app-cart-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, EmailPreviewModalComponent],
   templateUrl: './cart-detail.component.html',
   styleUrl: './cart-detail.component.scss',
 })
@@ -24,12 +25,17 @@ export class CartDetailComponent implements OnInit {
   cart = signal<Cart | null>(null);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
+  showEmailPreview = signal<boolean>(false);
 
   ngOnInit(): void {
     const cartId = this.route.snapshot.paramMap.get('id');
     if (cartId) {
       this.loadCart(cartId);
     }
+  }
+
+  toggleEmailPreview(): void {
+    this.showEmailPreview.update(v => !v);
   }
 
   private loadCart(cartId: string): void {

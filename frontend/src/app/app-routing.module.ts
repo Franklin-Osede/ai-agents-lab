@@ -10,6 +10,8 @@ import { CampaignResultsComponent } from './abandoned-cart/components/campaign-r
 import { CampaignListComponent } from './abandoned-cart/components/campaign-list/campaign-list.component';
 import { MobileLayoutComponent } from './abandoned-cart/components/mobile-layout/mobile-layout.component';
 
+import { WelcomeChatComponent } from './abandoned-cart/components/welcome-chat/welcome-chat.component';
+
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
   // Abandoned Cart Routes with Mobile Layout Wrapper
@@ -17,13 +19,15 @@ const routes: Routes = [
     path: 'abandoned-cart',
     component: MobileLayoutComponent,
     children: [
-      { path: '', component: AbandonedCartDashboardComponent },
+      { path: '', component: WelcomeChatComponent },
+      { path: 'dashboard', component: AbandonedCartDashboardComponent },
       { path: 'list', component: CartListComponent },
-      { path: ':id', component: CartDetailComponent },
-      { path: 'customer/:id', component: CustomerActivityComponent },
       { path: 'campaign/new', component: CampaignEditorComponent },
       { path: 'campaigns', component: CampaignListComponent },
       { path: 'campaign/:id/results', component: CampaignResultsComponent },
+      { path: 'performance', loadComponent: () => import('./abandoned-cart/components/recovery-performance/recovery-performance.component').then(m => m.RecoveryPerformanceComponent) },
+      { path: 'customer/:id', component: CustomerActivityComponent },
+      { path: ':id', component: CartDetailComponent },
     ],
   },
   // Legacy route redirects to new dashboard

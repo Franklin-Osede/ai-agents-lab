@@ -22,177 +22,288 @@
 
   <!-- Scrollable Content -->
   <main class="flex-1 overflow-y-auto no-scrollbar px-5 py-2 space-y-6 pb-32">
-    <!-- Step 1: Audiencia (Summary View) -->
-    <section class="group">
+    <!-- Step 1: Audiencia -->
+    <section class="group transition-all duration-300" [class.opacity-50]="currentStep() !== 1">
       <div class="flex items-center justify-between mb-2">
-        <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200">1. Audiencia</h2>
-        <button class="text-xs font-semibold text-primary" type="button">Editar</button>
-      </div>
-      <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="bg-primary/10 p-2 rounded-lg text-primary">
-            <span class="material-symbols-outlined text-[20px]">group</span>
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-slate-900 dark:text-white">Carritos de alto valor</p>
-            <p class="text-xs text-slate-500">245 contactos seleccionados</p>
-          </div>
-        </div>
-        <span class="material-symbols-outlined text-green-500 text-xl">check_circle</span>
-      </div>
-    </section>
-
-    <!-- Step 2: Mensaje (Summary View) -->
-    <section class="group">
-      <div class="flex items-center justify-between mb-2">
-        <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200">2. Mensaje</h2>
-        <button class="text-xs font-semibold text-primary" type="button">Editar</button>
-      </div>
-      <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="bg-green-100 dark:bg-green-900/30 p-2 rounded-lg text-green-600 dark:text-green-400">
-            <span class="material-symbols-outlined text-[20px]">chat</span>
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-slate-900 dark:text-white">WhatsApp Texto</p>
-            <p class="text-xs text-slate-500 line-clamp-1">Hola {{ '{' }}{{ '{' }}Nombre{{ '}' }}{{ '}' }}, notamos que...</p>
-          </div>
-        </div>
-        <span class="material-symbols-outlined text-green-500 text-xl">check_circle</span>
-      </div>
-    </section>
-
-    <!-- Step 3: Oferta (ACTIVE EDITING) -->
-    <section class="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div class="flex items-center gap-2 mb-4">
-        <div class="bg-primary text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shadow-glow">3</div>
-        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Configurar Oferta</h2>
-      </div>
-      <div class="bg-white dark:bg-background-dark rounded-2xl shadow-soft border border-slate-100 dark:border-slate-800 p-5 space-y-6">
-        <!-- Offer Type Selector -->
-        <div>
-          <label class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 block">Tipo de descuento</label>
-          <div class="grid grid-cols-3 gap-3">
-            <!-- Option 1 -->
-            <label class="relative cursor-pointer group">
-              <input checked="" class="peer sr-only" name="offer_type" type="radio" [checked]="offerType() === 'percentage'" (change)="setOfferType('percentage')"/>
-              <div class="h-24 rounded-xl border-2 border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 peer-checked:border-primary flex flex-col items-center justify-center transition-all hover:border-primary/50" [ngClass]="{'border-primary': offerType() === 'percentage', 'bg-primary': offerType() === 'percentage'}" [style.background-color]="offerType() === 'percentage' ? 'rgba(19, 91, 236, 0.05)' : ''">
-                <span class="material-symbols-outlined text-2xl mb-1" [class.text-primary]="offerType() === 'percentage'" [class.text-slate-400]="offerType() !== 'percentage'">percent</span>
-                <span class="text-xs font-bold" [class.text-primary]="offerType() === 'percentage'" [class.text-slate-600]="offerType() !== 'percentage'" [class.dark:text-slate-300]="offerType() !== 'percentage'">Porcentaje</span>
-              </div>
-              @if (offerType() === 'percentage') {
-                <div class="absolute top-2 right-2 opacity-100 transition-opacity">
-                  <span class="material-symbols-outlined text-primary text-sm filled">check_circle</span>
-                </div>
-              }
-            </label>
-            <!-- Option 2 -->
-            <label class="relative cursor-pointer group">
-              <input class="peer sr-only" name="offer_type" type="radio" [checked]="offerType() === 'fixed'" (change)="setOfferType('fixed')"/>
-              <div class="h-24 rounded-xl border-2 border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 peer-checked:border-primary flex flex-col items-center justify-center transition-all hover:border-primary/50" [ngClass]="{'border-primary': offerType() === 'fixed'}" [style.background-color]="offerType() === 'fixed' ? 'rgba(19, 91, 236, 0.05)' : ''">
-                <span class="material-symbols-outlined text-2xl mb-1" [class.text-primary]="offerType() === 'fixed'" [class.text-slate-400]="offerType() !== 'fixed'">attach_money</span>
-                <span class="text-xs font-bold" [class.text-primary]="offerType() === 'fixed'" [class.text-slate-600]="offerType() !== 'fixed'" [class.dark:text-slate-300]="offerType() !== 'fixed'">Monto Fijo</span>
-              </div>
-            </label>
-            <!-- Option 3 -->
-            <label class="relative cursor-pointer group">
-              <input class="peer sr-only" name="offer_type" type="radio" [checked]="offerType() === 'free-shipping'" (change)="setOfferType('free-shipping')"/>
-              <div class="h-24 rounded-xl border-2 border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 peer-checked:border-primary flex flex-col items-center justify-center transition-all hover:border-primary/50" [ngClass]="{'border-primary': offerType() === 'free-shipping'}" [style.background-color]="offerType() === 'free-shipping' ? 'rgba(19, 91, 236, 0.05)' : ''">
-                <span class="material-symbols-outlined text-2xl mb-1" [class.text-primary]="offerType() === 'free-shipping'" [class.text-slate-400]="offerType() !== 'free-shipping'">local_shipping</span>
-                <span class="text-xs font-bold text-center leading-tight" [class.text-primary]="offerType() === 'free-shipping'" [class.text-slate-600]="offerType() !== 'free-shipping'" [class.dark:text-slate-300]="offerType() !== 'free-shipping'">Envío<br/>Gratis</span>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <!-- Value Input -->
-        @if (offerType() !== 'free-shipping') {
-          <div>
-            <label class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 block">Valor del descuento</label>
-            <div class="relative">
-              <input class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 pl-4 pr-12 text-lg font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" type="number" [value]="discountValue()" (input)="discountValue.set(+$any($event.target).value)"/>
-              <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">{{ offerType() === 'percentage' ? '%' : '$' }}</div>
-            </div>
-          </div>
+        <h2 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+          <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs text-white" [class.bg-primary]="currentStep() === 1" [class.bg-slate-400]="currentStep() !== 1">1</div>
+          Seleccionar Dataset
+        </h2>
+        @if (currentStep() !== 1) {
+          <button class="text-xs font-semibold text-primary hover:underline" type="button" (click)="currentStep.set(1)">Editar</button>
         }
-
-        <!-- Expiration -->
-        <div>
-          <label class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 block">Expira en</label>
-          <div class="flex gap-2">
-            <button class="flex-1 py-2 px-3 rounded-lg border border-slate-200 dark:border-slate-700 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition" type="button" [ngClass]="{'bg-primary text-white shadow-md': expirationHours() === 24, 'text-slate-600 dark:text-slate-400': expirationHours() !== 24}" (click)="setExpiration(24)">24h</button>
-            <button class="flex-1 py-2 px-3 rounded-lg text-sm font-bold" type="button" [ngClass]="{'bg-primary text-white shadow-md': expirationHours() === 48, 'border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400': expirationHours() !== 48}" (click)="setExpiration(48)">48h</button>
-            <button class="flex-1 py-2 px-3 rounded-lg border border-slate-200 dark:border-slate-700 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition" type="button" [ngClass]="{'bg-primary text-white shadow-md': expirationHours() === 168, 'text-slate-600 dark:text-slate-400': expirationHours() !== 168}" (click)="setExpiration(168)">7d</button>
-          </div>
-        </div>
       </div>
+      
+      @if (currentStep() === 1) {
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4 space-y-3 animate-in fade-in zoom-in-95">
+          <label class="flex items-center gap-3 p-3 rounded-lg border border-primary bg-blue-50/50 dark:bg-blue-900/10 cursor-pointer">
+            <input type="radio" name="audience" checked class="text-primary focus:ring-primary size-4">
+            <div class="flex-1">
+              <p class="text-sm font-bold text-slate-900 dark:text-white">ChatAgent Data Set</p>
+              <p class="text-xs text-slate-500">Valor > $500 (245 contactos)</p>
+            </div>
+          </label>
+          <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors">
+            <input type="radio" name="audience" class="text-primary focus:ring-primary size-4">
+            <div class="flex-1">
+              <p class="text-sm font-bold text-slate-900 dark:text-white">Todos los Carritos</p>
+              <p class="text-xs text-slate-500">Últimos 7 días (840 contactos)</p>
+            </div>
+          </label>
+        </div>
+      } @else {
+        <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="bg-primary/10 p-2 rounded-lg text-primary">
+              <span class="material-symbols-outlined text-[20px]">group</span>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-900 dark:text-white">Carritos de alto valor</p>
+              <p class="text-xs text-slate-500">245 contactos seleccionados</p>
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-green-500 text-xl">check_circle</span>
+        </div>
+      }
     </section>
 
-    <!-- Step 4: Advanced Config (Partial View) -->
-    <section class="pt-2">
-      <div class="flex items-center gap-2 mb-4 opacity-50">
-        <div class="bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">4</div>
-        <h2 class="text-lg font-bold text-slate-400 dark:text-slate-500">Personalización Avanzada</h2>
+    <!-- Step 2: Mensaje -->
+    <section class="group transition-all duration-300" [class.opacity-50]="currentStep() !== 2">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+            <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs text-white" [class.bg-primary]="currentStep() === 2" [class.bg-slate-400]="currentStep() !== 2">2</div>
+            Mensaje
+        </h2>
+        @if (currentStep() !== 2) {
+            <button class="text-xs font-semibold text-primary hover:underline" type="button" (click)="currentStep.set(2)">Editar</button>
+        }
       </div>
-      <div class="bg-white dark:bg-background-dark rounded-2xl border border-slate-100 dark:border-slate-800 p-5 space-y-8 opacity-80 hover:opacity-100 transition-opacity">
-        <!-- Timing Slider -->
-        <div>
-          <div class="flex justify-between mb-2">
-            <label class="text-xs font-bold text-slate-500 uppercase">Tiempo de envío</label>
-            <span class="text-xs font-bold text-primary">1 hora después</span>
+
+      @if (currentStep() === 2) {
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4 space-y-3 animate-in fade-in zoom-in-95">
+          <div class="flex gap-2 mb-2">
+             <button type="button" class="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded hover:bg-slate-200 border border-slate-200 dark:border-slate-700">{{'{'}}Nombre{{'}'}}</button>
+             <button type="button" class="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded hover:bg-slate-200 border border-slate-200 dark:border-slate-700">{{'{'}}Producto{{'}'}}</button>
           </div>
-          <input class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700" max="72" min="1" type="range" value="1"/>
-          <div class="flex justify-between mt-1 text-[10px] text-slate-400 font-medium">
-            <span>Inmediato</span>
-            <span>24h</span>
-            <span>3 días</span>
+          <textarea class="w-full text-sm p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-black focus:ring-2 focus:ring-primary outline-none min-h-[100px]" placeholder="Escribe tu mensaje aquí...">Hola {{'{'}}Nombre{{'}'}}, notamos que dejaste {{'{'}}Producto{{'}'}} en tu carrito. Completa tu compra hoy con un 15% OFF! 🛒</textarea>
+          <div class="flex justify-end">
+             <span class="text-[10px] text-slate-400">0/160 caracteres</span>
           </div>
         </div>
+      } @else {
+        <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+            <div class="bg-green-100 dark:bg-green-900/30 p-2 rounded-lg text-green-600 dark:text-green-400">
+                <span class="material-symbols-outlined text-[20px]">chat</span>
+            </div>
+            <div>
+                <p class="text-sm font-semibold text-slate-900 dark:text-white">WhatsApp Texto</p>
+                <p class="text-xs text-slate-500 line-clamp-1">Hola {{ '{' }}{{ '{' }}Nombre{{ '}' }}{{ '}' }}, notamos que...</p>
+            </div>
+            </div>
+            <span class="material-symbols-outlined text-green-500 text-xl">check_circle</span>
+        </div>
+      }
+    </section>
 
-        <!-- Tone Slider -->
-        <div>
-          <div class="flex justify-between mb-2">
-            <label class="text-xs font-bold text-slate-500 uppercase">Tono del mensaje</label>
-            <span class="text-xs font-bold text-primary">Amigable</span>
+    <!-- Step 3: Configurar Oferta -->
+    <section class="group transition-all duration-300" [class.opacity-50]="currentStep() !== 3">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+          <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs text-white" [class.bg-primary]="currentStep() === 3" [class.bg-slate-400]="currentStep() !== 3">3</div>
+          Configurar Oferta
+        </h2>
+        @if (currentStep() !== 3) {
+          <button class="text-xs font-semibold text-primary hover:underline" type="button" (click)="currentStep.set(3)">Editar</button>
+        }
+      </div>
+      @if (currentStep() === 3) {
+        <div class="bg-white dark:bg-background-dark rounded-2xl shadow-soft border border-slate-100 dark:border-slate-800 p-5 space-y-6 animate-in fade-in zoom-in-95">
+          <!-- Offer Type Selector -->
+          <div>
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 block">Tipo de descuento</label>
+            <div class="grid grid-cols-3 gap-3">
+              <!-- Option 1 -->
+              <label class="relative cursor-pointer group">
+                <input checked="" class="peer sr-only" name="offer_type" type="radio" [checked]="offerType() === 'percentage'" (change)="setOfferType('percentage')"/>
+                <div class="h-24 rounded-xl border-2 border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 peer-checked:border-primary flex flex-col items-center justify-center transition-all hover:border-primary/50" [ngClass]="{'border-primary': offerType() === 'percentage', 'bg-primary': offerType() === 'percentage'}" [style.background-color]="offerType() === 'percentage' ? 'rgba(19, 91, 236, 0.05)' : ''">
+                  <span class="material-symbols-outlined text-2xl mb-1" [class.text-primary]="offerType() === 'percentage'" [class.text-slate-400]="offerType() !== 'percentage'">percent</span>
+                  <span class="text-xs font-bold" [class.text-primary]="offerType() === 'percentage'" [class.text-slate-600]="offerType() !== 'percentage'" [class.dark:text-slate-300]="offerType() !== 'percentage'">Porcentaje</span>
+                </div>
+                @if (offerType() === 'percentage') {
+                  <div class="absolute top-2 right-2 opacity-100 transition-opacity">
+                    <span class="material-symbols-outlined text-primary text-sm filled">check_circle</span>
+                  </div>
+                }
+              </label>
+              <!-- Option 2 -->
+              <label class="relative cursor-pointer group">
+                <input class="peer sr-only" name="offer_type" type="radio" [checked]="offerType() === 'fixed'" (change)="setOfferType('fixed')"/>
+                <div class="h-24 rounded-xl border-2 border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 peer-checked:border-primary flex flex-col items-center justify-center transition-all hover:border-primary/50" [ngClass]="{'border-primary': offerType() === 'fixed'}" [style.background-color]="offerType() === 'fixed' ? 'rgba(19, 91, 236, 0.05)' : ''">
+                  <span class="material-symbols-outlined text-2xl mb-1" [class.text-primary]="offerType() === 'fixed'" [class.text-slate-400]="offerType() !== 'fixed'">attach_money</span>
+                  <span class="text-xs font-bold" [class.text-primary]="offerType() === 'fixed'" [class.text-slate-600]="offerType() !== 'fixed'" [class.dark:text-slate-300]="offerType() !== 'fixed'">Monto Fijo</span>
+                </div>
+              </label>
+              <!-- Option 3 -->
+              <label class="relative cursor-pointer group">
+                <input class="peer sr-only" name="offer_type" type="radio" [checked]="offerType() === 'free-shipping'" (change)="setOfferType('free-shipping')"/>
+                <div class="h-24 rounded-xl border-2 border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 peer-checked:border-primary flex flex-col items-center justify-center transition-all hover:border-primary/50" [ngClass]="{'border-primary': offerType() === 'free-shipping'}" [style.background-color]="offerType() === 'free-shipping' ? 'rgba(19, 91, 236, 0.05)' : ''">
+                  <span class="material-symbols-outlined text-2xl mb-1" [class.text-primary]="offerType() === 'free-shipping'" [class.text-slate-400]="offerType() !== 'free-shipping'">local_shipping</span>
+                  <span class="text-xs font-bold text-center leading-tight" [class.text-primary]="offerType() === 'free-shipping'" [class.text-slate-600]="offerType() !== 'free-shipping'" [class.dark:text-slate-300]="offerType() !== 'free-shipping'">Envío<br/>Gratis</span>
+                </div>
+              </label>
+            </div>
           </div>
-          <div class="relative pt-1">
-            <input class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700" max="3" min="1" type="range" value="2"/>
-            <div class="flex justify-between mt-1 text-[10px] text-slate-400 font-medium">
-              <span>Urgente</span>
-              <span>Amigable</span>
-              <span>Formal</span>
+
+          <!-- Value Input -->
+          @if (offerType() !== 'free-shipping') {
+            <div>
+              <label class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 block">Valor del descuento</label>
+              <div class="relative">
+                <input class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 pl-4 pr-12 text-lg font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" type="number" [value]="discountValue()" (input)="discountValue.set(+$any($event.target).value)"/>
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">{{ offerType() === 'percentage' ? '%' : '$' }}</div>
+              </div>
+            </div>
+          }
+
+          <!-- Expiration -->
+          <div>
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 block">Expira en</label>
+            <div class="flex gap-2">
+              <button class="flex-1 py-2 px-3 rounded-lg border border-slate-200 dark:border-slate-700 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition" type="button" [ngClass]="{'bg-primary text-white shadow-md': expirationHours() === 24, 'text-slate-600 dark:text-slate-400': expirationHours() !== 24}" (click)="setExpiration(24)">24h</button>
+              <button class="flex-1 py-2 px-3 rounded-lg text-sm font-bold" type="button" [ngClass]="{'bg-primary text-white shadow-md': expirationHours() === 48, 'border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400': expirationHours() !== 48}" (click)="setExpiration(48)">48h</button>
+              <button class="flex-1 py-2 px-3 rounded-lg border border-slate-200 dark:border-slate-700 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition" type="button" [ngClass]="{'bg-primary text-white shadow-md': expirationHours() === 168, 'text-slate-600 dark:text-slate-400': expirationHours() !== 168}" (click)="setExpiration(168)">7d</button>
             </div>
           </div>
         </div>
+      } @else {
+        <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="bg-primary/10 p-2 rounded-lg text-primary">
+              <span class="material-symbols-outlined text-[20px]">sell</span>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-900 dark:text-white">Descuento del {{ discountValue() }}{{ offerType() === 'percentage' ? '%' : '$' }}</p>
+              <p class="text-xs text-slate-500">Expira en {{ expirationHours() }} horas</p>
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-green-500 text-xl">check_circle</span>
+        </div>
+      }
+    </section>
+
+    <!-- Step 4: Personalización Avanzada -->
+    <section class="group transition-all duration-300" [class.opacity-50]="currentStep() !== 4">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+           <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs text-white" [class.bg-primary]="currentStep() === 4" [class.bg-slate-400]="currentStep() !== 4">4</div>
+           Personalización Avanzada
+        </h2>
+        @if (currentStep() !== 4) {
+             <button class="text-xs font-semibold text-primary hover:underline" type="button" (click)="currentStep.set(4)">Editar</button>
+        }
       </div>
+      
+      @if (currentStep() === 4) {
+        <div class="bg-white dark:bg-background-dark rounded-2xl border border-slate-100 dark:border-slate-800 p-5 space-y-8 animate-in fade-in zoom-in-95">
+            <!-- Timing Slider -->
+            <div>
+            <div class="flex justify-between mb-2">
+                <label class="text-sm font-semibold text-slate-900 dark:text-white">Tiempo de espera</label>
+                <span class="text-sm font-bold text-primary">{{ expirationHours() }} horas</span>
+            </div>
+            <input type="range" min="1" max="72" [value]="expirationHours()" (input)="expirationHours.set(+$any($event.target).value)" class="w-full accent-primary h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer">
+            <div class="flex justify-between mt-1 text-[10px] text-slate-400">
+                <span>1h</span>
+                <span>24h</span>
+                <span>48h</span>
+                <span>72h</span>
+            </div>
+            </div>
+
+            <!-- AI Tone -->
+            <div>
+            <label class="block text-sm font-semibold text-slate-900 dark:text-white mb-3">Tono del Agente AI</label>
+            <div class="grid grid-cols-2 gap-3">
+                <button class="p-3 rounded-xl border-2 border-primary bg-primary/5 text-primary text-xs font-bold flex flex-col items-center gap-1 transition-all">
+                <span class="material-symbols-outlined">sentiment_satisfied</span>
+                Amigable
+                </button>
+                <button type="button" class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-600 dark:text-slate-300 text-xs font-medium flex flex-col items-center gap-1 transition-all">
+                <span class="material-symbols-outlined">business_center</span>
+                Profesional
+                </button>
+            </div>
+            </div>
+
+            <!-- Alerts Configuration -->
+            <div>
+              <label class="block text-sm font-semibold text-slate-900 dark:text-white mb-3">Configuración de Alertas</label>
+              <div class="space-y-3">
+                <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                  <div class="flex items-center gap-3">
+                    <div class="bg-amber-100 text-amber-600 p-2 rounded-lg">
+                      <span class="material-symbols-outlined text-lg">warning</span>
+                    </div>
+                    <div>
+                      <p class="text-sm font-bold text-slate-900 dark:text-white">Alerta de Fraude</p>
+                      <p class="text-xs text-slate-500">Notificar si el carrito excede $1000</p>
+                    </div>
+                  </div>
+                  <div class="relative inline-flex h-6 w-11 items-center rounded-full bg-slate-200 transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:bg-slate-300" [class.bg-primary]="true"> <!-- Mock checked state -->
+                    <span class="translate-x-6 inline-block h-4 w-4 transform rounded-full bg-white transition-transform"></span>
+                  </div>
+                </label>
+                
+                <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                  <div class="flex items-center gap-3">
+                    <div class="bg-purple-100 text-purple-600 p-2 rounded-lg">
+                      <span class="material-symbols-outlined text-lg">support_agent</span>
+                    </div>
+                    <div>
+                      <p class="text-sm font-bold text-slate-900 dark:text-white">Alerta a Soporte</p>
+                      <p class="text-xs text-slate-500">Si el cliente pide ayuda humana</p>
+                    </div>
+                  </div>
+                  <div class="relative inline-flex h-6 w-11 items-center rounded-full bg-slate-200 transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:bg-slate-300">
+                    <span class="translate-x-1 inline-block h-4 w-4 transform rounded-full bg-white transition-transform"></span>
+                  </div>
+                </label>
+              </div>
+            </div>
+        </div>
+      }
     </section>
 
     <!-- Step 5: Confirmation (Preview Peek) -->
-    <section class="pt-2 pb-6">
-      <div class="flex items-center gap-2 mb-4 opacity-50">
-        <div class="bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">5</div>
-        <h2 class="text-lg font-bold text-slate-400 dark:text-slate-500">Vista Previa</h2>
+    <section class="pt-2 pb-6" [class.opacity-50]="currentStep() !== 5">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" [class.bg-primary]="currentStep() === 5" [class.text-white]="currentStep() === 5">5</div>
+        <h2 class="text-lg font-bold text-slate-400 dark:text-slate-500" [class.text-slate-900]="currentStep() === 5" [class.dark:text-white]="currentStep() === 5">Vista Previa</h2>
       </div>
-      <div class="bg-slate-100 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-200 dark:border-slate-700">
-        <div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm relative overflow-hidden">
-          <div class="flex gap-3">
-            <div class="h-10 w-10 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
-              <img class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2gq2cQ9FPAJt-MWjiSUbSzNSXrekucfKH76GQD91NzVJPX1f0OiZOggCBa388geLmW-3ohE91mZFmaS-pgUHJ0L34j5SaNvyo7D6gtnLlYuaFeyTRwPto0wmalgZcc2a5Cuf6Ve5do_-C8Oldg_US2d9cXpyp6o5aVEih5qSqTSTtKQDCRkES3Vg1iQhjbLyR6adYcAhjJgYKBWnsh31prct2B2jQIM9cmvBauBy4fQgpKEDjwtJMg8eMJMqxb2bfpaWI54cdImU"/>
+      
+      @if (currentStep() === 5) {
+        <div class="bg-slate-100 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in-95">
+          <div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm relative overflow-hidden">
+            <div class="flex gap-3">
+              <div class="h-10 w-10 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+                <img class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2gq2cQ9FPAJt-MWjiSUbSzNSXrekucfKH76GQD91NzVJPX1f0OiZOggCBa388geLmW-3ohE91mZFmaS-pgUHJ0L34j5SaNvyo7D6gtnLlYuaFeyTRwPto0wmalgZcc2a5Cuf6Ve5do_-C8Oldg_US2d9cXpyp6o5aVEih5qSqTSTtKQDCRkES3Vg1iQhjbLyR6adYcAhjJgYKBWnsh31prct2B2jQIM9cmvBauBy4fQgpKEDjwtJMg8eMJMqxb2bfpaWI54cdImU"/>
+              </div>
+              <div class="flex-1 space-y-2">
+                <div class="h-3 w-24 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+                <div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded animate-pulse"></div>
+                <div class="h-2 w-2/3 bg-slate-100 dark:bg-slate-800 rounded animate-pulse"></div>
+              </div>
             </div>
-            <div class="flex-1 space-y-2">
-              <div class="h-3 w-24 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
-              <div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded animate-pulse"></div>
-              <div class="h-2 w-2/3 bg-slate-100 dark:bg-slate-800 rounded animate-pulse"></div>
+            <!-- Gradient Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-white/90 dark:from-slate-900/90 to-transparent flex items-end justify-center pb-4">
+              <button class="text-xs font-bold text-primary flex items-center gap-1" type="button" (click)="simulateCampaign()">
+                Ver simulación completa <span class="material-symbols-outlined text-sm">open_in_new</span>
+              </button>
             </div>
-          </div>
-          <!-- Gradient Overlay -->
-          <div class="absolute inset-0 bg-gradient-to-t from-white/90 dark:from-slate-900/90 to-transparent flex items-end justify-center pb-4">
-            <button class="text-xs font-bold text-primary flex items-center gap-1" type="button">
-              Ver simulación completa <span class="material-symbols-outlined text-sm">open_in_new</span>
-            </button>
           </div>
         </div>
-      </div>
+      }
     </section>
   </main>
 
@@ -208,4 +319,39 @@
       </button>
     </div>
   </footer>
+
+  <!-- Lead Gen Modal -->
+  @if (showLeadGenModal()) {
+    <div class="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div class="w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 m-4 animate-in zoom-in-95 duration-200 border border-slate-200 dark:border-slate-800">
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 text-primary">
+                    <span class="material-symbols-outlined text-2xl">rocket_launch</span>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">¿Te gustó esta demo?</h3>
+                <p class="text-sm text-slate-500">Déjanos tus datos para ver una simulación completa con IA en tiempo real.</p>
+            </div>
+
+            <form (submit)="submitLeadGen($event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Email Corporativo</label>
+                    <input type="email" required placeholder="tu@empresa.com" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Teléfono (WhatsApp)</label>
+                    <input type="tel" required placeholder="+34 600 000 000" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all">
+                </div>
+
+                <div class="pt-2 flex gap-3">
+                    <button type="button" (click)="closeLeadGenModal()" class="flex-1 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-[2] py-3 rounded-xl bg-primary text-white font-bold text-sm shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition">
+                        Ver Simulación
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+  }
 </div>

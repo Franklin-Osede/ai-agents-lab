@@ -63,7 +63,7 @@ describe('RecoverCartService', () => {
   it('should process abandoned carts correctly', async () => {
     // Arrange
     const item = CartItem.create('prod-1', 'Item A', 1, 100.0).value;
-    const cart = Cart.create('cart-1', 'customer-1', [item]).value;
+    const cart = Cart.create('cart-1', 'customer-1', 'test-tenant', [item]).value;
     cart.markAsAbandoned();
 
     mockCartRepository.findAbandonedCarts.mockResolvedValue([cart]);
@@ -108,7 +108,7 @@ describe('RecoverCartService', () => {
   it('should handle voice generation failure gracefully', async () => {
     // Arrange
     const item = CartItem.create('prod-1', 'Item A', 1, 100.0).value;
-    const cart = Cart.create('cart-1', 'cust-1', [item]).value;
+    const cart = Cart.create('cart-1', 'cust-1', 'test-tenant', [item]).value;
     cart.markAsAbandoned();
 
     mockCartRepository.findAbandonedCarts.mockResolvedValue([cart]);
@@ -127,7 +127,7 @@ describe('RecoverCartService', () => {
   it('should not recover cart if it cannot be recovered', async () => {
     // Arrange
     const item = CartItem.create('prod-1', 'Item A', 1, 100.0).value;
-    const cart = Cart.create('cart-1', 'cust-1', [item]).value;
+    const cart = Cart.create('cart-1', 'cust-1', 'test-tenant', [item]).value;
     cart.markAsAbandoned();
     cart.incrementRecoveryAttempts();
     cart.incrementRecoveryAttempts();
@@ -146,7 +146,7 @@ describe('RecoverCartService', () => {
   it('should handle WhatsApp send failure gracefully', async () => {
     // Arrange
     const item = CartItem.create('prod-1', 'Item A', 1, 100.0).value;
-    const cart = Cart.create('cart-1', 'customer-1', [item]).value;
+    const cart = Cart.create('cart-1', 'customer-1', 'test-tenant', [item]).value;
     cart.markAsAbandoned();
 
     mockCartRepository.findAbandonedCarts.mockResolvedValue([cart]);

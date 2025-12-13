@@ -26,6 +26,7 @@ export interface Customer {
   name: string;
   email: string;
   phoneNumber?: string;
+  phone?: string;
   company?: string;
   totalOrders?: number;
   totalSpent?: number;

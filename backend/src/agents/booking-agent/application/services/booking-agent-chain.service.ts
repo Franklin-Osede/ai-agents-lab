@@ -336,14 +336,15 @@ Recuerda: Eres INTELIGENTE, CONVERSACIONAL y tu objetivo es crear una experienci
       const resultMessages = result.messages || [];
 
       // Find tool calls for availability checking
-      const toolCalls: Array<{ name: string; args: Record<string, unknown> }> = [];
+      const toolCalls: Array<{ name: string; args: Record<string, unknown>; content?: string }> = [];
       resultMessages.forEach(
         (msg: { _getType?: () => string; name?: string; args?: Record<string, unknown> }) => {
           if (msg._getType && msg._getType() === 'tool') {
             toolCalls.push({
-              name: msg.name,
+              name: msg.name || 'unknown_tool',
               args: msg.args || {},
-              content: msg.content,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              content: (msg as any).content,
             });
           }
         },
@@ -401,7 +402,11 @@ Recuerda: Eres INTELIGENTE, CONVERSACIONAL y tu objetivo es crear una experienci
       // Return enhanced response with tool calls for frontend
       const response: {
         response: string;
-        toolCalls?: Array<{ name: string; args: Record<string, unknown> }>;
+        toolCalls?: Array<{ name: string; args: Record<string, unknown>; content?: string }>;
+        bookingStatus?: string;
+        bookingId?: string;
+        bookingDetails?: Record<string, unknown>;
+        nextAction?: string;
       } = {
         response: responseText,
         toolCalls: toolCalls.length > 0 ? toolCalls : undefined,

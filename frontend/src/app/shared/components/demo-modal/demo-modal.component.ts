@@ -4,6 +4,7 @@ import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { ChatMessage } from '../../models/agent.model';
 import { Router } from '@angular/router';
+import { VoiceService } from '../../services/voice.service';
 
 @Component({
   selector: 'app-demo-modal',
@@ -57,6 +58,11 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   private sessionId = this.generateSessionId();
   private timeouts: number[] = []; // Track all timeouts for cleanup
   
+  // Voice properties
+  currentAudio: HTMLAudioElement | null = null;
+  isPlayingAudio = false;
+  enableVoice = true; // Enable voice for booking agent
+  
   // Helper methods for template type safety
   isStep(step: number): boolean {
     return this.currentStep === step;
@@ -103,6 +109,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private authService: AuthService,
     private router: Router,
+    private voiceService: VoiceService
   ) {}
 
   ngOnInit(): void {

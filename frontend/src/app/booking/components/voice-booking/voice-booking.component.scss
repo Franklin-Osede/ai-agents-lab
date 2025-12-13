@@ -1,0 +1,357 @@
+.voice-booking-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated background blobs */
+.voice-booking-container::before,
+.voice-booking-container::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  animation: float 20s ease-in-out infinite;
+}
+
+.voice-booking-container::before {
+  width: 400px;
+  height: 400px;
+  background: #4f46e5;
+  top: -100px;
+  left: -100px;
+}
+
+.voice-booking-container::after {
+  width: 500px;
+  height: 500px;
+  background: #7c3aed;
+  bottom: -150px;
+  right: -150px;
+  animation-delay: -10s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -30px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+/* iPhone container */
+.iphone-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 90vh;
+  max-height: 844px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 50px;
+  box-shadow: 0 50px 100px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+/* Status bar */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.status-icons {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.status-icons .material-symbols-outlined {
+  font-size: 1rem;
+}
+
+/* Header */
+.header {
+  padding: 1rem 1.5rem;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #4f46e5;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  transform: translateX(-4px);
+}
+
+/* Agent Avatar */
+.agent-avatar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1.5rem;
+}
+
+.avatar-wrapper {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.pulse-ring,
+.pulse-ring-2 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
+  border: 3px solid #4f46e5;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.pulsing .pulse-ring {
+  animation: pulse 2s ease-out infinite;
+}
+
+.pulsing .pulse-ring-2 {
+  animation: pulse 2s ease-out infinite;
+  animation-delay: 1s;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+}
+
+.avatar .material-symbols-outlined {
+  font-size: 3rem;
+  color: white;
+}
+
+.agent-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.agent-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0.25rem 0 0;
+}
+
+/* Question Section */
+.question-section {
+  padding: 0 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.question-card {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.question-icon {
+  margin-bottom: 1rem;
+}
+
+.question-icon .material-symbols-outlined {
+  font-size: 2rem;
+  color: #4f46e5;
+}
+
+.question-text {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem;
+  line-height: 1.6;
+}
+
+.replay-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 1rem;
+  color: #4f46e5;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.replay-button:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #4f46e5;
+  transform: translateY(-2px);
+}
+
+.replay-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Options Section */
+.options-section {
+  padding: 0 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.option-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 1rem;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.option-button:hover:not(:disabled) {
+  border-color: #4f46e5;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+}
+
+.option-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.option-button .material-symbols-outlined {
+  font-size: 2.5rem;
+  color: #4f46e5;
+}
+
+.option-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+}
+
+/* Calendar Section */
+.calendar-section {
+  padding: 2rem 1.5rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-card {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.primary-button {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  border-radius: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 1rem;
+}
+
+.primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+}
+
+/* History Section */
+.history-section {
+  padding: 1rem 1.5rem;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.history-section h4 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin: 0 0 0.75rem;
+}
+
+.history-item {
+  margin-bottom: 0.75rem;
+}
+
+.history-question {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.history-answer {
+  font-size: 0.875rem;
+  color: #4f46e5;
+  font-weight: 600;
+  margin: 0.25rem 0 0;
+}
+
+/* Home indicator */
+.home-indicator {
+  width: 134px;
+  height: 5px;
+  background: #1f2937;
+  border-radius: 100px;
+  margin: 0.75rem auto;
+  opacity: 0.3;
+}

@@ -30,6 +30,11 @@ const routes: Routes = [
       { path: ':id', component: CartDetailComponent },
     ],
   },
+  // Voice Booking Route
+  {
+    path: 'booking',
+    loadChildren: () => import('./booking/booking.module').then(m => m.BookingModule),
+  },
   // Legacy route redirects to new dashboard
   { path: 'professional', redirectTo: '/abandoned-cart', pathMatch: 'full' },
   { path: '**', redirectTo: '' },

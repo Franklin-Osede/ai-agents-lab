@@ -259,10 +259,7 @@ export class WelcomeChatComponent {
     this.updateTime();
     setInterval(() => this.updateTime(), 60000);
 
-    // Auto-play greeting after a short delay
-    setTimeout(() => {
-      this.playGreeting();
-    }, 800);
+    // Removed autoplay - user controls when to play greeting
   }
 
   updateTime() {
@@ -284,7 +281,7 @@ export class WelcomeChatComponent {
 
       // Generate greeting audio if not already generated
       if (!this.greetingAudio) {
-        const greetingText = "Hola, soy tu Agente Recuperador. ¿Te gustaría saber cuántos carritos abandonados tienes pendientes?";
+        const greetingText = "¡Hola! ¡Qué alegría verte por aquí! Soy tu Agente Recuperador. ¿Te gustaría saber cuántos carritos abandonados tienes pendientes?";
         const audioBuffer = await this.voiceService.generateGreeting(greetingText);
         this.greetingAudio = this.voiceService.playAudioBlob(audioBuffer);
         
@@ -325,10 +322,11 @@ export class WelcomeChatComponent {
 
       // Improved system prompt for shorter, more focused responses
       const systemPrompt = `Eres un asistente de recuperación de carritos abandonados. 
+      Tono: FORMAL, PROFESIONAL, AMABLE Y ALEGRE (muy importante el tono alegre y entusiasta).
       Sé EXTREMADAMENTE BREVE (máximo 2 frases cortas).
-      Si el usuario dice SÍ: Responde "Perfecto, presiona el botón para ver tu dashboard."
-      Si el usuario dice NO: Responde "Entendido, ¿en qué más puedo ayudarte?"
-      Mantén un tono amigable pero conciso.`;
+      Si el usuario dice SÍ: Responde con entusiasmo "¡Perfecto! Presiona el botón para ver tu dashboard."
+      Si el usuario dice NO: Responde amablemente "¡Entendido! ¿En qué más puedo ayudarte?"
+      Mantén siempre un tono positivo, alegre y motivador.`;
 
       // Send to backend
       const result = await this.voiceService.interact(audioBlob, systemPrompt);

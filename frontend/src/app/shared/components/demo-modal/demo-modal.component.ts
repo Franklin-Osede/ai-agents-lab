@@ -1535,6 +1535,11 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         };
         this.messages.push(agentMessage);
         
+        // Play audio for booking agent responses
+        if (this.agent.id === 'booking' && this.enableVoice && agentMessage.content) {
+          this.playMessageAudio(agentMessage.content);
+        }
+        
         // Generate contextual suggestions AFTER agent message is added
         // This ensures we can analyze the last agent message correctly
         if (response && response.message) {

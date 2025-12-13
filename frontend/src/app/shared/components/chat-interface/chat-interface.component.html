@@ -18,7 +18,27 @@
               {{ message.sender === 'user' ? 'Tú' : 'Agente' }} • {{ message.timestamp | date:'HH:mm' }}
           </div>
           
-          <div class="message-bubble" 
+          <!-- WhatsApp-Style Audio Message (for agent audio messages) -->
+          <div *ngIf="message.isAudioMessage && message.sender === 'agent'" class="audio-message-container">
+            <div class="audio-player">
+              <span class="material-symbols-outlined mic-icon">mic</span>
+              <div class="waveform" [class.playing]="message.audioPlaying">
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+              </div>
+              <span class="duration">{{ message.audioDuration || '0:03' }}</span>
+            </div>
+            
+            <!-- Show transcript after audio finishes -->
+            <div *ngIf="message.showTranscript" class="transcript">
+              <p class="transcript-label">Transcripción:</p>
+              <p class="transcript-text">{{ message.content }}</p>
+            </div>
+          </div>
+          
+          <!-- Regular text message (for non-audio or user messages) -->
+          <div *ngIf="!message.isAudioMessage || message.sender === 'user'" 
+               class="message-bubble" 
                [class.user]="message.sender === 'user'" 
                [class.agent]="message.sender === 'agent'"
                [class.system]="message.isSystem">

@@ -11,6 +11,9 @@ export class VoiceService {
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
   
+  // Audio cache to avoid regenerating same messages
+  private audioCache = new Map<string, Blob>();
+  
   // API URL - reusing abandoned cart agent prefix for now as the controller lives there
   // Ideally this would be a shared endpoint
   private apiUrl = `${environment.apiBaseUrl || 'http://localhost:3005/api/v1'}/agents/voice`;
@@ -83,8 +86,18 @@ export class VoiceService {
 
   /**
    * Generate greeting audio from text (TTS only, no STT)
+   * Uses cache to avoid regenerating same messages
    */
   async generateGreeting(text: string): Promise<Blob> {
+    // Check cache first
+    const cacheKey = text.toLowerCase().trim();
+    if (this.audioCache.has(cacheKey)) {
+      console.log('🎵 Audio cache HIT for:', text.substring(0, 50));
+      return this.audioCache.get(cacheKey)!;
+    }
+
+    console.log('🎵 Audio cache MISS - generating for:', text.substring(0, 50));
+    
     const response = await firstValueFrom(
       this.http.post(
         `${this.apiUrl}/generate-greeting`,
@@ -92,6 +105,10 @@ export class VoiceService {
         { responseType: 'blob' }
       )
     );
+    
+    // Store in cache
+    this.audioCache.set(cacheKey, response);
+    
     return response;
   }
 
@@ -103,5 +120,20 @@ export class VoiceService {
     const audio = new Audio(url);
     audio.play();
     return audio;
+  }
+
+  /**
+   * Clear audio cache (useful for memory management)
+   */
+  clearCache(): void {
+    this.audioCache.clear();
+    console.log('🗑️ Audio cache cleared');
+  }
+
+  /**
+   * Get cache size for debugging
+   */
+  getCacheSize(): number {
+    return this.audioCache.size;
   }
 }

@@ -233,6 +233,11 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         timestamp: new Date(),
       });
       
+      // Play audio for booking agent
+      if (this.enableVoice) {
+        this.playMessageAudio(welcomeMessage);
+      }
+      
       // Store service context for the agent
     this.selectedService = {
       ...serviceContext,
@@ -277,6 +282,11 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         sender: 'agent',
         timestamp: new Date(),
       });
+      
+      // Play audio for booking agent
+      if (this.enableVoice) {
+        this.playMessageAudio(welcomeMessage);
+      }
       
       // Clear any previous day options when selecting a new service
       this.detectedDayOptions = [];
@@ -2470,10 +2480,42 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     this.currentStep = 1;
   }
 
+  async playMessageAudio(message: string): Promise<void> {
+    try {
+      this.isPlayingAudio = true;
+
+      // Stop any current audio
+      if (this.currentAudio) {
+        this.currentAudio.pause();
+        this.currentAudio = null;
+      }
+
+      // Generate and play audio
+      const audioBuffer = await this.voiceService.generateGreeting(message);
+      this.currentAudio = this.voiceService.playAudioBlob(audioBuffer);
+
+      // Handle audio end
+      if (this.currentAudio) {
+        this.currentAudio.onended = () => {
+          this.isPlayingAudio = false;
+        };
+      }
+    } catch (error) {
+      console.error('Error playing message audio:', error);
+      this.isPlayingAudio = false;
+    }
+  }
+
   ngOnDestroy(): void {
     // Clear all pending timeouts to prevent memory leaks
     this.timeouts.forEach(timeout => window.clearTimeout(timeout));
     this.timeouts = [];
+    
+    // Cleanup audio
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
   }
 
   // Helper method to safely create timeouts that will be cleaned up

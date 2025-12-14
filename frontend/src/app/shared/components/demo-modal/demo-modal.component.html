@@ -14,9 +14,7 @@
                 <span class="status-text">En línea</span>
             </div>
         </div>
-        <button class="icon-btn">
-            <span class="material-symbols-outlined">call</span>
-        </button>
+        <!-- Phone button removed - not functional -->
       </header>
 
       <!-- MAIN CONTENT AREA SWITCHER -->
@@ -934,29 +932,31 @@
               </button>
           </div>
 
-          <!-- Input Bar -->
-          <div class="input-bar">
-              <button class="icon-btn-small">
-                  <span class="material-symbols-outlined">add_circle</span>
-              </button>
-              <div class="input-wrapper">
+          <!-- FOOTER: Input Area (Hidden for booking agent - only button responses) -->
+          <footer class="mobile-footer" *ngIf="currentStep === 1 && agent.id !== 'booking'">
+              <div class="input-container">
+                  <button class="icon-btn">
+                      <span class="material-symbols-outlined">add_circle</span>
+                  </button>
                   <input 
                       type="text" 
                       [(ngModel)]="currentMessage" 
-                      (keypress)="onKeyPress($event)"
+                      (keyup.enter)="sendMessage()"
                       placeholder="Escribe un mensaje..."
-                  >
-                  <button class="emoji-btn">
+                      class="message-input"
+                  />
+                  <button class="icon-btn">
                       <span class="material-symbols-outlined">sentiment_satisfied</span>
                   </button>
+                  <button 
+                      class="send-btn" 
+                      (click)="sendMessage()"
+                      [disabled]="!currentMessage.trim() || isLoading">
+                      <span class="material-symbols-outlined">send</span>
+                  </button>
               </div>
-              <button 
-                  class="send-btn-circle" 
-                  [disabled]="!currentMessage.trim()"
-                  (click)="sendMessage()">
-                  <span class="material-symbols-outlined">send</span>
-              </button>
-          </div>
+          </footer>
+      </div>
 
           <!-- STEP 4: BOOKING CONFIRMATION -->
           <div class="step-view booking-confirmation-view" *ngIf="isStep(4) && selectedBooking">

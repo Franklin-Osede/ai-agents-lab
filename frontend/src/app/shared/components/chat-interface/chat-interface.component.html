@@ -28,12 +28,7 @@
               </div>
               <span class="duration">{{ message.audioDuration || '0:03' }}</span>
             </div>
-            
-            <!-- Show transcript after audio finishes -->
-            <div *ngIf="message.showTranscript" class="transcript">
-              <p class="transcript-label">Transcripción:</p>
-              <p class="transcript-text">{{ message.content }}</p>
-            </div>
+            <!-- Transcript removed - audio waveform is enough -->
           </div>
           
           <!-- Regular text message (for non-audio or user messages) -->

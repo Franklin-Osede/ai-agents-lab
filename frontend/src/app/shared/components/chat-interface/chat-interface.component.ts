@@ -1,10 +1,13 @@
 import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ChatMessage } from '../../models/agent.model';
 
 @Component({
   selector: 'app-chat-interface',
   templateUrl: './chat-interface.component.html',
   styleUrls: ['./chat-interface.component.scss'],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class ChatInterfaceComponent {
   @Input() messages: ChatMessage[] = [];

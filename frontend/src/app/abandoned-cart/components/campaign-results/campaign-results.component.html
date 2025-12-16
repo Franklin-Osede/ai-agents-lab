@@ -8,7 +8,7 @@
 
   <!-- TopAppBar -->
   <header class="sticky top-0 z-50 flex items-center justify-between bg-white/90 dark:bg-background-dark/90 backdrop-blur-md px-4 py-3 border-b border-gray-200 dark:border-gray-800">
-    <div class="flex size-10 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-900 dark:text-white transition-colors" (click)="goBack()">
+    <div class="flex size-10 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-900 dark:text-white transition-colors" (click)="goBack()" (keydown.enter)="goBack()" tabindex="0" role="button">
       <span class="material-symbols-outlined">arrow_back</span>
     </div>
     <h2 class="text-base font-bold leading-tight flex-1 text-center">Resultados de Campaña</h2>

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AgentResponse } from '../models/agent.model';
@@ -12,12 +12,14 @@ export class ApiService {
   private readonly baseUrl =
     environment.apiBaseUrl || 'http://localhost:3000/api/v1';
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+
+
 
   processBooking(
     message: string,
-    businessId: string = 'demo-business',
-    useDemo: boolean = true,
+    businessId = 'demo-business',
+    useDemo = true,
     serviceContext?: any,
     sessionId?: string,
   ): Observable<AgentResponse> {
@@ -100,7 +102,7 @@ export class ApiService {
 
   generateVoice(
     context: string,
-    includeVideo: boolean = false,
+    includeVideo = false,
     avatarImageUrl?: string,
   ): Observable<any> {
     return this.http.post(`${this.baseUrl}/agents/voice/generate`, {

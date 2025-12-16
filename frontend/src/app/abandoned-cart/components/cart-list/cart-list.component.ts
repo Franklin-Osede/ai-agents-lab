@@ -264,7 +264,7 @@ export class CartListComponent implements OnInit {
     this.showNotificationsDropdown.set(!this.showNotificationsDropdown());
   }
 
-  getMockNotifications(): Array<{ id: string; message: string; time: string; read: boolean }> {
+  getMockNotifications(): { id: string; message: string; time: string; read: boolean }[] {
     return [
       { id: '1', message: 'Nuevo carrito abandonado de Juan Pérez', time: 'Hace 5 min', read: false },
       { id: '2', message: 'Carrito recuperado exitosamente - $1,240', time: 'Hace 1 hora', read: false },

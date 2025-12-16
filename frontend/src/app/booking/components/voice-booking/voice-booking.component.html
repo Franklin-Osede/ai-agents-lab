@@ -33,57 +33,67 @@
     </div>
 
     <!-- Question Display -->
-    <div class="question-section" *ngIf="currentQuestion() && !showCalendar()">
-      <div class="question-card">
-        <div class="question-icon">
-          <span class="material-symbols-outlined">record_voice_over</span>
+    @if (currentQuestion() && !showCalendar()) {
+      <div class="question-section">
+        <div class="question-card">
+          <div class="question-icon">
+            <span class="material-symbols-outlined">record_voice_over</span>
+          </div>
+          <p class="question-text">{{ currentQuestion().question }}</p>
+          <!-- Replay button -->
+          <button
+            class="replay-button"
+            (click)="replayQuestion()"
+            [disabled]="isPlayingAudio()">
+            <span class="material-symbols-outlined">replay</span>
+            Repetir
+          </button>
         </div>
-        <p class="question-text">{{ currentQuestion().question }}</p>
-        
-        <!-- Replay button -->
-        <button 
-          class="replay-button" 
-          (click)="replayQuestion()"
-          [disabled]="isPlayingAudio()">
-          <span class="material-symbols-outlined">replay</span>
-          Repetir
-        </button>
       </div>
-    </div>
+    }
 
     <!-- Options -->
-    <div class="options-section" *ngIf="currentQuestion() && !showCalendar()">
-      <div class="options-grid">
-        <button 
-          *ngFor="let option of currentQuestion()?.options"
-          class="option-button"
-          (click)="selectOption(option)"
-          [disabled]="isPlayingAudio()">
-          <span class="material-symbols-outlined">{{ option.icon }}</span>
-          <span class="option-label">{{ option.label }}</span>
-        </button>
+    @if (currentQuestion() && !showCalendar()) {
+      <div class="options-section">
+        <div class="options-grid">
+          @for (option of currentQuestion().options; track option) {
+            <button
+              class="option-button"
+              (click)="selectOption(option)"
+              [disabled]="isPlayingAudio()">
+              <span class="material-symbols-outlined">{{ option.icon }}</span>
+              <span class="option-label">{{ option.label }}</span>
+            </button>
+          }
+        </div>
       </div>
-    </div>
+    }
 
     <!-- Calendar Placeholder -->
-    <div class="calendar-section" *ngIf="showCalendar()">
-      <div class="calendar-card">
-        <h3>📅 Selecciona fecha y hora</h3>
-        <p>Aquí iría el calendario interactivo</p>
-        <button class="primary-button" (click)="goBack()">
-          Confirmar Cita
-        </button>
+    @if (showCalendar()) {
+      <div class="calendar-section">
+        <div class="calendar-card">
+          <h3>📅 Selecciona fecha y hora</h3>
+          <p>Aquí iría el calendario interactivo</p>
+          <button class="primary-button" (click)="goBack()">
+            Confirmar Cita
+          </button>
+        </div>
       </div>
-    </div>
+    }
 
     <!-- Conversation History -->
-    <div class="history-section" *ngIf="conversationHistory().length > 0">
-      <h4>Resumen de la conversación</h4>
-      <div class="history-item" *ngFor="let item of conversationHistory()">
-        <p class="history-question">{{ item.question }}</p>
-        <p class="history-answer">→ {{ item.answer }}</p>
+    @if (conversationHistory().length > 0) {
+      <div class="history-section">
+        <h4>Resumen de la conversación</h4>
+        @for (item of conversationHistory(); track item) {
+          <div class="history-item">
+            <p class="history-question">{{ item.question }}</p>
+            <p class="history-answer">→ {{ item.answer }}</p>
+          </div>
+        }
       </div>
-    </div>
+    }
 
     <!-- Home indicator -->
     <div class="home-indicator"></div>

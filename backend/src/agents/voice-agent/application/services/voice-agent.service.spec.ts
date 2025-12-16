@@ -20,6 +20,8 @@ describe('VoiceAgentService', () => {
   const mockAiProvider: IAiProvider = {
     generateResponse: jest.fn(),
     classifyIntent: jest.fn(),
+    transcribeAudio: jest.fn(),
+    generateAudio: jest.fn(),
   };
 
   beforeEach(async () => {

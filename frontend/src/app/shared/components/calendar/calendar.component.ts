@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 interface DaySlot {
   date: Date;
@@ -10,7 +11,9 @@ interface DaySlot {
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.scss']
+  styleUrls: ['./calendar.component.scss'],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class CalendarComponent implements OnInit, OnChanges {
   @Input() currentDate: Date = new Date();
@@ -24,10 +27,11 @@ export class CalendarComponent implements OnInit, OnChanges {
   calendarData: { selectedSlot: string | null } = { selectedSlot: null };
   
   // Header details
-  currentMonthName: string = '';
-  currentYear: number = 2024;
+  currentMonthName = '';
+  currentYear = 2024;
 
-  constructor() {}
+
+
 
   ngOnInit(): void {
     this.generateCalendar();

@@ -1,13 +1,13 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-email-preview-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" (click)="close.emit()">
-      <div class="w-full max-w-lg bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200" (click)="$event.stopPropagation()">
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" (click)="modalClose.emit()" (keydown.escape)="modalClose.emit()" tabindex="0" role="button">
+      <div class="w-full max-w-lg bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200" (click)="$event.stopPropagation()" (keydown.enter)="$event.stopPropagation()" tabindex="0" role="alertdialog" aria-modal="true">
         <!-- Email Header (Gmail Style) -->
         <div class="bg-zinc-100 dark:bg-zinc-800 p-4 border-b border-zinc-200 dark:border-zinc-700 flex justify-between items-center">
           <div class="flex items-center gap-3">
@@ -17,7 +17,7 @@ import { CommonModule } from '@angular/common';
               <p class="text-xs text-zinc-500 dark:text-zinc-400">para {{ customerName }}</p>
             </div>
           </div>
-          <button (click)="close.emit()" class="size-8 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-colors">
+          <button (click)="modalClose.emit()" class="size-8 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-colors">
             <span class="material-symbols-outlined text-zinc-500">close</span>
           </button>
         </div>
@@ -60,7 +60,7 @@ import { CommonModule } from '@angular/common';
   `
 })
 export class EmailPreviewModalComponent {
-  @Input() customerName: string = 'Cliente';
-  @Input() totalValue: number = 0;
-  @Output() close = new EventEmitter<void>();
+  @Input() customerName = 'Cliente';
+  @Input() totalValue = 0;
+  @Output() modalClose = new EventEmitter<void>();
 }

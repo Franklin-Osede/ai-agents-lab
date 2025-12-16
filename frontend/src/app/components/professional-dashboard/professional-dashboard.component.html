@@ -1,233 +1,234 @@
 <div class="min-h-screen bg-slate-50 dark:bg-slate-900 pb-20 font-sans transition-colors duration-300">
-    <!-- Header -->
-    <header class="bg-white dark:bg-slate-800 pt-12 pb-6 px-6 rounded-b-[2rem] shadow-sm relative z-10 transition-colors duration-300">
-        <div class="flex justify-between items-center mb-6">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-md">
-                    <span class="material-symbols-outlined text-xl">smart_toy</span>
-                </div>
-                <span class="font-bold text-slate-800 dark:text-white text-lg">AI Agents Lab</span>
-            </div>
-            <div class="flex gap-3">
-                <button class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors relative">
-                    <span class="material-symbols-outlined">notifications</span>
-                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
-                </button>
-                <div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden border-2 border-white dark:border-slate-700 shadow-sm">
-                    <img src="https://ui-avatars.com/api/?name=Dr+Ramirez&background=0D8ABC&color=fff" alt="Profile" class="w-full h-full object-cover">
-                </div>
-            </div>
+  <!-- Header -->
+  <header class="bg-white dark:bg-slate-800 pt-12 pb-6 px-6 rounded-b-[2rem] shadow-sm relative z-10 transition-colors duration-300">
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-md">
+          <span class="material-symbols-outlined text-xl">smart_toy</span>
         </div>
-
-        <div class="mb-2">
-            <span class="text-sm text-slate-500 dark:text-slate-400 font-medium">Panel de Control</span>
-            <h1 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">Hola, Profesional</h1>
+        <span class="font-bold text-slate-800 dark:text-white text-lg">AI Agents Lab</span>
+      </div>
+      <div class="flex gap-3">
+        <button class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors relative">
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
+        </button>
+        <div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden border-2 border-white dark:border-slate-700 shadow-sm">
+          <img src="https://ui-avatars.com/api/?name=Dr+Ramirez&background=0D8ABC&color=fff" alt="Profile" class="w-full h-full object-cover">
         </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="px-6 py-6 space-y-6">
-        
-        <!-- Appointments Card -->
-        <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-sm relative overflow-hidden transition-colors duration-300">
-            <!-- Decorative circle -->
-            <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-50 dark:bg-indigo-900/20 rounded-bl-[100px] -z-0"></div>
-            
-            <div class="flex justify-between items-start relative z-10">
-                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400 mb-4">
-                    <span class="material-symbols-outlined text-2xl">calendar_today</span>
-                </div>
-                <span class="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold rounded-full">Hoy</span>
-            </div>
-            
-            <div class="relative z-10">
-                <h2 class="text-4xl font-bold text-slate-900 dark:text-white mb-1">{{ appointments.count }} Citas</h2>
-                <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">Tienes {{ appointments.pending }} citas pendientes de confirmar</p>
-                
-                <button class="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold text-sm hover:gap-3 transition-all group">
-                    Ver agenda completa
-                    <span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Grid Options -->
-        <div class="grid grid-cols-2 gap-4">
-            <!-- Manage Patients -->
-            <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group">
-                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-4 group-hover:scale-110 transition-transform">
-                    <span class="material-symbols-outlined text-2xl">group</span>
-                </div>
-                <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight">Gestionar <br>Clientes</h3>
-            </div>
-
-            <!-- Stats -->
-            <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group">
-                <div class="flex justify-between items-start mb-4">
-                    <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
-                        <span class="material-symbols-outlined text-2xl">bar_chart</span>
-                    </div>
-                    <span class="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold rounded-lg">+{{ stats.growth }}%</span>
-                </div>
-                <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight">Estadísticas <br>Generales</h3>
-            </div>
-        </div>
-
-        <!-- My Agents Section -->
-        <div>
-            <div class="flex justify-between items-center mb-4 pl-2">
-                <h3 class="font-bold text-slate-900 dark:text-white text-lg">mIs Agentes AI</h3>
-                <span class="text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded-full">{{ activeAgentsCount }} Activos</span>
-            </div>
-
-            <div class="grid grid-cols-1 gap-4">
-                <div *ngFor="let agent of agents" 
-                     class="bg-white dark:bg-slate-800 rounded-[2rem] p-5 shadow-sm relative overflow-hidden transition-all duration-300 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900/50 group cursor-pointer">
-                    
-                    <!-- Status Indicator -->
-                    <div class="absolute top-5 right-5 w-2 h-2 rounded-full" 
-                         [ngClass]="{'bg-emerald-500': agent.status === 'active', 'bg-slate-300': agent.status === 'inactive', 'bg-amber-400': agent.status === 'setup'}">
-                    </div>
-
-                    <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-3 transition-colors"
-                             [ngClass]="agent.iconBg">
-                            <span class="material-symbols-outlined text-2xl" [ngClass]="agent.iconColor">{{ agent.icon }}</span>
-                        </div>
-                        <div class="flex-1 pt-1">
-                            <h4 class="font-bold text-slate-900 dark:text-white text-base leading-tight mb-1">{{ agent.name }}</h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">{{ agent.description }}</p>
-                        </div>
-                    </div>
-
-                    <!-- Action Footer -->
-                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-50 dark:border-slate-700/50">
-                        <span class="text-[10px] font-semibold tracking-wider uppercase text-slate-400 dark:text-slate-500">{{ agent.role }}</span>
-                        <div class="flex items-center gap-1 text-xs font-semibold" 
-                             (click)="openIntegration(agent); $event.stopPropagation()"
-                             [ngClass]="{'text-emerald-600 dark:text-emerald-400': agent.status === 'active', 'text-indigo-600 dark:text-indigo-400': agent.status !== 'active'}">
-                            {{ agent.status === 'active' ? 'Configurar' : 'Activar' }}
-                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings & Access Section -->
-        <div>
-           <h3 class="font-bold text-slate-900 dark:text-white text-lg mb-4 pl-2">Accesos y Configuración</h3> 
-           
-           <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-2 shadow-sm space-y-1">
-               <!-- Config Item -->
-               <div class="flex items-center gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-[1.5rem] cursor-pointer transition-colors group">
-                   <div class="w-10 h-10 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-400 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/30 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                       <span class="material-symbols-outlined">settings</span>
-                   </div>
-                   <div class="flex-1">
-                       <h4 class="font-bold text-slate-900 dark:text-white">Configuración</h4>
-                       <p class="text-xs text-slate-500 dark:text-slate-400">Perfil, horarios y cuenta</p>
-                   </div>
-                   <span class="material-symbols-outlined text-slate-300 dark:text-slate-600">chevron_right</span>
-               </div>
-
-                <!-- Last Consultation Item -->
-                <div class="flex items-center gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-[1.5rem] cursor-pointer transition-colors group border-t border-slate-100 dark:border-slate-700/50">
-                    <div class="w-10 h-10 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-400">
-                        <span class="material-symbols-outlined">history</span>
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-bold text-slate-900 dark:text-white">Última interacción</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">{{ lastConsultation.name }} - {{ lastConsultation.time }}</p>
-                    </div>
-                    <span class="material-symbols-outlined text-slate-300 dark:text-slate-600">history</span>
-                </div>
-           </div>
-        </div>
-    </main>
-
-    <!-- Integration Modal -->
-    <div *ngIf="showIntegrationModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" (click)="closeIntegration()"></div>
-        
-        <div class="relative w-full max-w-lg bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 shadow-2xl animate-scale-up border border-white/20">
-            <!-- Close Button -->
-            <button (click)="closeIntegration()" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-
-            <div class="text-center mb-8">
-                <div class="w-20 h-20 rounded-3xl mx-auto flex items-center justify-center text-4xl mb-6 shadow-xl"
-                     [ngClass]="selectedAgentForIntegration.iconBg"
-                     [class]="selectedAgentForIntegration.iconColor">
-                    <span class="material-symbols-outlined text-4xl">{{ selectedAgentForIntegration.icon }}</span>
-                </div>
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Conectar {{ selectedAgentForIntegration.name }}</h2>
-                <p class="text-slate-500 dark:text-slate-400">Usa estas credenciales en tu flujo de n8n.</p>
-            </div>
-
-            <div class="space-y-6">
-                <!-- Webhook URL -->
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-4">Webhook (Endpoint)</label>
-                    <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 p-2 rounded-2xl border border-slate-200 dark:border-slate-700">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                            <span class="material-symbols-outlined">link</span>
-                        </div>
-                        <input type="text" readonly [value]="'https://api.agentslab.ai' + selectedAgentForIntegration.endpoint + '/chat'" 
-                               class="flex-1 bg-transparent border-none text-sm text-slate-600 dark:text-slate-300 focus:ring-0 font-mono">
-                        <button (click)="copyToClipboard('https://api.agentslab.ai' + selectedAgentForIntegration.endpoint + '/chat')" 
-                                class="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                            <span class="material-symbols-outlined">content_copy</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- API Key -->
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-4">API Key</label>
-                    <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 p-2 rounded-2xl border border-slate-200 dark:border-slate-700">
-                        <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
-                            <span class="material-symbols-outlined">key</span>
-                        </div>
-                        <input type="text" readonly value="sk_live_51M..." 
-                               class="flex-1 bg-transparent border-none text-sm text-slate-600 dark:text-slate-300 focus:ring-0 font-mono">
-                        <button (click)="copyToClipboard('sk_live_51M...')" 
-                                class="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                            <span class="material-symbols-outlined">content_copy</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="pt-4">
-                     <a href="https://n8n.io" target="_blank" class="flex items-center justify-center gap-2 w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold py-4 rounded-2xl hover:shadow-lg hover:-translate-y-1 transition-all">
-                        <span class="material-symbols-outlined">download</span>
-                        Descargar Blueprint de n8n
-                    </a>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 pb-safe pt-2 px-6 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)] rounded-t-[2rem]">
-        <div class="flex justify-between items-center max-w-md mx-auto">
-            <button class="flex flex-col items-center gap-1 p-3 text-indigo-600 dark:text-indigo-400">
-                <span class="material-symbols-outlined text-2xl">grid_view</span>
-                <span class="text-[10px] font-bold">Inicio</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 p-3 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                <span class="material-symbols-outlined text-2xl">calendar_today</span>
-                <span class="text-[10px] font-medium">Agenda</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 p-3 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                <span class="material-symbols-outlined text-2xl">chat_bubble</span>
-                <span class="text-[10px] font-medium">Chat</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 p-3 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                <span class="material-symbols-outlined text-2xl">person</span>
-                <span class="text-[10px] font-medium">Perfil</span>
-            </button>
+    <div class="mb-2">
+      <span class="text-sm text-slate-500 dark:text-slate-400 font-medium">Panel de Control</span>
+      <h1 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">Hola, Profesional</h1>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="px-6 py-6 space-y-6">
+
+    <!-- Appointments Card -->
+    <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-sm relative overflow-hidden transition-colors duration-300">
+      <!-- Decorative circle -->
+      <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-50 dark:bg-indigo-900/20 rounded-bl-[100px] -z-0"></div>
+
+      <div class="flex justify-between items-start relative z-10">
+        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400 mb-4">
+          <span class="material-symbols-outlined text-2xl">calendar_today</span>
         </div>
-    </nav>
+        <span class="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold rounded-full">Hoy</span>
+      </div>
+
+      <div class="relative z-10">
+        <h2 class="text-4xl font-bold text-slate-900 dark:text-white mb-1">{{ appointments.count }} Citas</h2>
+        <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">Tienes {{ appointments.pending }} citas pendientes de confirmar</p>
+
+        <button class="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold text-sm hover:gap-3 transition-all group">
+          Ver agenda completa
+          <span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Grid Options -->
+    <div class="grid grid-cols-2 gap-4">
+      <!-- Manage Patients -->
+      <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group">
+        <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-4 group-hover:scale-110 transition-transform">
+          <span class="material-symbols-outlined text-2xl">group</span>
+        </div>
+        <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight">Gestionar <br>Clientes</h3>
+      </div>
+
+      <!-- Stats -->
+      <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-2xl">bar_chart</span>
+          </div>
+          <span class="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold rounded-lg">+{{ stats.growth }}%</span>
+        </div>
+        <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight">Estadísticas <br>Generales</h3>
+      </div>
+    </div>
+
+    <!-- My Agents Section -->
+    <div>
+      <div class="flex justify-between items-center mb-4 pl-2">
+        <h3 class="font-bold text-slate-900 dark:text-white text-lg">mIs Agentes AI</h3>
+        <span class="text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded-full">{{ activeAgentsCount }} Activos</span>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4">
+        @for (agent of agents; track agent) {
+          <div
+            class="bg-white dark:bg-slate-800 rounded-[2rem] p-5 shadow-sm relative overflow-hidden transition-all duration-300 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900/50 group cursor-pointer">
+            <!-- Status Indicator -->
+            <div class="absolute top-5 right-5 w-2 h-2 rounded-full"
+              [ngClass]="{'bg-emerald-500': agent.status === 'active', 'bg-slate-300': agent.status === 'inactive', 'bg-amber-400': agent.status === 'setup'}">
+            </div>
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-3 transition-colors"
+                [ngClass]="agent.iconBg">
+                <span class="material-symbols-outlined text-2xl" [ngClass]="agent.iconColor">{{ agent.icon }}</span>
+              </div>
+              <div class="flex-1 pt-1">
+                <h4 class="font-bold text-slate-900 dark:text-white text-base leading-tight mb-1">{{ agent.name }}</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">{{ agent.description }}</p>
+              </div>
+            </div>
+            <!-- Action Footer -->
+            <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-50 dark:border-slate-700/50">
+              <span class="text-[10px] font-semibold tracking-wider uppercase text-slate-400 dark:text-slate-500">{{ agent.role }}</span>
+              <div class="flex items-center gap-1 text-xs font-semibold"
+                (click)="openIntegration(agent); $event.stopPropagation()"
+                (keydown.enter)="openIntegration(agent); $event.stopPropagation()"
+                tabindex="0"
+                role="button"
+                [ngClass]="{'text-emerald-600 dark:text-emerald-400': agent.status === 'active', 'text-indigo-600 dark:text-indigo-400': agent.status !== 'active'}">
+                {{ agent.status === 'active' ? 'Configurar' : 'Activar' }}
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Settings & Access Section -->
+    <div>
+      <h3 class="font-bold text-slate-900 dark:text-white text-lg mb-4 pl-2">Accesos y Configuración</h3>
+
+      <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-2 shadow-sm space-y-1">
+        <!-- Config Item -->
+        <div class="flex items-center gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-[1.5rem] cursor-pointer transition-colors group">
+          <div class="w-10 h-10 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-400 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/30 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+            <span class="material-symbols-outlined">settings</span>
+          </div>
+          <div class="flex-1">
+            <h4 class="font-bold text-slate-900 dark:text-white">Configuración</h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Perfil, horarios y cuenta</p>
+          </div>
+          <span class="material-symbols-outlined text-slate-300 dark:text-slate-600">chevron_right</span>
+        </div>
+
+        <!-- Last Consultation Item -->
+        <div class="flex items-center gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-[1.5rem] cursor-pointer transition-colors group border-t border-slate-100 dark:border-slate-700/50">
+          <div class="w-10 h-10 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center text-teal-600 dark:text-teal-400">
+            <span class="material-symbols-outlined">history</span>
+          </div>
+          <div class="flex-1">
+            <h4 class="font-bold text-slate-900 dark:text-white">Última interacción</h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400">{{ lastConsultation.name }} - {{ lastConsultation.time }}</p>
+          </div>
+          <span class="material-symbols-outlined text-slate-300 dark:text-slate-600">history</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Integration Modal -->
+  @if (showIntegrationModal) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+      <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" (click)="closeIntegration()" (keydown.enter)="closeIntegration()" tabindex="0" role="button" aria-sort="none"></div>
+      <div class="relative w-full max-w-lg bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 shadow-2xl animate-scale-up border border-white/20">
+        <!-- Close Button -->
+        <button (click)="closeIntegration()" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+        <div class="text-center mb-8">
+          <div class="w-20 h-20 rounded-3xl mx-auto flex items-center justify-center text-4xl mb-6 shadow-xl"
+            [ngClass]="selectedAgentForIntegration.iconBg"
+            [class]="selectedAgentForIntegration.iconColor">
+            <span class="material-symbols-outlined text-4xl">{{ selectedAgentForIntegration.icon }}</span>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Conectar {{ selectedAgentForIntegration.name }}</h2>
+          <p class="text-slate-500 dark:text-slate-400">Usa estas credenciales en tu flujo de n8n.</p>
+        </div>
+        <div class="space-y-6">
+          <!-- Webhook URL -->
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-4" for="webhook-url">Webhook (Endpoint)</label>
+            <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 p-2 rounded-2xl border border-slate-200 dark:border-slate-700">
+              <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                <span class="material-symbols-outlined">link</span>
+              </div>
+              <input type="text" readonly [value]="'https://api.agentslab.ai' + selectedAgentForIntegration.endpoint + '/chat'"
+                id="webhook-url"
+                class="flex-1 bg-transparent border-none text-sm text-slate-600 dark:text-slate-300 focus:ring-0 font-mono">
+              <button (click)="copyToClipboard('https://api.agentslab.ai' + selectedAgentForIntegration.endpoint + '/chat')"
+                class="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <span class="material-symbols-outlined">content_copy</span>
+              </button>
+            </div>
+          </div>
+          <!-- API Key -->
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-4" for="api-key">API Key</label>
+            <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 p-2 rounded-2xl border border-slate-200 dark:border-slate-700">
+              <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                <span class="material-symbols-outlined">key</span>
+              </div>
+              <input type="text" readonly value="sk_live_51M..."
+                id="api-key"
+                class="flex-1 bg-transparent border-none text-sm text-slate-600 dark:text-slate-300 focus:ring-0 font-mono">
+              <button (click)="copyToClipboard('sk_live_51M...')"
+                class="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <span class="material-symbols-outlined">content_copy</span>
+              </button>
+            </div>
+          </div>
+          <div class="pt-4">
+            <a href="https://n8n.io" target="_blank" class="flex items-center justify-center gap-2 w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold py-4 rounded-2xl hover:shadow-lg hover:-translate-y-1 transition-all">
+              <span class="material-symbols-outlined">download</span>
+              Descargar Blueprint de n8n
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 pb-safe pt-2 px-6 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)] rounded-t-[2rem]">
+    <div class="flex justify-between items-center max-w-md mx-auto">
+      <button class="flex flex-col items-center gap-1 p-3 text-indigo-600 dark:text-indigo-400">
+        <span class="material-symbols-outlined text-2xl">grid_view</span>
+        <span class="text-[10px] font-bold">Inicio</span>
+      </button>
+      <button class="flex flex-col items-center gap-1 p-3 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+        <span class="material-symbols-outlined text-2xl">calendar_today</span>
+        <span class="text-[10px] font-medium">Agenda</span>
+      </button>
+      <button class="flex flex-col items-center gap-1 p-3 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+        <span class="material-symbols-outlined text-2xl">chat_bubble</span>
+        <span class="text-[10px] font-medium">Chat</span>
+      </button>
+      <button class="flex flex-col items-center gap-1 p-3 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+        <span class="material-symbols-outlined text-2xl">person</span>
+        <span class="text-[10px] font-medium">Perfil</span>
+      </button>
+    </div>
+  </nav>
 </div>

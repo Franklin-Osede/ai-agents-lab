@@ -26,7 +26,7 @@
           placeholder="Buscar servicio..."
           type="text"
           [(ngModel)]="searchQuery"
-        />
+          />
       </label>
     </div>
 
@@ -38,59 +38,67 @@
 
     <!-- Category Accordions -->
     <div class="categories-list">
-      <div
-        *ngFor="let category of filteredCategories"
-        class="category-accordion"
-        [class.expanded]="category.expanded"
-      >
-        <!-- Category Header -->
-        <button
-          class="category-header"
-          (click)="toggleCategory(category)"
-          [ngClass]="category.bgColor"
-        >
-          <div class="category-icon-wrapper">
-            <span class="material-symbols-outlined" [ngClass]="category.color">
-              {{ category.icon }}
-            </span>
-          </div>
-          <div class="category-info">
-            <h4 class="category-name">{{ category.name }}</h4>
-            <p class="category-count">{{ category.services.length }} servicios</p>
-          </div>
-          <div class="category-chevron">
-            <span
-              class="material-symbols-outlined"
-              [class.rotated]="category.expanded"
-            >
-              expand_more
-            </span>
-          </div>
-        </button>
-
-        <!-- Services List (when expanded) -->
-        <div class="services-dropdown" *ngIf="category.expanded">
-          <div
-            *ngFor="let service of category.services"
-            class="service-item"
-            (click)="onServiceClick(service, category)"
+      @for (category of filteredCategories; track category) {
+        <div
+          class="category-accordion"
+          [class.expanded]="category.expanded"
           >
-            <div class="service-item-info">
-              <h5 class="service-item-name">{{ service.name }}</h5>
-              <p class="service-item-description">{{ service.description }}</p>
+          <!-- Category Header -->
+          <button
+            class="category-header"
+            (click)="toggleCategory(category)"
+            [ngClass]="category.bgColor"
+            >
+            <div class="category-icon-wrapper">
+              <span class="material-symbols-outlined" [ngClass]="category.color">
+                {{ category.icon }}
+              </span>
             </div>
-            <div class="service-item-arrow">
-              <span class="material-symbols-outlined">arrow_forward_ios</span>
+            <div class="category-info">
+              <h4 class="category-name">{{ category.name }}</h4>
+              <p class="category-count">{{ category.services.length }} servicios</p>
             </div>
-          </div>
+            <div class="category-chevron">
+              <span
+                class="material-symbols-outlined"
+                [class.rotated]="category.expanded"
+                >
+                expand_more
+              </span>
+            </div>
+          </button>
+          <!-- Services List (when expanded) -->
+          @if (category.expanded) {
+            <div class="services-dropdown">
+              @for (service of category.services; track service) {
+                <div
+                  class="service-item"
+                  (click)="onServiceClick(service, category)"
+                  (keydown.enter)="onServiceClick(service, category)"
+                  tabindex="0"
+                  role="button"
+                  >
+                  <div class="service-item-info">
+                    <h5 class="service-item-name">{{ service.name }}</h5>
+                    <p class="service-item-description">{{ service.description }}</p>
+                  </div>
+                  <div class="service-item-arrow">
+                    <span class="material-symbols-outlined">arrow_forward_ios</span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
         </div>
-      </div>
+      }
 
       <!-- Empty State -->
-      <div *ngIf="filteredCategories.length === 0" class="empty-state">
-        <span class="material-symbols-outlined empty-icon">search_off</span>
-        <p>No se encontraron servicios</p>
-      </div>
+      @if (filteredCategories.length === 0) {
+        <div class="empty-state">
+          <span class="material-symbols-outlined empty-icon">search_off</span>
+          <p>No se encontraron servicios</p>
+        </div>
+      }
     </div>
   </main>
 

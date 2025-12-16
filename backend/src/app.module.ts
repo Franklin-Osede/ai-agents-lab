@@ -7,6 +7,7 @@ import { VoiceAgentModule } from './agents/voice-agent/voice-agent.module';
 import { AbandonedCartModule } from './agents/abandoned-cart-agent/abandoned-cart.module';
 import { WebinarRecoveryModule } from './agents/webinar-recovery-agent/webinar-recovery.module';
 import { InvoiceChaserModule } from './agents/invoice-chaser-agent/invoice-chaser.module';
+import { RiderAgentModule } from './agents/rider-agent/rider-agent.module';
 import { DemoModule } from './demo/demo.module';
 import { MarketingModule } from './marketing/marketing.module';
 import { BillingModule } from './billing/billing.module';
@@ -50,6 +51,7 @@ import { TenantIsolationMiddleware } from './core/security/tenant.middleware';
     AbandonedCartModule,
     WebinarRecoveryModule,
     InvoiceChaserModule,
+    RiderAgentModule, // 🆕 Rider Agent
     DemoModule, // Demo endpoints
     MarketingModule, // Lead capture
     BillingModule, // Billing and Stripe

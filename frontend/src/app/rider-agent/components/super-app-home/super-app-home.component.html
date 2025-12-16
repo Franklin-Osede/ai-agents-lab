@@ -1,0 +1,253 @@
+<div [class]="dialog ? 'flex items-center justify-center h-full w-full bg-slate-900/10 backdrop-blur-sm' : 'relative flex min-h-full w-full flex-col bg-background-light'">
+    
+    <!-- Phone Container for Dialog Mode -->
+    <div [class]="dialog ? 'relative w-full max-w-[390px] h-[844px] bg-background-light rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col border-[6px] border-slate-50 ring-1 ring-slate-900/5' : 'contents'">
+
+        <!-- Dialog Header for Back Navigation -->
+        @if (dialog) {
+        <div class="absolute top-14 left-4 z-50">
+            <button (click)="onBack($event)" class="bg-white/90 hover:bg-white p-2 rounded-full shadow-lg backdrop-blur-md text-slate-800 transition-all hover:scale-110 border border-slate-100 group">
+                <span class="material-symbols-outlined text-xl group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
+            </button>
+        </div>
+        }
+
+        <header class="flex items-center justify-between p-4 sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 transition-all" [class.rounded-t-[2.5rem]]="dialog" [class.pt-12]="dialog">
+        <div class="flex items-center gap-3">
+        <div class="relative">
+        <div class="bg-center bg-no-repeat bg-cover rounded-full h-10 w-10 ring-2 ring-rider-primary/10" data-alt="Portrait of a young user looking confident" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAR-rRtTFBFQaVLPSo72NWnhthsMApuhgyM1dVm2MKHD3Lm-RFDplv32JZzB8LVC9MNfC_4jh7WQyEb1Dfpo_tBPGe0zKSyQTtU_K3EVq5LsFEldJ5yP5oHW3xcGmJlTaUnifFSlMshOgk3S3sMPBJu43Vs4KvOr-twlboJk39iKwXErzhJUQyAIfreK7bgwqUW6_g09aT6OVjAJiVCpKzxX4BVqp_lxJEtGa2tN2nwF1kTgdMntVs4D1CaR3aQXK9RTz3zkJuw6YY");'></div>
+        <div class="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></div>
+        </div>
+        <div>
+        <h2 class="text-sm text-rider-text-muted font-medium leading-none mb-1">Good morning,</h2>
+        <h1 class="text-lg font-bold leading-none tracking-tight text-rider-text-main">Alex</h1>
+        </div>
+        </div>
+        <button class="relative flex items-center justify-center h-10 w-10 rounded-full bg-rider-surface-light hover:bg-slate-200 text-slate-600 transition-colors">
+        <span class="material-symbols-outlined text-[24px]">notifications</span>
+        <span class="absolute top-2 right-2.5 h-2 w-2 bg-rider-accent rounded-full animate-pulse"></span>
+        </button>
+        </header>
+
+        <div class="flex-1 overflow-y-auto w-full no-scrollbar pb-24">
+        <!-- Content remains same -->
+        <div class="px-4 py-2">
+        <div class="relative group">
+        <div class="absolute inset-0 bg-gradient-to-r from-rider-primary/10 to-rider-accent/10 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <a class="relative flex w-full items-center rounded-xl bg-rider-surface-light border border-slate-200 overflow-hidden h-14 shadow-sm transition-shadow group-hover:shadow-md cursor-pointer" routerLink="chat">
+        <div class="flex items-center justify-center pl-4 pr-3 text-rider-primary">
+        <span class="material-symbols-outlined text-[24px]">smart_toy</span>
+        </div>
+        <input class="w-full bg-transparent border-none text-rider-text-main placeholder-slate-400 focus:ring-0 text-base font-medium h-full" placeholder="Ask AI regarding food, rides..." value=""/>
+        <div class="pr-2">
+        <button class="bg-white shadow-sm border border-slate-100 p-2 rounded-lg text-slate-500 hover:text-rider-primary transition-colors">
+        <span class="material-symbols-outlined text-[20px]">mic</span>
+        </button>
+        </div>
+        </a>
+        </div>
+        </div>
+        <div class="px-4 pt-6 pb-2">
+        <div class="flex items-stretch justify-between gap-4 rounded-2xl bg-slate-900 p-4 shadow-xl shadow-slate-200 relative overflow-hidden group">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-rider-primary/30 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+        <div class="flex flex-col justify-between flex-1 z-10">
+        <div>
+        <div class="flex items-center gap-2 mb-1">
+        <span class="bg-rider-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Logistics</span>
+        <span class="text-xs text-slate-300 flex items-center gap-1">
+        <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                                        Live
+                                    </span>
+        </div>
+        <p class="text-white text-lg font-bold leading-tight mt-1">Package arriving</p>
+        <p class="text-slate-400 text-sm mt-0.5 font-medium">15 mins • 2.4 km away</p>
+        </div>
+        <div class="mt-4 flex items-center gap-3">
+        <button class="flex-1 bg-rider-primary hover:bg-rider-primary-light text-white text-sm font-semibold h-9 rounded-lg px-4 transition-all shadow-rider-glow">
+                                    Track
+                                </button>
+        <button class="h-9 w-9 flex items-center justify-center rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors">
+        <span class="material-symbols-outlined text-[20px]">call</span>
+        </button>
+        </div>
+        </div>
+        <div class="w-24 h-full min-h-[110px] bg-cover bg-center rounded-xl flex-shrink-0 z-10 border border-white/10 opacity-90" data-location="City Map View" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCP0ZYOGxmMsZf4YQNyrp9SeBpXTEYroY4RZYWFrqwDLAvlZnhNPeAgp8XDi2iPO2EBSlF7XhYrbFP781ICOh3JqIHB3nI2L16ESW_7DkUyCpsJmVBXnsgygqvB-5F_xhS5KqERJs7J9R5IvUlMMR4sF7Rc70KzDFwW2tVnCqsG6sonM4QqqTRvDEF9N92WfKPVpIBrt4M5dQvWe23I90rVEmwRrz_hMXh--9AFpFDrmX2pNRpv56VkJFg5K5XwV0W23xbrdYK9xSA");'></div>
+        </div>
+        </div>
+        <div class="pt-6">
+        <div class="flex items-center justify-between px-4 mb-3">
+        <h3 class="text-rider-text-main text-xl font-bold">Services</h3>
+        <button class="text-rider-primary text-sm font-medium hover:text-rider-primary-light">View all</button>
+        </div>
+        <div class="grid grid-cols-3 gap-3 px-4">
+        <button class="relative group overflow-hidden rounded-2xl aspect-square flex flex-col justify-end p-3 transition-transform active:scale-95 shadow-rider-soft border border-slate-100">
+        <div class="absolute inset-0 bg-cover bg-center transition-transform group-hover:scale-110" data-alt="Abstract blue medical cross pattern" style='background-image: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(0,0,0,0.6) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuCf70inwloWf0Aprly_xjJfh8uMrfQxcRQrRkcoKrnRXR7dhiMQWFB1iWIRg7whfNvLGbtqc9KR8ivQaIR9PEm_Zue8ZFymsbQ0vhgoxtyll5kzkX-Fax-4OAWqS-7fAUt4wSTc5EsTkNeRVIFyv1F_6opVqd0v-wOYKAvC0sQTLsO4MQsDafEfpTnMzb9c5CUUcnHwX8u8GSUJocFEuCHDiW65yKsbG_AxdbrYl7MQCS2I46fe8FCScWRBysENs4XyXk8UJbRHLyI");'></div>
+        <div class="relative z-10 flex flex-col items-start gap-1">
+        <div class="bg-white/90 p-1.5 rounded-lg backdrop-blur-sm text-blue-600 shadow-sm">
+        <span class="material-symbols-outlined text-[20px]">cardiology</span>
+        </div>
+        <span class="font-semibold text-white text-sm drop-shadow-md">Health</span>
+        </div>
+        </button>
+        <button class="relative group overflow-hidden rounded-2xl aspect-square flex flex-col justify-end p-3 transition-transform active:scale-95 shadow-rider-soft border border-slate-100">
+        <div class="absolute inset-0 bg-cover bg-center transition-transform group-hover:scale-110" data-alt="Concert crowd with purple stage lights" style='background-image: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(0,0,0,0.6) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDi8nXjBa72NicYuGan7Vyef1zqaXqHEcPF9kfhEazeJ-Onzvi9E-d4OQAykeOGDsZmW0An4rVLn-k9kBGeSuWDjxA9opxb2OQe3EEWPuSaS2yXpYVMD6raSaRK8y1wnRPS9aqUXpZKeSMi_5WtQscUyH3a0kZ_wfktFrJiPU1xjzy2nxnH1l_33z49lRUsqi3fKRq3HFlEmVZG4YTho7_tVoMD714Ax9KSUy_1Y32zBdD_5Qki846-rYwJ3H1kVxPK5wDbV3aOrV4");'></div>
+        <div class="relative z-10 flex flex-col items-start gap-1">
+        <div class="bg-white/90 p-1.5 rounded-lg backdrop-blur-sm text-purple-600 shadow-sm">
+        <span class="material-symbols-outlined text-[20px]">confirmation_number</span>
+        </div>
+        <span class="font-semibold text-white text-sm drop-shadow-md">Events</span>
+        </div>
+        </button>
+        <button class="relative group overflow-hidden rounded-2xl aspect-square flex flex-col justify-end p-3 transition-transform active:scale-95 shadow-rider-soft border border-slate-100">
+        <div class="absolute inset-0 bg-cover bg-center transition-transform group-hover:scale-110" data-alt="Abstract logistics warehouse pattern" style='background-image: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(0,0,0,0.6) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBg1xcZOk_PT_kfHhNeiX7cqyONJaX-TLaRTaIjb1BkU7vPT92HdYeSwEvqtSsjwb2y8zwCP4JTIr66pNDcR74uBQyfbYdGMwPupSlKf1Y48ziBwcvEmi1kHNO5Kb8MnTIMZVHnAr01lV0g49Eimf33VGSuh7E3o6Obzb2KYjhuX37XggnOOoQuDQLr3JHF71pqEL7rLTkgMmaoESCBqY0jhg_AaDW2ptTplNc7fm8-dJnPokqN3OL-TJDOldv-IFb_mIeEtC0av_c");'></div>
+        <div class="relative z-10 flex flex-col items-start gap-1">
+        <div class="bg-white/90 p-1.5 rounded-lg backdrop-blur-sm text-orange-600 shadow-sm">
+        <span class="material-symbols-outlined text-[20px]">local_shipping</span>
+        </div>
+        <span class="font-semibold text-white text-sm drop-shadow-md">Logistics</span>
+        </div>
+        </button>
+        </div>
+        </div>
+        <div class="pt-8 pb-4">
+        <div class="flex items-center justify-between px-4 mb-4">
+        <div class="flex items-center gap-2">
+        <h3 class="text-rider-text-main text-xl font-bold">Food &amp; Beverage</h3>
+        <span class="bg-rider-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Hungry?</span>
+        </div>
+        <div class="flex gap-2">
+        <button class="bg-rider-surface-light hover:bg-slate-200 p-1.5 rounded-full text-slate-600 transition-colors">
+        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        </button>
+        <button class="bg-rider-primary hover:bg-rider-primary-light p-1.5 rounded-full text-white transition-colors">
+        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+        </button>
+        </div>
+        </div>
+        <div class="flex overflow-x-auto px-4 gap-4 no-scrollbar pb-6 snap-x snap-mandatory">
+        <div class="flex-none w-[280px] snap-center">
+        <div class="bg-white rounded-2xl overflow-hidden shadow-rider-soft border border-slate-100 group hover:border-rider-primary/30 hover:shadow-lg transition-all">
+        <div class="relative h-40 bg-cover bg-center" data-alt="Gourmet burger with cheese and lettuce" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD4RB9aQ_3VwOrQPj1b5bCHxEBLnMMJhVf-lcRl3IlJ1Q7oqADO9XeNy8C_k2sABlPTFGAKCn8jhJZHxHk-DCbULwl2PIsk3uiT_zdgcFlMsoiXfbnUWem2ZshTZeoxq4OfdLvaGoO9hAgG802b0KcuogYpCG5SzPwEJpZ6N8-QaQzdS1O6ZYSqjMXke2QyuRb35Zg6TD033WkS8shAKhxQ6KLFPfiHSPP-0-43wILDYUxupYFg2V2x-O562LDRbZxtuf6AFkkyx5k");'>
+        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-slate-800 text-xs font-bold px-2 py-1 rounded-lg shadow-sm">
+                                        25-30 min
+                                    </div>
+        <div class="absolute top-3 left-3 bg-rider-accent text-white text-xs font-bold px-2 py-1 rounded-lg shadow-lg">
+                                        Promo
+                                    </div>
+        </div>
+        <div class="p-4">
+        <div class="flex justify-between items-start mb-1">
+        <h4 class="text-rider-text-main font-bold text-lg">Burger House</h4>
+        <div class="flex items-center gap-1 bg-green-50 px-1.5 py-0.5 rounded text-green-600 border border-green-100">
+        <span class="material-symbols-outlined text-[14px]">star</span>
+        <span class="text-xs font-bold">4.8</span>
+        </div>
+        </div>
+        <p class="text-rider-text-muted text-sm mb-4">American • Fast Food • $$</p>
+        <button class="w-full h-10 rounded-lg bg-rider-surface-light hover:bg-rider-primary hover:text-white text-rider-primary text-sm font-semibold transition-all flex items-center justify-center gap-2 group-hover:bg-rider-primary group-hover:text-white group-hover:shadow-lg group-hover:shadow-rider-primary/20">
+                                        Order Now
+                                    </button>
+        </div>
+        </div>
+        </div>
+        <div class="flex-none w-[280px] snap-center">
+        <div class="bg-white rounded-2xl overflow-hidden shadow-rider-soft border border-slate-100 group hover:border-rider-primary/30 hover:shadow-lg transition-all">
+        <div class="relative h-40 bg-cover bg-center" data-alt="Fresh sushi platter" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBvQtzTlTuPUf1Wut8cgAsZzFNmQLuStoFGjO0xsYHsDDRIZ2aIGaC4bV6Y0QeMzx5LY6TYE2AnX90BNZwmHrGkFCiJ2BKkp2RciMRksIRvDicwk6O4TyzBxF8gym0Ng_zlNjJLbkWfEGpI0-LU_SwsTjxg188f0BQ94pz1tCh1Fn0SyQl3zQM7jOZh0ekp2Q1z33mu6fDHZu8so6KRfpm4nvSHkExYZjkNXJXcXhWuSnLEsA_wOYe6Qx70JmqiqpWPwUpQ7T947Sw");'>
+        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-slate-800 text-xs font-bold px-2 py-1 rounded-lg shadow-sm">
+                                        35-45 min
+                                    </div>
+        </div>
+        <div class="p-4">
+        <div class="flex justify-between items-start mb-1">
+        <h4 class="text-rider-text-main font-bold text-lg">Sushi Master</h4>
+        <div class="flex items-center gap-1 bg-green-50 px-1.5 py-0.5 rounded text-green-600 border border-green-100">
+        <span class="material-symbols-outlined text-[14px]">star</span>
+        <span class="text-xs font-bold">4.9</span>
+        </div>
+        </div>
+        <p class="text-rider-text-muted text-sm mb-4">Japanese • Sushi • $$$</p>
+        <button class="w-full h-10 rounded-lg bg-rider-surface-light hover:bg-rider-primary hover:text-white text-rider-primary text-sm font-semibold transition-all flex items-center justify-center gap-2 group-hover:bg-rider-primary group-hover:text-white group-hover:shadow-lg group-hover:shadow-rider-primary/20">
+                                        Order Now
+                                    </button>
+        </div>
+        </div>
+        </div>
+        <div class="flex-none w-[280px] snap-center">
+        <div class="bg-white rounded-2xl overflow-hidden shadow-rider-soft border border-slate-100 group hover:border-rider-primary/30 hover:shadow-lg transition-all">
+        <div class="relative h-40 bg-cover bg-center" data-alt="Fresh italian pizza" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDa6cNTPW3ApOsQRoRk4CeSKvTwtQv6vuE8LWibKb9WEjsI91lta4ayYAsQNJTaRtpWV9ffhbr2EN5qMspcDXQ-WVxhrAKBkMWSqYgK62p98cJZfhfKmmn5DUNYezeZmCB4Bb9EcHHXJaKQ98TlcGp5o8r8GlXsTchj89ccCcw9SOucYD6cZYJ4suY3TdtPhpqZFgc8QETcTrCgyEGKJUwsw5xzLNNGamiEjGHvmkW1fZH3U6rZqG27iOtlWpSL1b1v9QtijOFWf6w");'>
+        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-slate-800 text-xs font-bold px-2 py-1 rounded-lg shadow-sm">
+                                        15-25 min
+                                    </div>
+        </div>
+        <div class="p-4">
+        <div class="flex justify-between items-start mb-1">
+        <h4 class="text-rider-text-main font-bold text-lg">Bella Pizza</h4>
+        <div class="flex items-center gap-1 bg-green-50 px-1.5 py-0.5 rounded text-green-600 border border-green-100">
+        <span class="material-symbols-outlined text-[14px]">star</span>
+        <span class="text-xs font-bold">4.5</span>
+        </div>
+        </div>
+        <p class="text-rider-text-muted text-sm mb-4">Italian • Pizza • $$</p>
+        <button class="w-full h-10 rounded-lg bg-rider-surface-light hover:bg-rider-primary hover:text-white text-rider-primary text-sm font-semibold transition-all flex items-center justify-center gap-2 group-hover:bg-rider-primary group-hover:text-white group-hover:shadow-lg group-hover:shadow-rider-primary/20">
+                                        Order Now
+                                    </button>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        <div class="h-6"></div>
+        </div>
+        @if (!dialog) {
+        <div class="fixed bottom-0 left-0 right-0 z-50 p-4 max-w-md mx-auto">
+            <div class="glass-nav h-16 rounded-2xl bg-white/90 backdrop-blur-lg border border-slate-200 shadow-[0_0_30px_rgba(0,0,0,0.1)] flex items-center justify-around px-2">
+                <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+                    <span class="material-symbols-outlined text-[26px] text-rider-primary group-hover:scale-110 transition-transform">home</span>
+                    <span class="text-[10px] font-medium text-rider-text-main">Home</span>
+                </button>
+                <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+                    <span class="material-symbols-outlined text-[26px] text-slate-400 group-hover:text-rider-primary transition-colors group-hover:scale-110">account_balance_wallet</span>
+                    <span class="text-[10px] font-medium text-slate-400 group-hover:text-rider-text-main">Wallet</span>
+                </button>
+                <button class="relative -top-6 bg-rider-primary hover:bg-rider-primary-light text-white rounded-full h-14 w-14 flex items-center justify-center shadow-rider-glow border-4 border-white transition-transform active:scale-95">
+                    <span class="material-symbols-outlined text-[28px]">qr_code_scanner</span>
+                </button>
+                <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+                    <span class="material-symbols-outlined text-[26px] text-slate-400 group-hover:text-rider-primary transition-colors group-hover:scale-110">receipt_long</span>
+                    <span class="text-[10px] font-medium text-slate-400 group-hover:text-rider-text-main">Activity</span>
+                </button>
+                <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+                    <span class="material-symbols-outlined text-[26px] text-slate-400 group-hover:text-rider-primary transition-colors group-hover:scale-110">person</span>
+                    <span class="text-[10px] font-medium text-slate-400 group-hover:text-rider-text-main">Profile</span>
+                </button>
+            </div>
+        </div>
+        }
+        <!-- Menu style for Dialog (inside container) -->
+        @if (dialog) {
+        <div class="absolute bottom-0 left-0 right-0 z-50">
+            <div class="glass-nav h-20 bg-white/95 backdrop-blur-lg border-t border-slate-200 shadow-[0_-5px_20px_rgba(0,0,0,0.05)] flex items-center justify-around pb-4">
+        <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+        <span class="material-symbols-outlined text-[26px] text-rider-primary group-hover:scale-110 transition-transform">home</span>
+        <span class="text-[10px] font-medium text-rider-text-main">Home</span>
+        </button>
+        <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+        <span class="material-symbols-outlined text-[26px] text-slate-400 group-hover:text-rider-primary transition-colors group-hover:scale-110">account_balance_wallet</span>
+        <span class="text-[10px] font-medium text-slate-400 group-hover:text-rider-text-main">Wallet</span>
+        </button>
+        <button class="relative -top-6 bg-rider-primary hover:bg-rider-primary-light text-white rounded-full h-14 w-14 flex items-center justify-center shadow-rider-glow border-4 border-white transition-transform active:scale-95">
+        <span class="material-symbols-outlined text-[28px]">qr_code_scanner</span>
+        </button>
+        <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+        <span class="material-symbols-outlined text-[26px] text-slate-400 group-hover:text-rider-primary transition-colors group-hover:scale-110">receipt_long</span>
+        <span class="text-[10px] font-medium text-slate-400 group-hover:text-rider-text-main">Activity</span>
+        </button>
+        <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+        <span class="material-symbols-outlined text-[26px] text-slate-400 group-hover:text-rider-primary transition-colors group-hover:scale-110">person</span>
+        <span class="text-[10px] font-medium text-slate-400 group-hover:text-rider-text-main">Profile</span>
+        </button>
+        </div>
+        </div>
+        }
+    </div> <!-- End of Phone Container -->
+</div>

@@ -151,7 +151,7 @@ export class AbandonedCartService {
   /**
    * Trigger recovery process
    */
-  triggerRecovery(olderThanMinutes: number = 60): Observable<{ success: boolean; message: string }> {
+  triggerRecovery(olderThanMinutes = 60): Observable<{ success: boolean; message: string }> {
     return this.http.post<{ success: boolean; message: string }>(
       `${this.baseUrl}/trigger`,
       { olderThanMinutes },
@@ -177,7 +177,7 @@ export class AbandonedCartService {
     cartId: string;
     customerName: string;
     customerEmail: string;
-    cartItems: Array<{ name: string; quantity: number; price: number }>;
+    cartItems: { name: string; quantity: number; price: number }[];
     cartTotal: number;
     discountCode?: string;
     discountPercent?: number;

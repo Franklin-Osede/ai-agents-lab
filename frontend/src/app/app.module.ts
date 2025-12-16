@@ -18,6 +18,9 @@ import { RoleSelectorComponent } from './shared/components/role-selector/role-se
 import { LoginComponent } from './shared/components/login/login.component';
 import { RegisterComponent } from './shared/components/register/register.component';
 import { GoogleMapsAutocompleteComponent } from './shared/components/google-maps-autocomplete/google-maps-autocomplete.component';
+import { WelcomeChatComponent } from './abandoned-cart/components/welcome-chat/welcome-chat.component';
+import { RiderAgentModule } from './rider-agent/rider-agent.module';
+import { SuperAppHomeComponent } from './rider-agent/components/super-app-home/super-app-home.component';
 
 // Note: Abandoned Cart components are standalone and don't need to be declared here
 // They are imported directly in routes
@@ -27,19 +30,28 @@ import { GoogleMapsAutocompleteComponent } from './shared/components/google-maps
     AppComponent,
     LandingPageComponent,
     AgentCardComponent,
-    DemoModalComponent,
-    ChatInterfaceComponent,
+
     MetricsPanelComponent,
     EntityExtractionComponent,
-    VoicePlayerComponent,
-    ServiceSelectorComponent,
-    CalendarComponent,
     RoleSelectorComponent,
     LoginComponent,
     RegisterComponent,
-    GoogleMapsAutocompleteComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule],
+  imports: [
+    BrowserModule, 
+    AppRoutingModule, 
+    HttpClientModule, 
+    FormsModule, 
+    WelcomeChatComponent, 
+    RiderAgentModule, 
+    SuperAppHomeComponent, 
+    DemoModalComponent,
+    ChatInterfaceComponent,
+    ServiceSelectorComponent,
+    CalendarComponent,
+    VoicePlayerComponent,
+    GoogleMapsAutocompleteComponent
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })

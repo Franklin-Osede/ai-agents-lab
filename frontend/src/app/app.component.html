@@ -1,4 +1,6 @@
 <!-- Landing page always visible, mobile frame overlays it for abandoned cart -->
-<app-landing-page *ngIf="isAbandonedCartRoute" class="landing-background"></app-landing-page>
+@if (isAbandonedCartRoute) {
+  <app-landing-page class="landing-background"></app-landing-page>
+}
 <router-outlet></router-outlet>
 

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-declare var google: any;
+declare let google: any;
 
 export interface PlaceResult {
   place_id: string;

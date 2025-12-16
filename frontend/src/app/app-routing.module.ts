@@ -35,6 +35,11 @@ const routes: Routes = [
     path: 'booking',
     loadChildren: () => import('./booking/booking.module').then(m => m.BookingModule),
   },
+  // Rider Agent Route
+  {
+    path: 'rider',
+    loadChildren: () => import('./rider-agent/rider-agent.module').then(m => m.RiderAgentModule),
+  },
   // Legacy route redirects to new dashboard
   { path: 'professional', redirectTo: '/abandoned-cart', pathMatch: 'full' },
   { path: '**', redirectTo: '' },

@@ -29,7 +29,7 @@ export interface AgentResponse {
   entities?: BookingEntities;
   urgency?: 'LOW' | 'MEDIUM' | 'HIGH';
   suggestedNextSteps?: string[];
-  toolCalls?: Array<{ name: string; args: any }>;
+  toolCalls?: { name: string; args: any }[];
   // Voice agent specific fields
   script?: string;
   audioUrl?: string;

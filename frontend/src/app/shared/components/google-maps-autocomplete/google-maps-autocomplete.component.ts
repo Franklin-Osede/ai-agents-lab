@@ -1,4 +1,6 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
+
+import { FormsModule } from '@angular/forms';
 import { GoogleMapsService, PlaceResult } from '../../services/google-maps.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
@@ -6,18 +8,22 @@ import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/o
 @Component({
   selector: 'app-google-maps-autocomplete',
   templateUrl: './google-maps-autocomplete.component.html',
-  styleUrls: ['./google-maps-autocomplete.component.scss']
+  styleUrls: ['./google-maps-autocomplete.component.scss'],
+  standalone: true,
+  imports: [FormsModule]
 })
 export class GoogleMapsAutocompleteComponent implements OnInit, OnDestroy {
-  @Input() placeholder: string = 'Buscar dirección...';
-  @Input() initialValue: string = '';
-  @Input() label: string = 'Dirección';
+  @Input() placeholder = 'Buscar dirección...';
+  @Input() initialValue = '';
+  @Input() label = 'Dirección';
   @Output() placeSelected = new EventEmitter<PlaceResult>();
   @Output() addressChange = new EventEmitter<string>();
 
   @ViewChild('inputElement', { static: false }) inputElement!: ElementRef<HTMLInputElement>;
 
-  addressValue: string = '';
+  private googleMapsService = inject(GoogleMapsService);
+
+  addressValue = '';
   predictions: any[] = [];
   showPredictions = false;
   isLoading = false;
@@ -25,8 +31,6 @@ export class GoogleMapsAutocompleteComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
-
-  constructor(private googleMapsService: GoogleMapsService) {}
 
   ngOnInit(): void {
     if (this.initialValue) {

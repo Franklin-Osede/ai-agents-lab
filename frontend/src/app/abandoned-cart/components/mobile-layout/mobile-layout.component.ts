@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule, Router } from '@angular/router';
 import { ThemeService } from '../../../shared/services/theme.service';
 
@@ -12,7 +12,7 @@ import { ThemeService } from '../../../shared/services/theme.service';
 @Component({
   selector: 'app-mobile-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [RouterModule],
   templateUrl: './mobile-layout.component.html',
   styleUrl: './mobile-layout.component.scss',
 })

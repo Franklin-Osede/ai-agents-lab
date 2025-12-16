@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, inject } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -6,10 +6,12 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   @Input() preselectedRole: 'professional' | 'client' | null = null;
   @Output() switchToLogin = new EventEmitter<void>();
   @Output() registerSuccess = new EventEmitter<void>();
+
+  private authService = inject(AuthService);
 
   name = '';
   email = '';
@@ -19,8 +21,6 @@ export class RegisterComponent {
   acceptTerms = false;
   errorMessage = '';
   isLoading = false;
-
-  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
     if (this.preselectedRole) {

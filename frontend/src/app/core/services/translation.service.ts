@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
@@ -30,7 +30,9 @@ export class TranslationService {
     { code: 'de', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪' },
   ];
 
-  constructor(private translate: TranslateService) {
+  private translate = inject(TranslateService);
+
+  constructor() {
     // Load saved language or use default
     const savedLanguage = this.loadLanguageFromStorage();
     this.currentLanguageSubject = new BehaviorSubject<LanguageCode>(savedLanguage);

@@ -9,5 +9,6 @@ export const environment = {
     storageBucket: "YOUR_PROJECT.appspot.com",
     messagingSenderId: "YOUR_SENDER_ID",
     appId: "YOUR_APP_ID"
-  }
+  },
+  enabledAgents: ['booking', 'cart', 'voice', 'rider']
 };

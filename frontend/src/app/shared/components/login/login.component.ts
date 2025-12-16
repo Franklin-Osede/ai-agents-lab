@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -10,12 +10,12 @@ export class LoginComponent {
   @Output() switchToRegister = new EventEmitter<void>();
   @Output() loginSuccess = new EventEmitter<void>();
 
+  private authService = inject(AuthService);
+
   email = '';
   password = '';
   errorMessage = '';
   isLoading = false;
-
-  constructor(private authService: AuthService) {}
 
   onSubmit(): void {
     if (!this.email || !this.password) {

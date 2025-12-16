@@ -64,7 +64,7 @@
 
       <div class="flex overflow-x-auto gap-4 px-6 pb-6 no-scrollbar snap-x snap-mandatory">
         <!-- Professional Card -->
-        <div (click)="selectRole('professional')" class="snap-center shrink-0 w-[260px] bg-white p-4 rounded-2xl border border-gray-100 shadow-card flex flex-col gap-4 relative overflow-hidden group hover:border-primary/30 transition-colors cursor-pointer">
+        <div (click)="selectRole('professional')" (keydown.enter)="selectRole('professional')" tabindex="0" role="button" class="snap-center shrink-0 w-[260px] bg-white p-4 rounded-2xl border border-gray-100 shadow-card flex flex-col gap-4 relative overflow-hidden group hover:border-primary/30 transition-colors cursor-pointer">
           <div class="w-full h-32 rounded-xl bg-cover bg-center relative overflow-hidden grayscale-[20%] group-hover:grayscale-0 transition-all duration-500" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCTinBiitqgmqSpeFF01g_XZQ79WIVo-UlHk_TxXG37u29_wPccegODGcfQ5T0_vAfFmkKhAz0y-feYRimrRzJdn-S_nq6DWu6dT2tUvvNT6wQzu-z36lHVWi3qfLUAGxeCP5R6raET07SMPFwPRUN_ZGEQ5Jx8d6WiIGy2BjxnNhw5ISgp5IQ0gQ09SBlBRQTVltHHKo5S4Jj5tlNut70k-NXHol80TtAlsUQw9rnDf9gFvCyxYjW6DzrM2toeZMc8nDOfOkUSZ7SV');">
             <div class="absolute inset-0 bg-primary/5 mix-blend-multiply"></div>
           </div>
@@ -82,7 +82,7 @@
         </div>
 
         <!-- Client Card -->
-        <div (click)="selectRole('client')" class="snap-center shrink-0 w-[260px] bg-white p-4 rounded-2xl border border-gray-100 shadow-card flex flex-col gap-4 relative overflow-hidden group hover:border-primary/30 transition-colors cursor-pointer">
+        <div (click)="selectRole('client')" (keydown.enter)="selectRole('client')" tabindex="0" role="button" class="snap-center shrink-0 w-[260px] bg-white p-4 rounded-2xl border border-gray-100 shadow-card flex flex-col gap-4 relative overflow-hidden group hover:border-primary/30 transition-colors cursor-pointer">
           <div class="w-full h-32 rounded-xl bg-cover bg-center relative overflow-hidden grayscale-[20%] group-hover:grayscale-0 transition-all duration-500" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBD-IFZ9utm0_NRnkMSh2zSGQuhw4B1R_XQ8Sbtnz04pn3L7RmPsZOothk9hSCRt8LbfYgDDhcbUmoyl3nSZ8alr71NrH4F8JrBzJ-PVf_xw8o9ZCd48J_puC2CNpvbsAXzzDFDHJEGVRHGBEcu8LqNUcMH9VJabGwdSjvHwmQa4ifQxHY7A0ScLeH0dXNveFdTHjgwFTQtVAnTcZ-LU3T5OXqYbsENqYXXBwqmjSYG4VELOH_Uh_jhzMI1neKG5T9iZfJf3nobxLHy');">
             <div class="absolute inset-0 bg-primary/5 mix-blend-multiply"></div>
           </div>

@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 export interface Service {
   id: string;
@@ -18,10 +19,14 @@ export interface ServiceCategory {
   expanded: boolean;
 }
 
+import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-service-selector',
   templateUrl: './service-selector.component.html',
   styleUrls: ['./service-selector.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule]
 })
 export class ServiceSelectorComponent {
   @Output() serviceSelected = new EventEmitter<any>();

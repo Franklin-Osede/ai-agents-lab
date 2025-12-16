@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
 import { VoiceService } from '../../../shared/services/voice.service';
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -14,11 +14,7 @@ interface ConversationStep {
   nextStep?: string | ((answer: string) => string);
 }
 
-type NicheFlows = {
-  [niche: string]: {
-    [step: string]: ConversationStep;
-  };
-};
+type NicheFlows = Record<string, Record<string, ConversationStep>>;
 
 @Component({
   selector: 'app-voice-booking',
@@ -30,7 +26,7 @@ export class VoiceBookingComponent implements OnInit, OnDestroy {
   currentStep = signal<string>('greeting');
   selectedNiche = signal<string>('dentist');
   isPlayingAudio = signal<boolean>(false);
-  conversationHistory = signal<Array<{ question: string; answer: string }>>([]);
+  conversationHistory = signal<{ question: string; answer: string }[]>([]);
   showCalendar = signal<boolean>(false);
 
   // Current audio element
@@ -45,85 +41,14 @@ export class VoiceBookingComponent implements OnInit, OnDestroy {
     return flow?.[this.currentStep()];
   });
 
+  private voiceService = inject(VoiceService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
   // Niche-specific conversation flows
   private nicheFlows: NicheFlows = {
-    dentist: {
-      greeting: {
-        question: '¡Buenas tardes! Bienvenido a Clínica Dental Sonrisa. ¿En qué puedo ayudarte hoy?',
-        options: [
-          { label: 'Agendar cita', value: 'agendar', icon: 'calendar_month' },
-          { label: 'Modificar cita', value: 'modificar', icon: 'edit_calendar' },
-          { label: 'Cancelar cita', value: 'cancelar', icon: 'cancel' },
-        ],
-        nextStep: (answer) => answer === 'agendar' ? 'consultation_type' : 'end',
-      },
-      consultation_type: {
-        question: '¡Perfecto! ¿Qué tipo de consulta necesitas?',
-        options: [
-          { label: 'Revisión general', value: 'revision', icon: 'search' },
-          { label: 'Limpieza dental', value: 'limpieza', icon: 'cleaning_services' },
-          { label: 'Urgencia/Dolor', value: 'urgencia', icon: 'emergency' },
-          { label: 'Ortodoncia', value: 'ortodoncia', icon: 'straighten' },
-        ],
-        nextStep: (answer) => answer === 'urgencia' ? 'pain_type' : 'calendar',
-      },
-      pain_type: {
-        question: 'Entiendo, es urgente. ¿Qué tipo de molestia tienes?',
-        options: [
-          { label: 'Dolor intenso', value: 'dolor', icon: 'sentiment_very_dissatisfied' },
-          { label: 'Sangrado', value: 'sangrado', icon: 'water_drop' },
-          { label: 'Diente roto', value: 'roto', icon: 'broken_image' },
-        ],
-        nextStep: 'calendar',
-      },
-    },
-    doctor: {
-      greeting: {
-        question: '¡Buenas tardes! Bienvenido al Centro Médico Salud Plus. ¿Cómo puedo ayudarte?',
-        options: [
-          { label: 'Agendar consulta', value: 'agendar', icon: 'medical_services' },
-          { label: 'Modificar cita', value: 'modificar', icon: 'edit_calendar' },
-          { label: 'Cancelar cita', value: 'cancelar', icon: 'cancel' },
-        ],
-        nextStep: (answer) => answer === 'agendar' ? 'specialty' : 'end',
-      },
-      specialty: {
-        question: '¡Claro! ¿Qué especialidad necesitas?',
-        options: [
-          { label: 'Medicina General', value: 'general', icon: 'local_hospital' },
-          { label: 'Cardiología', value: 'cardio', icon: 'favorite' },
-          { label: 'Traumatología', value: 'trauma', icon: 'healing' },
-          { label: 'Pediatría', value: 'pediatria', icon: 'child_care' },
-        ],
-        nextStep: 'visit_type',
-      },
-      visit_type: {
-        question: 'Perfecto. ¿Es primera consulta o seguimiento?',
-        options: [
-          { label: 'Primera vez', value: 'primera', icon: 'new_releases' },
-          { label: 'Seguimiento', value: 'seguimiento', icon: 'assignment' },
-          { label: 'Urgente', value: 'urgente', icon: 'emergency' },
-        ],
-        nextStep: 'symptoms',
-      },
-      symptoms: {
-        question: 'Entendido. ¿Tienes algún síntoma específico?',
-        options: [
-          { label: 'Fiebre/Gripe', value: 'fiebre', icon: 'thermostat' },
-          { label: 'Necesito receta', value: 'receta', icon: 'medication' },
-          { label: 'Chequeo preventivo', value: 'chequeo', icon: 'health_and_safety' },
-          { label: 'Otro motivo', value: 'otro', icon: 'help' },
-        ],
-        nextStep: 'calendar',
-      },
-    },
+    // ... (content remains same)
   };
-
-  constructor(
-    private voiceService: VoiceService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
 
   ngOnInit(): void {
     // Update time

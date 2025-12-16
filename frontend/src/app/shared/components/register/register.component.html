@@ -10,10 +10,12 @@
     </div>
 
     <!-- Error Message -->
-    <div *ngIf="errorMessage" class="error-message">
-      <span class="material-symbols-outlined">error</span>
-      <span>{{ errorMessage }}</span>
-    </div>
+    @if (errorMessage) {
+      <div class="error-message">
+        <span class="material-symbols-outlined">error</span>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
 
     <!-- Register Form -->
     <form (ngSubmit)="onSubmit()" class="register-form">
@@ -32,7 +34,7 @@
           name="name"
           required
           autocomplete="name"
-        />
+          />
       </div>
 
       <!-- Email Field -->
@@ -50,7 +52,7 @@
           name="email"
           required
           autocomplete="email"
-        />
+          />
       </div>
 
       <!-- Password Field -->
@@ -68,7 +70,7 @@
           name="password"
           required
           autocomplete="new-password"
-        />
+          />
       </div>
 
       <!-- Confirm Password Field -->
@@ -86,15 +88,15 @@
           name="confirmPassword"
           required
           autocomplete="new-password"
-        />
+          />
       </div>
 
       <!-- Role Selection -->
-      <div class="form-group">
-        <label class="form-label">
+      <fieldset class="form-group">
+        <legend class="form-label">
           <span class="material-symbols-outlined">work</span>
           <span>Tipo de Cuenta</span>
-        </label>
+        </legend>
         <div class="role-options">
           <label class="role-option" [class.selected]="role === 'client'">
             <input
@@ -102,7 +104,7 @@
               name="role"
               value="client"
               [(ngModel)]="role"
-            />
+              />
             <div class="role-content">
               <span class="material-symbols-outlined">person</span>
               <span class="role-text">Cliente</span>
@@ -114,14 +116,14 @@
               name="role"
               value="professional"
               [(ngModel)]="role"
-            />
+              />
             <div class="role-content">
               <span class="material-symbols-outlined">medical_services</span>
               <span class="role-text">Profesional</span>
             </div>
           </label>
         </div>
-      </div>
+      </fieldset>
 
       <!-- Terms Checkbox -->
       <div class="terms-group">
@@ -131,7 +133,7 @@
             [(ngModel)]="acceptTerms"
             name="acceptTerms"
             class="checkbox-input"
-          />
+            />
           <span class="checkbox-text">
             Acepto los
             <a href="#" class="terms-link">términos y condiciones</a>
@@ -141,11 +143,15 @@
 
       <!-- Submit Button -->
       <button type="submit" class="submit-btn" [disabled]="isLoading">
-        <span *ngIf="!isLoading">Crear Cuenta</span>
-        <span *ngIf="isLoading" class="loading-spinner">
-          <span class="spinner"></span>
-          Creando cuenta...
-        </span>
+        @if (!isLoading) {
+          <span>Crear Cuenta</span>
+        }
+        @if (isLoading) {
+          <span class="loading-spinner">
+            <span class="spinner"></span>
+            Creando cuenta...
+          </span>
+        }
       </button>
     </form>
 

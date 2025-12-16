@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 
+
 /**
  * VoicePlayerComponent
  * 
@@ -10,6 +11,8 @@ import { Component, Input } from '@angular/core';
   selector: 'app-voice-player',
   templateUrl: './voice-player.component.html',
   styleUrls: ['./voice-player.component.scss'],
+  standalone: true,
+  imports: []
 })
 export class VoicePlayerComponent {
   @Input() audioUrl?: string;

@@ -1,19 +1,38 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, inject } from '@angular/core';
+import { GoogleMapsAutocompleteComponent } from '../google-maps-autocomplete/google-maps-autocomplete.component';
 import { Agent, AgentResponse } from '../../models/agent.model';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { ChatMessage } from '../../models/agent.model';
 import { Router } from '@angular/router';
 import { VoiceService } from '../../services/voice.service';
-
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { WelcomeChatComponent } from '../../../abandoned-cart/components/welcome-chat/welcome-chat.component';
+import { SuperAppHomeComponent } from '../../../rider-agent/components/super-app-home/super-app-home.component';
+import { ChatInterfaceComponent } from '../chat-interface/chat-interface.component';
+import { ServiceSelectorComponent } from '../service-selector/service-selector.component';
+import { CalendarComponent } from '../calendar/calendar.component';
 @Component({
   selector: 'app-demo-modal',
   templateUrl: './demo-modal.component.html',
   styleUrls: ['./demo-modal.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    WelcomeChatComponent, 
+    SuperAppHomeComponent,
+    ChatInterfaceComponent,
+    ServiceSelectorComponent,
+    CalendarComponent,
+    CalendarComponent,
+    GoogleMapsAutocompleteComponent
+  ]
 })
 export class DemoModalComponent implements OnInit, OnDestroy {
   @Input() agent!: Agent;
-  @Output() close = new EventEmitter<void>();
+  @Output() modalClose = new EventEmitter<void>();
 
   messages: ChatMessage[] = [];
   currentMessage = '';
@@ -47,7 +66,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   // Steps: 0 = Service Selector, 1 = Chat, 2 = Calendar, 3 = Professional, 4 = Confirmation, 5 = Success Message
   // 6 = Restaurant Selection, 7 = Menu Selection, 8 = Delivery Address (for restaurants)
   // 10 = Reservas, 11 = Avisos
-  currentStep: number = 0;
+  currentStep = 0;
   showSuccessMessage = false;
   
   // Restaurant flow state
@@ -72,14 +91,14 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   checkingAvailability = false;
   showLeadCapture = false;
   interactionCount = 0;
-  detectedDayOptions: Array<{day: string, date: Date, label: string}> = [];
+  detectedDayOptions: {day: string, date: Date, label: string}[] = [];
   selectedDayOption: {day: string, date: Date, label: string} | null = null;
   
   // Navigation
   activeTab: 'inicio' | 'reservas' | 'avisos' | 'perfil' = 'inicio';
   
   // Bookings/Reservas
-  bookings: Array<{
+  bookings: {
     id: string;
     date: string;
     time: string;
@@ -88,10 +107,10 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     status: 'confirmed' | 'pending' | 'cancelled' | 'completed';
     amount?: number;
     paymentStatus?: 'paid' | 'pending' | 'refunded';
-  }> = [];
+  }[] = [];
   
   // Notifications/Avisos
-  notifications: Array<{
+  notifications: {
     id: string;
     type: 'reminder' | 'payment' | 'action' | 'offer' | 'message' | 'security';
     title: string;
@@ -100,17 +119,21 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     read: boolean;
     icon: string;
     color: string;
-  }> = [];
+  }[] = [];
   
   // Selected booking for details
   selectedBooking: any = null;
 
-  constructor(
-    private apiService: ApiService,
-    private authService: AuthService,
-    private router: Router,
-    private voiceService: VoiceService
-  ) {}
+  private apiService = inject(ApiService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private voiceService = inject(VoiceService);
+
+
+
+  isMobile(): boolean {
+    return window.innerWidth < 768; // Tailwind md breakpoint
+  }
 
   ngOnInit(): void {
     console.log('DemoModalComponent ngOnInit - agent:', this.agent);
@@ -119,10 +142,24 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Special handling for abandoned cart - redirect to dashboard
-    if (this.agent.id === 'cart-recovery' || this.agent.id === 'abandoned-cart') {
+    // Special handling for abandoned cart - redirect ONLY on mobile
+    if ((this.agent.id === 'cart-recovery' || this.agent.id === 'abandoned-cart' || this.agent.id === 'cart') && this.isMobile()) {
       this.router.navigate(['/abandoned-cart']);
-      this.close.emit();
+      this.modalClose.emit();
+      return;
+    }
+
+    // Special handling for rider agent - redirect ONLY on mobile
+    if (this.agent.id === 'rider' && this.isMobile()) {
+      this.router.navigate(['/rider']);  // Assuming /rider is the route
+      this.modalClose.emit();
+      return;
+    }
+
+    // Special handling for rider agent - redirect to super app
+    if (this.agent.id === 'rider') {
+      this.router.navigate(['/rider']);
+      this.modalClose.emit();
       return;
     }
 
@@ -563,11 +600,11 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   selectedFilter: 'best-rated' | 'nearest' | 'price-low' | 'availability' = 'best-rated';
   
   // Cache for professionals to avoid multiple calls
-  private cachedProfessionals: Array<{ name: string; image: string; title: string; rating: number; reviews: number; distance: string; description: string }> = [];
+  private cachedProfessionals: { name: string; image: string; title: string; rating: number; reviews: number; distance: string; description: string }[] = [];
   private cachedServiceId: string | null = null;
   
   // Get professionals based on selected service
-  getProfessionalsForService(): Array<{ name: string; image: string; title: string; rating: number; reviews: number; distance: string; description: string }> {
+  getProfessionalsForService(): { name: string; image: string; title: string; rating: number; reviews: number; distance: string; description: string }[] {
     console.log('🟢 getProfessionalsForService CALLED');
     console.log('🟢 this.selectedService:', this.selectedService);
     
@@ -740,7 +777,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     };
     
     // Professional data by category
-    const professionalsByCategory: Record<string, Array<{ name: string; title: string; rating: number; reviews: number; distance: string; description: string }>> = {
+    const professionalsByCategory: Record<string, { name: string; title: string; rating: number; reviews: number; distance: string; description: string }[]> = {
       'dentista': [
         { name: 'Dr. Carlos Méndez', title: 'Dentista', rating: 4.9, reviews: 145, distance: '1.8km', description: 'Especialista en ortodoncia y estética dental con más de 15 años de experiencia.' },
         { name: 'Dra. Laura Sánchez', title: 'Odontóloga', rating: 4.8, reviews: 98, distance: '2.3km', description: 'Experta en implantes dentales y rehabilitación oral.' },
@@ -1047,8 +1084,8 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   }
   
   // Marketplace filters
-  selectedCategory: string = 'todos';
-  searchQuery: string = '';
+  selectedCategory = 'todos';
+  searchQuery = '';
   
   // All services
   allServices = [
@@ -1325,30 +1362,24 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     try {
       let response: AgentResponse | undefined;
       switch (this.agent.id) {
-        case 'booking':
-          // Include service context for personalized AI responses
+        case 'booking': {
           const serviceContext = this.selectedService ? {
-            id: this.selectedService.id,
-            name: this.selectedService.name,
-            businessType: this.selectedService.businessType || this.selectedService.id,
-            tone: this.selectedService.tone,
-          } : null;
-          
-          response = await this.apiService
-            .processBooking(
-              messageToSend,
-              'demo-business',
-              true,
-              serviceContext,
-              this.sessionId,
-            )
-            .toPromise();
-          
-          // Handle Tool Calls for Visualization and Real-time Availability
+             id: this.selectedService.id,
+             name: this.selectedService.name,
+             price: this.selectedService.price,
+             duration: this.selectedService.duration
+          } : undefined;
+
+          response = await this.apiService.processBooking(
+             messageToSend,
+             'demo-business',
+             true,
+             serviceContext,
+             this.sessionId
+          ).toPromise();
+
           if (response?.toolCalls && response.toolCalls.length > 0) {
-              console.log('Frontend received tool calls:', response.toolCalls);
-              
-              for (const call of response.toolCalls) {
+             for (const call of response.toolCalls) {
                   if (call.name === 'check_availability') {
                       // Parse date from args
                       const dateStr = call.args?.date || call.args || new Date().toISOString().split('T')[0];
@@ -1465,6 +1496,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
               }
           }
           break;
+        }
         case 'dm-response':
           response = await this.apiService.processDm(messageToSend).toPromise();
           // Generate contextual suggestions for dm-response agent
@@ -1949,7 +1981,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     this.currentStep = 4; // Show confirmation/details view
   }
   
-  getNotificationGroups(): Array<{ label: string; notifications: any[] }> {
+  getNotificationGroups(): { label: string; notifications: any[] }[] {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const yesterday = new Date(today);
@@ -1957,7 +1989,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     const weekAgo = new Date(today);
     weekAgo.setDate(weekAgo.getDate() - 7);
     
-    const groups: Array<{ label: string; notifications: any[] }> = [];
+    const groups: { label: string; notifications: any[] }[] = [];
     
     const todayNotifs = this.notifications.filter(n => {
       const notifDate = new Date(n.timestamp);
@@ -2009,7 +2041,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   }
 
   onClose(): void {
-    this.close.emit();
+    this.modalClose.emit();
   }
 
   confirmBooking(): void {
@@ -2118,7 +2150,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   }
 
   // Get restaurants list (imágenes diferentes y de mejor calidad - interiores de restaurantes)
-  getRestaurants(): Array<{ id: string; name: string; image: string; rating: number; reviews: number; cuisine: string; distance: string }> {
+  getRestaurants(): { id: string; name: string; image: string; rating: number; reviews: number; cuisine: string; distance: string }[] {
     return [
       {
         id: 'restaurant-1',
@@ -2159,7 +2191,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     return menuType?.name || 'Menú';
   }
 
-  getMenuTypes(): Array<{ id: string; name: string; description: string; icon: string }> {
+  getMenuTypes(): { id: string; name: string; description: string; icon: string }[] {
     return [
       { id: 'breakfast', name: 'Desayuno', description: '7:00 AM - 11:00 AM', icon: 'breakfast_dining' },
       { id: 'lunch', name: 'Comida', description: '1:00 PM - 4:00 PM', icon: 'lunch_dining' },
@@ -2353,7 +2385,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   private extractDayOptionsFromMessage(message: string): void {
     const daysOfWeek = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
     const today = new Date();
-    const options: Array<{day: string, date: Date, label: string}> = [];
+    const options: {day: string, date: Date, label: string}[] = [];
     
     // Improved pattern to match day mentions - more flexible
     // Matches: "mañana", "jueves", "viernes", "sábado", "el jueves", "mañana (jueves)", etc.

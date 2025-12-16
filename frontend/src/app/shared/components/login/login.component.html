@@ -10,10 +10,12 @@
     </div>
 
     <!-- Error Message -->
-    <div *ngIf="errorMessage" class="error-message">
-      <span class="material-symbols-outlined">error</span>
-      <span>{{ errorMessage }}</span>
-    </div>
+    @if (errorMessage) {
+      <div class="error-message">
+        <span class="material-symbols-outlined">error</span>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
 
     <!-- Login Form -->
     <form (ngSubmit)="onSubmit()" class="login-form">
@@ -32,7 +34,7 @@
           name="email"
           required
           autocomplete="email"
-        />
+          />
       </div>
 
       <!-- Password Field -->
@@ -50,7 +52,7 @@
           name="password"
           required
           autocomplete="current-password"
-        />
+          />
       </div>
 
       <!-- Forgot Password Link -->
@@ -60,11 +62,15 @@
 
       <!-- Submit Button -->
       <button type="submit" class="submit-btn" [disabled]="isLoading">
-        <span *ngIf="!isLoading">Iniciar Sesión</span>
-        <span *ngIf="isLoading" class="loading-spinner">
-          <span class="spinner"></span>
-          Iniciando...
-        </span>
+        @if (!isLoading) {
+          <span>Iniciar Sesión</span>
+        }
+        @if (isLoading) {
+          <span class="loading-spinner">
+            <span class="spinner"></span>
+            Iniciando...
+          </span>
+        }
       </button>
     </form>
 

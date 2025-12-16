@@ -1,46 +1,56 @@
-<div class="voice-player" *ngIf="hasAudio() || hasVideo()">
-  <div class="voice-header">
-    <span class="voice-icon">🎤</span>
-    <h4 class="voice-title">Mensaje de Voz Generado</h4>
-  </div>
-
-  <!-- Script -->
-  <div class="script-section" *ngIf="script">
-    <p class="script-text">{{ script }}</p>
-  </div>
-
-  <!-- Video Player (priority) -->
-  <div class="video-section" *ngIf="hasVideo()">
-    <video
-      [src]="videoUrl"
-      controls
-      class="video-player"
-      preload="metadata"
-    >
-      Tu navegador no soporta la reproducción de video.
-    </video>
-  </div>
-
-  <!-- Audio Player -->
-  <div class="audio-section" *ngIf="hasAudio() && !hasVideo()">
-    <audio
-      [src]="audioUrl"
-      controls
-      class="audio-player"
-    >
-      Tu navegador no soporta la reproducción de audio.
-    </audio>
-  </div>
-
-  <!-- Metadata -->
-  <div class="metadata-section" *ngIf="duration || estimatedCost">
-    <div class="metadata-item" *ngIf="duration">
-      <span class="metadata-label">⏱️ Duración:</span>
-      <span class="metadata-value">{{ formatDuration(duration) }}</span>
+@if (hasAudio() || hasVideo()) {
+  <div class="voice-player">
+    <div class="voice-header">
+      <span class="voice-icon">🎤</span>
+      <h4 class="voice-title">Mensaje de Voz Generado</h4>
     </div>
-    <div class="metadata-item" *ngIf="estimatedCost">
-      <span class="metadata-label">💰 Costo estimado:</span>
-      <span class="metadata-value">${{ estimatedCost.toFixed(2) }} USD</span>
-    </div>
+    <!-- Script -->
+    @if (script) {
+      <div class="script-section">
+        <p class="script-text">{{ script }}</p>
+      </div>
+    }
+    <!-- Video Player (priority) -->
+    @if (hasVideo()) {
+      <div class="video-section">
+        <video
+          [src]="videoUrl"
+          controls
+          class="video-player"
+          preload="metadata"
+          >
+          Tu navegador no soporta la reproducción de video.
+        </video>
+      </div>
+    }
+    <!-- Audio Player -->
+    @if (hasAudio() && !hasVideo()) {
+      <div class="audio-section">
+        <audio
+          [src]="audioUrl"
+          controls
+          class="audio-player"
+          >
+          Tu navegador no soporta la reproducción de audio.
+        </audio>
+      </div>
+    }
+    <!-- Metadata -->
+    @if (duration || estimatedCost) {
+      <div class="metadata-section">
+        @if (duration) {
+          <div class="metadata-item">
+            <span class="metadata-label">⏱️ Duración:</span>
+            <span class="metadata-value">{{ formatDuration(duration) }}</span>
+          </div>
+        }
+        @if (estimatedCost) {
+          <div class="metadata-item">
+            <span class="metadata-label">💰 Costo estimado:</span>
+            <span class="metadata-value">${{ estimatedCost.toFixed(2) }} USD</span>
+          </div>
+        }
+      </div>
+    }
   </div>
-</div>
+}

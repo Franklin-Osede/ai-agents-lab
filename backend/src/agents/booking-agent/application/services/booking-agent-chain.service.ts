@@ -336,7 +336,8 @@ Recuerda: Eres INTELIGENTE, CONVERSACIONAL y tu objetivo es crear una experienci
       const resultMessages = result.messages || [];
 
       // Find tool calls for availability checking
-      const toolCalls: Array<{ name: string; args: Record<string, unknown>; content?: string }> = [];
+      const toolCalls: Array<{ name: string; args: Record<string, unknown>; content?: string }> =
+        [];
       resultMessages.forEach(
         (msg: { _getType?: () => string; name?: string; args?: Record<string, unknown> }) => {
           if (msg._getType && msg._getType() === 'tool') {

@@ -22,7 +22,7 @@ export class OpenAiProvider implements IAiProvider {
       messages: [
         { role: 'system', content: systemPrompt as string },
         { role: 'user', content: userPrompt as string },
-      ] as any,
+      ],
       temperature: (context?.temperature as number) || 0.7,
       max_tokens: (context?.maxTokens as number) || 500,
     });
@@ -63,12 +63,12 @@ Respond with JSON format: {"intent": "INTENT_NAME", "confidence": 0.0-1.0}`;
     try {
       // Create a File object from the buffer using a workaround for node-fetch/openai compatibility
       // In a real staging environment we might need to use 'fs' to write to tmp first,
-      // but 'openai' SDK supports 'FileLike' object or 'fs.ReadStream'. 
+      // but 'openai' SDK supports 'FileLike' object or 'fs.ReadStream'.
       // For now, let's use the 'toFile' helper if available or a mock File implementation.
       // Since 'openai' > 4.0 accepts a 'File' object (Web API), we can use a small polyfill or `fetch-blob`.
-      // Simplest approach: Use the 'file' argument as is if the controller handles it, 
+      // Simplest approach: Use the 'file' argument as is if the controller handles it,
       // but usually the controller gives a Buffer.
-      
+
       const file = await OpenAI.toFile(fileBuffer, 'voice_input.webm', { type: 'audio/webm' });
 
       const transcription = await this.client.audio.transcriptions.create({

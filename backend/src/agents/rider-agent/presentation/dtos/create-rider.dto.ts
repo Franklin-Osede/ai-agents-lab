@@ -7,6 +7,10 @@ export class CreateRiderDto {
   @ApiProperty({ example: '+525512345678', required: false, description: 'Contact phone number' })
   phone_number?: string;
 
-  @ApiProperty({ example: 'idle', enum: ['idle', 'delivering', 'offline'], description: 'Initial status of the rider' })
+  @ApiProperty({
+    example: 'idle',
+    enum: ['idle', 'delivering', 'offline'],
+    description: 'Initial status of the rider',
+  })
   status: 'idle' | 'delivering' | 'offline';
 }

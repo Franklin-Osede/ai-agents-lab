@@ -29,7 +29,6 @@ export class VoiceAgentController {
     @Inject(AI_PROVIDER_TOKEN) private readonly aiProvider: IAiProvider,
   ) {}
 
-
   @Post('generate')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Generate personalized voice/video message' })

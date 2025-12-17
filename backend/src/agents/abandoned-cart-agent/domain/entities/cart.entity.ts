@@ -29,7 +29,7 @@ export class Cart {
   @Column({
     type: 'enum',
     enum: CartStatus,
-    default: CartStatus.OPEN
+    default: CartStatus.OPEN,
   })
   public status: CartStatus;
 
@@ -85,7 +85,16 @@ export class Cart {
     }
 
     return Result.ok(
-      new Cart(id, customerId, tenantId, items, totalValue, CartStatus.OPEN, new Date(), new Date()),
+      new Cart(
+        id,
+        customerId,
+        tenantId,
+        items,
+        totalValue,
+        CartStatus.OPEN,
+        new Date(),
+        new Date(),
+      ),
     );
   }
 

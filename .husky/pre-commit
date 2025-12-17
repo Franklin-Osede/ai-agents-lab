@@ -1,0 +1,7 @@
+echo "Running pre-commit checks..."
+# Run backend lint
+echo "Linting Backend..."
+cd backend && npm run lint
+# Run frontend lint
+echo "Linting Frontend..."
+cd ../frontend && npm run lint

@@ -1,50 +1,31 @@
-# Multi-stage build for production
-FROM node:20-alpine AS builder
+# 1. Base Image (Lightweight Node)
+FROM node:20-alpine As build
 
-WORKDIR /app
+# 2. Workdir
+WORKDIR /usr/src/app
 
-# Copy package files
+# 3. Dependencies
+# Copy package.json and lock file first to leverage caching
 COPY package*.json ./
-COPY tsconfig*.json ./
-
-# Install dependencies
 RUN npm ci
 
-# Copy source code
+# 4. Source Code
 COPY . .
 
-# Build application
+# 5. Build
 RUN npm run build
 
-# Production stage
-FROM node:20-alpine AS production
+# ---
 
-WORKDIR /app
+# 6. Production Image
+FROM node:20-alpine As production
 
-# Copy package files
+WORKDIR /usr/src/app
+
 COPY package*.json ./
+RUN npm ci --only=production
 
-# Install production dependencies only
-RUN npm ci --only=production && npm cache clean --force
+COPY --from=build /usr/src/app/dist ./dist
 
-# Copy built application from builder
-COPY --from=builder /app/dist ./dist
-
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
-
-# Change ownership
-RUN chown -R nodejs:nodejs /app
-USER nodejs
-
-# Expose port
-EXPOSE 3001
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3001/api/v1/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
-
-# Start application
-CMD ["node", "dist/main.js"]
-
+# 7. Start
+CMD ["node", "dist/main"]

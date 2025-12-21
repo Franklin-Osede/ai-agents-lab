@@ -1,0 +1,403 @@
+<div
+  class="relative min-h-screen flex flex-col mx-auto w-full max-w-md bg-white dark:bg-background-dark shadow-2xl overflow-hidden pb-20"
+>
+  <!-- Sticky Header Section -->
+  <header
+    class="sticky top-0 z-50 bg-white dark:bg-background-dark pt-12 pb-2 px-4 border-b border-gray-100 dark:border-gray-800"
+  >
+    <div class="flex items-center gap-3 mb-3">
+      <!-- Back Button -->
+      <button
+        class="flex items-center justify-center w-10 h-10 rounded-full text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+        (click)="goBack()"
+      >
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+      <!-- Search Input -->
+      <div class="flex-1 relative">
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        >
+          <span class="material-symbols-outlined text-primary text-[20px]"
+            >search</span
+          >
+        </div>
+        <input
+          class="block w-full pl-10 pr-10 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border-none text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary/20 transition-all text-base shadow-sm"
+          type="text"
+          value="Sushi"
+        />
+        <div
+          class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+        >
+          <span class="material-symbols-outlined text-slate-400 text-[18px]"
+            >cancel</span
+          >
+        </div>
+      </div>
+      <!-- Filter Button -->
+      <button
+        class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
+      >
+        <span class="material-symbols-outlined text-[20px]">tune</span>
+      </button>
+    </div>
+    <!-- Chips / Filters -->
+    <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2 mask-linear-fade">
+      <button
+        class="flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-white text-sm font-medium whitespace-nowrap shadow-sm shadow-primary/30"
+      >
+        <span>Top Rated</span>
+        <span class="material-symbols-outlined text-[16px]">expand_more</span>
+      </button>
+      <button
+        class="flex items-center gap-1.5 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium whitespace-nowrap"
+      >
+        <span>Nearest</span>
+      </button>
+      <button
+        class="flex items-center gap-1.5 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium whitespace-nowrap"
+      >
+        <span>Open Now</span>
+      </button>
+      <button
+        class="flex items-center gap-1.5 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium whitespace-nowrap"
+      >
+        <span>Price</span>
+      </button>
+    </div>
+  </header>
+  <!-- Main Content (Scrollable) -->
+  <main class="flex-1 overflow-y-auto px-4 py-4 space-y-6">
+    <!-- AI Insight Banner -->
+    <!-- AI Agent Greeting (Dynamic) -->
+    @if (showGreeting) {
+    <div
+      class="bg-gradient-to-r from-primary to-primary-light rounded-2xl p-4 flex gap-3 items-start shadow-glow animate-in fade-in slide-in-from-top-4 duration-700"
+    >
+      <div
+        class="bg-white/10 rounded-full p-1.5 shadow-sm shrink-0 border border-white/20"
+      >
+        <span class="material-symbols-outlined text-white text-[24px]"
+          >smart_toy</span
+        >
+      </div>
+      <div>
+        <p
+          class="text-white/80 font-semibold text-xs mb-0.5 uppercase tracking-wider"
+        >
+          RIDA Agent
+        </p>
+        <p class="text-white text-lg font-medium leading-snug">
+          Hello! How can I help you eat today?
+        </p>
+      </div>
+    </div>
+    }
+    <div class="space-y-1">
+      <h2 class="text-lg font-semibold text-slate-900 dark:text-white px-1">
+        Nearby Favorites
+      </h2>
+      <!-- Result List -->
+      <div class="flex flex-col gap-6 pt-2">
+        <!-- Item 1: Blue Ocean Sushi (Detailed) -->
+        <div
+          class="group flex flex-col gap-3 cursor-pointer"
+          routerLink="/rider/restaurant/1"
+        >
+          <!-- Card visual -->
+          <div class="flex gap-4">
+            <!-- Image -->
+            <div class="relative shrink-0">
+              <div
+                class="h-28 w-28 rounded-xl bg-cover bg-center shadow-sm"
+                data-alt="Close up of fresh sushi rolls on a wooden plate"
+                style="
+                  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlKK6QdGiDvxYuQzRfyZcvr8VHcLNlewQsp5-2lU7jjQEtM5cOLKq294TbRyMEJXT9SNnkR_SjgLCQLVj3jgcmWJaehzoqDiiHGIeqI2txX8JQrFpe0uzb1B760wDk41QJfBQv79W13MKPtYq8U2p9oH6YGihcTXbk5UuMZLEalVV8l3PyjCNQB-mEIkwf8a25q9rNBwbdLAL6aNLUdEFdc9zrJg-f5Qcsz5sSWVlftjFHrRSRnHsTn7ociEPM9xd4MZI0BNjHsGQ');
+                "
+              ></div>
+              <div
+                class="absolute top-2 left-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-active-orange shadow-sm border border-orange-100 dark:border-orange-900/30"
+              >
+                Open Now
+              </div>
+            </div>
+            <!-- Content -->
+            <div class="flex flex-1 flex-col justify-between py-0.5">
+              <div>
+                <div class="flex justify-between items-start">
+                  <h3
+                    class="text-base font-semibold text-slate-900 dark:text-white leading-tight"
+                  >
+                    Blue Ocean Sushi
+                  </h3>
+                  <button
+                    class="text-slate-300 hover:text-red-500 transition-colors"
+                  >
+                    <span class="material-symbols-outlined text-[24px]"
+                      >favorite</span
+                    >
+                  </button>
+                </div>
+                <div class="flex items-center gap-1 mt-1">
+                  <span
+                    class="material-symbols-outlined icon-filled text-primary text-[16px]"
+                    >star</span
+                  >
+                  <span
+                    class="text-sm font-semibold text-slate-900 dark:text-white"
+                    >4.8</span
+                  >
+                  <span class="text-slate-400 text-xs mx-1">•</span>
+                  <span class="text-sm text-slate-500 dark:text-slate-400"
+                    >1.2km</span
+                  >
+                  <span class="text-slate-400 text-xs mx-1">•</span>
+                  <span class="text-sm text-slate-500 dark:text-slate-400"
+                    >$$</span
+                  >
+                </div>
+                <!-- AI Tag Detail -->
+                <div
+                  class="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/30"
+                >
+                  <span
+                    class="material-symbols-outlined text-primary text-[12px]"
+                    >auto_awesome</span
+                  >
+                  <span class="text-xs font-medium text-primary"
+                    >Best spicy tuna roll</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="h-px w-full bg-slate-100 dark:bg-slate-800"></div>
+        <!-- Item 2: Zen Garden -->
+        <div class="group flex flex-col gap-3">
+          <div class="flex gap-4">
+            <div
+              class="h-28 w-28 shrink-0 rounded-xl bg-cover bg-center shadow-sm"
+              data-alt="Peaceful interior of a japanese restaurant"
+              style="
+                background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAeZNML-RUYLVf76pn58Kk655cExsNikfQQcuG0CHRurvb0YW0EJ1cO6UXnzURhCxThaKTFFyi5XOXgvBkydu7FijkqZ7dRizlkCBP9ZKavrHZMB2_Ee1ypXSWX4d9Q_KwGSmsIsJD1_2qpQDCsfIX-6hKtfTU8HKb5bpN0Q644PcpUbJ8QbPWQolfOL3vJZq2L9xRtSiZmcWzsX9XA6UR9aBnuWbtFQC6ZO2CVv2wfzW70mX34Oc7R4G_OFGFQELY6-BFdI41tZx4');
+              "
+            ></div>
+            <div class="flex flex-1 flex-col justify-between py-0.5">
+              <div>
+                <div class="flex justify-between items-start">
+                  <h3
+                    class="text-base font-semibold text-slate-900 dark:text-white leading-tight"
+                  >
+                    Zen Garden
+                  </h3>
+                  <button
+                    class="text-slate-300 hover:text-red-500 transition-colors"
+                  >
+                    <span class="material-symbols-outlined text-[24px]"
+                      >favorite</span
+                    >
+                  </button>
+                </div>
+                <div class="flex items-center gap-1 mt-1">
+                  <span
+                    class="material-symbols-outlined icon-filled text-primary text-[16px]"
+                    >star</span
+                  >
+                  <span
+                    class="text-sm font-semibold text-slate-900 dark:text-white"
+                    >4.5</span
+                  >
+                  <span class="text-slate-400 text-xs mx-1">•</span>
+                  <span class="text-sm text-slate-500 dark:text-slate-400"
+                    >2.5km</span
+                  >
+                  <span class="text-slate-400 text-xs mx-1">•</span>
+                  <span class="text-sm text-slate-500 dark:text-slate-400"
+                    >$$$</span
+                  >
+                </div>
+                <div
+                  class="mt-2 text-xs text-slate-500 dark:text-slate-400 line-clamp-2"
+                >
+                  Elegant dining with a focus on traditional Kyoto-style
+                  courses.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="h-px w-full bg-slate-100 dark:bg-slate-800"></div>
+        <!-- Item 3: Indigo Bowl -->
+        <div class="group flex flex-col gap-3">
+          <div class="flex gap-4">
+            <div class="relative shrink-0">
+              <div
+                class="h-28 w-28 rounded-xl bg-cover bg-center shadow-sm"
+                data-alt="Colorful poke bowl with salmon and avocado"
+                style="
+                  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBP6QwODm_GWABnyLAJJ7-jG1CbStOnFGxHbYYQwKnIyd857i7wZys7zh1qjbQwhtzY-IicX4gFlcn9RiiGY8Ee0YXTxQD78OGUXzWxiU-mutTLEG8kTB9OQ0W3C7Gxs6OR58_fe3aqjoa3Pq-ktQPBLJBlmCOx-cKZsDPud0pTMlq9kSv9uU3m0sv-rXX37cuQ43UWETU-Inzx219v6jmJTkTZAt-JPf03sXeVgDPHYPHjkDX-N8oir72P1UOs7yIg2qZ0cI7MjGU');
+                "
+              ></div>
+              <!-- Badge variant -->
+              <div
+                class="absolute bottom-0 right-0 bg-primary text-white px-2 py-1 rounded-tl-lg rounded-br-lg text-[10px] font-bold shadow-sm"
+              >
+                Promo
+              </div>
+            </div>
+            <div class="flex flex-1 flex-col justify-between py-0.5">
+              <div>
+                <div class="flex justify-between items-start">
+                  <h3
+                    class="text-base font-semibold text-slate-900 dark:text-white leading-tight"
+                  >
+                    Indigo Bowl
+                  </h3>
+                  <button
+                    class="text-red-500 hover:text-red-600 transition-colors"
+                  >
+                    <span
+                      class="material-symbols-outlined icon-filled text-[24px]"
+                      >favorite</span
+                    >
+                  </button>
+                </div>
+                <div class="flex items-center gap-1 mt-1">
+                  <span
+                    class="material-symbols-outlined icon-filled text-primary text-[16px]"
+                    >star</span
+                  >
+                  <span
+                    class="text-sm font-semibold text-slate-900 dark:text-white"
+                    >4.9</span
+                  >
+                  <span class="text-slate-400 text-xs mx-1">•</span>
+                  <span class="text-sm text-slate-500 dark:text-slate-400"
+                    >0.5km</span
+                  >
+                  <span class="text-slate-400 text-xs mx-1">•</span>
+                  <span class="text-sm text-slate-500 dark:text-slate-400"
+                    >$</span
+                  >
+                </div>
+                <div
+                  class="mt-2 text-xs text-slate-500 dark:text-slate-400 line-clamp-1"
+                >
+                  Fast casual poke bowls and salads.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="h-px w-full bg-slate-100 dark:bg-slate-800"></div>
+        <!-- Item 4: Kura Revolving -->
+        <div class="group flex flex-col gap-3 opacity-60 grayscale-[0.5]">
+          <div class="flex gap-4">
+            <div class="relative shrink-0">
+              <div
+                class="h-28 w-28 rounded-xl bg-cover bg-center shadow-sm"
+                data-alt="Revolving sushi belt with plates"
+                style="
+                  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAaD5PGguXQhooPSnx4YedoYZ6UgU_edUh9grsjCR7PiO3lN4u082wwLXxi8Bazs2Ar2gp_-0PMypHldU4_gyX2Z3Bb2_p5cxxNaqBi2TftGJ_i6Pfq3xbfOcobLINoQrSFRK4A-9B7yC9yPbA7rOnJJHMspNP5BzOZ-4MZXcz_ACSkgPSjzXRkZztlNlElq_tAP2N6uX9PpNlLaS0npPRv5Pp1RSaaE7UdwqS3ks3lwBAQjpfDIObxOz2PLDpdiuvxYnjPgGxpQX8');
+                "
+              ></div>
+              <div
+                class="absolute inset-0 bg-white/50 dark:bg-black/50 rounded-xl flex items-center justify-center"
+              >
+                <span
+                  class="bg-slate-800 text-white text-[10px] px-2 py-1 rounded font-bold"
+                  >CLOSED</span
+                >
+              </div>
+            </div>
+            <div class="flex flex-1 flex-col justify-between py-0.5">
+              <div>
+                <div class="flex justify-between items-start">
+                  <h3
+                    class="text-base font-semibold text-slate-900 dark:text-white leading-tight"
+                  >
+                    Kura Revolving
+                  </h3>
+                  <button class="text-slate-300">
+                    <span class="material-symbols-outlined text-[24px]"
+                      >favorite</span
+                    >
+                  </button>
+                </div>
+                <div class="flex items-center gap-1 mt-1">
+                  <span
+                    class="material-symbols-outlined icon-filled text-primary text-[16px]"
+                    >star</span
+                  >
+                  <span
+                    class="text-sm font-semibold text-slate-900 dark:text-white"
+                    >4.2</span
+                  >
+                  <span class="text-slate-400 text-xs mx-1">•</span>
+                  <span class="text-sm text-slate-500 dark:text-slate-400"
+                    >3.8km</span
+                  >
+                  <span class="text-slate-400 text-xs mx-1">•</span>
+                  <span class="text-sm text-slate-500 dark:text-slate-400"
+                    >$$</span
+                  >
+                </div>
+                <div class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                  Opens at 5:00 PM
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Spacer for bottom nav -->
+    <div class="h-10"></div>
+  </main>
+  <!-- Bottom Navigation -->
+  <nav
+    class="fixed bottom-0 w-full max-w-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-100 dark:border-slate-800 pb-safe pt-2 px-6 flex justify-between items-center z-50"
+  >
+    <button
+      class="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+      routerLink="/rider"
+    >
+      <span class="material-symbols-outlined text-[24px]">home</span>
+      <span class="text-[10px] font-medium">Home</span>
+    </button>
+    <button class="flex flex-col items-center gap-1 p-2 text-primary">
+      <span class="material-symbols-outlined icon-filled text-[24px]"
+        >search</span
+      >
+      <span class="text-[10px] font-medium">Search</span>
+    </button>
+    <div class="relative">
+      <button
+        class="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+      >
+        <span class="material-symbols-outlined text-[24px]">receipt_long</span>
+        <span class="text-[10px] font-medium">Orders</span>
+      </button>
+      <span
+        class="absolute top-2 right-3 h-2 w-2 rounded-full bg-active-orange ring-1 ring-white dark:ring-slate-900"
+      ></span>
+    </div>
+    <button
+      class="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+    >
+      <span class="material-symbols-outlined text-[24px]">person</span>
+      <span class="text-[10px] font-medium">Profile</span>
+    </button>
+  </nav>
+  <!-- Floating Action Button for Map View (Optional but typical for this pattern) -->
+  <div class="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-40">
+    <button
+      class="flex items-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-2.5 rounded-full shadow-lg hover:scale-105 transition-transform"
+    >
+      <span class="material-symbols-outlined text-[18px]">map</span>
+      <span class="text-sm font-semibold">Map View</span>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,178 @@
+<div class="flex flex-col h-screen bg-slate-50 relative">
+  <!-- Header -->
+  <header
+    class="flex items-center justify-between p-4 bg-white/95 backdrop-blur-sm z-20 border-b border-slate-100 sticky top-0"
+  >
+    <button
+      routerLink="/rider"
+      class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 transition-colors text-slate-900"
+    >
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div class="flex flex-col items-center">
+      <h2 class="text-lg font-bold text-slate-900">Chef AI</h2>
+      <div class="flex items-center gap-1.5">
+        <span class="relative flex h-2 w-2">
+          <span
+            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"
+          ></span>
+          <span
+            class="relative inline-flex rounded-full h-2 w-2 bg-green-500"
+          ></span>
+        </span>
+        <span class="text-xs font-medium text-slate-500">Online</span>
+      </div>
+    </div>
+    <button
+      class="relative flex size-10 items-center justify-center rounded-full hover:bg-indigo-50 text-indigo-600"
+    >
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span
+        class="absolute top-1 right-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white ring-2 ring-white"
+        >2</span
+      >
+    </button>
+  </header>
+
+  <!-- Chat Area -->
+  <main class="flex-1 overflow-y-auto p-4 space-y-6 pb-24 scroll-smooth">
+    <div class="flex justify-center">
+      <span
+        class="text-xs font-medium text-slate-400 py-1 px-3 bg-slate-100 rounded-full"
+        >Today</span
+      >
+    </div>
+
+    @for (msg of messages(); track $index) { @if (msg.role === 'ai') {
+    <div class="flex items-end gap-3 group animate-[fadeIn_0.3s_ease-out]">
+      <div class="relative shrink-0">
+        <div
+          class="bg-center bg-no-repeat bg-cover rounded-full w-10 h-10 shadow-sm border border-slate-100"
+          style="
+            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCwG95_Jyamt-03U1K7Es161_UU58Qrugpph4J0SSKkXt6vuj7h8WTJcqzkPMK0VTLv80KYlnVmoiHr_0m4Be36b9i85hxHL45pbwWsrD-NGd_09gCDRD5lihRVDFwxpKIuB37KT7zjelr9uHEiybwWf40CHtudofw5iKNR6oVS3v8IQG9dgXjE4N_xy8N5Kv0en3QD1UJOWBIuXgJv8yVyyyU9hrs2q8c5DedapnLMrSKeELGm2tzizdJEFKE6131-idVsQeiUdW4');
+          "
+        ></div>
+      </div>
+      <div class="flex flex-col gap-1 items-start max-w-[85%]">
+        <span class="text-xs font-medium text-slate-500 ml-1">Chef AI</span>
+        <div
+          class="p-4 rounded-2xl rounded-bl-none bg-white shadow-sm border border-slate-100 text-slate-800"
+        >
+          <p class="text-[15px] leading-relaxed">{{ msg.text }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards Carousel -->
+    @if (msg.cards) {
+    <div
+      class="flex gap-4 pl-[52px] overflow-x-auto no-scrollbar pb-2 snap-x snap-mandatory"
+    >
+      @for (card of msg.cards; track card.name) {
+      <div
+        class="snap-center shrink-0 w-64 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden group/card"
+      >
+        <div class="relative h-40 overflow-hidden">
+          <div
+            class="w-full h-full bg-cover bg-center"
+            [style.background-image]="'url(' + card.image + ')'"
+          ></div>
+          <div class="absolute top-3 left-3 bg-white/90 px-2 py-1 rounded-lg">
+            <span class="text-xs font-bold text-slate-900">{{
+              card.price
+            }}</span>
+          </div>
+          @if (card.bestValue) {
+          <div
+            class="absolute top-3 right-3 bg-orange-500 text-white px-2 py-1 rounded-lg"
+          >
+            <span class="text-[10px] font-bold uppercase tracking-wide"
+              >Best Value</span
+            >
+          </div>
+          }
+        </div>
+        <div class="p-4 flex flex-col gap-3">
+          <div>
+            <h3 class="font-bold text-slate-900 leading-tight">
+              {{ card.name }}
+            </h3>
+            <div class="flex items-center gap-2 mt-1.5">
+              @for (tag of card.tags; track tag) {
+              <span
+                class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-50 text-green-700 uppercase tracking-wide"
+                >{{ tag }}</span
+              >
+              }
+            </div>
+          </div>
+          <button
+            class="w-full h-9 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium text-sm transition-colors"
+          >
+            Add to Cart
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+    } } @else {
+    <div
+      class="flex items-end justify-end gap-3 animate-[fadeIn_0.3s_ease-out]"
+    >
+      <div class="flex flex-col gap-1 items-end max-w-[80%]">
+        <div
+          class="p-4 rounded-2xl rounded-br-none bg-indigo-600 text-white shadow-md"
+        >
+          <p class="text-[15px] leading-relaxed">{{ msg.text }}</p>
+        </div>
+      </div>
+      <div
+        class="bg-center bg-no-repeat bg-cover rounded-full w-10 h-10 shrink-0 border-2 border-white shadow-sm"
+        style="
+          background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC3FKpetbVAEeyJI0G5MAFXbjOhDY-say8ZYf1zGnUQwMBXaYlB2fulBqWwytcVfpPGp1lTpqk9S5kH2pxwUv8C4EFpZcW3t43mL0cyHSZOvKijl38c1nudl47zkuWzberc822OLAQi7jrOhv5FnFW7OYwNV5Z4jSu0y6kbYCYjcYgztLH6ZWkN4WU-2K0zz2t3GV9AmSJfjF3AtiioAbpMuIA6Ei8ZCsxmePMFpK5c8S6j664DV0pNfOJSVjAv1yzXSzXs96Adp-0');
+        "
+      ></div>
+    </div>
+    } }
+  </main>
+
+  <!-- Input Footer (Centered/Fixed) -->
+  <footer
+    class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[428px] bg-white border-t border-slate-100 p-4 z-30"
+  >
+    <div class="flex items-end gap-3">
+      <button
+        class="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 text-slate-500 hover:text-indigo-600 transition-colors"
+      >
+        <span class="material-symbols-outlined">add_circle</span>
+      </button>
+      <div
+        class="flex-1 bg-slate-100 rounded-3xl flex items-center px-4 py-2 min-h-[48px] focus-within:ring-2 focus-within:ring-indigo-600/20 transition-shadow"
+      >
+        <input
+          [(ngModel)]="inputText"
+          (keydown.enter)="sendMessage()"
+          class="flex-1 bg-transparent border-none p-0 text-slate-900 placeholder-slate-400 focus:ring-0 text-[15px]"
+          [placeholder]="isRecording() ? 'Listening...' : 'Ask for a meal...'"
+          type="text"
+        />
+        <button
+          (click)="toggleRecording()"
+          class="ml-2 text-slate-400 hover:text-indigo-600 transition-colors flex items-center"
+          [class.text-red-500]="isRecording()"
+          [class.animate-pulse]="isRecording()"
+        >
+          <span class="material-symbols-outlined">{{
+            isRecording() ? "mic_off" : "mic"
+          }}</span>
+        </button>
+      </div>
+      <button
+        (click)="sendMessage()"
+        class="shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 transition-colors active:scale-95"
+      >
+        <span class="material-symbols-outlined">arrow_upward</span>
+      </button>
+    </div>
+  </footer>
+</div>

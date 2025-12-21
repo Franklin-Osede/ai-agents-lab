@@ -1,11 +1,35 @@
 <!-- Simulated App Background for "Glass" feel -->
-<div class="absolute inset-0 w-full h-full overflow-hidden -z-10 bg-white dark:bg-[#0B0F19]">
-    <div class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-blue-500/10 blur-[120px]"></div>
-    <div class="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-purple-500/10 blur-[120px]"></div>
+<div
+  class="absolute inset-0 w-full h-full overflow-hidden -z-10 bg-white dark:bg-[#0B0F19]"
+>
+  <div
+    class="absolute inset-0 bg-cover bg-center brightness-50 blur-[5px] scale-110"
+    style="
+      background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80');
+    "
+  ></div>
+  <div
+    class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-blue-500/20 blur-[120px]"
+  ></div>
+  <div
+    class="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-purple-500/20 blur-[120px]"
+  ></div>
 </div>
 
-<div class="mobile-overlay" (click)="close()" (keydown.escape)="close()" tabindex="0" role="button">
-  <div class="mobile-container" (click)="$event.stopPropagation()" (keydown.enter)="$event.stopPropagation()" tabindex="0" role="region">
+<div
+  class="mobile-overlay"
+  (click)="close()"
+  (keydown.escape)="close()"
+  tabindex="0"
+  role="button"
+>
+  <div
+    class="mobile-container"
+    (click)="$event.stopPropagation()"
+    (keydown.enter)="$event.stopPropagation()"
+    tabindex="0"
+    role="region"
+  >
     <div class="mobile-scroll-area">
       <router-outlet></router-outlet>
     </div>

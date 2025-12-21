@@ -1,22 +1,25 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, firstValueFrom } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { Injectable, inject } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable, firstValueFrom } from "rxjs";
+import { environment } from "../../../environments/environment";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class VoiceService {
   private http = inject(HttpClient);
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
-  
+  private recognition: any; // Web Speech API instance
+
   // Audio cache to avoid regenerating same messages
   private audioCache = new Map<string, Blob>();
-  
+
   // API URL - reusing abandoned cart agent prefix for now as the controller lives there
   // Ideally this would be a shared endpoint
-  private apiUrl = `${environment.apiBaseUrl || 'http://localhost:3005/api/v1'}/agents/voice`;
+  private apiUrl = `${
+    environment.apiBaseUrl || "http://localhost:3005/api/v1"
+  }/agents/voice`;
 
   /**
    * Start recording audio from microphone
@@ -41,46 +44,49 @@ export class VoiceService {
       if (!this.mediaRecorder) return resolve(new Blob());
 
       this.mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+        const audioBlob = new Blob(this.audioChunks, { type: "audio/webm" });
         this.audioChunks = [];
         resolve(audioBlob);
       };
 
       this.mediaRecorder.stop();
       // Stop all tracks to release mic
-      this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+      this.mediaRecorder.stream.getTracks().forEach((track) => track.stop());
     });
   }
 
   /**
    * Send audio to backend and get response audio + text
    */
-  async interact(audioBlob: Blob, systemPrompt?: string): Promise<{ audio: Blob, userText: string, aiText: string }> {
+  async interact(
+    audioBlob: Blob,
+    systemPrompt?: string
+  ): Promise<{ audio: Blob; userText: string; aiText: string }> {
     const formData = new FormData();
-    formData.append('audio', audioBlob, 'recording.webm');
+    formData.append("audio", audioBlob, "recording.webm");
     if (systemPrompt) {
-      formData.append('systemPrompt', systemPrompt);
+      formData.append("systemPrompt", systemPrompt);
     }
 
     const response = await firstValueFrom(
-      this.http.post(
-        `${this.apiUrl}/interact`, 
-        formData, 
-        { 
-          responseType: 'blob', // Important! Expecting binary audio back
-          observe: 'response'   // We need headers for the text transcripts
-        }
-      )
+      this.http.post(`${this.apiUrl}/interact`, formData, {
+        responseType: "blob", // Important! Expecting binary audio back
+        observe: "response", // We need headers for the text transcripts
+      })
     );
 
     const audioResponse = response.body as Blob;
-    const userText = decodeURIComponent(response.headers.get('X-Transcript-User') || '');
-    const aiText = decodeURIComponent(response.headers.get('X-Transcript-AI') || '');
+    const userText = decodeURIComponent(
+      response.headers.get("X-Transcript-User") || ""
+    );
+    const aiText = decodeURIComponent(
+      response.headers.get("X-Transcript-AI") || ""
+    );
 
     return {
       audio: audioResponse,
       userText,
-      aiText
+      aiText,
     };
   }
 
@@ -92,23 +98,23 @@ export class VoiceService {
     // Check cache first
     const cacheKey = text.toLowerCase().trim();
     if (this.audioCache.has(cacheKey)) {
-      console.log('🎵 Audio cache HIT for:', text.substring(0, 50));
+      console.log("🎵 Audio cache HIT for:", text.substring(0, 50));
       return this.audioCache.get(cacheKey)!;
     }
 
-    console.log('🎵 Audio cache MISS - generating for:', text.substring(0, 50));
-    
+    console.log("🎵 Audio cache MISS - generating for:", text.substring(0, 50));
+
     const response = await firstValueFrom(
       this.http.post(
         `${this.apiUrl}/generate-greeting`,
         { text },
-        { responseType: 'blob' }
+        { responseType: "blob" }
       )
     );
-    
+
     // Store in cache
     this.audioCache.set(cacheKey, response);
-    
+
     return response;
   }
 
@@ -127,7 +133,7 @@ export class VoiceService {
    */
   clearCache(): void {
     this.audioCache.clear();
-    console.log('🗑️ Audio cache cleared');
+    console.log("🗑️ Audio cache cleared");
   }
 
   /**
@@ -136,4 +142,51 @@ export class VoiceService {
   getCacheSize(): number {
     return this.audioCache.size;
   }
+  /**
+   * Browser-based Speech Recognition (Web Speech API)
+   * This provides real STT for the demo without backend dependencies.
+   */
+  listen(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const SpeechRecognition =
+        (window as any).SpeechRecognition ||
+        (window as any).webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        reject("Speech Recognition not supported in this browser.");
+        return;
+      }
+
+      this.recognition = new SpeechRecognition();
+      this.recognition.lang = "es-ES"; // Default to Spanish as per user context
+      this.recognition.continuous = false;
+      this.recognition.interimResults = false;
+
+      this.recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        resolve(transcript);
+      };
+
+      this.recognition.onerror = (event: any) => {
+        reject(event.error);
+      };
+
+      this.recognition.onend = () => {
+        // Automatically stop specific instance logic if needed
+      };
+
+      this.recognition.start();
+    });
+  }
+
+  /**
+   * Stop any active browser recognition
+   */
+  stopListening() {
+    if (this.recognition) {
+      this.recognition.stop();
+    }
+  }
+
+  // ... existing methods ...
 }

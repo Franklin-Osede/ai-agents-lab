@@ -29,26 +29,37 @@ export class SimulationService {
     this.server = server;
   }
 
-  startSimulation(tenantId: string) {
+  /**
+   * Generates a dynamic route and starts simulation
+   */
+  startSimulation(
+    tenantId: string,
+    from?: { lat: number; lng: number },
+    to?: { lat: number; lng: number },
+  ) {
     if (this.activeSimulations.has(tenantId)) {
       clearInterval(this.activeSimulations.get(tenantId));
     }
 
-    let step = 0;
-    const totalSteps = this.routePoints.length;
+    // Use dynamic points if provided, otherwise fallback to default Madrid route
+    let points = this.routePoints;
+    if (from && to) {
+      points = this.interpolatePoints(from, to, 10); // Generate 10 steps
+    }
 
-    console.log(`[Simulation] Started for ${tenantId}`);
+    let step = 0;
+    const totalSteps = points.length;
+
+    console.log(
+      `[Simulation] Started for ${tenantId} from ${from?.lat},${from?.lng} to ${to?.lat},${to?.lng}`,
+    );
 
     const interval = setInterval(() => {
       if (step >= totalSteps) {
-        // Loop for demo purposes
-        step = 0;
+        step = 0; // Loop
       }
 
-      const location = this.routePoints[step];
-
-      // Update Rider State
-      this.activeRider.current_location = location;
+      this.activeRider.current_location = points[step];
 
       // Emit Event
       if (this.server) {
@@ -75,5 +86,22 @@ export class SimulationService {
 
     this.activeSimulations.set(tenantId, interval);
     return { status: 'Simulation Started', riderId: this.activeRider.id };
+  }
+
+  // Linear interpolation to create a smooth path between two points
+  private interpolatePoints(
+    start: { lat: number; lng: number },
+    end: { lat: number; lng: number },
+    steps: number,
+  ) {
+    const points = [];
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      points.push({
+        lat: start.lat + (end.lat - start.lat) * t,
+        lng: start.lng + (end.lng - start.lng) * t,
+      });
+    }
+    return points;
   }
 }

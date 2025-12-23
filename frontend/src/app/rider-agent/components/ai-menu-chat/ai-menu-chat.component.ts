@@ -864,7 +864,7 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
         },
       ];
     } else {
-      // Burgers / Fast Food
+      // Burgers / Fast Food / Chicken
       if (category === "kids") {
         return [
           {
@@ -924,6 +924,13 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
             tags: ["Sweet", "Cold"],
             description: "Batido cremoso de fresa.",
           },
+          {
+            name: "Agua Mineral",
+            price: 2.0,
+            image: img("1548839140-29a749e1cf4d"),
+            tags: ["Water"],
+            description: "Agua mineral natural.",
+          },
         ];
       }
       if (category === "dessert") {
@@ -944,6 +951,61 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           },
         ];
       }
+
+      // -- NEW CATEGORIES --
+      if (category === "menu_chicken") {
+        return [
+          {
+            name: "Chicken Wings",
+            price: 10.99,
+            image: img("1513639776629-7b611594e29b"),
+            tags: ["Fried"],
+            description: "Alitas de pollo crujientes.",
+          },
+          {
+            name: "Crispy Chicken Sandwich",
+            price: 11.5,
+            image: img("1626082927389-e1b715697b2f"),
+            tags: ["Popular"],
+            description: "Sandwich de pollo frito.",
+          },
+          {
+            name: "Chicken Tenders",
+            price: 9.99,
+            image: img("1562967963-ed7b199d9b69"),
+            tags: ["Kids"],
+            description: "Tiras de pechuga empanadas.",
+          },
+        ];
+      }
+
+      if (category === "menu_sides" || category === "starters") {
+        return [
+          {
+            name: "Fries",
+            price: 4.99,
+            image: img("1573080496987-a2267f884f4a"),
+            tags: ["Side"],
+            description: "Patatas fritas clásicas.",
+          },
+          {
+            name: "Onion Rings",
+            price: 5.5,
+            image: img("1639024471283-03518883512d"),
+            tags: ["Side"],
+            description: "Aros de cebolla rebozados.",
+          },
+          {
+            name: "Caesar Salad",
+            price: 8.5,
+            image: img("1550304943-4f24f54ddde9"),
+            tags: ["Healthy"],
+            description: "Ensalada César fresca.",
+          },
+        ];
+      }
+
+      // Default: Burgers (menu_burger or generic)
       return [
         {
           name: "Classic Smash",
@@ -961,25 +1023,11 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           description: "Hamburguesa con mayonesa de trufa.",
         },
         {
-          name: "Chicken Wings",
-          price: 10.99,
-          image: img("1513639776629-7b611594e29b"),
-          tags: ["Spicy"],
-          description: "Alitas de pollo estilo buffalo.",
-        },
-        {
-          name: "Caesar Salad",
-          price: 11.5,
-          image: img("1550304943-4f24f54ddde9"),
-          tags: ["Healthy"],
-          description: "Lechuga romana con parmesano crutones.",
-        },
-        {
-          name: "Fries",
-          price: 4.99,
-          image: img("1573080496987-a2267f884f4a"),
-          tags: ["Side"],
-          description: "Patatas fritas doradas y crujientes.",
+          name: "Bacon Cheese",
+          price: 13.99,
+          image: img("1553979459-d2229ba7433b"),
+          tags: ["Rich"],
+          description: "Hamburguesa con bacon crujiente.",
         },
       ];
     }

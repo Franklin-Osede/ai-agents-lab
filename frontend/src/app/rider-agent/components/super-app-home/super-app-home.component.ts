@@ -216,7 +216,7 @@ export class SuperAppHomeComponent implements OnInit, OnDestroy {
 
   logout() {
     this.session.logout();
-    this.router.navigate(["/rider/onboarding"]);
+    this.router.navigate(["/rider"]);
   }
 
   ngOnDestroy() {

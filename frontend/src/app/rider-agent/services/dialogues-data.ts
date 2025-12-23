@@ -589,7 +589,12 @@ export const DIALOGUES = {
     {
       id: "italian.dessert",
       response: "Postres: Tiramisú casero. ¿Individual o para compartir?",
-      suggestions: ["🍰 Individual", "👨‍👩‍👧‍👦 Compartir", "⬅️ Volver"],
+      suggestions: [
+        "🍰 Individual",
+        "👨‍👩‍👧‍👦 Compartir",
+        "✅ Ya lo tengo todo",
+        "⬅️ Volver",
+      ],
       on_select: {
         "🍰 Individual": {
           context: "general",
@@ -606,6 +611,10 @@ export const DIALOGUES = {
             name: "Tiramisú para compartir",
             tags: ["dessert", "italian"],
           },
+        },
+        "✅ Ya lo tengo todo": {
+          context: "general",
+          category: "confirm_order",
         },
         "⬅️ Volver": { context: "italian", category: "default" },
       },
@@ -763,6 +772,154 @@ export const DIALOGUES = {
       },
     },
 
+    {
+      id: "fast_food.menu_burger",
+      response: "Aquí tienes nuestras mejores burgers. 🍔 ¿Cuál te pido?",
+      suggestions: [
+        "Classic Smash",
+        "Truffle Burger",
+        "Bacon Cheese",
+        "⬅️ Volver",
+      ],
+      on_select: {
+        "Classic Smash": {
+          context: "fast_food",
+          category: "added_main",
+          add_item: {
+            name: "Classic Smash",
+            price: 12.99,
+            image:
+              "https://images.unsplash.com/photo-1568901346375-23c9450c58cd",
+          },
+        },
+        "Truffle Burger": {
+          context: "fast_food",
+          category: "added_main",
+          add_item: {
+            name: "Truffle Burger",
+            price: 15.5,
+            image:
+              "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5",
+          },
+        },
+        "Bacon Cheese": {
+          context: "fast_food",
+          category: "added_main",
+          add_item: {
+            name: "Bacon Cheese",
+            price: 13.99,
+            image:
+              "https://images.unsplash.com/photo-1596627196504-12d324d4220c",
+          },
+        },
+        "⬅️ Volver": { context: "fast_food", category: "menu" },
+      },
+    },
+    {
+      id: "fast_food.menu_chicken",
+      response: "Pollo crujiente. 🍗 ¿Alitas o Sandwich?",
+      suggestions: [
+        "Chicken Wings",
+        "Crispy Chicken Sandwich",
+        "Chicken Tenders",
+        "⬅️ Volver",
+      ],
+      on_select: {
+        "Chicken Wings": {
+          context: "fast_food",
+          category: "added_main",
+          add_item: {
+            name: "Chicken Wings",
+            price: 10.99,
+            image:
+              "https://images.unsplash.com/photo-1513639776629-7b611594e29b",
+          },
+        },
+        "Crispy Chicken Sandwich": {
+          context: "fast_food",
+          category: "added_main",
+          add_item: {
+            name: "Crispy Chicken Sandwich",
+            price: 11.5,
+            image:
+              "https://images.unsplash.com/photo-1626082927389-e1b715697b2f",
+          },
+        },
+        "Chicken Tenders": {
+          context: "fast_food",
+          category: "added_main",
+          add_item: {
+            name: "Chicken Tenders",
+            price: 9.99,
+            image: "https://images.unsplash.com/photo-1562967963-ed7b199d9b69",
+          },
+        },
+        "⬅️ Volver": { context: "fast_food", category: "menu" },
+      },
+    },
+    {
+      id: "fast_food.menu_sides",
+      response: "Para acompañar... 🍟",
+      suggestions: ["Fries", "Onion Rings", "Caesar Salad", "⬅️ Volver"],
+      on_select: {
+        Fries: {
+          context: "fast_food",
+          category: "added_side", // Redirect to same logic (added_main works generally)
+          add_item: {
+            name: "Fries",
+            price: 4.99,
+            image:
+              "https://images.unsplash.com/photo-1573080496987-a2267f884f4a",
+          },
+        },
+        "Onion Rings": {
+          context: "fast_food",
+          category: "added_side",
+          add_item: {
+            name: "Onion Rings",
+            price: 5.5,
+            image:
+              "https://images.unsplash.com/photo-1639024471283-03518883512d",
+          },
+        },
+        "Caesar Salad": {
+          context: "fast_food",
+          category: "added_side",
+          add_item: {
+            name: "Caesar Salad",
+            price: 8.5,
+            image: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9",
+          },
+        },
+        "⬅️ Volver": { context: "fast_food", category: "menu" },
+      },
+    },
+    {
+      id: "fast_food.added_main",
+      response: "¡Añadido! 👌 ¿Algo más de comer o pasamos a la bebida?",
+      suggestions: ["🥤 Bebidas", "🍟 Acompañantes", "✅ Ya lo tengo todo"],
+      on_select: {
+        "🥤 Bebidas": { context: "fast_food", category: "drinks" },
+        "🍟 Acompañantes": { context: "fast_food", category: "menu_sides" },
+        "✅ Ya lo tengo todo": {
+          context: "general",
+          category: "confirm_order",
+        },
+      },
+    },
+    {
+      id: "fast_food.added_side",
+      response: "Acompañante listo. ¿Alguna bebida?",
+      suggestions: ["🥤 Bebidas", "🍰 Postres", "✅ Ya lo tengo todo"],
+      on_select: {
+        "🥤 Bebidas": { context: "fast_food", category: "drinks" },
+        "🍰 Postres": { context: "fast_food", category: "dessert" },
+        "✅ Ya lo tengo todo": {
+          context: "general",
+          category: "confirm_order",
+        },
+      },
+    },
     {
       id: "spanish.default",
       response:

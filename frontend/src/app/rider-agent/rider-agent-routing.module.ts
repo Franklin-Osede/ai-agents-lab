@@ -11,8 +11,21 @@ const routes: Routes = [
     path: "",
     component: MobileLayoutComponent,
     children: [
-      { path: "", component: SuperAppHomeComponent },
-      { path: "chat", component: AiConciergeComponent },
+      {
+        path: "",
+        loadComponent: () =>
+          import("./components/onboarding/onboarding.component").then(
+            (m) => m.OnboardingComponent
+          ),
+      },
+      { path: "home", component: SuperAppHomeComponent },
+      {
+        path: "chat",
+        loadComponent: () =>
+          import("./components/ai-menu-chat/ai-menu-chat.component").then(
+            (m) => m.AiMenuChatComponent
+          ),
+      },
       { path: "search", component: SearchResultsComponent },
       {
         path: "checkout",
@@ -26,6 +39,13 @@ const routes: Routes = [
         loadComponent: () =>
           import("./components/ai-menu-chat/ai-menu-chat.component").then(
             (m) => m.AiMenuChatComponent
+          ),
+      },
+      {
+        path: "reservations",
+        loadComponent: () =>
+          import("./components/reservations/reservations.component").then(
+            (m) => m.ReservationsComponent
           ),
       },
       {

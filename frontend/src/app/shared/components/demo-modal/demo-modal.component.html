@@ -1,1322 +1,1560 @@
-<div class="modal-overlay" (click)="onClose()" (keydown.enter)="onClose()" tabindex="0" role="button">
-
+<div
+  class="modal-overlay"
+  (click)="onClose()"
+  (keydown.enter)="onClose()"
+  tabindex="0"
+  role="button"
+>
   <!-- Desktop Abandoned Cart Demo -->
-  @if ((agent.id === 'cart' || agent.id === 'cart-recovery' || agent.id === 'abandoned-cart') && !isMobile()) {
-    <app-welcome-chat [dialog]="true" (modalClose)="onClose()" (click)="$event.stopPropagation()"></app-welcome-chat>
-  }
-
-  <!-- Desktop Rider Agent Demo -->
-  @if (agent.id === 'rider' && !isMobile()) {
-    <app-super-app-home [dialog]="true" (modalClose)="onClose()" (click)="$event.stopPropagation()"></app-super-app-home>
+  @if ((agent.id === 'cart' || agent.id === 'cart-recovery' || agent.id ===
+  'abandoned-cart') && !isMobile()) {
+  <app-welcome-chat
+    [dialog]="true"
+    (modalClose)="onClose()"
+    (click)="$event.stopPropagation()"
+  ></app-welcome-chat>
   }
 
   <!-- Mobile Container mimicking the snippet -->
-  @if (!((agent.id === 'cart' || agent.id === 'cart-recovery' || agent.id === 'abandoned-cart') && !isMobile()) && !(agent.id === 'rider' && !isMobile())) {
-    <div class="mobile-container" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="0" role="dialog">
+  @if (!((agent.id === 'cart' || agent.id === 'cart-recovery' || agent.id ===
+  'abandoned-cart') && !isMobile()) && !(agent.id === 'rider' && !isMobile())) {
+  <div
+    class="mobile-container"
+    (click)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+    tabindex="0"
+    role="dialog"
+  >
+    <!-- HEADER (Hidden on Step -1: Role Selector, Step 3: Professional Selection, Step 9: Payment) -->
+    @if (currentStep >= 0 && currentStep !== 3 && currentStep !== 9) {
+    <header class="mobile-header">
+      <button
+        class="icon-btn"
+        (click)="currentStep > 0 ? prevStep() : onClose()"
+      >
+        <span class="material-symbols-outlined">arrow_back_ios_new</span>
+      </button>
+      <div class="header-title">
+        <h2>Agente de Reservas</h2>
+        <div class="status-indicator">
+          <span class="dot pulse"></span>
+          <span class="status-text">En línea</span>
+        </div>
+      </div>
+      <!-- Phone button removed - not functional -->
+    </header>
+    }
 
-      <!-- HEADER (Hidden on Step -1: Role Selector, Step 3: Professional Selection, Step 9: Payment) -->
-      @if (currentStep >= 0 && currentStep !== 3 && currentStep !== 9) {
-        <header class="mobile-header">
-          <button class="icon-btn" (click)="currentStep > 0 ? prevStep() : onClose()">
-            <span class="material-symbols-outlined">arrow_back_ios_new</span>
-          </button>
-          <div class="header-title">
-            <h2>Agente de Reservas</h2>
-            <div class="status-indicator">
-              <span class="dot pulse"></span>
-              <span class="status-text">En línea</span>
+    <!-- MAIN CONTENT AREA SWITCHER -->
+    <main class="mobile-main">
+      <!-- LEAD CAPTURE MODAL (Shows after 3-5 interactions) -->
+      <!-- LEAD CAPTURE MODAL (Shows after success) -->
+      @if (showLeadCapture) {
+      <div
+        class="lead-capture-overlay"
+        (click)="showLeadCapture = false"
+        (keydown.enter)="showLeadCapture = false"
+        tabindex="0"
+        role="button"
+      >
+        <div
+          class="lead-capture-modal"
+          (click)="$event.stopPropagation()"
+          (keydown)="$event.stopPropagation()"
+          tabindex="0"
+          role="dialog"
+        >
+          <h3>¿Te ha gustado la demo? 🎉</h3>
+          <p>
+            Déjanos tu email para enviarte una guía exclusiva sobre Agentes AI.
+          </p>
+          <form (ngSubmit)="captureLead()">
+            <input
+              type="email"
+              placeholder="Tu email"
+              [(ngModel)]="leadEmail"
+              name="email"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Tu nombre"
+              [(ngModel)]="leadName"
+              name="name"
+              required
+            />
+            <div class="lead-capture-actions">
+              <button type="submit" class="btn-primary">Enviar Guía</button>
+              <button
+                type="button"
+                class="btn-secondary"
+                (click)="showLeadCapture = false"
+              >
+                Continuar
+              </button>
             </div>
-          </div>
-          <!-- Phone button removed - not functional -->
-        </header>
+          </form>
+        </div>
+      </div>
       }
 
-      <!-- MAIN CONTENT AREA SWITCHER -->
-      <main class="mobile-main">
-
-        <!-- LEAD CAPTURE MODAL (Shows after 3-5 interactions) -->
-        @if (showLeadCapture) {
-          <div class="lead-capture-overlay" (click)="showLeadCapture = false" (keydown.enter)="showLeadCapture = false" tabindex="0" role="button">
-            <div class="lead-capture-modal" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="0" role="dialog">
-              <h3>¿Te gustó lo que viste? 🎉</h3>
-              <p>Obtén tu API Key gratis para usar en tu negocio</p>
-              <form (ngSubmit)="captureLead()">
-                <input type="email" placeholder="Tu email" [(ngModel)]="leadEmail" name="email" required>
-                <input type="text" placeholder="Tu nombre" [(ngModel)]="leadName" name="name" required>
-                <div class="lead-capture-actions">
-                  <button type="submit" class="btn-primary">Obtener API Key Gratis</button>
-                  <button type="button" class="btn-secondary" (click)="showLeadCapture = false">Continuar Demo</button>
-                </div>
-              </form>
+      <!-- STEP 1: PROFESSIONAL DASHBOARD (Legacy - not used in demo flow) -->
+      @if (currentStep === -1) {
+      <div class="step-view professional-dashboard-view">
+        <!-- Header -->
+        <div class="prof-header">
+          <div class="prof-logo">
+            <div class="logo-icon">
+              <span class="material-symbols-outlined">health_and_safety</span>
+            </div>
+            <span class="logo-text">MediConnect</span>
+          </div>
+          <div class="prof-actions">
+            <!-- Logout Button -->
+            <button class="icon-btn" (click)="onLogout()" title="Cerrar Sesión">
+              <span class="material-symbols-outlined" style="color: #ef4444"
+                >logout</span
+              >
+            </button>
+            <div class="profile-avatar">
+              <span class="material-symbols-outlined">person</span>
             </div>
           </div>
-        }
+        </div>
 
-        <!-- STEP 1: PROFESSIONAL DASHBOARD (Legacy - not used in demo flow) -->
-        @if (currentStep === -1) {
-          <div class="step-view professional-dashboard-view">
-            <!-- Header -->
-            <div class="prof-header">
-              <div class="prof-logo">
-                <div class="logo-icon">
-                  <span class="material-symbols-outlined">health_and_safety</span>
-                </div>
-                <span class="logo-text">MediConnect</span>
-              </div>
-              <div class="prof-actions">
-                <!-- Logout Button -->
-                <button class="icon-btn" (click)="onLogout()" title="Cerrar Sesión">
-                  <span class="material-symbols-outlined" style="color: #ef4444;">logout</span>
-                </button>
-                <div class="profile-avatar">
-                  <span class="material-symbols-outlined">person</span>
-                </div>
-              </div>
-            </div>
+        <!-- Main Content -->
+        <div class="prof-content">
+          <!-- Welcome Section -->
+          <div class="welcome-section">
+            <p class="section-label">Panel de Control</p>
+            <h1 class="welcome-title">Hola, Dr. Ramírez</h1>
+          </div>
 
-            <!-- Main Content -->
-            <div class="prof-content">
-              <!-- Welcome Section -->
-              <div class="welcome-section">
-                <p class="section-label">Panel de Control</p>
-                <h1 class="welcome-title">Hola, Dr. Ramírez</h1>
-              </div>
-
-              <!-- Appointments Card -->
-              <div class="appointments-card">
-                <div class="card-header">
-                  <div class="icon-badge blue">
-                    <span class="material-symbols-outlined">calendar_today</span>
-                  </div>
-                  <span class="card-date">Hoy</span>
-                </div>
-                <div class="card-content">
-                  <h2 class="card-number">6 Citas</h2>
-                  <p class="card-subtitle">Tienes 2 citas pendientes de confirmar</p>
-                  <button class="link-btn">
-                    Ver agenda completa
-                    <span class="material-symbols-outlined">arrow_forward</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Quick Actions -->
-              <div class="quick-actions">
-                <div class="action-card">
-                  <div class="icon-badge purple">
-                    <span class="material-symbols-outlined">group</span>
-                  </div>
-                  <h3 class="action-title">Gestionar<br/>Pacientes</h3>
-                </div>
-                <div class="action-card">
-                  <div class="icon-badge green">
-                    <span class="material-symbols-outlined">trending_up</span>
-                  </div>
-                  <div class="badge-percent">+12%</div>
-                  <h3 class="action-title">Estadísticas<br/>Generales</h3>
-                </div>
-              </div>
-
-              <!-- Access & Configuration -->
-              <div class="config-section">
-                <h3 class="section-title">Accesos y Configuración</h3>
-
-                <div class="config-list">
-                  <div class="config-item">
-                    <div class="config-icon">
-                      <span class="material-symbols-outlined">settings</span>
-                    </div>
-                    <div class="config-info">
-                      <h4 class="config-title">Configuración</h4>
-                      <p class="config-subtitle">Perfil, horarios y cuenta</p>
-                    </div>
-                    <span class="material-symbols-outlined arrow">chevron_right</span>
-                  </div>
-
-                  <div class="config-item">
-                    <div class="config-icon avatar">
-                      <span class="material-symbols-outlined">person</span>
-                    </div>
-                    <div class="config-info">
-                      <h4 class="config-title">Última consulta</h4>
-                      <p class="config-subtitle">Ana García · Hace 2 horas</p>
-                    </div>
-                    <span class="material-symbols-outlined arrow">history</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Bottom Navigation -->
-            <div class="bottom-nav">
-              <button class="nav-item active">
-                <span class="material-symbols-outlined fill-1">home</span>
-                <span class="nav-label">Inicio</span>
-              </button>
-              <button class="nav-item">
+          <!-- Appointments Card -->
+          <div class="appointments-card">
+            <div class="card-header">
+              <div class="icon-badge blue">
                 <span class="material-symbols-outlined">calendar_today</span>
-                <span class="nav-label">Agenda</span>
-              </button>
-              <button class="nav-item">
-                <span class="material-symbols-outlined">chat</span>
-                <span class="nav-label">Chat</span>
-              </button>
-              <button class="nav-item">
-                <span class="material-symbols-outlined">person</span>
-                <span class="nav-label">Perfil</span>
+              </div>
+              <span class="card-date">Hoy</span>
+            </div>
+            <div class="card-content">
+              <h2 class="card-number">6 Citas</h2>
+              <p class="card-subtitle">
+                Tienes 2 citas pendientes de confirmar
+              </p>
+              <button class="link-btn">
+                Ver agenda completa
+                <span class="material-symbols-outlined">arrow_forward</span>
               </button>
             </div>
           </div>
-        }
-        <!-- STEP 0: CLIENT PERSONAL DASHBOARD (Legacy - not used in demo flow) -->
-        @if (currentStep === -2) {
-          <div class="step-view client-dashboard-view">
-            <!-- Header -->
-            <div class="client-header">
-              <div class="client-logo">
-                <div class="logo-icon-client">
-                  <span class="material-symbols-outlined">health_and_safety</span>
-                </div>
-                <span class="logo-text">MediConnect</span>
+
+          <!-- Quick Actions -->
+          <div class="quick-actions">
+            <div class="action-card">
+              <div class="icon-badge purple">
+                <span class="material-symbols-outlined">group</span>
               </div>
-              <div class="client-actions" style="display: flex; gap: 10px;">
-                <button class="icon-btn" (click)="onLogout()" title="Cerrar Sesión" style="border: none; background: none; cursor: pointer;">
-                  <span class="material-symbols-outlined" style="color: #ef4444;">logout</span>
-                </button>
-                <div class="client-avatar">
+              <h3 class="action-title">Gestionar<br />Pacientes</h3>
+            </div>
+            <div class="action-card">
+              <div class="icon-badge green">
+                <span class="material-symbols-outlined">trending_up</span>
+              </div>
+              <div class="badge-percent">+12%</div>
+              <h3 class="action-title">Estadísticas<br />Generales</h3>
+            </div>
+          </div>
+
+          <!-- Access & Configuration -->
+          <div class="config-section">
+            <h3 class="section-title">Accesos y Configuración</h3>
+
+            <div class="config-list">
+              <div class="config-item">
+                <div class="config-icon">
+                  <span class="material-symbols-outlined">settings</span>
+                </div>
+                <div class="config-info">
+                  <h4 class="config-title">Configuración</h4>
+                  <p class="config-subtitle">Perfil, horarios y cuenta</p>
+                </div>
+                <span class="material-symbols-outlined arrow"
+                  >chevron_right</span
+                >
+              </div>
+
+              <div class="config-item">
+                <div class="config-icon avatar">
                   <span class="material-symbols-outlined">person</span>
                 </div>
+                <div class="config-info">
+                  <h4 class="config-title">Última consulta</h4>
+                  <p class="config-subtitle">Ana García · Hace 2 horas</p>
+                </div>
+                <span class="material-symbols-outlined arrow">history</span>
               </div>
             </div>
+          </div>
+        </div>
 
-            <!-- Main Content -->
-            <div class="client-content">
-              <!-- Welcome Section -->
-              <div class="client-welcome">
-                <h1 class="client-greeting">Hola, María 👋</h1>
-                <p class="client-subtitle">Gestiona tu bienestar hoy.</p>
-              </div>
-
-              <!-- Book Appointment Card -->
-              <div class="booking-card">
-                <div class="booking-icon">
-                  <span class="material-symbols-outlined">add</span>
-                </div>
-                <div class="booking-content">
-                  <h2 class="booking-title">Reservar<br/>Nueva Cita</h2>
-                  <p class="booking-subtitle">🔍 Busca especialistas y horarios</p>
-                </div>
-                <button class="search-btn">
-                  <span class="material-symbols-outlined">search</span>
-                </button>
-              </div>
-
-              <!-- Next Visit -->
-              <div class="next-visit-section">
-                <div class="section-header">
-                  <h3 class="section-title">Próxima Visita</h3>
-                  <button class="see-all-btn">VER TODO</button>
-                </div>
-
-                <div class="appointment-card">
-                  <div class="doctor-info">
-                    <div class="doctor-avatar">
-                      <span class="material-symbols-outlined">person</span>
-                    </div>
-                    <div class="doctor-details">
-                      <h4 class="doctor-name">Dr. Carlos Mendoza</h4>
-                      <p class="doctor-specialty">CARDIOLOGÍA</p>
-                      <span class="status-badge confirmed">● CONFIRMADA</span>
-                    </div>
-                    <button class="more-btn">
-                      <span class="material-symbols-outlined">more_vert</span>
-                    </button>
-                  </div>
-                  <div class="appointment-time">
-                    <div class="time-item">
-                      <span class="material-symbols-outlined">calendar_today</span>
-                      <div>
-                        <p class="time-label">FECHA</p>
-                        <p class="time-value">15 Oct</p>
-                      </div>
-                    </div>
-                    <div class="time-item">
-                      <span class="material-symbols-outlined">schedule</span>
-                      <div>
-                        <p class="time-label">HORA</p>
-                        <p class="time-value">09:30 AM</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Quick Access -->
-              <div class="quick-access-section">
-                <h3 class="section-title">Acceso Rápido</h3>
-
-                <div class="access-grid">
-                  <div class="access-card">
-                    <div class="access-icon blue">
-                      <span class="material-symbols-outlined">calendar_month</span>
-                    </div>
-                    <h4 class="access-title">Mis Citas</h4>
-                    <p class="access-subtitle">Historial y Futuras</p>
-                  </div>
-
-                  <div class="access-card">
-                    <div class="access-icon purple">
-                      <span class="material-symbols-outlined">person</span>
-                    </div>
-                    <h4 class="access-title">Mi Perfil</h4>
-                    <p class="access-subtitle">Datos personales</p>
-                  </div>
-
-                  <div class="access-card">
-                    <div class="access-icon orange">
-                      <span class="material-symbols-outlined">notifications</span>
-                    </div>
-                    <h4 class="access-title">Avisos</h4>
-                    <p class="access-subtitle">2 Nuevos</p>
-                  </div>
-
-                  <div class="access-card">
-                    <div class="access-icon green">
-                      <span class="material-symbols-outlined">support_agent</span>
-                    </div>
-                    <h4 class="access-title">Ayuda</h4>
-                    <p class="access-subtitle">Soporte 24/7</p>
-                  </div>
-                </div>
-              </div>
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+          <button class="nav-item active">
+            <span class="material-symbols-outlined fill-1">home</span>
+            <span class="nav-label">Inicio</span>
+          </button>
+          <button class="nav-item">
+            <span class="material-symbols-outlined">calendar_today</span>
+            <span class="nav-label">Agenda</span>
+          </button>
+          <button class="nav-item">
+            <span class="material-symbols-outlined">chat</span>
+            <span class="nav-label">Chat</span>
+          </button>
+          <button class="nav-item">
+            <span class="material-symbols-outlined">person</span>
+            <span class="nav-label">Perfil</span>
+          </button>
+        </div>
+      </div>
+      }
+      <!-- STEP 0: CLIENT PERSONAL DASHBOARD (Legacy - not used in demo flow) -->
+      @if (currentStep === -2) {
+      <div class="step-view client-dashboard-view">
+        <!-- Header -->
+        <div class="client-header">
+          <div class="client-logo">
+            <div class="logo-icon-client">
+              <span class="material-symbols-outlined">health_and_safety</span>
             </div>
-
-            <!-- Bottom Navigation -->
-            <div class="bottom-nav">
-              <button class="nav-item active">
-                <span class="material-symbols-outlined fill-1">home</span>
-                <span class="nav-label">Inicio</span>
-              </button>
-              <button class="nav-item">
-                <span class="material-symbols-outlined">calendar_today</span>
-                <span class="nav-label">Agenda</span>
-              </button>
-              <button class="nav-item">
-                <span class="material-symbols-outlined">favorite</span>
-                <span class="nav-label">Favs</span>
-              </button>
-              <button class="nav-item">
-                <span class="material-symbols-outlined">person</span>
-                <span class="nav-label">Perfil</span>
-              </button>
+            <span class="logo-text">MediConnect</span>
+          </div>
+          <div class="client-actions" style="display: flex; gap: 10px">
+            <button
+              class="icon-btn"
+              (click)="onLogout()"
+              title="Cerrar Sesión"
+              style="border: none; background: none; cursor: pointer"
+            >
+              <span class="material-symbols-outlined" style="color: #ef4444"
+                >logout</span
+              >
+            </button>
+            <div class="client-avatar">
+              <span class="material-symbols-outlined">person</span>
             </div>
+          </div>
+        </div>
 
-            <!-- Floating Action Button -->
-            <button class="fab">
+        <!-- Main Content -->
+        <div class="client-content">
+          <!-- Welcome Section -->
+          <div class="client-welcome">
+            <h1 class="client-greeting">Hola, María 👋</h1>
+            <p class="client-subtitle">Gestiona tu bienestar hoy.</p>
+          </div>
+
+          <!-- Book Appointment Card -->
+          <div class="booking-card">
+            <div class="booking-icon">
               <span class="material-symbols-outlined">add</span>
+            </div>
+            <div class="booking-content">
+              <h2 class="booking-title">Reservar<br />Nueva Cita</h2>
+              <p class="booking-subtitle">🔍 Busca especialistas y horarios</p>
+            </div>
+            <button class="search-btn">
+              <span class="material-symbols-outlined">search</span>
             </button>
           </div>
-        }
 
-        <!-- STEP 1: CHAT (After Professional Selection) -->
-        @if (currentStep === 1) {
-          <div class="step-view chat-view">
-            <!-- Calendar Modal Overlay -->
-            <div class="calendar-modal-overlay" (click)="showCalendarModal = false" (keydown.enter)="showCalendarModal = false" tabindex="0" role="button">
-              @if (showCalendarModal) {
-                <div class="calendar-modal-content" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="0" role="dialog">
-                  <div class="calendar-modal-header">
-                    <h3>Selecciona Fecha y Hora</h3>
-                    <button class="close-calendar-btn" (click)="showCalendarModal = false">
-                      <span class="material-symbols-outlined">close</span>
-                    </button>
-                  </div>
-                  <app-calendar
-                    [currentDate]="calendarData.currentDate"
-                    [availableSlots]="availableSlots"
-                    (slotSelected)="onSlotSelected($event)">
-                  </app-calendar>
-                </div>
-              }
-            </div>
-            <!-- Timestamp -->
-            <div class="chat-timestamp">
-              <span>Hoy</span>
+          <!-- Next Visit -->
+          <div class="next-visit-section">
+            <div class="section-header">
+              <h3 class="section-title">Próxima Visita</h3>
+              <button class="see-all-btn">VER TODO</button>
             </div>
 
-            <app-chat-interface
-              [messages]="messages"
-              [isLoading]="isLoading"
-            ></app-chat-interface>
-
-            <!-- Day Options Display (when agent offers days) -->
-            @if (detectedDayOptions.length > 0) {
-              <div class="day-options-panel">
-                <div class="day-options-header">
-                  <span class="material-symbols-outlined">calendar_today</span>
-                  <h4>Selecciona un día:</h4>
+            <div class="appointment-card">
+              <div class="doctor-info">
+                <div class="doctor-avatar">
+                  <span class="material-symbols-outlined">person</span>
                 </div>
-                <div class="day-options-list">
-                  @for (option of detectedDayOptions; track option) {
-                    <button
-                      class="day-option-button"
-                      (click)="onDayOptionSelected(option)">
-                      <span class="day-label">{{ option.label }}</span>
-                      <span class="day-date">{{ option.date.getDate() }}/{{ option.date.getMonth() + 1 }}</span>
-                    </button>
-                  }
+                <div class="doctor-details">
+                  <h4 class="doctor-name">Dr. Carlos Mendoza</h4>
+                  <p class="doctor-specialty">CARDIOLOGÍA</p>
+                  <span class="status-badge confirmed">● CONFIRMADA</span>
                 </div>
+                <button class="more-btn">
+                  <span class="material-symbols-outlined">more_vert</span>
+                </button>
               </div>
-            }
-
-            <!-- Real-time Availability Display -->
-            @if (availableSlots.length > 0 && !checkingAvailability) {
-              <div class="availability-panel">
-                <div class="availability-header">
+              <div class="appointment-time">
+                <div class="time-item">
+                  <span class="material-symbols-outlined">calendar_today</span>
+                  <div>
+                    <p class="time-label">FECHA</p>
+                    <p class="time-value">15 Oct</p>
+                  </div>
+                </div>
+                <div class="time-item">
                   <span class="material-symbols-outlined">schedule</span>
-                  <h4>Horarios Disponibles (Tiempo Real)</h4>
-                </div>
-                <div class="availability-slots">
-                  @for (slot of availableSlots; track slot) {
-                    <button
-                      class="slot-button"
-                      (click)="selectTimeSlot(slot)">
-                      {{ slot }}
-                    </button>
-                  }
-                </div>
-                <button class="open-calendar-btn" (click)="openCalendarModal()">
-                  <span class="material-symbols-outlined">calendar_today</span>
-                  Ver calendario completo
-                </button>
-              </div>
-            }
-
-            <!-- Loading indicator for availability check -->
-            @if (checkingAvailability) {
-              <div class="availability-loading">
-                <span class="material-symbols-outlined spin">sync</span>
-                <span>Verificando disponibilidad en tiempo real...</span>
-              </div>
-            }
-
-            <!-- Button to open calendar if no availability shown yet -->
-            @if (availableSlots.length === 0 && !checkingAvailability && messages.length > 2) {
-              <div class="calendar-cta">
-                <button class="open-calendar-btn-large" (click)="openCalendarModal()">
-                  <span class="material-symbols-outlined">calendar_today</span>
-                  Ver Calendario de Disponibilidad
-                </button>
-              </div>
-            }
-
-            <!-- Restaurant Delivery Option Buttons (in chat) -->
-            @if (selectedRestaurant && selectedMenuType && !deliveryOption && messages.length > 0) {
-              <div class="delivery-options">
-                <button class="delivery-option-btn dine-in" (click)="selectDeliveryOption('dine-in')">
-                  <span class="material-symbols-outlined">restaurant</span>
                   <div>
-                    <strong>Comer Aquí</strong>
-                    <span>Reservar mesa en el restaurante</span>
+                    <p class="time-label">HORA</p>
+                    <p class="time-value">09:30 AM</p>
                   </div>
-                </button>
-                <button class="delivery-option-btn delivery" (click)="selectDeliveryOption('delivery')">
-                  <span class="material-symbols-outlined">delivery_dining</span>
-                  <div>
-                    <strong>Pedir a Domicilio</strong>
-                    <span>Entrega en tu dirección</span>
-                  </div>
-                </button>
+                </div>
               </div>
-            }
-          </div>
-        }
-
-        <!-- STEP 2: CALENDAR (Shows when agent checks availability) -->
-        @if (currentStep === 2) {
-          <div class="step-view calendar-view">
-            <div class="step-header">
-              <h3>📅 Horarios Disponibles</h3>
-              @if (selectedService) {
-                <p class="step-subtitle">
-                  Para {{selectedService.name}} - Selecciona fecha y hora
-                </p>
-              }
             </div>
+          </div>
 
-            <!-- Show available slots from agent check -->
-            @if (availableSlots.length > 0) {
-              <div class="availability-display">
-                <p class="availability-info">
-                  El agente ha verificado la disponibilidad. Estos son los horarios disponibles:
-                </p>
-                <div class="slots-grid">
-                  @for (slot of availableSlots; track slot) {
-                    <button
-                      class="slot-btn"
-                      (click)="selectTimeSlot(slot)">
-                      {{ slot }}
-                    </button>
-                  }
+          <!-- Quick Access -->
+          <div class="quick-access-section">
+            <h3 class="section-title">Acceso Rápido</h3>
+
+            <div class="access-grid">
+              <div class="access-card">
+                <div class="access-icon blue">
+                  <span class="material-symbols-outlined">calendar_month</span>
                 </div>
+                <h4 class="access-title">Mis Citas</h4>
+                <p class="access-subtitle">Historial y Futuras</p>
               </div>
-            }
 
+              <div class="access-card">
+                <div class="access-icon purple">
+                  <span class="material-symbols-outlined">person</span>
+                </div>
+                <h4 class="access-title">Mi Perfil</h4>
+                <p class="access-subtitle">Datos personales</p>
+              </div>
+
+              <div class="access-card">
+                <div class="access-icon orange">
+                  <span class="material-symbols-outlined">notifications</span>
+                </div>
+                <h4 class="access-title">Avisos</h4>
+                <p class="access-subtitle">2 Nuevos</p>
+              </div>
+
+              <div class="access-card">
+                <div class="access-icon green">
+                  <span class="material-symbols-outlined">support_agent</span>
+                </div>
+                <h4 class="access-title">Ayuda</h4>
+                <p class="access-subtitle">Soporte 24/7</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+          <button class="nav-item active">
+            <span class="material-symbols-outlined fill-1">home</span>
+            <span class="nav-label">Inicio</span>
+          </button>
+          <button class="nav-item">
+            <span class="material-symbols-outlined">calendar_today</span>
+            <span class="nav-label">Agenda</span>
+          </button>
+          <button class="nav-item">
+            <span class="material-symbols-outlined">favorite</span>
+            <span class="nav-label">Favs</span>
+          </button>
+          <button class="nav-item">
+            <span class="material-symbols-outlined">person</span>
+            <span class="nav-label">Perfil</span>
+          </button>
+        </div>
+
+        <!-- Floating Action Button -->
+        <button class="fab">
+          <span class="material-symbols-outlined">add</span>
+        </button>
+      </div>
+      }
+
+      <!-- STEP 1: CHAT (After Professional Selection) -->
+      @if (currentStep === 1) {
+      <div class="step-view chat-view">
+        <!-- Calendar Modal Overlay -->
+        <div
+          class="calendar-modal-overlay"
+          (click)="showCalendarModal = false"
+          (keydown.enter)="showCalendarModal = false"
+          tabindex="0"
+          role="button"
+        >
+          @if (showCalendarModal) {
+          <div
+            class="calendar-modal-content"
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+            tabindex="0"
+            role="dialog"
+          >
+            <div class="calendar-modal-header">
+              <h3>Selecciona Fecha y Hora</h3>
+              <button
+                class="close-calendar-btn"
+                (click)="showCalendarModal = false"
+              >
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
             <app-calendar
               [currentDate]="calendarData.currentDate"
               [availableSlots]="availableSlots"
-              (slotSelected)="onSlotSelected($event)">
+              (slotSelected)="onSlotSelected($event)"
+            >
             </app-calendar>
           </div>
-        }
-
-        <!-- STEP 3: PROFESSIONAL SELECTION (Based on provided HTML design) -->
-        @if (currentStep === 3) {
-          <div class="step-view professional-view-new"
-            [style.--filter-active-bg]="getCategoryColor()"
-            [style.--filter-active-bg-hover]="getCategoryColorHover()"
-            [style.--professional-title-color]="getCategoryColor()">
-            <!-- Header -->
-            <div class="professional-header">
-              <button class="back-btn" (click)="goToStep(0)">
-                <span class="material-symbols-outlined">arrow_back_ios_new</span>
-              </button>
-              <h2>Elige tu Experto</h2>
-            </div>
-
-            <!-- Filter Chips -->
-            <div class="filter-chips">
-              <button
-                class="filter-chip active"
-                [class.active]="selectedFilter === 'best-rated'"
-                (click)="selectedFilter = 'best-rated'">
-                <span class="material-symbols-outlined">star</span>
-                <p>Mejor Valorados</p>
-              </button>
-              <button
-                class="filter-chip"
-                [class.active]="selectedFilter === 'nearest'"
-                (click)="selectedFilter = 'nearest'">
-                <span class="material-symbols-outlined">location_on</span>
-                <p>Más Cercanos</p>
-              </button>
-              <button
-                class="filter-chip"
-                [class.active]="selectedFilter === 'price-low'"
-                (click)="selectedFilter = 'price-low'">
-                <span class="material-symbols-outlined">attach_money</span>
-                <p>Precio Bajo</p>
-              </button>
-              <button
-                class="filter-chip"
-                [class.active]="selectedFilter === 'availability'"
-                (click)="selectedFilter = 'availability'">
-                <span class="material-symbols-outlined">calendar_today</span>
-                <p>Disponibilidad</p>
-              </button>
-            </div>
-
-            <!-- Professional List -->
-            <div class="professionals-list">
-              <!-- Dynamic Professional Cards -->
-              @for (prof of getProfessionalsForService(); track prof) {
-                <div class="professional-card">
-                  <div class="professional-main">
-                    <div class="professional-avatar"
-                      [style.background-image]="'url(' + prof.image + ')'">
-                    </div>
-                    <div class="professional-info">
-                      <div class="professional-header-info">
-                        <div>
-                          <h3>{{ prof.name }}</h3>
-                          <p class="professional-title">{{ prof.title }}</p>
-                        </div>
-                        <div class="rating-badge">
-                          <span class="material-symbols-outlined filled">star</span>
-                          <span>{{ prof.rating }}</span>
-                        </div>
-                      </div>
-                      <p class="professional-description">
-                        {{ prof.description }}
-                      </p>
-                    </div>
-                  </div>
-                  <div class="professional-footer">
-                    <span class="professional-meta">{{ prof.reviews }} Reseñas • A {{ prof.distance }}</span>
-                          <button class="select-btn" (click)="selectProfessional({
-                              name: prof.name,
-                              image: prof.image,
-                              title: prof.title,
-                              rating: prof.rating,
-                              reviews: prof.reviews
-                          })">
-                      Seleccionar
-                    </button>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-        }
-
-        <!-- STEP 0: SERVICE SELECTOR (First step for demo) -->
-        @if (currentStep === 0) {
-          <div class="step-view service-selection-view">
-            <app-service-selector
-              (serviceSelected)="onServiceSelected($event)"
-              (back)="onServiceSelectorBack()">
-            </app-service-selector>
-          </div>
-        }
-
-        <!-- STEP 3.5: SERVICE SELECTION (Legacy - for booking flow) -->
-        @if (currentStep === 3.5) {
-          <div class="step-view service-selection-view">
-            <app-service-selector
-              (serviceSelected)="onServiceSelected($event)"
-              (back)="onServiceSelectorBack()">
-            </app-service-selector>
-          </div>
-        }
-
-        <!-- STEP 4: CONFIRMATION (Based on provided HTML design) -->
-        <!-- STEP 9: PAYMENT -->
-        @if (currentStep === 9) {
-          <div class="step-view payment-view">
-            <!-- Top App Bar -->
-            <div class="payment-header">
-              <button class="back-btn" (click)="goToStep(2)">
-                <span class="material-symbols-outlined">arrow_back_ios_new</span>
-              </button>
-              <h2>Pago</h2>
-            </div>
-
-            <!-- Main Content - Sin contenedor scrollable, todo en una pantalla -->
-            <div class="payment-content">
-              <!-- Test Environment Banner -->
-              <div class="test-banner">
-                <div class="test-banner-content">
-                  <span class="material-symbols-outlined">science</span>
-                  <div class="test-banner-text">
-                    <p class="test-banner-title">Entorno de Prueba</p>
-                    <p class="test-banner-message">No se realizará ningún cobro real. Esta es una simulación para demostración.</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Booking Summary - Sin div separado, directamente en el fondo -->
-              <div class="booking-summary-section">
-                <h3>Resumen de la Reserva</h3>
-                <div class="summary-item">
-                  <span class="summary-label">Servicio:</span>
-                  <span class="summary-value">{{ selectedService?.name || 'Servicio' }}</span>
-                </div>
-                @if (selectedProfessionalData) {
-                  <div class="summary-item">
-                    <span class="summary-label">Profesional:</span>
-                    <span class="summary-value">{{ selectedProfessionalData.name }}</span>
-                  </div>
-                }
-                @if (selectedRestaurant) {
-                  <div class="summary-item">
-                    <span class="summary-label">Restaurante:</span>
-                    <span class="summary-value">{{ selectedRestaurant.name }}</span>
-                  </div>
-                }
-                <div class="summary-item">
-                  <span class="summary-label">Fecha:</span>
-                  <span class="summary-value">{{ calendarData.currentDate | date:'EEEE, d \'de\' MMMM' | titlecase }}</span>
-                </div>
-                <div class="summary-item">
-                  <span class="summary-label">Hora:</span>
-                  <span class="summary-value">{{ calendarData.selectedSlot }}</span>
-                </div>
-                <div class="summary-item total">
-                  <span class="summary-label">Total:</span>
-                  <span class="summary-value">€{{ getBookingPrice() }}.00</span>
-                </div>
-              </div>
-
-              <!-- Payment Method - Sin div separado, directamente en el fondo -->
-              <div class="payment-method-section">
-                <h3>Método de Pago</h3>
-                <div class="stripe-container">
-                  <!-- Stripe Elements will be injected here -->
-                  @if (!paymentProcessing && !paymentError) {
-                    <div class="stripe-placeholder">
-                      <div class="card-element-placeholder">
-                        <div class="card-icon-wrapper">
-                          <span class="material-symbols-outlined">credit_card</span>
-                        </div>
-                        <p class="stripe-label">Pago seguro con Stripe</p>
-                        <div class="test-card-info">
-                          <span class="material-symbols-outlined">info</span>
-                          <p>Modo de prueba: Usa la tarjeta de prueba <strong>4242 4242 4242 4242</strong></p>
-                        </div>
-                      </div>
-                    </div>
-                  }
-                  @if (paymentProcessing) {
-                    <div class="payment-loading">
-                      <div class="spinner"></div>
-                      <p>Procesando pago...</p>
-                    </div>
-                  }
-                  @if (paymentError) {
-                    <div class="payment-error">
-                      <span class="material-symbols-outlined">error</span>
-                      <p>{{ paymentError }}</p>
-                    </div>
-                  }
-                </div>
-              </div>
-
-              <!-- Security Notice -->
-              <div class="security-notice">
-                <span class="material-symbols-outlined">verified</span>
-                <p>Tu información está protegida. Este es un entorno de prueba y no se procesarán pagos reales.</p>
-              </div>
-
-              <!-- Payment Button - Dentro del contenido, sticky al final -->
-              <div class="payment-actions">
-                @if (!paymentProcessing && !paymentError) {
-                  <button
-                    class="pay-button"
-                    [disabled]="paymentProcessing"
-                    (click)="initializePayment()"
-                    >
-                    <span class="material-symbols-outlined">lock</span>
-                    <span>Pagar €{{ getBookingPrice() }}.00</span>
-                    <span class="test-badge">PRUEBA</span>
-                  </button>
-                }
-                @if (paymentError) {
-                  <button
-                    class="pay-button retry-button"
-                    [disabled]="paymentProcessing"
-                    (click)="initializePayment()"
-                    >
-                    <span class="material-symbols-outlined">refresh</span>
-                    Reintentar Pago
-                  </button>
-                }
-              </div>
-            </div>
-          </div>
-        }
-
-        @if (currentStep === 4) {
-          <div class="step-view confirmation-view-new">
-            <!-- Top App Bar -->
-            <div class="confirmation-header">
-              <button class="back-btn" (click)="goToStep(1)">
-                <span class="material-symbols-outlined">arrow_back_ios_new</span>
-              </button>
-              <h2>Detalles de la Cita</h2>
-            </div>
-
-            <!-- Main Content - Sin contenedor scrollable, todo en una pantalla -->
-            <div class="confirmation-content">
-              <!-- Status Card -->
-              <div class="status-card">
-                <div class="status-icon-wrapper">
-                  <span class="material-symbols-outlined status-icon">check</span>
-                </div>
-                <h3>Reservación Confirmada</h3>
-                <p>Tu cita ha sido programada exitosamente.</p>
-                <div class="add-calendar-btn-wrapper">
-                  <button class="add-calendar-btn" (click)="addToCalendar()">
-                    <span class="material-symbols-outlined">calendar_add_on</span>
-                    Añadir a Calendario
-                  </button>
-                </div>
-              </div>
-
-              <!-- Details List -->
-              <div class="details-section">
-                <h4>Información</h4>
-                <div class="details-list">
-                  <!-- Date -->
-                  <div class="detail-row">
-                    <div class="detail-icon">
-                      <span class="material-symbols-outlined">calendar_today</span>
-                    </div>
-                    <div class="detail-content">
-                      <p class="detail-label">Fecha</p>
-                      <p class="detail-value">{{ calendarData.currentDate | date:'EEEE, d \'de\' MMMM' | titlecase }}</p>
-                    </div>
-                  </div>
-
-                  <!-- Time -->
-                  <div class="detail-row">
-                    <div class="detail-icon">
-                      <span class="material-symbols-outlined">schedule</span>
-                    </div>
-                    <div class="detail-content">
-                      <p class="detail-label">Hora</p>
-                      <p class="detail-value">{{ calendarData.selectedSlot || '10:00' }} - {{ getEndTime(calendarData.selectedSlot || '10:00') }} <span class="duration">(1h)</span></p>
-                    </div>
-                  </div>
-
-                  <!-- Service / Restaurant -->
-                  @if (!selectedRestaurant) {
-                    <div class="detail-row">
-                      <div class="detail-icon">
-                        <span class="material-symbols-outlined">content_cut</span>
-                      </div>
-                      <div class="detail-content">
-                        <p class="detail-label">Servicio</p>
-                        <p class="detail-value">{{ selectedService?.name || 'Corte de Cabello y Barba' }}</p>
-                      </div>
-                    </div>
-                  }
-                  @if (selectedRestaurant) {
-                    <div class="detail-row">
-                      <div class="detail-icon">
-                        <span class="material-symbols-outlined">restaurant</span>
-                      </div>
-                      <div class="detail-content">
-                        <p class="detail-label">Restaurante</p>
-                        <p class="detail-value">{{ selectedRestaurant.name }}</p>
-                      </div>
-                    </div>
-                  }
-                  @if (selectedRestaurant && selectedMenuType) {
-                    <div class="detail-row">
-                      <div class="detail-icon">
-                        <span class="material-symbols-outlined">restaurant_menu</span>
-                      </div>
-                      <div class="detail-content">
-                        <p class="detail-label">Tipo de Menú</p>
-                        <p class="detail-value">{{ getSelectedMenuTypeName() }}</p>
-                      </div>
-                    </div>
-                  }
-
-                  <!-- Professional -->
-                  @if (selectedProfessionalData) {
-                    <div class="detail-row">
-                      <div class="detail-icon professional-avatar">
-                        @if (selectedProfessionalData.image) {
-                          <img [src]="selectedProfessionalData.image" [alt]="selectedProfessionalData.name + ' profile'">
-                        }
-                        @if (!selectedProfessionalData.image) {
-                          <span class="material-symbols-outlined">person</span>
-                        }
-                      </div>
-                      <div class="detail-content">
-                        <p class="detail-label">Profesional</p>
-                        <p class="detail-value">{{ selectedProfessionalData.name || selectedProfessional || 'Profesional Asignado' }}</p>
-                      </div>
-                    </div>
-                  }
-                  @if (!selectedProfessionalData) {
-                    <div class="detail-row">
-                      <div class="detail-icon professional-avatar">
-                        <span class="material-symbols-outlined">person</span>
-                      </div>
-                      <div class="detail-content">
-                        <p class="detail-label">Profesional</p>
-                        <p class="detail-value">{{ selectedProfessional || 'Profesional Asignado' }}</p>
-                      </div>
-                    </div>
-                  }
-
-                  <!-- Cost -->
-                  <div class="detail-row cost-row">
-                    <div class="detail-icon cost-icon">
-                      <span class="material-symbols-outlined">payments</span>
-                    </div>
-                    <div class="detail-content cost-content">
-                      <div class="cost-header">
-                        <p class="detail-label">Costo Total</p>
-                        <span class="paid-badge">Pagado</span>
-                      </div>
-                      <p class="cost-value">€{{ getBookingPrice() }}.00</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Location Section -->
-              <div class="location-section">
-                <h4>Ubicación</h4>
-                <div class="location-card">
-                  <div class="location-map">
-                    <div class="map-placeholder">
-                      <div class="map-marker">
-                        <span class="material-symbols-outlined">storefront</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="location-info">
-                    <div>
-                      <p class="location-name">{{ selectedRestaurant?.name || selectedService?.name || 'Barbería The Gentlemen' }}</p>
-                      @if (deliveryAddress) {
-                        <p class="location-address">{{ deliveryAddress.formatted_address }}</p>
-                      }
-                      @if (!deliveryAddress) {
-                        <p class="location-address">Av. Reforma 222, CDMX</p>
-                      }
-                    </div>
-                    <button class="location-btn">
-                      <span class="material-symbols-outlined">near_me</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Bottom Action Bar - Dentro del contenido, sticky al final -->
-              <div class="confirmation-actions">
-                <button class="reschedule-btn" (click)="rescheduleBooking()">
-                  Reagendar
-                </button>
-                <button class="cancel-btn" (click)="cancelBooking()">
-                  Cancelar Cita
-                </button>
-              </div>
-            </div>
-          </div>
-        }
-
-        <!-- STEP 6: RESTAURANT SELECTION -->
-        @if (currentStep === 6) {
-          <div class="step-view restaurant-selection-view">
-            <div class="restaurant-header">
-              <button class="back-btn" (click)="goToStep(0)">
-                <span class="material-symbols-outlined">arrow_back_ios_new</span>
-              </button>
-              <h2>Elige un Restaurante</h2>
-            </div>
-
-            <div class="restaurants-list">
-              @for (restaurant of getRestaurants(); track restaurant) {
-                <div class="restaurant-card" (click)="selectRestaurant(restaurant)" (keydown.enter)="selectRestaurant(restaurant)" tabindex="0" role="button">
-                  <div class="restaurant-image" [style.background-image]="'url(' + restaurant.image + ')'"></div>
-                  <div class="restaurant-info">
-                    <div class="restaurant-header-info">
-                      <div>
-                        <h3>{{ restaurant.name }}</h3>
-                        <p class="restaurant-cuisine">{{ restaurant.cuisine }}</p>
-                      </div>
-                      <div class="rating-badge">
-                        <span class="material-symbols-outlined filled">star</span>
-                        <span>{{ restaurant.rating }}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="restaurant-footer">
-                    <span class="restaurant-meta">{{ restaurant.reviews }} Reseñas • A {{ restaurant.distance }}</span>
-                    <span class="material-symbols-outlined arrow">chevron_right</span>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-        }
-
-        <!-- STEP 7: MENU TYPE SELECTION -->
-        @if (currentStep === 7) {
-          <div class="step-view menu-selection-view">
-            <div class="menu-header">
-              <button class="back-btn" (click)="goToStep(6)">
-                <span class="material-symbols-outlined">arrow_back_ios_new</span>
-              </button>
-              <h2>Elige Tipo de Menú</h2>
-              @if (selectedRestaurant) {
-                <p class="restaurant-name">{{ selectedRestaurant.name }}</p>
-              }
-            </div>
-
-            <div class="menu-types-list">
-              @for (menuType of getMenuTypes(); track menuType) {
-                <div class="menu-type-card" (click)="selectMenuType(menuType.id)" (keydown.enter)="selectMenuType(menuType.id)" tabindex="0" role="button">
-                  <div class="menu-icon">
-                    <span class="material-symbols-outlined">{{ menuType.icon }}</span>
-                  </div>
-                  <div class="menu-info">
-                    <h3>{{ menuType.name }}</h3>
-                    <p>{{ menuType.description }}</p>
-                  </div>
-                  <span class="material-symbols-outlined arrow">chevron_right</span>
-                </div>
-              }
-            </div>
-          </div>
-        }
-
-        <!-- STEP 8: DELIVERY ADDRESS SELECTION -->
-        @if (currentStep === 8) {
-          <div class="step-view delivery-address-view">
-            <div class="delivery-header">
-              <button class="back-btn" (click)="goToStep(1)">
-                <span class="material-symbols-outlined">arrow_back_ios_new</span>
-              </button>
-              <h2>Dirección de Entrega</h2>
-              <p class="delivery-subtitle">Selecciona la dirección donde quieres recibir tu pedido</p>
-            </div>
-
-            <div class="delivery-content">
-              <app-google-maps-autocomplete
-                [placeholder]="'Buscar dirección de entrega...'"
-                [label]="'Dirección de Entrega'"
-                (placeSelected)="onAddressSelected($event)">
-              </app-google-maps-autocomplete>
-
-              @if (deliveryAddress) {
-                <div class="delivery-info">
-                  <div class="info-card">
-                    <span class="material-symbols-outlined">location_on</span>
-                    <div>
-                      <p class="info-label">Dirección confirmada</p>
-                      <p class="info-value">{{ deliveryAddress.formatted_address }}</p>
-                    </div>
-                  </div>
-                </div>
-              }
-
-              @if (deliveryAddress) {
-                <div class="delivery-actions">
-                  <button class="continue-btn" (click)="goToStep(2)">
-                    Continuar con la Reserva
-                    <span class="material-symbols-outlined">arrow_forward</span>
-                  </button>
-                </div>
-              }
-            </div>
-          </div>
-        }
-
-        <!-- STEP 5: SUCCESS MESSAGE -->
-        @if (currentStep === 5 && showSuccessMessage) {
-          <div class="step-view success-view">
-            <div class="success-container">
-              <div class="success-icon">
-                <span class="material-symbols-outlined">check_circle</span>
-              </div>
-              <h2 class="success-title">¡Cita Confirmada!</h2>
-              <p class="success-message">
-                Tu cita ha sido confirmada exitosamente. Recibirás un recordatorio antes de tu cita.
-              </p>
-
-              <div class="success-details">
-                <div class="detail-row">
-                  <span class="material-symbols-outlined">person</span>
-                  <span>{{ selectedProfessional || 'Profesional Asignado' }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="material-symbols-outlined">calendar_today</span>
-                  <span>{{ calendarData.currentDate | date:'EEEE, d MMMM' | titlecase }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="material-symbols-outlined">schedule</span>
-                  <span>{{ calendarData.selectedSlot || '10:00' }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="material-symbols-outlined">spa</span>
-                  <span>{{ selectedService?.name || 'Servicio' }}</span>
-                </div>
-              </div>
-
-              <button class="success-btn" (click)="onSuccessClose()">
-                Cerrar
-              </button>
-            </div>
-          </div>
-        }
-      </main>
-
-      <!-- BOTTOM INPUT AREA (Only on Chat Step 1) -->
-      @if (currentStep === 1) {
-        <div class="mobile-footer">
-          <!-- Chips -->
-          @if (exampleMessages.length > 0 && detectedDayOptions.length === 0) {
-            <div class="chips-scroll">
-              @for (ex of exampleMessages; track ex) {
-                <button class="chip" (click)="useExample(ex)">
-                  {{ ex }}
-                </button>
-              }
-            </div>
-          }
-
-          <!-- FOOTER: Input Area (Hidden for booking agent - only button responses) -->
-          @if (currentStep === 1 && agent.id !== 'booking') {
-            <footer class="mobile-footer">
-              <div class="input-container">
-                <button class="icon-btn">
-                  <span class="material-symbols-outlined">add_circle</span>
-                </button>
-                <input
-                  type="text"
-                  [(ngModel)]="currentMessage"
-                  (keyup.enter)="sendMessage()"
-                  placeholder="Escribe un mensaje..."
-                  class="message-input"
-                  />
-                <button class="icon-btn">
-                  <span class="material-symbols-outlined">sentiment_satisfied</span>
-                </button>
-                <button
-                  class="send-btn"
-                  (click)="sendMessage()"
-                  [disabled]="!currentMessage.trim() || isLoading">
-                  <span class="material-symbols-outlined">send</span>
-                </button>
-              </div>
-            </footer>
           }
         </div>
+        <!-- Timestamp -->
+        <div class="chat-timestamp">
+          <span>Hoy</span>
+        </div>
+
+        <app-chat-interface
+          [messages]="messages"
+          [isLoading]="isLoading"
+        ></app-chat-interface>
+
+        <!-- Day Options Display (when agent offers days) -->
+        @if (detectedDayOptions.length > 0) {
+        <div class="day-options-panel">
+          <div class="day-options-header">
+            <span class="material-symbols-outlined">calendar_today</span>
+            <h4>Selecciona un día:</h4>
+          </div>
+          <div class="day-options-list">
+            @for (option of detectedDayOptions; track option) {
+            <button
+              class="day-option-button"
+              (click)="onDayOptionSelected(option)"
+            >
+              <span class="day-label">{{ option.label }}</span>
+              <span class="day-date"
+                >{{ option.date.getDate() }}/{{
+                  option.date.getMonth() + 1
+                }}</span
+              >
+            </button>
+            }
+          </div>
+        </div>
+        }
+
+        <!-- Real-time Availability Display -->
+        @if (availableSlots.length > 0 && !checkingAvailability) {
+        <div class="availability-panel">
+          <div class="availability-header">
+            <span class="material-symbols-outlined">schedule</span>
+            <h4>Horarios Disponibles (Tiempo Real)</h4>
+          </div>
+          <div class="availability-slots">
+            @for (slot of availableSlots; track slot) {
+            <button class="slot-button" (click)="selectTimeSlot(slot)">
+              {{ slot }}
+            </button>
+            }
+          </div>
+          <button class="open-calendar-btn" (click)="openCalendarModal()">
+            <span class="material-symbols-outlined">calendar_today</span>
+            Ver calendario completo
+          </button>
+        </div>
+        }
+
+        <!-- Loading indicator for availability check -->
+        @if (checkingAvailability) {
+        <div class="availability-loading">
+          <span class="material-symbols-outlined spin">sync</span>
+          <span>Verificando disponibilidad en tiempo real...</span>
+        </div>
+        }
+
+        <!-- Button to open calendar if no availability shown yet -->
+        @if (availableSlots.length === 0 && !checkingAvailability &&
+        messages.length > 2) {
+        <div class="calendar-cta">
+          <button class="open-calendar-btn-large" (click)="openCalendarModal()">
+            <span class="material-symbols-outlined">calendar_today</span>
+            Ver Calendario de Disponibilidad
+          </button>
+        </div>
+        }
+
+        <!-- Restaurant Delivery Option Buttons (in chat) -->
+        @if (selectedRestaurant && selectedMenuType && !deliveryOption &&
+        messages.length > 0) {
+        <div class="delivery-options">
+          <button
+            class="delivery-option-btn dine-in"
+            (click)="selectDeliveryOption('dine-in')"
+          >
+            <span class="material-symbols-outlined">restaurant</span>
+            <div>
+              <strong>Comer Aquí</strong>
+              <span>Reservar mesa en el restaurante</span>
+            </div>
+          </button>
+          <button
+            class="delivery-option-btn delivery"
+            (click)="selectDeliveryOption('delivery')"
+          >
+            <span class="material-symbols-outlined">delivery_dining</span>
+            <div>
+              <strong>Pedir a Domicilio</strong>
+              <span>Entrega en tu dirección</span>
+            </div>
+          </button>
+        </div>
+        }
+      </div>
       }
 
-      <!-- STEP 4: BOOKING CONFIRMATION -->
-      @if (isStep(4) && selectedBooking) {
-        <div class="step-view booking-confirmation-view">
-          <div class="confirmation-header">
-            <button class="icon-btn" (click)="navigateToTab('inicio')">
-              <span class="material-symbols-outlined">arrow_back_ios_new</span>
+      <!-- STEP 2: CALENDAR (Shows when agent checks availability) -->
+      @if (currentStep === 2) {
+      <div class="step-view calendar-view">
+        <div class="step-header">
+          <h3>📅 Horarios Disponibles</h3>
+          @if (selectedService) {
+          <p class="step-subtitle">
+            Para {{ selectedService.name }} - Selecciona fecha y hora
+          </p>
+          }
+        </div>
+
+        <!-- Show available slots from agent check -->
+        @if (availableSlots.length > 0) {
+        <div class="availability-display">
+          <p class="availability-info">
+            El agente ha verificado la disponibilidad. Estos son los horarios
+            disponibles:
+          </p>
+          <div class="slots-grid">
+            @for (slot of availableSlots; track slot) {
+            <button class="slot-btn" (click)="selectTimeSlot(slot)">
+              {{ slot }}
             </button>
-            <h2>Detalles de la Cita</h2>
+            }
+          </div>
+        </div>
+        }
+
+        <app-calendar
+          [currentDate]="calendarData.currentDate"
+          [availableSlots]="availableSlots"
+          (slotSelected)="onSlotSelected($event)"
+        >
+        </app-calendar>
+      </div>
+      }
+
+      <!-- STEP 3: PROFESSIONAL SELECTION (Based on provided HTML design) -->
+      @if (currentStep === 3) {
+      <div
+        class="step-view professional-view-new"
+        [style.--filter-active-bg]="getCategoryColor()"
+        [style.--filter-active-bg-hover]="getCategoryColorHover()"
+        [style.--professional-title-color]="getCategoryColor()"
+      >
+        <!-- Header -->
+        <div class="professional-header">
+          <button class="back-btn" (click)="goToStep(0)">
+            <span class="material-symbols-outlined">arrow_back_ios_new</span>
+          </button>
+          <h2>Elige tu Experto</h2>
+        </div>
+
+        <!-- Filter Chips -->
+        <div class="filter-chips">
+          <button
+            class="filter-chip active"
+            [class.active]="selectedFilter === 'best-rated'"
+            (click)="selectedFilter = 'best-rated'"
+          >
+            <span class="material-symbols-outlined">star</span>
+            <p>Mejor Valorados</p>
+          </button>
+          <button
+            class="filter-chip"
+            [class.active]="selectedFilter === 'nearest'"
+            (click)="selectedFilter = 'nearest'"
+          >
+            <span class="material-symbols-outlined">location_on</span>
+            <p>Más Cercanos</p>
+          </button>
+          <button
+            class="filter-chip"
+            [class.active]="selectedFilter === 'price-low'"
+            (click)="selectedFilter = 'price-low'"
+          >
+            <span class="material-symbols-outlined">attach_money</span>
+            <p>Precio Bajo</p>
+          </button>
+          <button
+            class="filter-chip"
+            [class.active]="selectedFilter === 'availability'"
+            (click)="selectedFilter = 'availability'"
+          >
+            <span class="material-symbols-outlined">calendar_today</span>
+            <p>Disponibilidad</p>
+          </button>
+        </div>
+
+        <!-- Professional List -->
+        <div class="professionals-list">
+          <!-- Dynamic Professional Cards -->
+          @for (prof of getProfessionalsForService(); track prof) {
+          <div class="professional-card">
+            <div class="professional-main">
+              <div
+                class="professional-avatar"
+                [style.background-image]="'url(' + prof.image + ')'"
+              ></div>
+              <div class="professional-info">
+                <div class="professional-header-info">
+                  <div>
+                    <h3>{{ prof.name }}</h3>
+                    <p class="professional-title">{{ prof.title }}</p>
+                  </div>
+                  <div class="rating-badge">
+                    <span class="material-symbols-outlined filled">star</span>
+                    <span>{{ prof.rating }}</span>
+                  </div>
+                </div>
+                <p class="professional-description">
+                  {{ prof.description }}
+                </p>
+              </div>
+            </div>
+            <div class="professional-footer">
+              <span class="professional-meta"
+                >{{ prof.reviews }} Reseñas • A {{ prof.distance }}</span
+              >
+              <button
+                class="select-btn"
+                (click)="
+                  selectProfessional({
+                    name: prof.name,
+                    image: prof.image,
+                    title: prof.title,
+                    rating: prof.rating,
+                    reviews: prof.reviews
+                  })
+                "
+              >
+                Seleccionar
+              </button>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- STEP 0: SERVICE SELECTOR (First step for demo) -->
+      @if (currentStep === 0) {
+      <div class="step-view service-selection-view">
+        <app-service-selector
+          (serviceSelected)="onServiceSelected($event)"
+          (back)="onServiceSelectorBack()"
+        >
+        </app-service-selector>
+      </div>
+      }
+
+      <!-- STEP 3.5: SERVICE SELECTION (Legacy - for booking flow) -->
+      @if (currentStep === 3.5) {
+      <div class="step-view service-selection-view">
+        <app-service-selector
+          (serviceSelected)="onServiceSelected($event)"
+          (back)="onServiceSelectorBack()"
+        >
+        </app-service-selector>
+      </div>
+      }
+
+      <!-- STEP 4: CONFIRMATION (Based on provided HTML design) -->
+      <!-- STEP 9: PAYMENT -->
+      @if (currentStep === 9) {
+      <div class="step-view payment-view">
+        <!-- Top App Bar -->
+        <div class="payment-header">
+          <button class="back-btn" (click)="goToStep(2)">
+            <span class="material-symbols-outlined">arrow_back_ios_new</span>
+          </button>
+          <h2>Pago</h2>
+        </div>
+
+        <!-- Main Content - Sin contenedor scrollable, todo en una pantalla -->
+        <div class="payment-content">
+          <!-- Test Environment Banner -->
+          <div class="test-banner">
+            <div class="test-banner-content">
+              <span class="material-symbols-outlined">science</span>
+              <div class="test-banner-text">
+                <p class="test-banner-title">Entorno de Prueba</p>
+                <p class="test-banner-message">
+                  No se realizará ningún cobro real. Esta es una simulación para
+                  demostración.
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div class="confirmation-content">
-            <!-- Status Card -->
-            <div class="status-card">
-              <div class="status-icon">
-                <span class="material-symbols-outlined">check</span>
+          <!-- Booking Summary - Sin div separado, directamente en el fondo -->
+          <div class="booking-summary-section">
+            <h3>Resumen de la Reserva</h3>
+            <div class="summary-item">
+              <span class="summary-label">Servicio:</span>
+              <span class="summary-value">{{
+                selectedService?.name || "Servicio"
+              }}</span>
+            </div>
+            @if (selectedProfessionalData) {
+            <div class="summary-item">
+              <span class="summary-label">Profesional:</span>
+              <span class="summary-value">{{
+                selectedProfessionalData.name
+              }}</span>
+            </div>
+            } @if (selectedRestaurant) {
+            <div class="summary-item">
+              <span class="summary-label">Restaurante:</span>
+              <span class="summary-value">{{ selectedRestaurant.name }}</span>
+            </div>
+            }
+            <div class="summary-item">
+              <span class="summary-label">Fecha:</span>
+              <span class="summary-value">{{
+                calendarData.currentDate
+                  | date : "EEEE, d 'de' MMMM"
+                  | titlecase
+              }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Hora:</span>
+              <span class="summary-value">{{ calendarData.selectedSlot }}</span>
+            </div>
+            <div class="summary-item total">
+              <span class="summary-label">Total:</span>
+              <span class="summary-value">€{{ getBookingPrice() }}.00</span>
+            </div>
+          </div>
+
+          <!-- Payment Method - Sin div separado, directamente en el fondo -->
+          <div class="payment-method-section">
+            <h3>Método de Pago</h3>
+            <div class="stripe-container">
+              <!-- Stripe Elements will be injected here -->
+              @if (!paymentProcessing && !paymentError) {
+              <div class="stripe-placeholder">
+                <div class="card-element-placeholder">
+                  <div class="card-icon-wrapper">
+                    <span class="material-symbols-outlined">credit_card</span>
+                  </div>
+                  <p class="stripe-label">Pago seguro con Stripe</p>
+                  <div class="test-card-info">
+                    <span class="material-symbols-outlined">info</span>
+                    <p>
+                      Modo de prueba: Usa la tarjeta de prueba
+                      <strong>4242 4242 4242 4242</strong>
+                    </p>
+                  </div>
+                </div>
               </div>
-              <h3>Reservación Confirmada</h3>
-              <p>Tu cita ha sido programada exitosamente.</p>
-              <button class="btn-add-calendar" (click)="addToCalendar()">
+              } @if (paymentProcessing) {
+              <div class="payment-loading">
+                <div class="spinner"></div>
+                <p>Procesando pago...</p>
+              </div>
+              } @if (paymentError) {
+              <div class="payment-error">
+                <span class="material-symbols-outlined">error</span>
+                <p>{{ paymentError }}</p>
+              </div>
+              }
+            </div>
+          </div>
+
+          <!-- Security Notice -->
+          <div class="security-notice">
+            <span class="material-symbols-outlined">verified</span>
+            <p>
+              Tu información está protegida. Este es un entorno de prueba y no
+              se procesarán pagos reales.
+            </p>
+          </div>
+
+          <!-- Payment Button - Dentro del contenido, sticky al final -->
+          <div class="payment-actions">
+            @if (!paymentProcessing && !paymentError) {
+            <button
+              class="pay-button"
+              [disabled]="paymentProcessing"
+              (click)="initializePayment()"
+            >
+              <span class="material-symbols-outlined">lock</span>
+              <span>Pagar €{{ getBookingPrice() }}.00</span>
+              <span class="test-badge">PRUEBA</span>
+            </button>
+            } @if (paymentError) {
+            <button
+              class="pay-button retry-button"
+              [disabled]="paymentProcessing"
+              (click)="initializePayment()"
+            >
+              <span class="material-symbols-outlined">refresh</span>
+              Reintentar Pago
+            </button>
+            }
+          </div>
+        </div>
+      </div>
+      } @if (currentStep === 4) {
+      <div class="step-view confirmation-view-new">
+        <!-- Top App Bar -->
+        <div class="confirmation-header">
+          <button class="back-btn" (click)="goToStep(1)">
+            <span class="material-symbols-outlined">arrow_back_ios_new</span>
+          </button>
+          <h2>Detalles de la Cita</h2>
+        </div>
+
+        <!-- Main Content - Sin contenedor scrollable, todo en una pantalla -->
+        <div class="confirmation-content">
+          <!-- Status Card -->
+          <div class="status-card">
+            <div class="status-icon-wrapper">
+              <span class="material-symbols-outlined status-icon">check</span>
+            </div>
+            <h3>Reservación Confirmada</h3>
+            <p>Tu cita ha sido programada exitosamente.</p>
+            <div class="add-calendar-btn-wrapper">
+              <button class="add-calendar-btn" (click)="addToCalendar()">
                 <span class="material-symbols-outlined">calendar_add_on</span>
                 Añadir a Calendario
               </button>
             </div>
+          </div>
 
-            <!-- Details List -->
-            <div class="details-section">
-              <h4>Información</h4>
-              <div class="details-card">
-                <div class="detail-item">
-                  <div class="detail-icon">
-                    <span class="material-symbols-outlined">calendar_today</span>
-                  </div>
-                  <div>
-                    <p class="detail-label">Fecha</p>
-                    <p class="detail-value">{{ formatDate(selectedBooking.date) }}</p>
-                  </div>
+          <!-- Details List -->
+          <div class="details-section">
+            <h4>Información</h4>
+            <div class="details-list">
+              <!-- Date -->
+              <div class="detail-row">
+                <div class="detail-icon">
+                  <span class="material-symbols-outlined">calendar_today</span>
                 </div>
-                <div class="detail-item">
-                  <div class="detail-icon">
-                    <span class="material-symbols-outlined">schedule</span>
-                  </div>
-                  <div>
-                    <p class="detail-label">Hora</p>
-                    <p class="detail-value">{{ selectedBooking.time }} - {{ getEndTime(selectedBooking.time) }} (1h)</p>
-                  </div>
+                <div class="detail-content">
+                  <p class="detail-label">Fecha</p>
+                  <p class="detail-value">
+                    {{
+                      calendarData.currentDate
+                        | date : "EEEE, d 'de' MMMM"
+                        | titlecase
+                    }}
+                  </p>
                 </div>
-                <div class="detail-item">
-                  <div class="detail-icon">
-                    <span class="material-symbols-outlined">content_cut</span>
-                  </div>
-                  <div>
-                    <p class="detail-label">Servicio</p>
-                    <p class="detail-value">{{ selectedBooking.service }}</p>
-                  </div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-icon">
-                    <span class="material-symbols-outlined">person</span>
-                  </div>
-                  <div>
-                    <p class="detail-label">Profesional</p>
-                    <p class="detail-value">{{ selectedBooking.professional }}</p>
-                  </div>
-                </div>
-                @if (selectedBooking.amount) {
-                  <div class="detail-item payment-item">
-                    <div class="detail-icon payment-icon">
-                      <span class="material-symbols-outlined">payments</span>
-                    </div>
-                    <div class="flex-1">
-                      <div class="flex justify-between items-center mb-1">
-                        <p class="detail-label">Costo Total</p>
-                        <span class="payment-badge" [class.paid]="selectedBooking.paymentStatus === 'paid'">
-                          {{ selectedBooking.paymentStatus === 'paid' ? 'Pagado' : 'Pendiente' }}
-                        </span>
-                      </div>
-                      <p class="detail-value price">${{ selectedBooking.amount.toFixed(2) }} MXN</p>
-                      @if (selectedBooking.paymentStatus === 'pending') {
-                        <button
-                          class="btn-pay-test"
-                          (click)="processTestPayment(selectedBooking.id, selectedBooking.amount)">
-                          Pagar con Dinero de Prueba
-                        </button>
-                      }
-                    </div>
-                  </div>
-                }
               </div>
-            </div>
-          </div>
 
-          <!-- Bottom Actions -->
-          <div class="bottom-actions">
-            <button class="btn-secondary" (click)="reagendarBooking(selectedBooking.id)">Reagendar</button>
-            <button class="btn-danger" (click)="cancelBookingById(selectedBooking.id)">Cancelar Cita</button>
-          </div>
-        </div>
-      }
-
-      <!-- STEP 10: RESERVAS VIEW -->
-      @if (isStep(10)) {
-        <div class="step-view reservas-view">
-          <div class="reservas-header">
-            <button class="icon-btn" (click)="navigateToTab('inicio')">
-              <span class="material-symbols-outlined">arrow_back_ios_new</span>
-            </button>
-            <h2>Mis Reservas</h2>
-          </div>
-
-          <div class="reservas-content">
-            @if (bookings.length === 0) {
-              <div class="empty-reservas">
-                <span class="material-symbols-outlined">calendar_today</span>
-                <p>No tienes reservas aún</p>
-              </div>
-            }
-
-            @for (booking of bookings; track booking) {
-              <div class="booking-card">
-                <div class="booking-info">
-                  <div class="booking-date-time">
-                    <span class="material-symbols-outlined">event</span>
-                    <div>
-                      <p class="booking-date">{{ formatDate(booking.date) }}</p>
-                      <p class="booking-time">{{ booking.time }}</p>
-                    </div>
-                  </div>
-                  <div class="booking-details">
-                    <p class="booking-service">{{ booking.service }}</p>
-                    @if (booking.professional) {
-                      <p class="booking-professional">{{ booking.professional }}</p>
-                    }
-                  </div>
-                  <div class="booking-status">
-                    <span class="status-badge" [class.confirmed]="booking.status === 'confirmed'"
-                      [class.cancelled]="booking.status === 'cancelled'">
-                      {{ booking.status === 'confirmed' ? 'Confirmada' : booking.status === 'cancelled' ? 'Cancelada' : 'Pendiente' }}
-                    </span>
-                  </div>
+              <!-- Time -->
+              <div class="detail-row">
+                <div class="detail-icon">
+                  <span class="material-symbols-outlined">schedule</span>
                 </div>
-                <div class="booking-actions">
-                  <button class="btn-view" (click)="viewBookingDetails(booking)">Ver Detalles</button>
-                  @if (booking.status === 'confirmed') {
-                    <button class="btn-cancel" (click)="cancelBookingById(booking.id)">Cancelar</button>
+                <div class="detail-content">
+                  <p class="detail-label">Hora</p>
+                  <p class="detail-value">
+                    {{ calendarData.selectedSlot || "10:00" }} -
+                    {{ getEndTime(calendarData.selectedSlot || "10:00") }}
+                    <span class="duration">(1h)</span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Service / Restaurant -->
+              @if (!selectedRestaurant) {
+              <div class="detail-row">
+                <div class="detail-icon">
+                  <span class="material-symbols-outlined">content_cut</span>
+                </div>
+                <div class="detail-content">
+                  <p class="detail-label">Servicio</p>
+                  <p class="detail-value">
+                    {{ selectedService?.name || "Corte de Cabello y Barba" }}
+                  </p>
+                </div>
+              </div>
+              } @if (selectedRestaurant) {
+              <div class="detail-row">
+                <div class="detail-icon">
+                  <span class="material-symbols-outlined">restaurant</span>
+                </div>
+                <div class="detail-content">
+                  <p class="detail-label">Restaurante</p>
+                  <p class="detail-value">{{ selectedRestaurant.name }}</p>
+                </div>
+              </div>
+              } @if (selectedRestaurant && selectedMenuType) {
+              <div class="detail-row">
+                <div class="detail-icon">
+                  <span class="material-symbols-outlined">restaurant_menu</span>
+                </div>
+                <div class="detail-content">
+                  <p class="detail-label">Tipo de Menú</p>
+                  <p class="detail-value">{{ getSelectedMenuTypeName() }}</p>
+                </div>
+              </div>
+              }
+
+              <!-- Professional -->
+              @if (selectedProfessionalData) {
+              <div class="detail-row">
+                <div class="detail-icon professional-avatar">
+                  @if (selectedProfessionalData.image) {
+                  <img
+                    [src]="selectedProfessionalData.image"
+                    [alt]="selectedProfessionalData.name + ' profile'"
+                  />
+                  } @if (!selectedProfessionalData.image) {
+                  <span class="material-symbols-outlined">person</span>
                   }
-                  <button class="btn-delete" (click)="deleteBooking(booking.id)">Eliminar</button>
+                </div>
+                <div class="detail-content">
+                  <p class="detail-label">Profesional</p>
+                  <p class="detail-value">
+                    {{
+                      selectedProfessionalData.name ||
+                        selectedProfessional ||
+                        "Profesional Asignado"
+                    }}
+                  </p>
                 </div>
               </div>
-            }
+              } @if (!selectedProfessionalData) {
+              <div class="detail-row">
+                <div class="detail-icon professional-avatar">
+                  <span class="material-symbols-outlined">person</span>
+                </div>
+                <div class="detail-content">
+                  <p class="detail-label">Profesional</p>
+                  <p class="detail-value">
+                    {{ selectedProfessional || "Profesional Asignado" }}
+                  </p>
+                </div>
+              </div>
+              }
+
+              <!-- Cost -->
+              <div class="detail-row cost-row">
+                <div class="detail-icon cost-icon">
+                  <span class="material-symbols-outlined">payments</span>
+                </div>
+                <div class="detail-content cost-content">
+                  <div class="cost-header">
+                    <p class="detail-label">Costo Total</p>
+                    <span class="paid-badge">Pagado</span>
+                  </div>
+                  <p class="cost-value">€{{ getBookingPrice() }}.00</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Location Section -->
+          <div class="location-section">
+            <h4>Ubicación</h4>
+            <div class="location-card">
+              <div class="location-map">
+                <div class="map-placeholder">
+                  <div class="map-marker">
+                    <span class="material-symbols-outlined">storefront</span>
+                  </div>
+                </div>
+              </div>
+              <div class="location-info">
+                <div>
+                  <p class="location-name">
+                    {{
+                      selectedRestaurant?.name ||
+                        selectedService?.name ||
+                        "Barbería The Gentlemen"
+                    }}
+                  </p>
+                  @if (deliveryAddress) {
+                  <p class="location-address">
+                    {{ deliveryAddress.formatted_address }}
+                  </p>
+                  } @if (!deliveryAddress) {
+                  <p class="location-address">Av. Reforma 222, CDMX</p>
+                  }
+                </div>
+                <button class="location-btn">
+                  <span class="material-symbols-outlined">near_me</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Bar - Dentro del contenido, sticky al final -->
+          <div class="confirmation-actions">
+            <button class="reschedule-btn" (click)="rescheduleBooking()">
+              Reagendar
+            </button>
+            <button class="cancel-btn" (click)="cancelBooking()">
+              Cancelar Cita
+            </button>
           </div>
         </div>
+      </div>
       }
 
-      <!-- STEP 11: AVISOS VIEW -->
-      @if (isStep(11)) {
-        <div class="step-view avisos-view">
-          <div class="avisos-header">
-            <button class="icon-btn" (click)="navigateToTab('inicio')">
-              <span class="material-symbols-outlined">arrow_back_ios_new</span>
-            </button>
-            <div class="header-title-group">
-              <span class="material-symbols-outlined filled">notifications</span>
-              <h2>Avisos</h2>
-              @if (unreadNotificationsCount > 0) {
-                <div class="badge-unread">
-                  <span class="dot-pulse"></span>
-                  {{ unreadNotificationsCount }}
+      <!-- STEP 6: RESTAURANT SELECTION -->
+      @if (currentStep === 6) {
+      <div class="step-view restaurant-selection-view">
+        <div class="restaurant-header">
+          <button class="back-btn" (click)="goToStep(0)">
+            <span class="material-symbols-outlined">arrow_back_ios_new</span>
+          </button>
+          <h2>Elige un Restaurante</h2>
+        </div>
+
+        <div class="restaurants-list">
+          @for (restaurant of getRestaurants(); track restaurant) {
+          <div
+            class="restaurant-card"
+            (click)="selectRestaurant(restaurant)"
+            (keydown.enter)="selectRestaurant(restaurant)"
+            tabindex="0"
+            role="button"
+          >
+            <div
+              class="restaurant-image"
+              [style.background-image]="'url(' + restaurant.image + ')'"
+            ></div>
+            <div class="restaurant-info">
+              <div class="restaurant-header-info">
+                <div>
+                  <h3>{{ restaurant.name }}</h3>
+                  <p class="restaurant-cuisine">{{ restaurant.cuisine }}</p>
                 </div>
-              }
+                <div class="rating-badge">
+                  <span class="material-symbols-outlined filled">star</span>
+                  <span>{{ restaurant.rating }}</span>
+                </div>
+              </div>
             </div>
-            <button class="btn-mark-read" (click)="markAllNotificationsAsRead()">Leídos</button>
+            <div class="restaurant-footer">
+              <span class="restaurant-meta"
+                >{{ restaurant.reviews }} Reseñas • A
+                {{ restaurant.distance }}</span
+              >
+              <span class="material-symbols-outlined arrow">chevron_right</span>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- STEP 7: MENU TYPE SELECTION -->
+      @if (currentStep === 7) {
+      <div class="step-view menu-selection-view">
+        <div class="menu-header">
+          <button class="back-btn" (click)="goToStep(6)">
+            <span class="material-symbols-outlined">arrow_back_ios_new</span>
+          </button>
+          <h2>Elige Tipo de Menú</h2>
+          @if (selectedRestaurant) {
+          <p class="restaurant-name">{{ selectedRestaurant.name }}</p>
+          }
+        </div>
+
+        <div class="menu-types-list">
+          @for (menuType of getMenuTypes(); track menuType) {
+          <div
+            class="menu-type-card"
+            (click)="selectMenuType(menuType.id)"
+            (keydown.enter)="selectMenuType(menuType.id)"
+            tabindex="0"
+            role="button"
+          >
+            <div class="menu-icon">
+              <span class="material-symbols-outlined">{{ menuType.icon }}</span>
+            </div>
+            <div class="menu-info">
+              <h3>{{ menuType.name }}</h3>
+              <p>{{ menuType.description }}</p>
+            </div>
+            <span class="material-symbols-outlined arrow">chevron_right</span>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- STEP 8: DELIVERY ADDRESS SELECTION -->
+      @if (currentStep === 8) {
+      <div class="step-view delivery-address-view">
+        <div class="delivery-header">
+          <button class="back-btn" (click)="goToStep(1)">
+            <span class="material-symbols-outlined">arrow_back_ios_new</span>
+          </button>
+          <h2>Dirección de Entrega</h2>
+          <p class="delivery-subtitle">
+            Selecciona la dirección donde quieres recibir tu pedido
+          </p>
+        </div>
+
+        <div class="delivery-content">
+          <app-google-maps-autocomplete
+            [placeholder]="'Buscar dirección de entrega...'"
+            [label]="'Dirección de Entrega'"
+            (placeSelected)="onAddressSelected($event)"
+          >
+          </app-google-maps-autocomplete>
+
+          @if (deliveryAddress) {
+          <div class="delivery-info">
+            <div class="info-card">
+              <span class="material-symbols-outlined">location_on</span>
+              <div>
+                <p class="info-label">Dirección confirmada</p>
+                <p class="info-value">
+                  {{ deliveryAddress.formatted_address }}
+                </p>
+              </div>
+            </div>
+          </div>
+          } @if (deliveryAddress) {
+          <div class="delivery-actions">
+            <button class="continue-btn" (click)="goToStep(2)">
+              Continuar con la Reserva
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- STEP 5: SUCCESS MESSAGE -->
+      @if (currentStep === 5 && showSuccessMessage) {
+      <div class="step-view success-view">
+        <div class="success-container">
+          <div class="success-icon">
+            <span class="material-symbols-outlined">check_circle</span>
+          </div>
+          <h2 class="success-title">¡Cita Confirmada!</h2>
+          <p class="success-message">
+            Tu cita ha sido confirmada exitosamente. Recibirás un recordatorio
+            antes de tu cita.
+          </p>
+
+          <div class="success-details">
+            <div class="detail-row">
+              <span class="material-symbols-outlined">person</span>
+              <span>{{ selectedProfessional || "Profesional Asignado" }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="material-symbols-outlined">calendar_today</span>
+              <span>{{
+                calendarData.currentDate | date : "EEEE, d MMMM" | titlecase
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="material-symbols-outlined">schedule</span>
+              <span>{{ calendarData.selectedSlot || "10:00" }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="material-symbols-outlined">spa</span>
+              <span>{{ selectedService?.name || "Servicio" }}</span>
+            </div>
           </div>
 
-          <div class="avisos-content">
-            @if (notifications.length === 0) {
-              <div class="empty-avisos">
-                <div class="empty-icon-wrapper">
-                  <span class="material-symbols-outlined">inbox</span>
-                </div>
-                <p>No tienes más avisos para mostrar.</p>
-              </div>
-            }
+          <button class="success-btn" (click)="onSuccessClose()">Cerrar</button>
+        </div>
+      </div>
+      }
+    </main>
 
-            <!-- Group by date -->
-            @for (group of getNotificationGroups(); track group) {
-              <div class="notification-group">
-                <h3 class="group-header">
-                  <span>{{ group.label }}</span>
-                  <div class="divider-line"></div>
-                </h3>
-                @for (notif of group.notifications; track notif) {
-                  <div
-                    class="notification-card"
-                    [class.read]="notif.read"
-                    (click)="markNotificationAsRead(notif.id)"
-                    (keydown.enter)="markNotificationAsRead(notif.id)"
-                    tabindex="0"
-                    role="button">
-                    @if (!notif.read) {
-                      <div class="notification-dot"></div>
-                    }
-                    <div class="notification-icon" [ngClass]="'icon-' + notif.color">
-                      <span class="material-symbols-outlined">{{ notif.icon }}</span>
-                    </div>
-                    <div class="notification-content">
-                      <h4>{{ notif.title }}</h4>
-                      <p>{{ notif.message }}</p>
-                      <span class="notification-time">
-                        <span class="material-symbols-outlined">schedule</span>
-                        {{ getRelativeTime(notif.timestamp) }}
-                      </span>
-                    </div>
-                  </div>
+    <!-- BOTTOM INPUT AREA (Only on Chat Step 1) -->
+    @if (currentStep === 1) {
+    <div class="mobile-footer">
+      <!-- Chips -->
+      @if (exampleMessages.length > 0 && detectedDayOptions.length === 0) {
+      <div class="chips-scroll">
+        @for (ex of exampleMessages; track ex) {
+        <button class="chip" (click)="useExample(ex)">
+          {{ ex }}
+        </button>
+        }
+      </div>
+      }
+
+      <!-- FOOTER: Input Area (Hidden for booking agent - only button responses) -->
+      @if (currentStep === 1 && agent.id !== 'booking') {
+      <footer class="mobile-footer">
+        <div class="input-container">
+          <button class="icon-btn">
+            <span class="material-symbols-outlined">add_circle</span>
+          </button>
+          <input
+            type="text"
+            [(ngModel)]="currentMessage"
+            (keyup.enter)="sendMessage()"
+            placeholder="Escribe un mensaje..."
+            class="message-input"
+          />
+          <button class="icon-btn">
+            <span class="material-symbols-outlined">sentiment_satisfied</span>
+          </button>
+          <button
+            class="send-btn"
+            (click)="sendMessage()"
+            [disabled]="!currentMessage.trim() || isLoading"
+          >
+            <span class="material-symbols-outlined">send</span>
+          </button>
+        </div>
+      </footer>
+      }
+    </div>
+    }
+
+    <!-- STEP 4: BOOKING CONFIRMATION -->
+    @if (isStep(4) && selectedBooking) {
+    <div class="step-view booking-confirmation-view">
+      <div class="confirmation-header">
+        <button class="icon-btn" (click)="navigateToTab('inicio')">
+          <span class="material-symbols-outlined">arrow_back_ios_new</span>
+        </button>
+        <h2>Detalles de la Cita</h2>
+      </div>
+
+      <div class="confirmation-content">
+        <!-- Status Card -->
+        <div class="status-card">
+          <div class="status-icon">
+            <span class="material-symbols-outlined">check</span>
+          </div>
+          <h3>Reservación Confirmada</h3>
+          <p>Tu cita ha sido programada exitosamente.</p>
+          <button class="btn-add-calendar" (click)="addToCalendar()">
+            <span class="material-symbols-outlined">calendar_add_on</span>
+            Añadir a Calendario
+          </button>
+        </div>
+
+        <!-- Details List -->
+        <div class="details-section">
+          <h4>Información</h4>
+          <div class="details-card">
+            <div class="detail-item">
+              <div class="detail-icon">
+                <span class="material-symbols-outlined">calendar_today</span>
+              </div>
+              <div>
+                <p class="detail-label">Fecha</p>
+                <p class="detail-value">
+                  {{ formatDate(selectedBooking.date) }}
+                </p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-icon">
+                <span class="material-symbols-outlined">schedule</span>
+              </div>
+              <div>
+                <p class="detail-label">Hora</p>
+                <p class="detail-value">
+                  {{ selectedBooking.time }} -
+                  {{ getEndTime(selectedBooking.time) }} (1h)
+                </p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-icon">
+                <span class="material-symbols-outlined">content_cut</span>
+              </div>
+              <div>
+                <p class="detail-label">Servicio</p>
+                <p class="detail-value">{{ selectedBooking.service }}</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-icon">
+                <span class="material-symbols-outlined">person</span>
+              </div>
+              <div>
+                <p class="detail-label">Profesional</p>
+                <p class="detail-value">{{ selectedBooking.professional }}</p>
+              </div>
+            </div>
+            @if (selectedBooking.amount) {
+            <div class="detail-item payment-item">
+              <div class="detail-icon payment-icon">
+                <span class="material-symbols-outlined">payments</span>
+              </div>
+              <div class="flex-1">
+                <div class="flex justify-between items-center mb-1">
+                  <p class="detail-label">Costo Total</p>
+                  <span
+                    class="payment-badge"
+                    [class.paid]="selectedBooking.paymentStatus === 'paid'"
+                  >
+                    {{
+                      selectedBooking.paymentStatus === "paid"
+                        ? "Pagado"
+                        : "Pendiente"
+                    }}
+                  </span>
+                </div>
+                <p class="detail-value price">
+                  ${{ selectedBooking.amount.toFixed(2) }} MXN
+                </p>
+                @if (selectedBooking.paymentStatus === 'pending') {
+                <button
+                  class="btn-pay-test"
+                  (click)="
+                    processTestPayment(
+                      selectedBooking.id,
+                      selectedBooking.amount
+                    )
+                  "
+                >
+                  Pagar con Dinero de Prueba
+                </button>
                 }
               </div>
+            </div>
             }
           </div>
         </div>
-      }
+      </div>
 
+      <!-- Bottom Actions -->
+      <div class="bottom-actions">
+        <button
+          class="btn-secondary"
+          (click)="reagendarBooking(selectedBooking.id)"
+        >
+          Reagendar
+        </button>
+        <button
+          class="btn-danger"
+          (click)="cancelBookingById(selectedBooking.id)"
+        >
+          Cancelar Cita
+        </button>
+      </div>
+    </div>
+    }
 
-      <!-- Bottom Navigation (Fixed) -->
-      @if (currentStep >= 0 && currentStep < 10) {
-        <nav class="bottom-nav-fixed">
-          <div class="flex justify-between items-center max-w-xs mx-auto w-full">
-            <button class="nav-item" [class.active]="activeTab === 'inicio'" (click)="navigateToTab('inicio')">
-              <span class="material-symbols-outlined" [class.filled]="activeTab === 'inicio'">home</span>
-              <span class="nav-text">Inicio</span>
-            </button>
-            <button class="nav-item" [class.active]="activeTab === 'reservas'" (click)="navigateToTab('reservas')">
-              <span class="material-symbols-outlined" [class.filled]="activeTab === 'reservas'">calendar_today</span>
-              <span class="nav-text">Reservas</span>
-            </button>
-            <button class="nav-item" [class.active]="activeTab === 'avisos'" (click)="navigateToTab('avisos')">
-              <span class="material-symbols-outlined" [class.filled]="activeTab === 'avisos'">notifications</span>
-              <span class="nav-text">Avisos</span>
-              @if (unreadNotificationsCount > 0) {
-                <span class="nav-badge">{{ unreadNotificationsCount }}</span>
+    <!-- STEP 10: RESERVAS VIEW -->
+    @if (isStep(10)) {
+    <div class="step-view reservas-view">
+      <div class="reservas-header">
+        <button class="icon-btn" (click)="navigateToTab('inicio')">
+          <span class="material-symbols-outlined">arrow_back_ios_new</span>
+        </button>
+        <h2>Mis Reservas</h2>
+      </div>
+
+      <div class="reservas-content">
+        @if (bookings.length === 0) {
+        <div class="empty-reservas">
+          <span class="material-symbols-outlined">calendar_today</span>
+          <p>No tienes reservas aún</p>
+        </div>
+        } @for (booking of bookings; track booking) {
+        <div class="booking-card">
+          <div class="booking-info">
+            <div class="booking-date-time">
+              <span class="material-symbols-outlined">event</span>
+              <div>
+                <p class="booking-date">{{ formatDate(booking.date) }}</p>
+                <p class="booking-time">{{ booking.time }}</p>
+              </div>
+            </div>
+            <div class="booking-details">
+              <p class="booking-service">{{ booking.service }}</p>
+              @if (booking.professional) {
+              <p class="booking-professional">{{ booking.professional }}</p>
               }
+            </div>
+            <div class="booking-status">
+              <span
+                class="status-badge"
+                [class.confirmed]="booking.status === 'confirmed'"
+                [class.cancelled]="booking.status === 'cancelled'"
+              >
+                {{
+                  booking.status === "confirmed"
+                    ? "Confirmada"
+                    : booking.status === "cancelled"
+                    ? "Cancelada"
+                    : "Pendiente"
+                }}
+              </span>
+            </div>
+          </div>
+          <div class="booking-actions">
+            <button class="btn-view" (click)="viewBookingDetails(booking)">
+              Ver Detalles
             </button>
-            <button class="nav-item" [class.active]="activeTab === 'perfil'" (click)="navigateToTab('perfil')">
-              <span class="material-symbols-outlined" [class.filled]="activeTab === 'perfil'">person</span>
-              <span class="nav-text">Perfil</span>
+            @if (booking.status === 'confirmed') {
+            <button class="btn-cancel" (click)="cancelBookingById(booking.id)">
+              Cancelar
+            </button>
+            }
+            <button class="btn-delete" (click)="deleteBooking(booking.id)">
+              Eliminar
             </button>
           </div>
-        </nav>
-      }
-
+        </div>
+        }
+      </div>
     </div>
+    }
+
+    <!-- STEP 11: AVISOS VIEW -->
+    @if (isStep(11)) {
+    <div class="step-view avisos-view">
+      <div class="avisos-header">
+        <button class="icon-btn" (click)="navigateToTab('inicio')">
+          <span class="material-symbols-outlined">arrow_back_ios_new</span>
+        </button>
+        <div class="header-title-group">
+          <span class="material-symbols-outlined filled">notifications</span>
+          <h2>Avisos</h2>
+          @if (unreadNotificationsCount > 0) {
+          <div class="badge-unread">
+            <span class="dot-pulse"></span>
+            {{ unreadNotificationsCount }}
+          </div>
+          }
+        </div>
+        <button class="btn-mark-read" (click)="markAllNotificationsAsRead()">
+          Leídos
+        </button>
+      </div>
+
+      <div class="avisos-content">
+        @if (notifications.length === 0) {
+        <div class="empty-avisos">
+          <div class="empty-icon-wrapper">
+            <span class="material-symbols-outlined">inbox</span>
+          </div>
+          <p>No tienes más avisos para mostrar.</p>
+        </div>
+        }
+
+        <!-- Group by date -->
+        @for (group of getNotificationGroups(); track group) {
+        <div class="notification-group">
+          <h3 class="group-header">
+            <span>{{ group.label }}</span>
+            <div class="divider-line"></div>
+          </h3>
+          @for (notif of group.notifications; track notif) {
+          <div
+            class="notification-card"
+            [class.read]="notif.read"
+            (click)="markNotificationAsRead(notif.id)"
+            (keydown.enter)="markNotificationAsRead(notif.id)"
+            tabindex="0"
+            role="button"
+          >
+            @if (!notif.read) {
+            <div class="notification-dot"></div>
+            }
+            <div class="notification-icon" [ngClass]="'icon-' + notif.color">
+              <span class="material-symbols-outlined">{{ notif.icon }}</span>
+            </div>
+            <div class="notification-content">
+              <h4>{{ notif.title }}</h4>
+              <p>{{ notif.message }}</p>
+              <span class="notification-time">
+                <span class="material-symbols-outlined">schedule</span>
+                {{ getRelativeTime(notif.timestamp) }}
+              </span>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Bottom Navigation (Fixed) -->
+    @if (currentStep >= 0 && currentStep < 10) {
+    <nav class="bottom-nav-fixed">
+      <div class="flex justify-between items-center max-w-xs mx-auto w-full">
+        <button
+          class="nav-item"
+          [class.active]="activeTab === 'inicio'"
+          (click)="navigateToTab('inicio')"
+        >
+          <span
+            class="material-symbols-outlined"
+            [class.filled]="activeTab === 'inicio'"
+            >home</span
+          >
+          <span class="nav-text">Inicio</span>
+        </button>
+        <button
+          class="nav-item"
+          [class.active]="activeTab === 'reservas'"
+          (click)="navigateToTab('reservas')"
+        >
+          <span
+            class="material-symbols-outlined"
+            [class.filled]="activeTab === 'reservas'"
+            >calendar_today</span
+          >
+          <span class="nav-text">Reservas</span>
+        </button>
+        <button
+          class="nav-item"
+          [class.active]="activeTab === 'avisos'"
+          (click)="navigateToTab('avisos')"
+        >
+          <span
+            class="material-symbols-outlined"
+            [class.filled]="activeTab === 'avisos'"
+            >notifications</span
+          >
+          <span class="nav-text">Avisos</span>
+          @if (unreadNotificationsCount > 0) {
+          <span class="nav-badge">{{ unreadNotificationsCount }}</span>
+          }
+        </button>
+        <button
+          class="nav-item"
+          [class.active]="activeTab === 'perfil'"
+          (click)="navigateToTab('perfil')"
+        >
+          <span
+            class="material-symbols-outlined"
+            [class.filled]="activeTab === 'perfil'"
+            >person</span
+          >
+          <span class="nav-text">Perfil</span>
+        </button>
+      </div>
+    </nav>
+    }
+  </div>
   }
 </div>

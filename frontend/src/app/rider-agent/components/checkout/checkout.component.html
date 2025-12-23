@@ -1,170 +1,223 @@
 <div
-  class="min-h-screen bg-slate-50 pb-20 max-w-md mx-auto relative overflow-hidden"
+  class="relative flex flex-col w-full min-h-screen bg-slate-50 dark:bg-[#121022] font-sans text-slate-900 dark:text-slate-100 selection:bg-indigo-500 selection:text-white pb-32"
 >
   <!-- Header -->
-  <div
-    class="px-6 pt-12 pb-4 bg-white shadow-sm flex items-center gap-4 sticky top-0 z-20"
+  <header
+    class="sticky top-0 z-40 bg-white/90 dark:bg-[#121022]/90 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-gray-100 dark:border-slate-800"
   >
     <button
-      routerLink="/rider"
-      class="h-8 w-8 flex items-center justify-center bg-slate-100 rounded-full hover:bg-slate-200"
+      (click)="goBack()"
+      class="flex items-center justify-center w-10 h-10 -ml-2 rounded-full hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
     >
-      <span class="material-symbols-outlined text-slate-700">arrow_back</span>
+      <span class="material-symbols-outlined">arrow_back_ios_new</span>
     </button>
-    <h1 class="text-lg font-bold text-rider-text-main">Checkout</h1>
-  </div>
+    <h2 class="text-base font-semibold leading-tight tracking-tight">
+      Checkout
+    </h2>
+    <div class="w-10"></div>
+  </header>
 
-  @if (!isSuccess) {
-  <div
-    class="p-6 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500"
-  >
-    <!-- Delivery Map Mock -->
-    <div class="bg-white rounded-2xl p-4 shadow-card border border-slate-100">
-      <div class="flex items-center gap-3 mb-3">
-        <div
-          class="h-8 w-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center"
+  <main class="flex-1 flex flex-col gap-8 p-6 max-w-lg mx-auto w-full">
+    <!-- Total & Breakdown -->
+    <section class="relative">
+      <div class="flex flex-col gap-6 pt-2">
+        <div class="flex items-end justify-between">
+          <div class="flex flex-col gap-2">
+            <p
+              class="text-slate-500 dark:text-slate-400 text-sm font-medium tracking-wide uppercase"
+            >
+              Total Amount
+            </p>
+            <p class="text-4xl font-extrabold tracking-tight mt-1">
+              ${{ totalPrice().toFixed(2) }}
+            </p>
+          </div>
+          <div
+            class="w-12 h-12 bg-center bg-no-repeat bg-cover rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700"
+            style="
+              background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA5n4qERK6HxyAw_af8WRUgwiFWWwXesgOU2GWGglcECpY6oBCJ7inG_IsuzBMQ5g_CNSPyCcllEfHlVjap9KDBDZK70xpPSEKF8TjpEIW4EPM3fuIqYTjitdJMYHXmknSczldlG5zewQqWtReBQFQMDQxguVljXzu-OA_tAYy4s1Yc55tZzvTDqnT7hJBbQ8GDUSzVCEXpu-G071rBLK1CmqNlso374xgYcf_0ldlJHwqR9p5Nma7Bhzf4hLaFCg7FxXb38vIs_AI');
+            "
+          ></div>
+        </div>
+
+        <details
+          class="group bg-white dark:bg-slate-800 rounded-xl px-4 py-3 border border-gray-100 dark:border-slate-700"
         >
-          <span class="material-symbols-outlined text-sm">location_on</span>
-        </div>
-        <div>
-          <div class="text-xs text-text-muted font-bold uppercase">
-            Deliver to
+          <summary
+            class="flex cursor-pointer items-center justify-between py-1 select-none"
+          >
+            <p class="text-sm font-medium flex items-center gap-2">
+              Order breakdown
+            </p>
+            <span
+              class="material-symbols-outlined text-slate-400 text-xl group-open:rotate-180 transition-transform duration-300"
+              >keyboard_arrow_down</span
+            >
+          </summary>
+          <div
+            class="pt-4 pb-2 space-y-3 border-t border-gray-100 dark:border-slate-700 mt-2"
+          >
+            @for (item of cart(); track item.id) {
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-slate-500 dark:text-slate-400"
+                >{{ item?.quantity || 1 }}x {{ item?.name }}</span
+              >
+              <span class="font-medium"
+                >${{
+                  ((item?.price || 0) * (item?.quantity || 1)).toFixed(2)
+                }}</span
+              >
+            </div>
+            }
+            <div
+              class="flex justify-between items-center text-sm border-t border-dashed border-gray-200 dark:border-slate-700 pt-2 mt-2"
+            >
+              <span class="text-slate-500 dark:text-slate-400"
+                >Delivery Fee</span
+              >
+              <span class="font-medium">$5.00</span>
+            </div>
           </div>
-          <div class="font-bold text-text-main text-sm">
-            Home (123 Market St)
-          </div>
-        </div>
-        <button class="ml-auto text-rider-primary text-xs font-bold">
-          Edit
-        </button>
+        </details>
       </div>
-      <div class="h-24 bg-slate-200 rounded-xl overflow-hidden relative">
-        <img
-          src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?q=80&w=1000&auto=format&fit=crop"
-          class="h-full w-full object-cover opacity-50"
-          alt="Delivery map preview"
+    </section>
+
+    <!-- AI Insight -->
+    <div
+      class="flex items-start gap-3 rounded-2xl bg-indigo-50/50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 p-4 shadow-sm"
+    >
+      <div
+        class="flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400 shadow-sm shrink-0 border border-indigo-50 dark:border-indigo-800"
+      >
+        <span class="material-symbols-outlined text-lg">smart_toy</span>
+      </div>
+      <div class="flex-1 pt-0.5">
+        <p class="text-sm text-slate-600 dark:text-slate-300 leading-snug">
+          <span class="font-bold text-indigo-600 dark:text-indigo-400"
+            >AI Insight:</span
+          >
+          This matches your Friday habits. Use 500 points to cover the delivery
+          fee?
+        </p>
+      </div>
+      <button
+        class="text-xs font-bold text-orange-500 hover:text-orange-600 shrink-0 mt-1 uppercase tracking-wide px-2 py-1 rounded bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 transition-colors"
+      >
+        Apply
+      </button>
+    </div>
+
+    <!-- Address Input (New) -->
+    <section>
+      <h3 class="text-base font-bold mb-4">Delivery Address</h3>
+      <div class="relative group">
+        <div
+          class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+        >
+          <span class="material-symbols-outlined text-slate-400"
+            >location_on</span
+          >
+        </div>
+        <input
+          class="block w-full rounded-xl border-gray-200 dark:border-slate-700 py-4 pl-12 pr-4 bg-gray-50/50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-800 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm font-medium shadow-sm transition-all outline-none"
+          placeholder="Enter your street address..."
+          type="text"
         />
       </div>
-    </div>
-
-    <!-- Order Summary -->
-    <div class="bg-white rounded-2xl p-4 shadow-card border border-slate-100">
-      <h2 class="text-sm font-bold text-rider-text-main mb-4">Your Order</h2>
-      <div class="space-y-3">
-        <div class="flex items-start justify-between">
-          <div class="flex gap-3">
-            <span
-              class="bg-slate-100 px-2 rounded text-xs font-bold h-fit mt-0.5"
-              >1x</span
-            >
-            <div>
-              <div class="text-sm font-medium text-text-main">
-                Classic Cheese Smash
-              </div>
-              <div class="text-xs text-text-muted">No pickles</div>
-            </div>
-          </div>
-          <div class="text-sm font-bold text-text-main">$12.99</div>
-        </div>
-        <div class="flex items-start justify-between">
-          <div class="flex gap-3">
-            <span
-              class="bg-slate-100 px-2 rounded text-xs font-bold h-fit mt-0.5"
-              >1x</span
-            >
-            <div>
-              <div class="text-sm font-medium text-text-main">
-                Truffle Fries
-              </div>
-            </div>
-          </div>
-          <div class="text-sm font-bold text-text-main">$6.50</div>
-        </div>
-      </div>
-      <div class="border-t border-slate-100 mt-4 pt-4 space-y-2">
-        <div class="flex justify-between text-sm text-text-muted">
-          <span>Subtotal</span>
-          <span>$19.49</span>
-        </div>
-        <div class="flex justify-between text-sm text-text-muted">
-          <span>Delivery Fee</span>
-          <span>$2.50</span>
-        </div>
-        <div
-          class="flex justify-between text-base font-bold text-text-main pt-2"
-        >
-          <span>Total</span>
-          <span>$21.99</span>
-        </div>
-      </div>
-    </div>
+    </section>
 
     <!-- Payment Method -->
-    <div class="bg-white rounded-2xl p-4 shadow-card border border-slate-100">
-      <div class="flex items-center gap-3">
-        <div
-          class="h-8 w-8 bg-slate-100 rounded-full flex items-center justify-center"
+    <section>
+      <h3 class="text-base font-bold mb-4">Payment Method</h3>
+      <div class="flex gap-4 overflow-x-auto no-scrollbar pb-2 -mx-6 px-6">
+        <button
+          class="relative group flex flex-col justify-between w-36 h-24 shrink-0 p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-glow border border-indigo-100 dark:border-indigo-900 transition-all active:scale-95 ring-2 ring-indigo-600 ring-offset-2 dark:ring-offset-slate-900"
         >
-          <span class="material-symbols-outlined text-sm">credit_card</span>
-        </div>
-        <div>
-          <div class="text-xs text-text-muted font-bold uppercase">Payment</div>
-          <div class="font-bold text-text-main text-sm">
-            Apple Pay (**** 1234)
+          <div class="flex justify-between items-start w-full">
+            <div
+              class="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600"
+            >
+              <span class="material-symbols-outlined text-xl">credit_card</span>
+            </div>
+            <div
+              class="w-4 h-4 rounded-full bg-indigo-600 flex items-center justify-center"
+            >
+              <span
+                class="material-symbols-outlined text-white text-[10px] font-bold"
+                >check</span
+              >
+            </div>
           </div>
-        </div>
-        <button class="ml-auto text-rider-primary text-xs font-bold">
-          Change
+          <div class="flex flex-col items-start">
+            <span class="text-sm font-bold text-left">Credit Card</span>
+            <span class="text-slate-400 text-[10px] font-medium text-left"
+              >Default</span
+            >
+          </div>
+        </button>
+        <button
+          class="relative group flex flex-col justify-between w-36 h-24 shrink-0 p-4 rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 shadow-sm transition-all hover:border-gray-300 active:scale-95 opacity-60"
+        >
+          <span class="text-sm font-semibold">Apple Pay</span>
         </button>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- Bottom Pay Button -->
-  <div
-    class="fixed bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100 z-50"
-  >
-    <button
-      (click)="processPayment()"
-      [disabled]="isProcessing"
-      class="w-full bg-black text-white font-bold py-4 rounded-2xl shadow-lg transform active:scale-95 transition-all text-sm uppercase tracking-wide flex items-center justify-center gap-2 relative overflow-hidden"
+    <!-- Card Details -->
+    <section
+      class="flex flex-col gap-6 bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700"
     >
-      @if (isProcessing) {
-      <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
-      <span class="material-symbols-outlined animate-spin"
-        >progress_activity</span
+      <div class="flex flex-col gap-2">
+        <span
+          class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1"
+          >Card Number</span
+        >
+        <div class="relative group">
+          <div
+            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+          >
+            <span class="material-symbols-outlined text-slate-400"
+              >credit_card</span
+            >
+          </div>
+          <input
+            class="block w-full rounded-xl border-gray-200 dark:border-slate-600 py-4 pl-12 pr-4 bg-gray-50/50 dark:bg-slate-700 focus:bg-white dark:focus:bg-slate-600 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm font-mono tracking-wide shadow-sm transition-all outline-none"
+            placeholder="0000 0000 0000 0000"
+            type="text"
+          />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Sticky Footer -->
+  <div
+    class="fixed bottom-0 left-0 w-full bg-white/80 dark:bg-[#121022]/80 backdrop-blur-xl border-t border-gray-200 dark:border-slate-800 p-5 z-50"
+  >
+    <div class="max-w-lg mx-auto flex flex-col gap-4">
+      <div class="flex justify-center">
+        <div
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700"
+        >
+          <span class="material-symbols-outlined text-green-600 text-[14px]"
+            >lock</span
+          >
+          <span
+            class="text-[10px] font-bold tracking-wide uppercase text-slate-500"
+            >SSL Encrypted & Secure</span
+          >
+        </div>
+      </div>
+      <button
+        (click)="placeOrder()"
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-indigo-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-3 relative overflow-hidden group"
       >
-      <span>Processing...</span>
-      } @else {
-      <span class="material-symbols-outlined">lock</span>
-      <span>Pay $21.99</span>
-      }
-    </button>
-  </div>
-  } @else {
-  <!-- Success State -->
-  <div
-    class="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center animate-in zoom-in duration-500"
-  >
-    <div
-      class="h-24 w-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6"
-    >
-      <span class="material-symbols-outlined text-6xl">check_circle</span>
+        <span class="relative z-10">Pay ${{ totalPrice().toFixed(2) }}</span>
+        <span
+          class="material-symbols-outlined relative z-10 text-xl group-hover:translate-x-1 transition-transform"
+          >arrow_forward</span
+        >
+      </button>
     </div>
-    <h2 class="text-2xl font-extrabold text-rider-text-main mb-2">
-      Order Confirmed!
-    </h2>
-    <p class="text-text-muted mb-8">
-      Your food is being prepared. <br />
-      Estimated delivery: 25 mins.
-    </p>
-
-    <button
-      routerLink="/rider/tracking"
-      class="bg-rider-primary text-white px-8 py-3 rounded-xl font-bold hover:bg-rider-primary-light transition-colors shadow-lg shadow-rider-primary/30"
-    >
-      Track Order
-    </button>
   </div>
-  }
 </div>

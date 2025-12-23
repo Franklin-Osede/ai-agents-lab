@@ -166,9 +166,9 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Special handling for rider agent - redirect ONLY on mobile
-    if (this.agent.id === "rider" && this.isMobile()) {
-      this.router.navigate(["/rider"]); // Assuming /rider is the route
+    // Special handling for rider agent - always redirect
+    if (this.agent.id === "rider") {
+      this.router.navigate(["/rider"]);
       this.modalClose.emit();
       return;
     }

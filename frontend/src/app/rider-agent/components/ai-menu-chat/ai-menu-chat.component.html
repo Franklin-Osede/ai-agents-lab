@@ -10,7 +10,10 @@
       <span class="material-symbols-outlined">arrow_back</span>
     </button>
     <div class="flex flex-col items-center">
-      <h2 class="text-lg font-bold text-slate-900">Chef Maria</h2>
+      <h2 class="text-lg font-bold text-slate-900">
+        @if (session.user()) { Hola, {{ session.user()?.name }} } @else { Maria
+        Concierge }
+      </h2>
       <div class="flex items-center gap-1.5">
         <span class="relative flex h-2 w-2">
           <span
@@ -20,18 +23,33 @@
             class="relative inline-flex rounded-full h-2 w-2 bg-green-500"
           ></span>
         </span>
-        <span class="text-xs font-medium text-slate-500">Online</span>
+        <span class="text-xs font-medium text-slate-500">Concierge Online</span>
       </div>
     </div>
-    <button
-      class="relative flex size-10 items-center justify-center rounded-full hover:bg-indigo-50 text-indigo-600"
-    >
-      <span class="material-symbols-outlined">shopping_cart</span>
-      <span
-        class="absolute top-1 right-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white ring-2 ring-white"
-        >2</span
+
+    <div class="flex items-center gap-2">
+      <!-- User Avatar or Cart -->
+      @if (session.user()) {
+      <img
+        [src]="session.user()?.avatarUrl"
+        class="w-8 h-8 rounded-full border border-slate-200 hidden sm:block"
+        alt="Profile"
+      />
+      }
+
+      <button
+        (click)="goToCheckout()"
+        class="relative flex size-10 items-center justify-center rounded-full hover:bg-indigo-50 text-indigo-600 transition-colors"
       >
-    </button>
+        <span class="material-symbols-outlined">shopping_cart</span>
+        @if (cartCount > 0) {
+        <span
+          class="absolute top-1 right-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white ring-2 ring-white"
+          >{{ cartCount }}</span
+        >
+        }
+      </button>
+    </div>
   </header>
 
   <!-- Chat Area -->
@@ -39,7 +57,7 @@
     <div class="flex justify-center">
       <span
         class="text-xs font-medium text-slate-400 py-1 px-3 bg-slate-100 rounded-full"
-        >Today</span
+        >Hoy</span
       >
     </div>
 
@@ -48,9 +66,7 @@
       <div class="relative shrink-0">
         <div
           class="bg-center bg-no-repeat bg-cover rounded-full w-10 h-10 shadow-sm border border-slate-100"
-          style="
-            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCwG95_Jyamt-03U1K7Es161_UU58Qrugpph4J0SSKkXt6vuj7h8WTJcqzkPMK0VTLv80KYlnVmoiHr_0m4Be36b9i85hxHL45pbwWsrD-NGd_09gCDRD5lihRVDFwxpKIuB37KT7zjelr9uHEiybwWf40CHtudofw5iKNR6oVS3v8IQG9dgXjE4N_xy8N5Kv0en3QD1UJOWBIuXgJv8yVyyyU9hrs2q8c5DedapnLMrSKeELGm2tzizdJEFKE6131-idVsQeiUdW4');
-          "
+          [style.background-image]="'url(' + agentAvatarUrl() + ')'"
         ></div>
         <!-- Status Dot -->
         <div
@@ -62,19 +78,25 @@
         </div>
       </div>
       <div class="flex flex-col gap-1 items-start max-w-[85%]">
-        <span class="text-xs font-medium text-slate-500 ml-1">Chef Maria</span>
+        <span class="text-xs font-medium text-slate-500 ml-1"
+          >Maria Concierge</span
+        >
         <div
           class="p-4 rounded-2xl rounded-bl-none bg-white shadow-sm border border-slate-100 text-slate-800 flex items-center gap-3 relative"
         >
           <!-- <p class="text-[15px] leading-relaxed">{{ msg.text }}</p> -->
           <!-- Hidden Text, Show Waveform to imply Voice -->
           <button
-            (click)="speak(msg.text)"
+            (click)="toggleAudio(msg.text)"
             class="h-8 w-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all"
           >
-            <span class="material-symbols-outlined text-[20px] ml-0.5"
-              >play_arrow</span
-            >
+            <span class="material-symbols-outlined text-[20px] ml-0.5">
+              {{
+                currentlySpeakingMessageText() === msg.text
+                  ? "pause"
+                  : "play_arrow"
+              }}
+            </span>
           </button>
 
           <div
@@ -129,9 +151,11 @@
             class="w-full h-full bg-cover bg-center"
             [style.background-image]="'url(' + card.image + ')'"
           ></div>
-          <div class="absolute top-3 left-3 bg-white/90 px-2 py-1 rounded-lg">
-            <span class="text-xs font-bold text-slate-900">{{
-              card.price
+          <div
+            class="absolute top-3 left-3 bg-white/95 px-3 py-1.5 rounded-xl shadow-sm border border-slate-100"
+          >
+            <span class="text-base font-extrabold text-indigo-600">{{
+              card.price | currency : "EUR" : "symbol" : "1.2-2"
             }}</span>
           </div>
           @if (card.bestValue) {
@@ -158,12 +182,34 @@
               }
             </div>
           </div>
+          @if (getQuantity(card) > 0) {
+          <div
+            class="flex items-center justify-between bg-slate-100 rounded-lg p-1 relative z-20 h-9"
+          >
+            <button
+              (click)="$event.stopPropagation(); removeFromCart(card)"
+              class="w-8 h-full flex items-center justify-center text-slate-600 hover:text-red-500"
+            >
+              <span class="material-symbols-outlined text-sm">remove</span>
+            </button>
+            <span class="font-bold text-sm text-slate-900">{{
+              getQuantity(card)
+            }}</span>
+            <button
+              (click)="$event.stopPropagation(); addToCart(card)"
+              class="w-8 h-full flex items-center justify-center text-slate-600 hover:text-green-600"
+            >
+              <span class="material-symbols-outlined text-sm">add</span>
+            </button>
+          </div>
+          } @else {
           <button
             (click)="$event.stopPropagation(); addToCart(card)"
             class="w-full h-9 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium text-sm transition-colors relative z-20"
           >
-            Add to Cart
+            Añadir
           </button>
+          }
         </div>
       </div>
       }
@@ -181,9 +227,7 @@
       </div>
       <div
         class="bg-center bg-no-repeat bg-cover rounded-full w-10 h-10 shrink-0 border-2 border-white shadow-sm"
-        style="
-          background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC3FKpetbVAEeyJI0G5MAFXbjOhDY-say8ZYf1zGnUQwMBXaYlB2fulBqWwytcVfpPGp1lTpqk9S5kH2pxwUv8C4EFpZcW3t43mL0cyHSZOvKijl38c1nudl47zkuWzberc822OLAQi7jrOhv5FnFW7OYwNV5Z4jSu0y6kbYCYjcYgztLH6ZWkN4WU-2K0zz2t3GV9AmSJfjF3AtiioAbpMuIA6Ei8ZCsxmePMFpK5c8S6j664DV0pNfOJSVjAv1yzXSzXs96Adp-0');
-        "
+        [style.background-image]="'url(' + agentAvatarUrl() + ')'"
       ></div>
     </div>
     } }
@@ -202,67 +246,30 @@
     </div>
     }
 
-    <!-- Cart Footer -->
-    @if(cart().length > 0) {
+    <!-- Floating "Ver Pedido" Pill (Cleaner) -->
+    @if(cartCount > 0) {
+    <!-- Wrapper to center positioned content relative to viewport/container -->
     <div
-      class="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-[60] w-full max-w-[360px] animate-[slideUp_0.3s_ease-out] px-4"
+      class="fixed bottom-4 left-1/2 -translate-x-1/2 w-full max-w-[428px] pointer-events-none z-[60] flex justify-center"
     >
-      <button
-        class="w-full bg-slate-900 text-white p-4 rounded-full shadow-2xl flex items-center justify-between border border-slate-800 hover:scale-[1.02] transition-transform"
-      >
-        <div class="flex items-center gap-3">
-          <div
-            class="bg-[#3730a3] h-10 w-10 rounded-full flex items-center justify-center"
-          >
-            <span class="font-bold text-white">{{ cart().length }}</span>
-          </div>
-          <span class="font-medium text-lg">Ver Pedido</span>
-        </div>
-        <span class="font-bold text-lg text-white"
-          >${{ cartTotal().toFixed(2) }}</span
+      <div class="pointer-events-auto animate-[slideUp_0.3s_ease-out]">
+        <button
+          (click)="goToCheckout()"
+          class="bg-slate-900 text-white pl-4 pr-5 py-3 rounded-full shadow-xl flex items-center gap-3 border border-slate-800 hover:scale-105 transition-transform active:scale-95"
         >
-      </button>
+          <div
+            class="bg-white/20 h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold"
+          >
+            {{ cartCount }}
+          </div>
+          <span class="font-bold text-sm"
+            >Ver Pedido ({{ cartTotal | currency : "EUR" }})</span
+          >
+        </button>
+      </div>
     </div>
     }
   </main>
 
-  <!-- Input Footer (Centered/Fixed) -->
-  <footer
-    class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[428px] bg-white border-t border-slate-100 p-4 z-30"
-  >
-    <div class="flex items-end gap-3">
-      <button
-        class="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 text-slate-500 hover:text-indigo-600 transition-colors"
-      >
-        <span class="material-symbols-outlined">add_circle</span>
-      </button>
-      <div
-        class="flex-1 bg-slate-100 rounded-3xl flex items-center px-4 py-2 min-h-[48px] focus-within:ring-2 focus-within:ring-indigo-600/20 transition-shadow"
-      >
-        <input
-          [(ngModel)]="inputText"
-          (keydown.enter)="sendMessage()"
-          class="flex-1 bg-transparent border-none p-0 text-slate-900 placeholder-slate-400 focus:ring-0 text-[15px]"
-          [placeholder]="isRecording() ? 'Escuchando...' : 'Pide tu comida...'"
-          type="text"
-        />
-        <button
-          (click)="toggleRecording()"
-          class="ml-2 text-slate-400 hover:text-indigo-600 transition-colors flex items-center"
-          [class.text-red-500]="isRecording()"
-          [class.animate-pulse]="isRecording()"
-        >
-          <span class="material-symbols-outlined">{{
-            isRecording() ? "mic_off" : "mic"
-          }}</span>
-        </button>
-      </div>
-      <button
-        (click)="sendMessage()"
-        class="shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 transition-colors active:scale-95"
-      >
-        <span class="material-symbols-outlined">arrow_upward</span>
-      </button>
-    </div>
-  </footer>
+  <!-- Footer Removed as requested -->
 </div>

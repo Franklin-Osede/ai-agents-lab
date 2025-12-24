@@ -1,6 +1,6 @@
 import { Component, inject, signal, OnInit, OnDestroy } from "@angular/core";
 import { RouterModule, Router } from "@angular/router";
-import { CommonModule } from "@angular/common";
+import { CommonModule, Location } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { VoiceService } from "../../../shared/services/voice.service";
 import { CartService, CartItem } from "../../../shared/services/cart.service";
@@ -31,6 +31,7 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   public session = inject(UserSessionService);
   private stateMachine = inject(StateMachineService); // Inject State Machine
+  private location = inject(Location);
 
   inputText = signal("");
   isRecording = signal(false);
@@ -94,29 +95,46 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // 5. Normal Flow (Welcome)
-    const initialState = this.stateMachine.getCurrentStateNode();
+    // 5. Normal Flow (Welcome OR Restore)
+    const storedMessages = this.stateMachine.memory.messages;
+    if (storedMessages && storedMessages.length > 0) {
+      // Restore state
+      this.messages.set(storedMessages);
 
-    if (initialState) {
-      // Compose Welcome Message
-      const welcomeText = `Hola ${userName}. ${initialState.response}`;
+      // Also restore suggestions based on current state node
+      const currentNode = this.stateMachine.getCurrentStateNode();
+      if (currentNode) {
+        this.suggestions.set(currentNode.suggestions);
+        this.showOptions.set(true);
+      }
+    } else {
+      // Fresh Start
+      const initialState = this.stateMachine.getCurrentStateNode();
 
-      this.messages.set([
-        {
-          role: "ai",
+      if (initialState) {
+        // Compose Welcome Message
+        const welcomeText = `Hola ${userName}. ${initialState.response}`;
+
+        const initialMsg = {
+          role: "ai" as const,
           text: welcomeText,
           time: new Date().toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
           }),
-        },
-      ]);
+        };
 
-      this.suggestions.set(initialState.suggestions);
-      this.showOptions.set(true);
+        this.messages.set([initialMsg]);
 
-      // Auto-play audio welcome
-      setTimeout(() => this.speak(welcomeText), 500);
+        // Save to memory
+        this.stateMachine.memory.messages = [initialMsg];
+
+        this.suggestions.set(initialState.suggestions);
+        this.showOptions.set(true);
+
+        // Auto-play audio welcome
+        setTimeout(() => this.speak(welcomeText), 500);
+      }
     }
   }
 
@@ -151,17 +169,22 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     if (!text) return;
 
     // Add User Message
-    this.messages.update((msgs) => [
-      ...msgs,
-      {
-        role: "user",
-        text: this.formatDisplayText(text),
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      },
-    ]);
+    this.messages.update((msgs) => {
+      const newMsgs = [
+        ...msgs,
+        {
+          role: "user" as const,
+          text: this.formatDisplayText(text),
+          time: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        },
+      ];
+      // Persist
+      this.stateMachine.memory.messages = newMsgs;
+      return newMsgs;
+    });
     this.inputText.set("");
 
     // --- STATE MACHINE PROCESSING ---
@@ -174,12 +197,99 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     // We pass 'select' if it matches a button, or 'intent' otherwise.
     // Actually, let's pass it to a unified handler if possible or guess.
 
+    // Navigation Shortcuts
+    if (
+      text.toLowerCase().includes("domicilio") &&
+      text.toLowerCase().includes("a")
+    ) {
+      this.router.navigate(["/rider/checkout"]);
+      return;
+    }
+    if (
+      text.toLowerCase().includes("reservar") &&
+      text.toLowerCase().includes("mesa")
+    ) {
+      this.router.navigate(["/rider/reservations"]);
+      return;
+    }
+
+    // GLOBAL INTERCEPT: "Postres" (Desserts)
+    // Because we dynamically add "Postres" to suggestions in addToCart,
+    // the current state node might not explicitly have it defined in 'on_select'.
+    if (
+      text.toLowerCase().includes("postre") ||
+      text.toLowerCase().includes("dessert")
+    ) {
+      const currentContext = this.stateMachine.currentState().context;
+      // Force transition to dessert for the current cuisine
+      const overrideResult = this.stateMachine.handleTransition(
+        "force_dessert",
+        "intent"
+      );
+
+      // Since handleTransition might not know "force_dessert", we basically construct the transition manually
+      // if the normal flow fails.
+      // Actually, let's just manually set the state and simulate a result.
+
+      // Verify we have a dessert state for this context
+      const targetId = `${currentContext}.dessert`;
+      // We can use the service to get the node to be sure
+      // But assuming the standard naming convention context.dessert exists (it does for all cuisines)
+
+      this.stateMachine.currentState.set({
+        context: currentContext,
+        category: "dessert",
+      });
+      const newNode = this.stateMachine.getCurrentStateNode();
+
+      if (newNode) {
+        // Create a fake result object
+        const manualResult = {
+          id: newNode.id,
+          response: newNode.response,
+          suggestions: newNode.suggestions,
+          category: "dessert",
+          cards: [],
+        };
+      }
+    }
+
+    // --- INTERCEPT: Checkout / Finalize ---
+    // If user says "Ya lo tengo todo", we skip the 'confirmation' step and go straight to "Delivery or Table?"
+    if (
+      text.toLowerCase().includes("ya lo tengo todo") ||
+      text.toLowerCase().includes("tengo todo") ||
+      text.toLowerCase().includes("finalizar") ||
+      text.toLowerCase().includes("pagar")
+    ) {
+      // 1. Add User Message (already added above)
+      // 2. Add AI Response directly
+      setTimeout(() => {
+        const responseText =
+          "¿Cómo prefieres disfrutar tu pedido? ¿A domicilio 🛵 o Reservar Mesa 📅?";
+
+        this.messages.update((msgs) => [
+          ...msgs,
+          {
+            role: "ai" as const,
+            text: responseText,
+            time: new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          },
+        ]);
+
+        this.speak(responseText);
+        this.suggestions.set(["🛵 A domicilio", "📅 Reservar Mesa"]);
+        this.showOptions.set(true);
+      }, 500);
+
+      return; // Stop here, don't use State Machine for this step
+    }
+
     // In strict mode: buttons send exact text. Voice sends loose text.
     // We will assume 'select' for now if it matches known suggestions, else 'intent' logic (which maps key words).
-
-    // *Correction*: The user's JSON has on_select keys like "🍣 Japonesa".
-    // If user types "Japonesa", we should match "🍣 Japonesa" if possible or mapped.
-    // For simplicity, handleTransition will take the raw text.
 
     // If text matches an intent key directly (like 'choose_cuisine_japanese'), use it.
     const currentNode = this.stateMachine.getCurrentStateNode();
@@ -203,17 +313,59 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       inputKey = this.mapTextToIntent(text);
     }
 
-    const result = this.stateMachine.handleTransition(inputKey, type);
+    // Check if we intercepted it above?
+    // Actually, creating a valid `result` object is better.
+    let result = this.stateMachine.handleTransition(inputKey, type);
+
+    // Fix for Postres if normal transition failed OR if we want to force it
+    if (
+      !result &&
+      (text.toLowerCase().includes("postre") ||
+        text.toLowerCase().includes("dessert"))
+    ) {
+      const currentContext = this.stateMachine.currentState().context;
+      // Manual Transition
+      this.stateMachine.currentState.set({
+        context: currentContext,
+        category: "dessert",
+      });
+      const newNode = this.stateMachine.getCurrentStateNode();
+      if (newNode) {
+        result = {
+          id: newNode.id,
+          response: newNode.response,
+          suggestions: newNode.suggestions,
+          category: "dessert",
+          cards: [],
+        };
+      }
+    }
+
     this.showOptions.set(false); // Hide old options
 
     if (result) {
+      const res = result; // Local capture for closure safety
       // Enforce specific "Meals" logic for visual cards if applicable
       let localCards: any[] = [];
       const currentState = this.stateMachine.currentState();
 
       // If the category suggests a menu view, try to load cards
       // FIX: Don't show cards on 'default' (initial cuisine selection), wait for specific menu choice.
-      if (currentState.category.includes("menu")) {
+      // If the category suggests a menu view, try to load cards
+      const category = currentState.category;
+      if (
+        category.includes("menu") ||
+        [
+          "starters",
+          "mains",
+          "drinks",
+          "dessert",
+          "spicy_pick",
+          "kids",
+          "menu_ramen",
+          "menu_hot",
+        ].includes(category)
+      ) {
         localCards = this.getCardsForCuisine(
           currentState.context,
           currentState.category
@@ -221,17 +373,17 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       }
 
       setTimeout(() => {
-        let responseText = result.response;
+        let responseText = res.response;
         // Prepend name if this is the first AI response (or if we just started)
         const aiMessages = this.messages().filter((m) => m.role === "ai");
         if (aiMessages.length === 0) {
           const userName = this.session.user()?.name;
           if (userName) {
-            if (result.id === "japanese.default") {
+            if (res.id === "japanese.default") {
               responseText = `Perfecto ${userName}, veo que quieres comer japonesa 🍣. Elige entre las opciones de abajo:`;
-            } else if (result.id === "italian.default") {
+            } else if (res.id === "italian.default") {
               responseText = `Perfecto ${userName}, veo que te apetece italiana 🍕. Elige entre las opciones de abajo:`;
-            } else if (result.id === "fast_food.default") {
+            } else if (res.id === "fast_food.default") {
               responseText = `Perfecto ${userName}, marchando Fast Food 🍔. Elige entre las opciones de abajo:`;
             } else {
               // Check if response already has "Hola" (case insensitive)
@@ -244,20 +396,52 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           }
         }
 
-        this.messages.update((msgs) => [
-          ...msgs,
-          {
-            role: "ai",
-            text: responseText,
-            time: new Date().toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
-            cards: localCards.length > 0 ? localCards : undefined,
-          },
-        ]);
+        this.messages.update((msgs) => {
+          const newMsgs = [
+            ...msgs,
+            {
+              role: "ai" as const,
+              text: responseText,
+              time: new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+              cards: localCards.length > 0 ? localCards : undefined,
+            },
+          ];
+          // Persist
+          this.stateMachine.memory.messages = newMsgs;
+          return newMsgs;
+        });
         this.speak(responseText);
-        this.suggestions.set(result.suggestions);
+        // SMART UI: Filter out suggestions that are already shown as cards
+        let finalSuggestions = res.suggestions;
+        if (localCards && localCards.length > 0) {
+          // Normalize string helper: remove emojis, special chars, extra spaces, lowercase
+          const normalize = (str: string) =>
+            str
+              .replace(/[^a-zA-Z0-9\sñáéíóúÁÉÍÓÚüÜ]/g, "")
+              .replace(/\s+/g, " ")
+              .trim()
+              .toLowerCase();
+
+          const cardNames = localCards.map((c) => normalize(c.name));
+
+          // Filter out suggestions that are present in the cards
+          // Matches strict and partial (e.g. "Sushi Set" vs "🍣 Sushi Set")
+          finalSuggestions = finalSuggestions.filter((s) => {
+            const sClean = normalize(s);
+            // Check reciprocal containment
+            const isCard = cardNames.some(
+              (cName) => sClean.includes(cName) || cName.includes(sClean)
+            );
+
+            // Keep only if NOT a card
+            return !isCard;
+          });
+        }
+
+        this.suggestions.set(finalSuggestions);
         this.showOptions.set(true);
 
         // Check for new items in StateMachine memory to add to CartService
@@ -271,16 +455,46 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
             name: lastItem.name,
             price: 10.0, // Mock price
             quantity: 1,
-            image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c", // Mock image
+            image: "assets/food_images/caesar_salad.webp", // Mock image
           });
         }
 
         // Check for Navigation Triggers
-        if (result.category === "reservation_entry") {
+        if (res.category === "reservation_entry") {
           // Detect Trigger
           setTimeout(() => {
             this.router.navigate(["/rider/reservations"]);
           }, 1000);
+        }
+
+        if (res.category === "delivery_action" || res.category === "checkout") {
+          // INTERCEPT: Don't go to checkout immediately. Ask for preference.
+          // However, if the user explicitly clicked "A domicilio" (which we might need to detecting), proceed.
+          // If the text was generic "pagar" or "finalizar", ask.
+
+          if (this.inputText().toLowerCase().includes("domicilio")) {
+            setTimeout(() => {
+              this.router.navigate(["/rider/checkout"]);
+            }, 1000);
+          } else {
+            // Fallback default response if we hit this state via means other than "Ya lo tengo todo" intent
+            const askText =
+              "¿Prefieres que te lo levemos a casa 🛵 o quieres reservar una mesa 📅?";
+            this.speak(askText);
+            this.suggestions.set(["🛵 A domicilio", "📅 Reservar Mesa"]);
+
+            // Update the last message
+            this.messages.update((msgs) => {
+              const newMsgs = [...msgs];
+              const lastMsg = newMsgs[newMsgs.length - 1];
+              if (lastMsg.role === "ai") {
+                lastMsg.text = askText;
+              }
+              // Persist
+              this.stateMachine.memory.messages = newMsgs;
+              return newMsgs;
+            });
+          }
         }
       }, 1000);
     } else {
@@ -365,7 +579,9 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       t.includes("pagar") ||
       t.includes("finalizar") ||
       t.includes("cuenta") ||
-      t.includes("checkout")
+      t.includes("checkout") ||
+      t.includes("ya lo tengo todo") ||
+      t.includes("tengo todo")
     )
       return "checkout";
 
@@ -374,6 +590,15 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
   }
 
   handleOption(option: string) {
+    if (option.includes("Reservar Mesa")) {
+      this.router.navigate(["/rider/reservations"]);
+      return;
+    }
+    if (option.includes("A domicilio")) {
+      this.router.navigate(["/rider/checkout"]);
+      return;
+    }
+
     this.inputText.set(option);
     this.sendMessage();
   }
@@ -383,29 +608,47 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
   currentlySpeakingMessageText = signal<string | null>(null);
 
   speak(text: string) {
-    if (!("speechSynthesis" in window)) return;
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
 
-    // Stop any current audio first (Mutex)
+    // Stop any current audio first
     window.speechSynthesis.cancel();
     this.currentUtterance = null;
     this.currentlySpeakingMessageText.set(null);
     this.isAgentSpeaking.set(false);
 
     const utterance = new SpeechSynthesisUtterance(text);
-    // Try to select a Spanish voice
+    // CRITICAL: Set language so browser can auto-select if manual selection fails
+    utterance.lang = "es-ES";
+
     const voices = window.speechSynthesis.getVoices();
-    const spanishVoice = voices.find(
+    this.applyVoiceAndSpeak(utterance, voices);
+  }
+
+  private applyVoiceAndSpeak(
+    utterance: SpeechSynthesisUtterance,
+    voices: SpeechSynthesisVoice[]
+  ) {
+    // 1. Try preferred Spanish voices (Google, Monica, Paulina)
+    let spanishVoice = voices.find(
       (v) =>
         v.lang.includes("es") &&
         (v.name.includes("Google") ||
           v.name.includes("Monica") ||
           v.name.includes("Paulina"))
     );
-    if (spanishVoice) utterance.voice = spanishVoice;
+
+    // 2. Fallback to ANY Spanish voice
+    if (!spanishVoice) {
+      spanishVoice = voices.find((v) => v.lang.includes("es"));
+    }
+
+    if (spanishVoice) {
+      utterance.voice = spanishVoice;
+    }
 
     utterance.onstart = () => {
       this.isAgentSpeaking.set(true);
-      this.currentlySpeakingMessageText.set(text);
+      this.currentlySpeakingMessageText.set(utterance.text);
     };
 
     utterance.onend = () => {
@@ -414,7 +657,8 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       this.currentUtterance = null;
     };
 
-    utterance.onerror = () => {
+    utterance.onerror = (e) => {
+      console.error("Speech error", e);
       this.isAgentSpeaking.set(false);
       this.currentlySpeakingMessageText.set(null);
       this.currentUtterance = null;
@@ -439,10 +683,145 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
 
   addToCart(item: MenuCard) {
     this.cartService.addToCart(item);
+
+    // Contextual Suggestions Logic
+    const tags = (item.tags || []).map((t) => t.toLowerCase());
+    let nextOptions: string[] = [];
+
+    // 0. DESSERT -> FINISH (Usually last step)
+    if (tags.some((t) => t.includes("dessert") || t.includes("sweet"))) {
+      nextOptions = ["✅ Ya lo tengo todo"];
+    }
+    // DRINKS -> DESSERTS (Global)
+    else if (tags.some((t) => t.includes("drink") || t.includes("beverage"))) {
+      nextOptions = ["🍰 Postres", "✅ Ya lo tengo todo"];
+    }
+    // 1. FAST FOOD
+    else if (tags.includes("burger")) {
+      nextOptions = [
+        "🍟 Acompañantes",
+        "🥤 Bebidas",
+        "🍰 Postres",
+        "🌶️ Picante",
+        "👶 Menú Infantil",
+        "✅ Ya lo tengo todo",
+      ];
+    } else if (tags.includes("chicken")) {
+      nextOptions = [
+        "🍔 Hamburguesas",
+        "🍟 Acompañantes",
+        "🥤 Bebidas",
+        "🍰 Postres",
+        "🌶️ Picante",
+        "✅ Ya lo tengo todo",
+      ];
+    } else if (tags.includes("side") && tags.includes("fast_food")) {
+      nextOptions = [
+        "🍔 Hamburguesas",
+        "🥤 Bebidas",
+        "🍰 Postres",
+        "✅ Ya lo tengo todo",
+      ];
+    }
+    // 2. JAPANESE
+    else if (tags.includes("starter") && tags.includes("japan")) {
+      nextOptions = [
+        "🍣 Principales / Sushi",
+        "🍜 Ramen",
+        "🥤 Bebidas", // Ensure drinks are always an option after starters
+        "✅ Ya lo tengo todo",
+      ];
+    } else if (
+      tags.includes("sushi") ||
+      (tags.includes("main") && tags.includes("japan"))
+    ) {
+      nextOptions = [
+        "🥗 Entrantes",
+        "🥤 Bebidas",
+        "🍰 Postres",
+        "✅ Ya lo tengo todo",
+      ];
+    }
+    // 3. ITALIAN
+    else if (tags.includes("italian") && tags.includes("main")) {
+      nextOptions = ["🥤 Bebidas", "🍰 Postres", "✅ Ya lo tengo todo"];
+    }
+    // 4. SPANISH
+    else if (
+      tags.includes("spanish") &&
+      (tags.includes("main") || tags.includes("tapas"))
+    ) {
+      nextOptions = ["🥤 Bebidas", "🍰 Postres", "✅ Ya lo tengo todo"];
+    }
+    // FALLBACKS
+    else if (tags.some((t) => t.includes("fast_food"))) {
+      nextOptions = [
+        "🍔 Hamburguesa",
+        "🥤 Bebidas",
+        "🍰 Postres",
+        "🌶️ Picante",
+        "✅ Ya lo tengo todo",
+      ];
+    } else if (tags.some((t) => t.includes("japan"))) {
+      nextOptions = [
+        "🍣 Principales / Sushi",
+        "🥤 Bebidas",
+        "🍰 Postres",
+        "✅ Ya lo tengo todo",
+      ];
+    } else if (tags.some((t) => t.includes("ital"))) {
+      nextOptions = ["🥤 Bebidas", "🍰 Postres", "✅ Ya lo tengo todo"];
+    } else if (tags.some((t) => t.includes("span"))) {
+      nextOptions = ["🥤 Bebidas", "🍰 Postres", "✅ Ya lo tengo todo"];
+    }
+
+    // SMART FILTERING: Don't suggest what they already have
+    const cartItems = this.cartService.cartItems();
+
+    // Check for categories present in cart
+    const hasDessert = cartItems.some((i) =>
+      (i.tags || []).some((t) => {
+        const lower = t.toLowerCase();
+        return lower.includes("dessert") || lower.includes("sweet");
+      })
+    );
+    const hasDrink = cartItems.some((i) =>
+      (i.tags || []).some((t) => {
+        const lower = t.toLowerCase();
+        return lower.includes("drink") || lower.includes("beverage");
+      })
+    );
+
+    // Suggest items NOT present.
+    // If we have dessert, don't ask for dessert.
+    if (hasDessert) {
+      nextOptions = nextOptions.filter((o) => !o.includes("Postres"));
+    }
+    // If we have drinks, don't ask for drinks.
+    if (hasDrink) {
+      nextOptions = nextOptions.filter((o) => !o.includes("Bebidas"));
+    }
+
+    // REMOVE "VER PEDIDO" text options as requested (since we have the floating button)
+    nextOptions = nextOptions.filter(
+      (o) =>
+        !o.toLowerCase().includes("ver pedido") &&
+        !o.toLowerCase().includes("confirmar")
+    );
+
+    // Filter duplicates just in case
+    nextOptions = [...new Set(nextOptions)];
+
+    this.suggestions.set(nextOptions);
+  }
+
+  goHome() {
+    this.location.back();
   }
 
   removeFromCart(item: MenuCard) {
     this.cartService.removeFromCart(item);
+    // Optional: could trigger "removed" intent if needed, but manual control is fine
   }
 
   getQuantity(item: MenuCard): number {
@@ -465,9 +844,8 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
   }
 
   getCardsForCuisine(type: string, category = "popular"): MenuCard[] {
-    // Helper to get reliable Unsplash URL
-    const img = (id: string) =>
-      `https://images.unsplash.com/photo-${id}?w=500&auto=format&fit=crop`;
+    // Helper to use local assets
+    const img = (filename: string) => `assets/food_images/${filename}`;
 
     if (type.includes("japan") || type.includes("sushi")) {
       if (category === "starters") {
@@ -475,48 +853,53 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Edamame",
             price: 4.5,
-            image: img("1524594152303-9fd13543fe6e"),
-            tags: ["Healthy"],
-            description: "Habas de soja al vapor.",
+            image: img("edamame.webp"),
+            tags: ["japan", "starter", "Healthy"],
+            description: "Habas de soja al vapor con sal.",
           },
           {
             name: "Gyoza",
             price: 6.0,
-            image: img("1541544744-378ca6f04085"),
-            tags: ["Hot"],
-            description: "Empanadillas de carne.",
+            image: img("gyoza.webp"),
+            tags: ["japan", "starter", "Hot"],
+            description: "Empanadillas de carne y verduras.",
           },
           {
             name: "Sopa Miso",
             price: 3.5,
-            image: img("1547592180-85f173990554"),
-            tags: ["Warm"],
-            description: "Sopa tradicional.",
+            image: img("miso_soup.webp"),
+            tags: ["japan", "starter", "Warm"],
+            description: "Sopa tradicional con tofu y algas.",
           },
         ];
       }
-      if (category === "mains" || category === "menu") {
+      if (
+        category === "mains" ||
+        category === "menu" ||
+        category === "added_starter" ||
+        category === "added_main"
+      ) {
         return [
           {
             name: "Sushi Set Deluxe",
             price: 18.0,
-            image: img("1579871494447-9811cf80d66c"),
-            tags: ["Premium"],
-            description: "Variado de Nigiris y Makis.",
+            image: img("sushi_set.webp"),
+            tags: ["japan", "sushi", "main", "Premium"],
+            description: "Variado de 12 piezas de Nigiris y Makis.",
           },
           {
             name: "Katsu Curry",
             price: 14.0,
-            image: img("1563484227706-53d92fb9c56f"),
-            tags: ["Hot"],
-            description: "Curry japonés con cerdo empanado.",
+            image: img("katsu_curry.webp"),
+            tags: ["japan", "main", "Hot"],
+            description: "Curry japonés con cerdo empanado y arroz.",
           },
           {
             name: "Bento Box",
             price: 16.5,
-            image: img("1623961817344-672dc6788db3"),
-            tags: ["Value"],
-            description: "Caja completa con arroz y pollo.",
+            image: img("bento_box.webp"),
+            tags: ["japan", "main", "Value"],
+            description: "Caja completa con arroz, pollo y guarnición.",
           },
         ];
       }
@@ -525,35 +908,35 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Chicken Teriyaki Bowl",
             price: 9.5,
-            image: img("1563484227706-53d92fb9c56f"),
+            image: img("chicken_teriyaki.webp"),
             tags: ["Kids"],
             description: "Pollo a la parrilla con salsa dulce y arroz.",
           },
           {
             name: "Cucumber Roll",
             price: 5.5,
-            image: img("1559847844-5315695dadae"),
+            image: img("cucumber_roll.webp"),
             tags: ["Mild"],
             description: "Rollitos sencillos de pepino.",
           },
           {
             name: "Mini Ramen",
             price: 8.0,
-            image: img("1547592180-85f173990554"),
+            image: img("mini_ramen.webp"),
             tags: ["Warm"],
             description: "Pequeña porción de sopa de fideos.",
           },
           {
             name: "Edamame",
             price: 4.0,
-            image: img("1524594152303-9fd13543fe6e"),
+            image: img("edamame.webp"),
             tags: ["Healthy"],
             description: "Habas de soja al vapor.",
           },
           {
             name: "Tamago Sushi",
             price: 4.5,
-            image: img("1579584425555-c3ce17fd4351"),
+            image: img("tamago_sushi.webp"),
             tags: ["Sweet"],
             description: "Tortilla dulce sobre arroz.",
           },
@@ -564,21 +947,21 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Mochi Ice Cream",
             price: 6.5,
-            image: img("1623595119708-26b1f2b61dc4"),
+            image: img("mochi.webp"),
             tags: ["Sweet"],
             description: "Pastel de arroz relleno de helado.",
           },
           {
             name: "Matcha Cheesecake",
             price: 7.5,
-            image: img("1565557623262-b51c2513a641"),
+            image: img("matcha_cheesecake.webp"),
             tags: ["Creamy"],
             description: "Tarta de queso con té verde.",
           },
           {
             name: "Dorayaki",
             price: 5.5,
-            image: img("1586522502809-c12e584a78d0"),
+            image: img("dorayaki.webp"),
             tags: ["Classic"],
             description: "Sándwich de tortitas con judía roja.",
           },
@@ -589,21 +972,21 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Volcano Roll",
             price: 15.0,
-            image: img("1617196034421-24e74917a035"),
+            image: img("volcano_roll.webp"),
             tags: ["Hot", "Spicy"],
             description: "Roll de atún con salsa picante.",
           },
           {
             name: "Spicy Ramen",
             price: 13.5,
-            image: img("1569718212165-3a8278d5f624"),
+            image: img("spicy_ramen.webp"),
             tags: ["Hot"],
             description: "Caldo rico con aceite de chile.",
           },
           {
             name: "Dynamite Roll",
             price: 14.5,
-            image: img("1615887023516-9b6c504c9527"),
+            image: img("dynamite_roll.webp"),
             tags: ["Spicy"],
             description: "Tempura de gamba con mayonesa picante.",
           },
@@ -614,22 +997,22 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Asahi Beer",
             price: 6.0,
-            image: img("1585553616435-2dc0a54e271d"),
-            tags: ["Alcohol"],
+            image: img("asahi.webp"),
+            tags: ["japan", "drink", "Alcohol"],
             description: "Cerveza japonesa refrescante.",
           },
           {
             name: "Sake Caliente",
             price: 8.5,
-            image: img("1580556606083-d527a051d95c"),
-            tags: ["Warm"],
+            image: img("sake.webp"),
+            tags: ["japan", "drink", "Warm"],
             description: "Vino de arroz tradicional.",
           },
           {
             name: "Ramune",
             price: 4.0,
-            image: img("1566847438217-76e82d383f84"),
-            tags: ["Soda"],
+            image: img("ramune.webp"),
+            tags: ["japan", "drink", "Soda"],
             description: "Refresco japonés con canica.",
           },
         ];
@@ -638,7 +1021,7 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
         {
           name: "Salmon Nigiri Set",
           price: 14.5,
-          image: img("1579871494447-9811cf80d66c"),
+          image: img("salmon_nigiri.webp"),
           tags: ["Fresh", "Best Seller"],
           bestValue: true,
           description: "Salmón fresco sobre arroz sazonado.",
@@ -646,28 +1029,28 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
         {
           name: "Spicy Tuna Roll",
           price: 11.0,
-          image: img("1553621042-f6e147245754"),
+          image: img("spicy_tuna.webp"),
           tags: ["Spicy"],
           description: "Atún con mayonesa picante y pepino.",
         },
         {
           name: "Dragon Roll",
           price: 16.0,
-          image: img("1611143669185-af224c5e3252"),
+          image: img("dragon_roll.webp"),
           tags: ["Chef's Pick"],
           description: "Anguila y pepino cubierto de aguacate.",
         },
         {
           name: "Miso Soup",
           price: 4.5,
-          image: img("1547592180-85f173990554"),
+          image: img("miso_soup.webp"),
           tags: ["Warm"],
           description: "Sopa tradicional de soja con tofu.",
         },
         {
           name: "Tempura Udon",
           price: 13.5,
-          image: img("1552611052-33e04de081de"),
+          image: img("tempura_udon.webp"),
           tags: ["Hot"],
           description: "Fideos gruesos en caldo con tempura.",
         },
@@ -678,23 +1061,48 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Mini Margherita",
             price: 8.5,
-            image: img("1513104890138-7c749659a591"),
+            image: img("mini_margherita.webp"),
             tags: ["Kids"],
             description: "Pequeña pizza de queso y tomate.",
           },
           {
             name: "Spaghetti Bambino",
             price: 9.0,
-            image: img("1608219992759-8d74ed8d76eb"),
+            image: img("spaghetti_bambino.webp"),
             tags: ["Mild"],
             description: "Pasta con salsa suave de tomate.",
           },
           {
             name: "Macarrones Queso",
             price: 9.5,
-            image: img("1587569192938-34661b3699b8"),
+            image: img("mac_cheese.webp"),
             tags: ["Cheesy"],
             description: "Pasta con mucha salsa de queso.",
+          },
+        ];
+      }
+      if (category === "drinks") {
+        return [
+          {
+            name: "Chianti Classico",
+            price: 7.0,
+            image: img("chianti.webp"),
+            tags: ["italian", "drink", "Alcohol"],
+            description: "Vino tinto de la Toscana.",
+          },
+          {
+            name: "Peroni Nastro",
+            price: 5.0,
+            image: img("peroni.webp"),
+            tags: ["italian", "drink", "Alcohol"],
+            description: "Cerveza italiana premium.",
+          },
+          {
+            name: "Limoncello",
+            price: 4.5,
+            image: img("limoncello.webp"),
+            tags: ["italian", "drink", "Alcohol"],
+            description: "Licor de limón refrescante.",
           },
         ];
       }
@@ -703,22 +1111,22 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Tiramisu",
             price: 8.0,
-            image: img("1571877227200-a0d98ea607e9"),
-            tags: ["Dessert"],
+            image: img("tiramisu.webp"),
+            tags: ["italian", "dessert", "Dessert"],
             description: "Postre italiano con café y mascarpone.",
           },
           {
             name: "Panna Cotta",
             price: 7.5,
-            image: img("1488477181946-6428a0291777"),
-            tags: ["Creamy"],
+            image: img("panna_cotta.webp"),
+            tags: ["italian", "dessert", "Creamy"],
             description: "Crema de nata con frutos rojos.",
           },
           {
             name: "Cannoli",
             price: 6.0,
-            image: img("1616260855210-9556886e04d4"),
-            tags: ["Crispy"],
+            image: img("cannoli.webp"),
+            tags: ["italian", "dessert", "Crispy"],
             description: "Masa frita rellena de ricotta dulce.",
           },
         ];
@@ -727,29 +1135,29 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
         {
           name: "Margherita Pizza",
           price: 13.9,
-          image: img("1574071318508-1cdbab80d002"),
-          tags: ["Vegetarian"],
+          image: img("pizza_margherita.webp"),
+          tags: ["italian", "main", "Vegetarian"],
           description: "Tomate, mozzarella y albahaca fresca.",
         },
         {
           name: "Carbonara",
           price: 15.5,
-          image: img("1612874742237-6526221588e3"),
-          tags: ["Creamy"],
+          image: img("carbonara.webp"),
+          tags: ["italian", "main", "Creamy"],
           description: "Pasta con huevo, queso pecorino y guanciale.",
         },
         {
           name: "Lasagna",
           price: 16.0,
-          image: img("1574868291534-18cd5700fa40"),
-          tags: ["Hearty"],
+          image: img("lasagna.webp"),
+          tags: ["italian", "main", "Hearty"],
           description: "Capas de pasta con salsa de carne y bechamel.",
         },
         {
           name: "Risotto Funghi",
           price: 18.0,
-          image: img("1476124369491-e7addf5db371"),
-          tags: ["Creamy"],
+          image: img("risotto_funghi.webp"),
+          tags: ["italian", "main", "Creamy"],
           description: "Arroz cremoso con selección de setas.",
         },
       ];
@@ -759,14 +1167,14 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Tortilla Francesa",
             price: 5.0,
-            image: img("1584278860047-22db9ff82bed"),
+            image: img("tortilla_francesa.webp"),
             tags: ["Kids"],
             description: "Tortilla simple con pan.",
           },
           {
             name: "Croquetas de Jamón",
             price: 8.0,
-            image: img("1626806554902-60280eb4523c"),
+            image: img("croquetas.webp"),
             tags: ["Classic"],
             description: "Croquetas caseras cremosas.",
           },
@@ -777,14 +1185,14 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Patatas Bravas",
             price: 6.5,
-            image: img("1555126627-2b7d41f715c6"),
+            image: img("patatas_bravas.webp"),
             tags: ["Spicy", "Tapas"],
             description: "Patatas fritas con salsa picante.",
           },
           {
             name: "Chorizo a la Sidra",
             price: 9.0,
-            image: img("1574484284002-952d924558e0"),
+            image: img("chorizo_sidra.webp"),
             tags: ["Spicy", "Hot"],
             description: "Chorizo cocido en sidra natural.",
           },
@@ -795,15 +1203,15 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Vino Rioja",
             price: 4.5,
-            image: img("1506377247377-2a5b3b417ebb"),
-            tags: ["Alcohol"],
+            image: img("vino_rioja.webp"),
+            tags: ["spanish", "drink", "Alcohol"],
             description: "Copa de vino tinto.",
           },
           {
             name: "Cerveza",
             price: 3.5,
-            image: img("1607559136127-e2a2253303c7"),
-            tags: ["Alcohol", "Cold"],
+            image: img("cerveza.webp"),
+            tags: ["spanish", "drink", "Alcohol", "Cold"],
             description: "Caña de cerveza rubia.",
           },
         ];
@@ -813,15 +1221,15 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Crema Catalana",
             price: 6.0,
-            image: img("1618790325946-b8e723223126"),
-            tags: ["Sweet"],
+            image: img("crema_catalana.webp"),
+            tags: ["spanish", "dessert", "Sweet"],
             description: "Crema pastelera con azúcar quemado.",
           },
           {
             name: "Churros",
             price: 6.5,
-            image: img("1624371414361-e670edf4803d"),
-            tags: ["Sweet"],
+            image: img("churros.webp"),
+            tags: ["spanish", "dessert", "Sweet"],
             description: "Masa frita con chocolate caliente.",
           },
         ];
@@ -830,36 +1238,36 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
         {
           name: "Jamón Ibérico",
           price: 22.0,
-          image: img("1559563362-c667ba5f5480"),
-          tags: ["Premium"],
+          image: img("jamon_iberico.webp"),
+          tags: ["spanish", "main", "Premium"],
           description: "Jamón curado de bellota cortado a mano.",
         },
         {
           name: "Patatas Bravas",
           price: 8.5,
-          image: img("1593560708920-61dd98c46a4e"),
-          tags: ["Spicy"],
+          image: img("patatas_bravas.webp"),
+          tags: ["spanish", "main", "Spicy"],
           description: "Patatas fritas con salsa picante.",
         },
         {
           name: "Paella Mixta",
           price: 18.0,
-          image: img("1534080564583-6be75777b70a"),
-          tags: ["Classic"],
+          image: img("paella.webp"),
+          tags: ["spanish", "main", "Classic"],
           description: "Arroz con marisco y pollo.",
         },
         {
           name: "Tortilla Española",
           price: 9.0,
-          image: img("1619895092538-128341789043"),
-          tags: ["Vegetarian"],
+          image: img("tortilla_espanola.webp"),
+          tags: ["spanish", "main", "Vegetarian"],
           description: "Tortilla de patatas y huevo.",
         },
         {
           name: "Croquetas",
           price: 10.0,
-          image: img("1596791243171-d6c1b3337905"),
-          tags: ["Tapas"],
+          image: img("croquetas.webp"),
+          tags: ["spanish", "tapas"],
           description: "Bechamel cremosa con jamón frita.",
         },
       ];
@@ -870,21 +1278,21 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Kids Burger",
             price: 7.99,
-            image: img("1551782450-a2132b4ba21d"),
+            image: img("kids_burger.webp"),
             tags: ["Kids"],
             description: "Hamburguesa sencilla con ketchup.",
           },
           {
             name: "Mac & Cheese",
             price: 6.99,
-            image: img("1543339308-43e59d6b73a6"),
+            image: img("mac_cheese.webp"),
             tags: ["Cheesy"],
             description: "Macarrones con salsa de queso.",
           },
           {
             name: "Nuggets",
             price: 6.5,
-            image: img("1562967963-ed7b199d9b69"),
+            image: img("nuggets.webp"),
             tags: ["Crunchy"],
             description: "Trocitos de pollo empanado.",
           },
@@ -895,14 +1303,14 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Diablo Burger",
             price: 14.99,
-            image: img("1601666687353-06655c65b161"),
+            image: img("diablo_burger.webp"),
             tags: ["Hot"],
             description: "Con chiles jalapeños y salsa picante.",
           },
           {
             name: "Spicy Wings",
             price: 11.99,
-            image: img("1608039829572-78524f79c4c7"),
+            image: img("spicy_wings.webp"),
             tags: ["Hot"],
             description: "Alitas bañadas en salsa buffalo.",
           },
@@ -913,22 +1321,22 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Cola",
             price: 3.0,
-            image: img("1622483767028-3f66f32aef97"),
-            tags: ["Soda", "Cold"],
+            image: img("cola.webp"),
+            tags: ["fast_food", "drink", "Soda", "Cold"],
             description: "Refresco de cola con hielo.",
           },
           {
             name: "Batido de Fresa",
             price: 4.5,
-            image: img("1577805947693-f9d446f0259e"),
-            tags: ["Sweet", "Cold"],
+            image: img("strawberry_shake.webp"),
+            tags: ["fast_food", "drink", "Sweet", "Cold"],
             description: "Batido cremoso de fresa.",
           },
           {
             name: "Agua Mineral",
             price: 2.0,
-            image: img("1548839140-29a749e1cf4d"),
-            tags: ["Water"],
+            image: img("mineral_water.webp"),
+            tags: ["fast_food", "drink", "Water"],
             description: "Agua mineral natural.",
           },
         ];
@@ -938,15 +1346,15 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Helado Sundae",
             price: 4.5,
-            image: img("1563805042-7684c019e1cb"),
-            tags: ["Cold"],
+            image: img("sundae.webp"),
+            tags: ["fast_food", "dessert", "Cold"],
             description: "Helado de vainilla con sirope.",
           },
           {
             name: "Brownie",
             price: 5.0,
-            image: img("1606313564200-e75d5e30476d"),
-            tags: ["Sweet"],
+            image: img("brownie.webp"),
+            tags: ["fast_food", "dessert", "Sweet"],
             description: "Bizcocho de chocolate templado.",
           },
         ];
@@ -958,22 +1366,22 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Chicken Wings",
             price: 10.99,
-            image: img("1513639776629-7b611594e29b"),
-            tags: ["Fried"],
+            image: img("chicken_wings.webp"),
+            tags: ["fast_food", "chicken", "main", "Fried"],
             description: "Alitas de pollo crujientes.",
           },
           {
             name: "Crispy Chicken Sandwich",
             price: 11.5,
-            image: img("1626082927389-e1b715697b2f"),
-            tags: ["Popular"],
+            image: img("chicken_sandwich.webp"),
+            tags: ["fast_food", "chicken", "main", "Popular"],
             description: "Sandwich de pollo frito.",
           },
           {
             name: "Chicken Tenders",
             price: 9.99,
-            image: img("1562967963-ed7b199d9b69"),
-            tags: ["Kids"],
+            image: img("chicken_tenders.webp"),
+            tags: ["fast_food", "chicken", "main", "Kids"],
             description: "Tiras de pechuga empanadas.",
           },
         ];
@@ -984,22 +1392,22 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           {
             name: "Fries",
             price: 4.99,
-            image: img("1573080496987-a2267f884f4a"),
-            tags: ["Side"],
+            image: img("fries.webp"),
+            tags: ["fast_food", "side", "Side"],
             description: "Patatas fritas clásicas.",
           },
           {
             name: "Onion Rings",
             price: 5.5,
-            image: img("1639024471283-03518883512d"),
-            tags: ["Side"],
+            image: img("onion_rings.webp"),
+            tags: ["fast_food", "side", "Side"],
             description: "Aros de cebolla rebozados.",
           },
           {
             name: "Caesar Salad",
             price: 8.5,
-            image: img("1550304943-4f24f54ddde9"),
-            tags: ["Healthy"],
+            image: img("caesar_salad.webp"),
+            tags: ["fast_food", "side", "Healthy"],
             description: "Ensalada César fresca.",
           },
         ];
@@ -1010,23 +1418,23 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
         {
           name: "Classic Smash",
           price: 12.99,
-          image: img("1568901346375-23c9450c58cd"),
-          tags: ["Popular"],
+          image: img("burger_smash.webp"),
+          tags: ["fast_food", "burger", "main", "Popular"],
           description: "Doble carne con queso fundido.",
         },
         {
           name: "Truffle Burger",
           price: 15.5,
-          image: img("1594212699903-ec8a3eca50f5"),
-          tags: ["Gourmet", "Best Value"],
+          image: img("burger_truffle.webp"),
+          tags: ["fast_food", "burger", "main", "Gourmet", "Best Value"],
           bestValue: true,
           description: "Hamburguesa con mayonesa de trufa.",
         },
         {
           name: "Bacon Cheese",
           price: 13.99,
-          image: img("1553979459-d2229ba7433b"),
-          tags: ["Rich"],
+          image: img("burger_bacon.webp"),
+          tags: ["fast_food", "burger", "main", "Rich"],
           description: "Hamburguesa con bacon crujiente.",
         },
       ];

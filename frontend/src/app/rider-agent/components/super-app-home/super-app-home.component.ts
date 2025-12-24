@@ -110,39 +110,48 @@ export class SuperAppHomeComponent implements OnInit, OnDestroy {
   }
 
   playGreeting() {
-    if ("speechSynthesis" in window) {
-      const user = this.session.user();
-      const userName = user?.name || "Amigo";
-      const greeting = user?.gender === "female" ? "bienvenida" : "bienvenido";
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
 
-      const text = `Hola ${userName}, ${greeting}! ¿Qué te apetece comer hoy?`;
+    // Get user details
+    const user = this.session.user();
+    const userName = user?.name || "Amigo";
+    const greeting = user?.gender === "female" ? "bienvenida" : "bienvenido";
+    const text = `Hola ${userName}, ${greeting}! ¿Qué te apetece comer hoy?`;
 
-      // Stop any existing speech
-      window.speechSynthesis.cancel();
+    // Stop any existing speech
+    window.speechSynthesis.cancel();
 
-      const utterance = new SpeechSynthesisUtterance(text);
+    const utterance = new SpeechSynthesisUtterance(text);
+    // CRITICAL: Set language so browser can auto-select if manual selection fails
+    utterance.lang = "es-ES";
 
-      // Try to select a Spanish voice
-      const voices = window.speechSynthesis.getVoices();
-      // Prefer premium/Google voices if available, falling back to any 'es' voice
-      const spanishVoice = voices.find(
-        (v) =>
-          v.lang.includes("es") &&
-          (v.name.includes("Google") ||
-            v.name.includes("Monica") ||
-            v.name.includes("Paulina"))
-      );
-      if (spanishVoice) utterance.voice = spanishVoice;
+    const voices = window.speechSynthesis.getVoices();
 
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
+    // Try to select a Spanish voice
+    const spanishVoice = voices.find(
+      (v) =>
+        v.lang.includes("es") &&
+        (v.name.includes("Google") ||
+          v.name.includes("Monica") ||
+          v.name.includes("Paulina"))
+    );
+    // Fallback to any 'es' voice
+    const fallbackVoice =
+      spanishVoice || voices.find((v) => v.lang.includes("es"));
 
-      // Animation control
-      utterance.onstart = () => this.isAgentSpeaking.set(true);
-      utterance.onend = () => this.isAgentSpeaking.set(false);
-
-      window.speechSynthesis.speak(utterance);
+    if (fallbackVoice) {
+      utterance.voice = fallbackVoice;
     }
+
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+
+    // Animation control
+    utterance.onstart = () => this.isAgentSpeaking.set(true);
+    utterance.onend = () => this.isAgentSpeaking.set(false);
+    utterance.onerror = () => this.isAgentSpeaking.set(false);
+
+    window.speechSynthesis.speak(utterance);
   }
 
   async toggleRecording() {

@@ -52,6 +52,7 @@ export class StateMachineService {
     order: [],
     spicy_level: null,
     delivery_method: null,
+    messages: [], // Persist chat messages
   };
 
   constructor() {

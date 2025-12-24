@@ -11,7 +11,6 @@ export const DIALOGUES = {
         "🍕 Italiana",
         "🍔 Fast Food",
         "🥘 Española",
-        "🛒 Ver pedido",
       ],
       on_select: {
         "🍣 Japonesa": { context: "japanese", category: "default" },
@@ -45,10 +44,9 @@ export const DIALOGUES = {
       id: "general.add_to_order",
       response:
         "Perfecto, lo añado a tu pedido. ¿Quieres algo más o finalizamos?",
-      suggestions: ["➕ Seguir pidiendo", "🛒 Ver pedido", "✅ Finalizar"],
+      suggestions: ["➕ Seguir pidiendo", "✅ Finalizar"],
       on_select: {
         "➕ Seguir pidiendo": { context: "general", category: "default" },
-        "🛒 Ver pedido": { context: "general", category: "view_order" },
         "✅ Finalizar": { context: "general", category: "confirm_order" },
       },
       on_intent: {
@@ -62,17 +60,10 @@ export const DIALOGUES = {
       id: "general.view_order",
       response:
         "Aquí tienes tu pedido actual. ¿Confirmamos o quieres cambiar algo?",
-      suggestions: [
-        "✅ Confirmar",
-        "✏️ Modificar",
-        "➕ Añadir algo",
-        "⬅️ Volver",
-      ],
+      suggestions: ["✅ Confirmar", "➕ Seguir pidiendo"],
       on_select: {
         "✅ Confirmar": { context: "general", category: "confirm_order" },
-        "✏️ Modificar": { context: "general", category: "modify_order" },
-        "➕ Añadir algo": { context: "general", category: "default" },
-        "⬅️ Volver": { context: "japanese", category: "default" },
+        "➕ Seguir pidiendo": { context: "general", category: "default" },
       },
       on_intent: {
         confirm_order: { context: "general", category: "confirm_order" },
@@ -83,39 +74,23 @@ export const DIALOGUES = {
 
     {
       id: "general.confirm_order",
-      response: "Genial. ¿Recogida o a domicilio?",
-      suggestions: [
-        "🚶 Recogida",
-        "🏠 A domicilio",
-        "📅 Reservar Mesa",
-        "⬅️ Volver",
-      ],
+      response: "Genial. ¿A domicilio o Reservar Mesa?",
+      suggestions: ["🏠 A domicilio", "📅 Reservar Mesa"],
       on_select: {
-        "🚶 Recogida": {
-          context: "general",
-          category: "checkout",
-          set_memory: { delivery_method: "pickup" },
-        },
         "🏠 A domicilio": {
           context: "general",
-          category: "checkout",
+          category: "delivery_action",
           set_memory: { delivery_method: "delivery" },
         },
         "📅 Reservar Mesa": {
           context: "general",
-          category: "reservation_entry", // New Category
+          category: "reservation_entry",
         },
-        "⬅️ Volver": { context: "general", category: "view_order" },
       },
       on_intent: {
-        choose_pickup: {
-          context: "general",
-          category: "checkout",
-          set_memory: { delivery_method: "pickup" },
-        },
         choose_delivery: {
           context: "general",
-          category: "checkout",
+          category: "delivery_action",
           set_memory: { delivery_method: "delivery" },
         },
         choose_reservation: {
@@ -217,8 +192,8 @@ export const DIALOGUES = {
     {
       id: "japanese.starters",
       response:
-        "Aquí tienes nuestros entrantes más populares. ¿Te apetece alguno?",
-      suggestions: ["Edamame", "Gyoza", "Sopa Miso", "⬅️ Volver"],
+        "Aquí tienes nuestros entrantes más populares. Haz clic en el que te apetezca.",
+      suggestions: ["✅ Ya lo tengo todo"],
       on_select: {
         Edamame: {
           context: "japanese",
@@ -226,8 +201,7 @@ export const DIALOGUES = {
           add_item: {
             name: "Edamame",
             price: 4.5,
-            image:
-              "https://images.unsplash.com/photo-1524594152303-9fd13543fe6e",
+            image: "assets/food_images/edamame.webp",
           }, // Simple mock item injection
         },
         Gyoza: {
@@ -236,7 +210,7 @@ export const DIALOGUES = {
           add_item: {
             name: "Gyoza",
             price: 6.0,
-            image: "https://images.unsplash.com/photo-1541544744-378ca6f04085",
+            image: "assets/food_images/gyoza.webp",
           },
         },
         "Sopa Miso": {
@@ -245,21 +219,59 @@ export const DIALOGUES = {
           add_item: {
             name: "Sopa Miso",
             price: 3.5,
-            image: "https://images.unsplash.com/photo-1547592180-85f173990554",
+            image: "assets/food_images/miso_soup.webp",
           },
         },
-        "⬅️ Volver": { context: "japanese", category: "default" },
+        "🍣 Principales / Sushi": { context: "japanese", category: "mains" },
+        "🍜 Ramen": { context: "japanese", category: "menu_ramen" },
+        "🥤 Bebidas": { context: "japanese", category: "drinks" },
+        "🍰 Postres": { context: "japanese", category: "dessert" },
+        "✅ Ya lo tengo todo": {
+          context: "general",
+          category: "confirm_order",
+        },
       },
     },
 
     {
       id: "japanese.added_starter",
-      response: "¡Añadido! 👌 ¿Pasamos a los platos principales o sushi?",
-      suggestions: ["🍣 Ver Principales", "🍜 Ramen", "🥤 Bebidas"],
+      response:
+        "¡Añadido! 👌 ¿Pasamos a los platos principales, sushi o has terminado?",
+      suggestions: ["🍣 Ver Principales", "🍜 Ramen", "✅ Ya lo tengo todo"],
       on_select: {
+        Edamame: {
+          context: "japanese",
+          category: "added_starter",
+          add_item: {
+            name: "Edamame",
+            price: 4.5,
+            image: "assets/food_images/edamame.webp",
+          },
+        },
+        Gyoza: {
+          context: "japanese",
+          category: "added_starter",
+          add_item: {
+            name: "Gyoza",
+            price: 6.0,
+            image: "assets/food_images/gyoza.webp",
+          },
+        },
+        "Sopa Miso": {
+          context: "japanese",
+          category: "added_starter",
+          add_item: {
+            name: "Sopa Miso",
+            price: 3.5,
+            image: "assets/food_images/miso_soup.webp",
+          },
+        },
         "🍣 Ver Principales": { context: "japanese", category: "mains" },
         "🍜 Ramen": { context: "japanese", category: "menu_ramen" },
-        "🥤 Bebidas": { context: "japanese", category: "drinks" },
+        "✅ Ya lo tengo todo": {
+          context: "general",
+          category: "confirm_order",
+        },
       },
     },
 
@@ -268,19 +280,38 @@ export const DIALOGUES = {
       response: "Nuestra selección de Sushi y Platos calientes.",
       suggestions: [
         "🍣 Sushi Set",
-        "🍛 Curry Japonés",
+        "🍛 Katsu Curry",
         "🍱 Bento Box",
-        "⬅️ Volver",
+        "✅ Ya lo tengo todo",
       ],
       on_select: {
-        "🍣 Sushi Set": {
+        "Sushi Set Deluxe": {
+          // Changed key to match card name usually, but keeping logic
           context: "japanese",
           category: "added_main",
           add_item: {
             name: "Sushi Set Deluxe",
             price: 18.0,
-            image:
-              "https://images.unsplash.com/photo-1579871494447-9811cf80d66c",
+            image: "assets/food_images/sushi_set.webp",
+          },
+        },
+        // Supporting old key just in case
+        "Sushi Set": {
+          context: "japanese",
+          category: "added_main",
+          add_item: {
+            name: "Sushi Set Deluxe",
+            price: 18.0,
+            image: "assets/food_images/sushi_set.webp",
+          },
+        },
+        "Katsu Curry": {
+          context: "japanese",
+          category: "added_main",
+          add_item: {
+            name: "Katsu Curry",
+            price: 14.0,
+            image: "assets/food_images/katsu_curry.webp",
           },
         },
         "🍛 Curry Japonés": {
@@ -289,8 +320,16 @@ export const DIALOGUES = {
           add_item: {
             name: "Katsu Curry",
             price: 14.0,
-            image:
-              "https://images.unsplash.com/photo-1563484227706-53d92fb9c56f",
+            image: "assets/food_images/katsu_curry.webp",
+          },
+        },
+        "Bento Box": {
+          context: "japanese",
+          category: "added_main",
+          add_item: {
+            name: "Bento Box",
+            price: 16.5,
+            image: "assets/food_images/bento_box.webp",
           },
         },
         "🍱 Bento Box": {
@@ -299,24 +338,57 @@ export const DIALOGUES = {
           add_item: {
             name: "Bento Box",
             price: 16.5,
-            image:
-              "https://images.unsplash.com/photo-1623961817344-672dc6788db3",
+            image: "assets/food_images/bento_box.webp",
           },
         },
-        "⬅️ Volver": { context: "japanese", category: "default" },
+        "🥗 Entrantes": { context: "japanese", category: "starters" },
+        "🥤 Bebidas": { context: "japanese", category: "drinks" },
+        "🍰 Postres": { context: "japanese", category: "dessert" },
+        "✅ Ya lo tengo todo": {
+          context: "general",
+          category: "confirm_order",
+        },
       },
     },
 
     {
       id: "japanese.added_main",
-      response: "¡Excelente elección! 😋 ¿Te pongo algo de beber o un postre?",
-      suggestions: ["🥤 Bebidas", "🍰 Postres", "✅ Ver Pedido / Finalizar"],
+      response:
+        "¡Excelente elección! 😋 ¿Te pongo algo de beber, postre o cerramos?",
+      suggestions: ["🥤 Bebidas", "🍰 Postres", "✅ Ya lo tengo todo"],
       on_select: {
+        "Sushi Set Deluxe": {
+          context: "japanese",
+          category: "added_main",
+          add_item: {
+            name: "Sushi Set Deluxe",
+            price: 18.0,
+            image: "assets/food_images/sushi_set.webp",
+          },
+        },
+        "Katsu Curry": {
+          context: "japanese",
+          category: "added_main",
+          add_item: {
+            name: "Katsu Curry",
+            price: 14.0,
+            image: "assets/food_images/katsu_curry.webp",
+          },
+        },
+        "Bento Box": {
+          context: "japanese",
+          category: "added_main",
+          add_item: {
+            name: "Bento Box",
+            price: 16.5,
+            image: "assets/food_images/bento_box.webp",
+          },
+        },
         "🥤 Bebidas": { context: "japanese", category: "drinks" },
         "🍰 Postres": { context: "japanese", category: "dessert" },
-        "✅ Ver Pedido / Finalizar": {
+        "✅ Ya lo tengo todo": {
           context: "general",
-          category: "view_order",
+          category: "confirm_order",
         },
       },
     },
@@ -325,7 +397,7 @@ export const DIALOGUES = {
       id: "japanese.menu",
       response:
         "En japonés tenemos sushi, ramen y platos calientes. ¿Qué te apetece?",
-      suggestions: ["🍣 Sushi", "🍜 Ramen", "🔥 Platos calientes", "⬅️ Volver"],
+      suggestions: ["🍣 Sushi", "🍜 Ramen", "🔥 Platos calientes"],
       on_select: {
         "🍣 Sushi": { context: "japanese", category: "mains" }, // Redirects to new mains
         "🍜 Ramen": { context: "japanese", category: "menu_ramen" },
@@ -333,7 +405,62 @@ export const DIALOGUES = {
           context: "japanese",
           category: "menu_hot",
         },
-        "⬅️ Volver": { context: "japanese", category: "default" },
+      },
+    },
+
+    {
+      id: "japanese.menu_ramen",
+      response:
+        "Ramen casero: Tonkotsu (cerdo) o Miso (vegetal). ¿Cuál prefieres?",
+      suggestions: ["🍜 Tonkotsu", "🍜 Miso", "⬅️ Volver"],
+      on_select: {
+        "🍜 Tonkotsu": {
+          context: "general",
+          category: "add_to_order",
+          add_item: { name: "Tonkotsu Ramen", tags: ["ramen", "japanese"] },
+        },
+        "🍜 Miso": {
+          context: "general",
+          category: "add_to_order",
+          add_item: { name: "Miso Ramen", tags: ["ramen", "japanese"] },
+        },
+        "⬅️ Volver": { context: "japanese", category: "menu" },
+      },
+      on_intent: {
+        checkout: { context: "general", category: "confirm_order" },
+      },
+    },
+
+    {
+      id: "japanese.menu_hot",
+      response:
+        "Platos calientes deliciosos. ¿Katsu Curry, Bento Box o Yakisoba?",
+      suggestions: [
+        "🍛 Katsu Curry",
+        "🍱 Bento Box",
+        "🍝 Yakisoba",
+        "⬅️ Volver",
+      ],
+      on_select: {
+        "🍛 Katsu Curry": {
+          context: "general",
+          category: "add_to_order",
+          add_item: { name: "Katsu Curry", tags: ["main", "japanese"] },
+        },
+        "🍱 Bento Box": {
+          context: "general",
+          category: "add_to_order",
+          add_item: { name: "Bento Box", tags: ["main", "japanese"] },
+        },
+        "🍝 Yakisoba": {
+          context: "general",
+          category: "add_to_order",
+          add_item: { name: "Yakisoba", tags: ["main", "japanese"] },
+        },
+        "⬅️ Volver": { context: "japanese", category: "menu" },
+      },
+      on_intent: {
+        checkout: { context: "general", category: "confirm_order" },
       },
     },
 
@@ -417,16 +544,26 @@ export const DIALOGUES = {
       id: "japanese.drinks",
       response:
         "Para beber: té matcha, refrescos japoneses o sake. ¿Con alcohol o sin alcohol?",
-      suggestions: ["🍶 Con alcohol", "🍵 Sin alcohol", "✅ No, gracias"],
+      suggestions: [
+        "🥤 Ramune",
+        "🍶 Con alcohol",
+        "🍵 Sin alcohol",
+        "✅ No, gracias",
+      ],
       on_select: {
+        "🥤 Ramune": {
+          context: "japanese",
+          category: "dessert",
+          add_item: { name: "Ramune", tags: ["drink", "japanese"] },
+        },
         "🍶 Con alcohol": {
-          context: "general",
-          category: "add_to_order",
+          context: "japanese",
+          category: "dessert",
           add_item: { name: "Sake", tags: ["drink", "japanese"] },
         },
         "🍵 Sin alcohol": {
-          context: "general",
-          category: "add_to_order",
+          context: "japanese",
+          category: "dessert",
           add_item: { name: "Té Matcha", tags: ["drink", "japanese"] },
         },
         "✅ No, gracias": { context: "japanese", category: "dessert" }, // Suggest dessert if skipping drinks
@@ -565,36 +702,38 @@ export const DIALOGUES = {
     {
       id: "italian.drinks",
       response: "Para beber: vino, refresco o café. ¿Qué te apetece?",
-      suggestions: ["🍷 Vino", "🥤 Refresco", "☕ Café", "⬅️ Volver"],
+      suggestions: ["🍷 Vino", "🥤 Refresco", "☕ Café"],
       on_select: {
         "🍷 Vino": {
-          context: "general",
-          category: "add_to_order",
+          context: "italian",
+          category: "dessert",
           add_item: { name: "Vino", tags: ["drink", "italian"] },
         },
+        "🍺 Cerveza": {
+          context: "italian",
+          category: "dessert",
+          add_item: { name: "Cerveza", tags: ["drink", "italian"] },
+        },
         "🥤 Refresco": {
-          context: "general",
-          category: "add_to_order",
+          context: "italian",
+          category: "dessert",
           add_item: { name: "Refresco", tags: ["drink", "italian"] },
         },
         "☕ Café": {
-          context: "general",
-          category: "add_to_order",
+          context: "italian",
+          category: "dessert",
           add_item: { name: "Café", tags: ["drink", "italian"] },
         },
-        "⬅️ Volver": { context: "italian", category: "default" },
+      },
+      on_intent: {
+        checkout: { context: "general", category: "confirm_order" },
       },
     },
 
     {
       id: "italian.dessert",
       response: "Postres: Tiramisú casero. ¿Individual o para compartir?",
-      suggestions: [
-        "🍰 Individual",
-        "👨‍👩‍👧‍👦 Compartir",
-        "✅ Ya lo tengo todo",
-        "⬅️ Volver",
-      ],
+      suggestions: ["🍰 Individual", "👨‍👩‍👧‍👦 Compartir", "✅ Ya lo tengo todo"],
       on_select: {
         "🍰 Individual": {
           context: "general",
@@ -616,7 +755,9 @@ export const DIALOGUES = {
           context: "general",
           category: "confirm_order",
         },
-        "⬅️ Volver": { context: "italian", category: "default" },
+      },
+      on_intent: {
+        checkout: { context: "general", category: "confirm_order" },
       },
     },
 
@@ -639,6 +780,9 @@ export const DIALOGUES = {
         "🥤 Bebidas": { context: "fast_food", category: "drinks" },
         "🍰 Postres": { context: "fast_food", category: "dessert" },
         "🛒 Ver pedido": { context: "general", category: "view_order" },
+      },
+      on_intent: {
+        checkout: { context: "general", category: "confirm_order" },
       },
     },
 
@@ -732,7 +876,7 @@ export const DIALOGUES = {
     {
       id: "fast_food.drinks",
       response: "Para beber: refresco, batido o agua. ¿Qué quieres?",
-      suggestions: ["🥤 Refresco", "🥛 Batido", "💧 Agua", "⬅️ Volver"],
+      suggestions: ["🥤 Refresco", "🥛 Batido", "💧 Agua"],
       on_select: {
         "🥤 Refresco": {
           context: "general",
@@ -749,14 +893,16 @@ export const DIALOGUES = {
           category: "add_to_order",
           add_item: { name: "Agua", tags: ["drink", "fast_food"] },
         },
-        "⬅️ Volver": { context: "fast_food", category: "default" },
+      },
+      on_intent: {
+        checkout: { context: "general", category: "confirm_order" },
       },
     },
 
     {
       id: "fast_food.dessert",
       response: "Postres: helado o brownie. ¿Cuál te apetece?",
-      suggestions: ["🍦 Helado", "🍫 Brownie", "⬅️ Volver"],
+      suggestions: ["🍦 Helado", "🍫 Brownie"],
       on_select: {
         "🍦 Helado": {
           context: "general",
@@ -768,19 +914,17 @@ export const DIALOGUES = {
           category: "add_to_order",
           add_item: { name: "Brownie", tags: ["dessert", "fast_food"] },
         },
-        "⬅️ Volver": { context: "fast_food", category: "default" },
+      },
+      on_intent: {
+        checkout: { context: "general", category: "confirm_order" },
       },
     },
 
     {
       id: "fast_food.menu_burger",
-      response: "Aquí tienes nuestras mejores burgers. 🍔 ¿Cuál te pido?",
-      suggestions: [
-        "Classic Smash",
-        "Truffle Burger",
-        "Bacon Cheese",
-        "⬅️ Volver",
-      ],
+      response:
+        "Aquí tienes nuestras mejores burgers. 🍔 Haz clic en la que más te guste.",
+      suggestions: ["✅ Ya lo tengo todo"],
       on_select: {
         "Classic Smash": {
           context: "fast_food",
@@ -788,8 +932,7 @@ export const DIALOGUES = {
           add_item: {
             name: "Classic Smash",
             price: 12.99,
-            image:
-              "https://images.unsplash.com/photo-1568901346375-23c9450c58cd",
+            image: "assets/food_images/burger_smash.webp",
           },
         },
         "Truffle Burger": {
@@ -798,8 +941,7 @@ export const DIALOGUES = {
           add_item: {
             name: "Truffle Burger",
             price: 15.5,
-            image:
-              "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5",
+            image: "assets/food_images/burger_truffle.webp",
           },
         },
         "Bacon Cheese": {
@@ -808,22 +950,24 @@ export const DIALOGUES = {
           add_item: {
             name: "Bacon Cheese",
             price: 13.99,
-            image:
-              "https://images.unsplash.com/photo-1596627196504-12d324d4220c",
+            image: "assets/food_images/burger_bacon.webp",
           },
+        },
+        "🍗 Pollo": { context: "fast_food", category: "menu_chicken" },
+        "🍟 Acompañantes": { context: "fast_food", category: "menu_sides" },
+        "🥤 Bebidas": { context: "fast_food", category: "drinks" },
+        "🍰 Postres": { context: "fast_food", category: "dessert" },
+        "✅ Ya lo tengo todo": {
+          context: "general",
+          category: "confirm_order",
         },
         "⬅️ Volver": { context: "fast_food", category: "menu" },
       },
     },
     {
       id: "fast_food.menu_chicken",
-      response: "Pollo crujiente. 🍗 ¿Alitas o Sandwich?",
-      suggestions: [
-        "Chicken Wings",
-        "Crispy Chicken Sandwich",
-        "Chicken Tenders",
-        "⬅️ Volver",
-      ],
+      response: "Pollo crujiente. 🍗 Elige tu favorito:",
+      suggestions: ["⬅️ Volver"],
       on_select: {
         "Chicken Wings": {
           context: "fast_food",
@@ -831,8 +975,7 @@ export const DIALOGUES = {
           add_item: {
             name: "Chicken Wings",
             price: 10.99,
-            image:
-              "https://images.unsplash.com/photo-1513639776629-7b611594e29b",
+            image: "assets/food_images/chicken_wings.webp",
           },
         },
         "Crispy Chicken Sandwich": {
@@ -841,8 +984,7 @@ export const DIALOGUES = {
           add_item: {
             name: "Crispy Chicken Sandwich",
             price: 11.5,
-            image:
-              "https://images.unsplash.com/photo-1626082927389-e1b715697b2f",
+            image: "assets/food_images/chicken_sandwich.webp",
           },
         },
         "Chicken Tenders": {
@@ -851,8 +993,16 @@ export const DIALOGUES = {
           add_item: {
             name: "Chicken Tenders",
             price: 9.99,
-            image: "https://images.unsplash.com/photo-1562967963-ed7b199d9b69",
+            image: "assets/food_images/chicken_tenders.webp",
           },
+        },
+        "🍔 Hamburguesas": { context: "fast_food", category: "menu_burger" },
+        "🍟 Acompañantes": { context: "fast_food", category: "menu_sides" },
+        "🥤 Bebidas": { context: "fast_food", category: "drinks" },
+        "🍰 Postres": { context: "fast_food", category: "dessert" },
+        "✅ Ya lo tengo todo": {
+          context: "general",
+          category: "confirm_order",
         },
         "⬅️ Volver": { context: "fast_food", category: "menu" },
       },
@@ -860,7 +1010,7 @@ export const DIALOGUES = {
     {
       id: "fast_food.menu_sides",
       response: "Para acompañar... 🍟",
-      suggestions: ["Fries", "Onion Rings", "Caesar Salad", "⬅️ Volver"],
+      suggestions: ["⬅️ Volver"],
       on_select: {
         Fries: {
           context: "fast_food",
@@ -868,8 +1018,7 @@ export const DIALOGUES = {
           add_item: {
             name: "Fries",
             price: 4.99,
-            image:
-              "https://images.unsplash.com/photo-1573080496987-a2267f884f4a",
+            image: "assets/food_images/fries.webp",
           },
         },
         "Onion Rings": {
@@ -878,8 +1027,7 @@ export const DIALOGUES = {
           add_item: {
             name: "Onion Rings",
             price: 5.5,
-            image:
-              "https://images.unsplash.com/photo-1639024471283-03518883512d",
+            image: "assets/food_images/onion_rings.webp",
           },
         },
         "Caesar Salad": {
@@ -888,8 +1036,15 @@ export const DIALOGUES = {
           add_item: {
             name: "Caesar Salad",
             price: 8.5,
-            image: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9",
+            image: "assets/food_images/caesar_salad.webp",
           },
+        },
+        "🍔 Hamburguesas": { context: "fast_food", category: "menu_burger" },
+        "🥤 Bebidas": { context: "fast_food", category: "drinks" },
+        "🍰 Postres": { context: "fast_food", category: "dessert" },
+        "✅ Ya lo tengo todo": {
+          context: "general",
+          category: "confirm_order",
         },
         "⬅️ Volver": { context: "fast_food", category: "menu" },
       },
@@ -899,6 +1054,60 @@ export const DIALOGUES = {
       response: "¡Añadido! 👌 ¿Algo más de comer o pasamos a la bebida?",
       suggestions: ["🥤 Bebidas", "🍟 Acompañantes", "✅ Ya lo tengo todo"],
       on_select: {
+        "Classic Smash": {
+          context: "fast_food",
+          category: "added_main",
+          add_item: {
+            name: "Classic Smash",
+            price: 12.99,
+            image: "assets/food_images/burger_smash.webp",
+          },
+        },
+        "Truffle Burger": {
+          context: "fast_food",
+          category: "added_main",
+          add_item: {
+            name: "Truffle Burger",
+            price: 15.5,
+            image: "assets/food_images/burger_truffle.webp",
+          },
+        },
+        "Bacon Cheese": {
+          context: "fast_food",
+          category: "added_main",
+          add_item: {
+            name: "Bacon Cheese",
+            price: 13.99,
+            image: "assets/food_images/burger_bacon.webp",
+          },
+        },
+        "Chicken Wings": {
+          context: "fast_food",
+          category: "added_main",
+          add_item: {
+            name: "Chicken Wings",
+            price: 10.99,
+            image: "assets/food_images/chicken_wings.webp",
+          },
+        },
+        "Crispy Chicken Sandwich": {
+          context: "fast_food",
+          category: "added_main",
+          add_item: {
+            name: "Crispy Chicken Sandwich",
+            price: 11.5,
+            image: "assets/food_images/chicken_sandwich.webp",
+          },
+        },
+        "Chicken Tenders": {
+          context: "fast_food",
+          category: "added_main",
+          add_item: {
+            name: "Chicken Tenders",
+            price: 9.99,
+            image: "assets/food_images/chicken_tenders.webp",
+          },
+        },
         "🥤 Bebidas": { context: "fast_food", category: "drinks" },
         "🍟 Acompañantes": { context: "fast_food", category: "menu_sides" },
         "✅ Ya lo tengo todo": {
@@ -912,6 +1121,33 @@ export const DIALOGUES = {
       response: "Acompañante listo. ¿Alguna bebida?",
       suggestions: ["🥤 Bebidas", "🍰 Postres", "✅ Ya lo tengo todo"],
       on_select: {
+        Fries: {
+          context: "fast_food",
+          category: "added_side",
+          add_item: {
+            name: "Fries",
+            price: 4.99,
+            image: "assets/food_images/fries.webp",
+          },
+        },
+        "Onion Rings": {
+          context: "fast_food",
+          category: "added_side",
+          add_item: {
+            name: "Onion Rings",
+            price: 5.5,
+            image: "assets/food_images/onion_rings.webp",
+          },
+        },
+        "Caesar Salad": {
+          context: "fast_food",
+          category: "added_side",
+          add_item: {
+            name: "Caesar Salad",
+            price: 8.5,
+            image: "assets/food_images/caesar_salad.webp",
+          },
+        },
         "🥤 Bebidas": { context: "fast_food", category: "drinks" },
         "🍰 Postres": { context: "fast_food", category: "dessert" },
         "✅ Ya lo tengo todo": {
@@ -1025,24 +1261,26 @@ export const DIALOGUES = {
     {
       id: "spanish.drinks",
       response: "Para beber: vino, cerveza o refresco. ¿Qué te pongo?",
-      suggestions: ["🍷 Vino", "🍺 Cerveza", "🥤 Refresco", "⬅️ Volver"],
+      suggestions: ["🍷 Vino", "🍺 Cerveza", "🥤 Refresco"],
       on_select: {
         "🍷 Vino": {
-          context: "general",
-          category: "add_to_order",
+          context: "spanish",
+          category: "dessert",
           add_item: { name: "Vino", tags: ["drink", "spanish"] },
         },
         "🍺 Cerveza": {
-          context: "general",
-          category: "add_to_order",
+          context: "spanish",
+          category: "dessert",
           add_item: { name: "Cerveza", tags: ["drink", "spanish"] },
         },
         "🥤 Refresco": {
-          context: "general",
-          category: "add_to_order",
+          context: "spanish",
+          category: "dessert",
           add_item: { name: "Refresco", tags: ["drink", "spanish"] },
         },
-        "⬅️ Volver": { context: "spanish", category: "default" },
+      },
+      on_intent: {
+        checkout: { context: "general", category: "confirm_order" },
       },
     },
 
@@ -1050,7 +1288,7 @@ export const DIALOGUES = {
       id: "spanish.dessert",
       response:
         "Postres: churros con chocolate o crema catalana. ¿Cuál prefieres?",
-      suggestions: ["🍩 Churros", "🍮 Crema catalana", "⬅️ Volver"],
+      suggestions: ["🍩 Churros", "🍮 Crema catalana"],
       on_select: {
         "🍩 Churros": {
           context: "general",
@@ -1068,7 +1306,9 @@ export const DIALOGUES = {
             tags: ["dessert", "spanish"],
           },
         },
-        "⬅️ Volver": { context: "spanish", category: "default" },
+      },
+      on_intent: {
+        checkout: { context: "general", category: "confirm_order" },
       },
     },
 

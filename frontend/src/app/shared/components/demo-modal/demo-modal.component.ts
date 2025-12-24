@@ -17,7 +17,6 @@ import { VoiceService } from "../../services/voice.service";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { WelcomeChatComponent } from "../../../abandoned-cart/components/welcome-chat/welcome-chat.component";
-import { SuperAppHomeComponent } from "../../../rider-agent/components/super-app-home/super-app-home.component";
 import { ChatInterfaceComponent } from "../chat-interface/chat-interface.component";
 import { ServiceSelectorComponent } from "../service-selector/service-selector.component";
 import { CalendarComponent } from "../calendar/calendar.component";
@@ -30,7 +29,6 @@ import { CalendarComponent } from "../calendar/calendar.component";
     CommonModule,
     FormsModule,
     WelcomeChatComponent,
-    SuperAppHomeComponent,
     ChatInterfaceComponent,
     ServiceSelectorComponent,
     CalendarComponent,

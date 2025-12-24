@@ -73,12 +73,51 @@ export class RestaurantService {
 
     const lowerQuery = query.toLowerCase();
 
-    // Simple filter logic
-    return this.restaurants.filter(
-      (restaurant) =>
-        restaurant.name.toLowerCase().includes(lowerQuery) ||
-        restaurant.cuisine.toLowerCase().includes(lowerQuery),
-    );
+    // TDD: Mapping for synonyms/localized terms
+    const mappings: Record<string, string[]> = {
+      hamburguesa: ['burger', 'american'],
+      burger: ['burger', 'american'],
+      asiática: ['asian', 'thai', 'chinese', 'japanese'],
+      asiatica: ['asian', 'thai', 'chinese', 'japanese'],
+      japonés: ['japanese', 'sushi'],
+      japones: ['japanese', 'sushi'],
+      sushi: ['sushi', 'japanese'],
+      vegano: ['vegetarian', 'healthy', 'salad'],
+      banana: ['vegetarian', 'healthy'], // For cases like 'banana' matching healthy if needed, though rare
+      vegetariano: ['vegetarian', 'healthy', 'salad'],
+      pizza: ['pizza', 'italian'],
+      italiana: ['italian', 'pizza'],
+      postre: ['desserts', 'sweet'],
+      calamares: ['spanish', 'tapas', 'starters'], // Mapping specific dishes to likely cuisines
+      tapas: ['spanish', 'tapas'],
+    };
+
+    // Check if query matches a known mapping key
+    let mappedKeywords: string[] = [];
+
+    // Direct match check
+    if (mappings[lowerQuery]) {
+      mappedKeywords = mappings[lowerQuery];
+    } else {
+      // Partial match check (e.g. "hamburguesas" -> "hamburguesa")
+      for (const key in mappings) {
+        if (lowerQuery.includes(key) || key.includes(lowerQuery)) {
+          mappedKeywords = [...mappedKeywords, ...mappings[key]];
+        }
+      }
+    }
+
+    // If no mapping, just use the query itself
+    if (mappedKeywords.length === 0) {
+      mappedKeywords = [lowerQuery];
+    }
+
+    return this.restaurants.filter((restaurant) => {
+      const textToSearch = (restaurant.name + ' ' + restaurant.cuisine).toLowerCase();
+
+      // Match if ANY of the mapped keywords are present in the restaurant data
+      return mappedKeywords.some((keyword) => textToSearch.includes(keyword));
+    });
   }
 
   getMenu(restaurantId: string, category: string) {

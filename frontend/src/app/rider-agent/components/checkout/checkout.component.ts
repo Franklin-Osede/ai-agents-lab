@@ -10,6 +10,7 @@ import { CommonModule, Location, isPlatformBrowser } from "@angular/common";
 import { RouterModule, Router } from "@angular/router";
 import { FormsModule } from "@angular/forms";
 import { CartService } from "../../../shared/services/cart.service";
+import { UserSessionService } from "../../services/user-session.service";
 import { MapService } from "../../../shared/services/map.service";
 import { Subject, debounceTime, distinctUntilChanged, switchMap } from "rxjs"; // RxJS for optimized search
 import * as L from "leaflet";
@@ -29,6 +30,7 @@ import * as L from "leaflet";
 })
 export class CheckoutComponent implements AfterViewInit {
   cartService = inject(CartService);
+  session = inject(UserSessionService);
   mapService = inject(MapService);
   router = inject(Router);
   location = inject(Location);
@@ -198,7 +200,7 @@ export class CheckoutComponent implements AfterViewInit {
   }
 
   goBack() {
-    this.location.back();
+    this.router.navigate(["/rider/chat"]);
   }
 
   processPayment() {

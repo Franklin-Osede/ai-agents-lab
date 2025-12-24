@@ -1,25 +1,25 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { AiMenuChatComponent } from "./ai-menu-chat.component";
-import { VoiceService } from "../../../shared/services/voice.service";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { CartService } from "../../../shared/services/cart.service";
+import { UserSessionService } from "../../services/user-session.service";
+import { StateMachineService } from "../../services/state-machine.service";
 import { RouterTestingModule } from "@angular/router/testing";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 
-describe("AiMenuChatComponent", () => {
+describe("AiMenuChatComponent Logic", () => {
   let component: AiMenuChatComponent;
   let fixture: ComponentFixture<AiMenuChatComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AiMenuChatComponent, RouterTestingModule],
-      providers: [
-        {
-          provide: VoiceService,
-          useValue: {
-            listen: jasmine
-              .createSpy("listen")
-              .and.returnValue(Promise.resolve("test")),
-          },
-        },
+      imports: [
+        AiMenuChatComponent,
+        HttpClientTestingModule,
+        RouterTestingModule,
+        NoopAnimationsModule,
       ],
+      providers: [CartService, UserSessionService, StateMachineService],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AiMenuChatComponent);
@@ -27,28 +27,44 @@ describe("AiMenuChatComponent", () => {
     fixture.detectChanges();
   });
 
-  it("should create", () => {
-    expect(component).toBeTruthy();
+  it('should map "ya lo tengo todo" to "confirm_order" intent', () => {
+    const intent = component.mapTextToIntent("ya lo tengo todo");
+    expect(intent).toBe("confirm_order");
   });
 
-  it("should initialize with empty cart", () => {
-    expect(component.cart().length).toBe(0);
-    expect(component.cartTotal()).toBe(0);
+  it('should map "finalizar pedido" to "confirm_order" intent', () => {
+    const intent = component.mapTextToIntent("finalizar pedido");
+    expect(intent).toBe("confirm_order");
   });
 
-  it("should add item to cart", () => {
-    const item = { name: "Test Item", price: 10.0, image: "", tags: [] };
+  it("should not suggest items already in cart (Smart Filtering)", () => {
+    // Mock Cart with Drinks
+    spyOn(component.cartService, "cartItems").and.returnValue([
+      { id: "1", name: "Cola", price: 2, tags: ["drink"] } as any,
+    ]);
+
+    // Mock Item being added (Burger)
+    const item = { name: "Burger", tags: ["burger", "fast_food"] } as any;
+
     component.addToCart(item);
-    expect(component.cart().length).toBe(1);
-    expect(component.cartTotal()).toBe(10.0);
+
+    const suggestions = component.suggestions();
+    // Should NOT contain "🥤 Bebidas"
+    expect(suggestions.some((s) => s.includes("Bebidas"))).toBeFalse();
+    // Should contain "Postres"? (Burgers usually suggest Drinks, Sides, Chicken. If Drink matches, it removes it).
+    // Logic: if tags.includes('burger') -> nextOptions includes 'Bebidas'.
+    // Filtering removes it.
   });
 
-  it("should generate 5 menu items for recommendations", () => {
-    // Trigger the logic that generates cards (e.g., via manually calling a generation method or mocking input)
-    // For now, we'll verify the data structure logic inside the component if we can access it,
-    // or refine the test after seeing the implementation.
-    // Let's assume we call a method to get cards.
-    const cards = component.getCardsForCuisine("Italian");
-    expect(cards.length).toBe(5);
+  it("should suggest Desserts if Drinks are added (Contextual)", () => {
+    // Mock Cart Empty
+    spyOn(component.cartService, "cartItems").and.returnValue([]);
+
+    // Add Drink
+    const item = { name: "Coke", tags: ["drink"] } as any;
+    component.addToCart(item);
+
+    const suggestions = component.suggestions();
+    expect(suggestions).toContain("🍰 Postres");
   });
 });

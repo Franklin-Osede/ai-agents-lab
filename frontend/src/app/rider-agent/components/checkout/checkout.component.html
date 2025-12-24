@@ -18,6 +18,74 @@
   </header>
 
   <main class="flex-1 flex flex-col gap-8 p-6 max-w-lg mx-auto w-full">
+    <!-- Addresses & Map -->
+    <section class="flex flex-col gap-4">
+      <div
+        class="flex items-center gap-4 bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700"
+      >
+        <div class="relative">
+          <img
+            [src]="session.user()?.avatarUrl || 'assets/avatars/default.webp'"
+            alt="User"
+            class="w-16 h-16 rounded-full object-cover border-2 border-indigo-100 dark:border-indigo-900"
+          />
+          <div
+            class="absolute bottom-0 right-0 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-slate-800"
+          ></div>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">
+            {{ session.user()?.name || "Guest" }}
+          </h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400">
+            Confirming delivery location
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="relative w-full h-40 rounded-2xl overflow-hidden shadow-sm border border-slate-200"
+      >
+        <!-- Map Background (Placeholder) -->
+        <div
+          class="absolute inset-0 bg-slate-100 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=40.416775,-3.703790&zoom=14&size=600x300&scale=2&style=feature:all|element:all|saturation:-100|lightness:10')] bg-cover bg-center opacity-70"
+        ></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-white/90 to-transparent"
+        ></div>
+
+        <div class="absolute bottom-4 left-4 right-4">
+          <h3
+            class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1 ml-1"
+          >
+            Delivery Address
+          </h3>
+          <div class="relative group shadow-lg rounded-xl">
+            <div
+              class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+            >
+              <div
+                class="h-2 w-2 bg-indigo-600 rounded-full animate-pulse"
+              ></div>
+            </div>
+            <input
+              class="block w-full rounded-xl border-none py-3 pl-8 pr-12 bg-white text-slate-900 placeholder:text-slate-400 font-medium text-sm focus:ring-2 focus:ring-indigo-500 shadow-sm"
+              placeholder="Detecting location..."
+              value="Gran Vía, 28, Madrid"
+              type="text"
+            />
+            <div
+              class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
+            >
+              <span class="material-symbols-outlined text-indigo-600 text-lg"
+                >my_location</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Total & Breakdown -->
     <section class="relative">
       <div class="flex flex-col gap-6 pt-2">
@@ -26,28 +94,24 @@
             <p
               class="text-slate-500 dark:text-slate-400 text-sm font-medium tracking-wide uppercase"
             >
-              Total Amount
+              Total a Pagar
             </p>
             <p class="text-4xl font-extrabold tracking-tight mt-1">
-              ${{ totalPrice().toFixed(2) }}
+              €{{ totalPrice().toFixed(2) }}
             </p>
           </div>
-          <div
-            class="w-12 h-12 bg-center bg-no-repeat bg-cover rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700"
-            style="
-              background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA5n4qERK6HxyAw_af8WRUgwiFWWwXesgOU2GWGglcECpY6oBCJ7inG_IsuzBMQ5g_CNSPyCcllEfHlVjap9KDBDZK70xpPSEKF8TjpEIW4EPM3fuIqYTjitdJMYHXmknSczldlG5zewQqWtReBQFQMDQxguVljXzu-OA_tAYy4s1Yc55tZzvTDqnT7hJBbQ8GDUSzVCEXpu-G071rBLK1CmqNlso374xgYcf_0ldlJHwqR9p5Nma7Bhzf4hLaFCg7FxXb38vIs_AI');
-            "
-          ></div>
+          <!-- Colored circle removed as requested -->
         </div>
 
         <details
           class="group bg-white dark:bg-slate-800 rounded-xl px-4 py-3 border border-gray-100 dark:border-slate-700"
+          open
         >
           <summary
             class="flex cursor-pointer items-center justify-between py-1 select-none"
           >
             <p class="text-sm font-medium flex items-center gap-2">
-              Order breakdown
+              Resumen del Pedido
             </p>
             <span
               class="material-symbols-outlined text-slate-400 text-xl group-open:rotate-180 transition-transform duration-300"
@@ -55,27 +119,42 @@
             >
           </summary>
           <div
-            class="pt-4 pb-2 space-y-3 border-t border-gray-100 dark:border-slate-700 mt-2"
+            class="pt-4 pb-2 space-y-4 border-t border-gray-100 dark:border-slate-700 mt-2"
           >
             @for (item of cart(); track item.id) {
-            <div class="flex justify-between items-center text-sm">
-              <span class="text-slate-500 dark:text-slate-400"
-                >{{ item?.quantity || 1 }}x {{ item?.name }}</span
-              >
-              <span class="font-medium"
-                >${{
-                  ((item?.price || 0) * (item?.quantity || 1)).toFixed(2)
-                }}</span
-              >
+            <div class="flex items-center gap-3">
+              <!-- Item Thumbnail -->
+              <img
+                [src]="item.image || 'assets/food_images/default_food.webp'"
+                alt="{{ item.name }}"
+                class="w-12 h-12 rounded-lg object-cover bg-gray-100"
+                onerror="this.src='assets/food_images/default_food.webp'"
+              />
+              <div class="flex-1 flex justify-between items-start">
+                <div class="flex flex-col">
+                  <span
+                    class="text-sm font-medium text-slate-700 dark:text-slate-200"
+                    >{{ item.name }}</span
+                  >
+                  <span class="text-xs text-slate-400 dark:text-slate-500"
+                    >x{{ item.quantity || 1 }}</span
+                  >
+                </div>
+                <span class="font-medium text-sm"
+                  >€{{
+                    ((item?.price || 0) * (item?.quantity || 1)).toFixed(2)
+                  }}</span
+                >
+              </div>
             </div>
             }
             <div
-              class="flex justify-between items-center text-sm border-t border-dashed border-gray-200 dark:border-slate-700 pt-2 mt-2"
+              class="flex justify-between items-center text-sm border-t border-dashed border-gray-200 dark:border-slate-700 pt-3 mt-1"
             >
               <span class="text-slate-500 dark:text-slate-400"
-                >Delivery Fee</span
+                >Gastos de envío</span
               >
-              <span class="font-medium">$5.00</span>
+              <span class="font-medium">€2.50</span>
             </div>
           </div>
         </details>
@@ -83,52 +162,11 @@
     </section>
 
     <!-- AI Insight -->
-    <div
-      class="flex items-start gap-3 rounded-2xl bg-indigo-50/50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 p-4 shadow-sm"
-    >
-      <div
-        class="flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400 shadow-sm shrink-0 border border-indigo-50 dark:border-indigo-800"
-      >
-        <span class="material-symbols-outlined text-lg">smart_toy</span>
-      </div>
-      <div class="flex-1 pt-0.5">
-        <p class="text-sm text-slate-600 dark:text-slate-300 leading-snug">
-          <span class="font-bold text-indigo-600 dark:text-indigo-400"
-            >AI Insight:</span
-          >
-          This matches your Friday habits. Use 500 points to cover the delivery
-          fee?
-        </p>
-      </div>
-      <button
-        class="text-xs font-bold text-orange-500 hover:text-orange-600 shrink-0 mt-1 uppercase tracking-wide px-2 py-1 rounded bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 transition-colors"
-      >
-        Apply
-      </button>
-    </div>
-
-    <!-- Address Input (New) -->
-    <section>
-      <h3 class="text-base font-bold mb-4">Delivery Address</h3>
-      <div class="relative group">
-        <div
-          class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
-        >
-          <span class="material-symbols-outlined text-slate-400"
-            >location_on</span
-          >
-        </div>
-        <input
-          class="block w-full rounded-xl border-gray-200 dark:border-slate-700 py-4 pl-12 pr-4 bg-gray-50/50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-800 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm font-medium shadow-sm transition-all outline-none"
-          placeholder="Enter your street address..."
-          type="text"
-        />
-      </div>
-    </section>
+    <!-- AI Insight Removed as per request -->
 
     <!-- Payment Method -->
     <section>
-      <h3 class="text-base font-bold mb-4">Payment Method</h3>
+      <h3 class="text-base font-bold mb-4">Método de Pago</h3>
       <div class="flex gap-4 overflow-x-auto no-scrollbar pb-2 -mx-6 px-6">
         <button
           class="relative group flex flex-col justify-between w-36 h-24 shrink-0 p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-glow border border-indigo-100 dark:border-indigo-900 transition-all active:scale-95 ring-2 ring-indigo-600 ring-offset-2 dark:ring-offset-slate-900"
@@ -149,9 +187,9 @@
             </div>
           </div>
           <div class="flex flex-col items-start">
-            <span class="text-sm font-bold text-left">Credit Card</span>
+            <span class="text-sm font-bold text-left">Stripe Test</span>
             <span class="text-slate-400 text-[10px] font-medium text-left"
-              >Default</span
+              >Predeterminado</span
             >
           </div>
         </button>
@@ -192,27 +230,27 @@
 
   <!-- Sticky Footer -->
   <div
-    class="fixed bottom-0 left-0 w-full bg-white/80 dark:bg-[#121022]/80 backdrop-blur-xl border-t border-gray-200 dark:border-slate-800 p-5 z-50"
+    class="fixed bottom-0 left-0 w-full bg-white/80 dark:bg-[#121022]/80 backdrop-blur-xl border-t border-gray-200 dark:border-slate-800 p-4 z-50 pb-8"
   >
-    <div class="max-w-lg mx-auto flex flex-col gap-4">
+    <div class="max-w-lg mx-auto flex flex-col gap-3">
       <div class="flex justify-center">
         <div
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700"
+          class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700"
         >
-          <span class="material-symbols-outlined text-green-600 text-[14px]"
+          <span class="material-symbols-outlined text-green-600 text-[12px]"
             >lock</span
           >
           <span
-            class="text-[10px] font-bold tracking-wide uppercase text-slate-500"
+            class="text-[9px] font-bold tracking-wide uppercase text-slate-500"
             >SSL Encrypted & Secure</span
           >
         </div>
       </div>
       <button
         (click)="placeOrder()"
-        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-indigo-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-3 relative overflow-hidden group"
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg py-3.5 rounded-2xl shadow-lg shadow-indigo-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-3 relative overflow-hidden group"
       >
-        <span class="relative z-10">Pay ${{ totalPrice().toFixed(2) }}</span>
+        <span class="relative z-10">Pagar €{{ totalPrice().toFixed(2) }}</span>
         <span
           class="material-symbols-outlined relative z-10 text-xl group-hover:translate-x-1 transition-transform"
           >arrow_forward</span

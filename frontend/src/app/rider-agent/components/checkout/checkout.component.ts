@@ -12,7 +12,13 @@ import { FormsModule } from "@angular/forms";
 import { CartService } from "../../../shared/services/cart.service";
 import { UserSessionService } from "../../services/user-session.service";
 import { MapService } from "../../../shared/services/map.service";
-import { Subject, debounceTime, distinctUntilChanged, switchMap } from "rxjs"; // RxJS for optimized search
+import {
+  Subject,
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  of,
+} from "rxjs"; // RxJS for optimized search
 import * as L from "leaflet";
 
 @Component({
@@ -24,6 +30,10 @@ import * as L from "leaflet";
     `
       .map-base {
         filter: grayscale(100%) contrast(1.05) brightness(1.05);
+      }
+      #previewMapContainer {
+        height: 100%;
+        width: 100%;
       }
     `,
   ],
@@ -47,7 +57,9 @@ export class CheckoutComponent implements AfterViewInit {
   cartItems = this.cartService.cartItems;
 
   // Address Logic
-  address = "123 Market St, San Francisco, CA"; // Default fallback
+  address = ""; // Empty to prompt user input
+  // Default to Madrid center but do not show marker yet effectively if address empty?
+  // Actually let's keep a default view but no marker if address empty, or just default marker at Sol.
   selectedCoordinates: [number, number] | null = [40.4168, -3.7038];
 
   isEditingAddress = false;
@@ -64,7 +76,7 @@ export class CheckoutComponent implements AfterViewInit {
         debounceTime(400),
         distinctUntilChanged(),
         switchMap((query) => {
-          if (!query || query.length < 3) return [];
+          if (!query || query.length < 3) return of([]);
           this.isSearchingAddress = true;
           return this.mapService.searchAddress(query);
         })
@@ -108,6 +120,13 @@ export class CheckoutComponent implements AfterViewInit {
     ).addTo(this.previewMap);
 
     this.updateMapMarker();
+
+    // Leaflet fix for container size
+    setTimeout(() => {
+      if (this.previewMap) {
+        this.previewMap.invalidateSize();
+      }
+    }, 500);
   }
 
   updateMapMarker() {
@@ -176,6 +195,7 @@ export class CheckoutComponent implements AfterViewInit {
   }
 
   onAddressInput(query: string) {
+    this.addressQuery = query;
     this.searchSubject.next(query);
   }
 
@@ -204,17 +224,20 @@ export class CheckoutComponent implements AfterViewInit {
   }
 
   processPayment() {
+    if (this.isProcessing) return;
     this.isProcessing = true;
 
-    // Simulate API call and pass coordinates to the next step (e.g., via Service or URL)
-    // For now we just mock the success
+    // Simulación de pago
     setTimeout(() => {
       this.isProcessing = false;
       this.isSuccess = true;
-      this.cartService.clearCart();
 
-      // In a real app, we'd pass the coordinates to the tracking page
-      // e.g. this.router.navigate(['/rider/tracking', { lat: ..., lon: ... }]);
-    }, 2500);
+      // Show success confirmation for 1.5 seconds before navigating
+      setTimeout(() => {
+        this.cartService.clearCart();
+        // Navegar a la pantalla de seguimiento
+        this.router.navigate(["/rider/tracking"]);
+      }, 1500);
+    }, 2000);
   }
 }

@@ -25,15 +25,20 @@ export class VoiceService {
    * Start recording audio from microphone
    */
   async startRecording(): Promise<void> {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    this.mediaRecorder = new MediaRecorder(stream);
-    this.audioChunks = [];
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.mediaRecorder = new MediaRecorder(stream);
+      this.audioChunks = [];
 
-    this.mediaRecorder.ondataavailable = (event) => {
-      this.audioChunks.push(event.data);
-    };
+      this.mediaRecorder.ondataavailable = (event) => {
+        this.audioChunks.push(event.data);
+      };
 
-    this.mediaRecorder.start();
+      this.mediaRecorder.start();
+    } catch (error) {
+      console.error("Error starting recording:", error);
+      throw error;
+    }
   }
 
   /**
@@ -41,7 +46,9 @@ export class VoiceService {
    */
   stopRecording(): Promise<Blob> {
     return new Promise((resolve) => {
-      if (!this.mediaRecorder) return resolve(new Blob());
+      if (!this.mediaRecorder || this.mediaRecorder.state === "inactive") {
+        return resolve(new Blob());
+      }
 
       this.mediaRecorder.onstop = () => {
         const audioBlob = new Blob(this.audioChunks, { type: "audio/webm" });
@@ -50,7 +57,6 @@ export class VoiceService {
       };
 
       this.mediaRecorder.stop();
-      // Stop all tracks to release mic
       this.mediaRecorder.stream.getTracks().forEach((track) => track.stop());
     });
   }
@@ -68,26 +74,36 @@ export class VoiceService {
       formData.append("systemPrompt", systemPrompt);
     }
 
-    const response = await firstValueFrom(
-      this.http.post(`${this.apiUrl}/interact`, formData, {
-        responseType: "blob", // Important! Expecting binary audio back
-        observe: "response", // We need headers for the text transcripts
-      })
-    );
+    try {
+      const response = await firstValueFrom(
+        this.http.post(`${this.apiUrl}/interact`, formData, {
+          responseType: "blob", // Important! Expecting binary audio back
+          observe: "response", // We need headers for the text transcripts
+        })
+      );
 
-    const audioResponse = response.body as Blob;
-    const userText = decodeURIComponent(
-      response.headers.get("X-Transcript-User") || ""
-    );
-    const aiText = decodeURIComponent(
-      response.headers.get("X-Transcript-AI") || ""
-    );
+      const audioResponse = response.body as Blob;
+      const userText = decodeURIComponent(
+        response.headers.get("X-Transcript-User") || ""
+      );
+      const aiText = decodeURIComponent(
+        response.headers.get("X-Transcript-AI") || ""
+      );
 
-    return {
-      audio: audioResponse,
-      userText,
-      aiText,
-    };
+      return {
+        audio: audioResponse,
+        userText,
+        aiText,
+      };
+    } catch (error) {
+      console.error("Voice interaction error:", error);
+      return {
+        audio: new Blob(),
+        userText: "Error de conexión",
+        aiText:
+          "Lo siento, el servicio de voz no está disponible en este momento. (Modo Fallback)",
+      };
+    }
   }
 
   /**
@@ -104,27 +120,42 @@ export class VoiceService {
 
     console.log("🎵 Audio cache MISS - generating for:", text.substring(0, 50));
 
-    const response = await firstValueFrom(
-      this.http.post(
-        `${this.apiUrl}/generate-greeting`,
-        { text },
-        { responseType: "blob" }
-      )
-    );
+    try {
+      const response = await firstValueFrom(
+        this.http.post(
+          `${this.apiUrl}/generate-greeting`,
+          { text },
+          { responseType: "blob" }
+        )
+      );
 
-    // Store in cache
-    this.audioCache.set(cacheKey, response);
+      // Store in cache
+      this.audioCache.set(cacheKey, response);
 
-    return response;
+      return response;
+    } catch (error) {
+      console.warn("Backend voice service unavailable, skipping audio.");
+      return new Blob();
+    }
   }
 
   /**
    * Helper to play a blob audio
    */
   playAudioBlob(blob: Blob): HTMLAudioElement {
+    if (blob.size === 0) {
+      // Handle empty blob (fallback case): Return dummy audio and trigger ended event
+      const audio = new Audio();
+      // Simulate playback finishing immediately so UI states (like isPlaying) reset
+      setTimeout(() => {
+        audio.dispatchEvent(new Event("ended"));
+      }, 100);
+      return audio;
+    }
+
     const url = URL.createObjectURL(blob);
     const audio = new Audio(url);
-    audio.play();
+    audio.play().catch((e) => console.warn("Audio play failed:", e));
     return audio;
   }
 

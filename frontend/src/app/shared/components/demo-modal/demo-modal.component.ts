@@ -354,9 +354,83 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       this.selectedService
     ) {
       const professionalName = this.selectedProfessionalData.name;
-      const serviceName = this.selectedService.name;
+      const serviceId = this.selectedService.id.toLowerCase();
+      let welcomeMessage = "";
+      let options: string[] = [];
 
-      const welcomeMessage = `¡Perfecto! Has seleccionado a ${professionalName}. ¿Para qué fecha te gustaría agendar tu cita de ${serviceName}?`;
+      // Logic to determine the flow based on service/category
+      if (
+        serviceId === "clinica" ||
+        serviceId.includes("medic") ||
+        serviceId.includes("doctor")
+      ) {
+        // 1. DENTIST / DOCTOR
+        welcomeMessage = `¡Hola! Soy el asistente del ${professionalName}. Veo que quieres agendar una consulta. Para darte la mejor atención, ¿es una primera visita o una revisión de seguimiento?`;
+        options = ["Primera Visita", "Revisión / Seguimiento", "Urgencia"];
+      } else if (serviceId === "fisioterapia" || serviceId.includes("fisio")) {
+        // 2. FISIOTERAPIA
+        welcomeMessage = `Hola, aquí el asistente de ${professionalName}. Para preparar la sesión, ¿qué zona necesitas tratar o qué molestia tienes?`;
+        options = [
+          "Dolor de Espalda/Cuello",
+          "Lesión Deportiva",
+          "Rehabilitación",
+          "Masaje Descontracturante",
+        ];
+      } else if (serviceId === "peluqueria" || serviceId.includes("pelu")) {
+        // 3. PELUQUERIA
+        welcomeMessage = `¡Hola! Estaré encantada de atenderte hoy. ¿Qué cambio de look tienes en mente con ${professionalName}?`;
+        options = [
+          "Corte de Pelo",
+          "Tinte / Mechas",
+          "Peinado / Brushing",
+          "Tratamiento Capilar",
+        ];
+      } else if (serviceId === "estetica" || serviceId.includes("belleza")) {
+        // 4. ESTETICA
+        welcomeMessage = `Bienvenido/a. ¿Qué tratamiento te gustaría realizarte hoy para mimarte?`;
+        options = [
+          "Limpieza Facial",
+          "Depilación Láser",
+          "Tratamiento Corporal",
+          "Lifting de Pestañas",
+        ];
+      } else if (
+        serviceId === "unas" ||
+        serviceId.includes("manicura") ||
+        serviceId.includes("nail")
+      ) {
+        // 5. MANICURA
+        welcomeMessage = `¡Hola! Listos para dejar tus manos perfectas. ¿Qué tipo de manicura prefieres?`;
+        options = [
+          "Manicura Tradicional",
+          "Semipermanente",
+          "Uñas de Gel / Acrílico",
+          "Retirada de esmalte",
+        ];
+      } else if (
+        serviceId === "abogado" ||
+        serviceId.includes("legal") ||
+        serviceId === "contador" ||
+        serviceId.includes("aseosria")
+      ) {
+        // 6. LEGAL / ASESORIA
+        welcomeMessage = `Buenos días. Soy el asistente virtual del despacho. Para asignarle el tiempo adecuado con ${professionalName}, ¿su consulta está relacionada con qué área?`;
+        options = [
+          "Laboral / Despidos",
+          "Fiscal / Declaración Renta",
+          "Herencias / Familia",
+          "Creación de Empresas",
+        ];
+      } else {
+        // DEFAULT FALLBACK
+        welcomeMessage = `¡Perfecto! Has seleccionado a ${professionalName}. ¿Para qué fecha te gustaría agendar tu cita?`;
+        options = [
+          "Lo antes posible",
+          "Esta semana",
+          "La próxima semana",
+          "Ver disponibilidad",
+        ];
+      }
 
       this.messages.push({
         id: "welcome-professional",
@@ -374,8 +448,8 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       this.detectedDayOptions = [];
       this.selectedDayOption = null;
 
-      // Update example messages based on selected service
-      this.exampleMessages = this.getExamples();
+      // Update example messages (Chips) with the specific options
+      this.exampleMessages = options;
     }
   }
 
@@ -839,11 +913,11 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     const professionalImages: Record<string, string[]> = {
       // Salud - Dentistas (imágenes ÚNICAS de dentistas - ninguna duplicada)
       dentista: [
-        "https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1594824476968-48aa8a6701b0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
+        "https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Dr. Carlos Méndez
+        "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Dra. Laura Sánchez
+        "https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Dr. Miguel Torres
+        "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Dra. Patricia Ramírez - Female dentist
+        "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Dr. Javier Morales - Male dentist
       ],
       // Médicos (imágenes COMPLETAMENTE DIFERENTES - ninguna duplicada con dentistas)
       // Imagen específica para Sofía Ramírez (Cardióloga) - índice 2
@@ -854,13 +928,13 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         "https://images.unsplash.com/photo-1551601651-2a8555f1a136?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
         "https://images.unsplash.com/photo-1537368910025-700350fe46c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
       ],
-      // Fisioterapeutas (imágenes de personas haciendo terapia física/ejercicios)
+      // Fisioterapeutas (profesionales con caras visibles)
       fisioterapeuta: [
-        "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400&q=80",
-        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400&q=80",
-        "https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400&q=80",
-        "https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400&q=80",
-        "https://images.unsplash.com/photo-1506126613408-eca07ce68773?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400&q=80",
+        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Carlos Ruiz - Male professional (NEW)
+        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // María González - Female professional (NEW)
+        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Javier López - Male professional
+        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Elena Martínez - Female professional
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Roberto Sánchez - Male professional
       ],
       // Veterinaria (veterinarios con animales o en clínica veterinaria)
       veterinaria: [
@@ -877,7 +951,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Ana Martínez (1)
         "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Laura Rodríguez (2)
         "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Carmen López (3) - IMAGEN ESPECÍFICA DIFERENTE
-        "https://images.unsplash.com/photo-1492106087820-3f1b6c6f04fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Sofía Hernández (4)
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Carlos Hernández (4) - Male barber
       ],
       // Estética removida - ahora se usa 'estetica' para centros de estética (negocios) más abajo
       // Restaurantes (imágenes de restaurantes/interiores, no chefs)
@@ -896,21 +970,21 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
         "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
       ],
-      // Abogados (profesionales en traje formal)
+      // Abogados (profesionales en traje formal - contexto legal)
       abogado: [
-        "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1556155092-490a1ba16284?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
+        "https://images.unsplash.com/photo-1556157382-97eda2d62296?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Lic. Roberto Martínez
+        "https://images.unsplash.com/photo-1551836022-d5d88e9218df?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Lic. Ana Sánchez
+        "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Lic. Carlos Fernández
+        "https://images.unsplash.com/photo-1551836022-4c4c79ecde51?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Lic. Patricia Ramírez
+        "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Lic. Fernando López - NEW unique
       ],
-      // Contadores (profesionales de negocios)
+      // Contadores (profesionales de negocios - sin duplicados, género correcto)
       contador: [
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
+        "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // C.P. María González - Female
+        "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // C.P. Luis Ramírez - Male
+        "https://images.unsplash.com/photo-1551836022-4c4c79ecde51?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // C.P. Sofía Torres - Female
+        "https://images.unsplash.com/photo-1556157382-97eda2d62296?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // C.P. Roberto Sánchez - Male
+        "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // C.P. Ana Martínez - Female
       ],
       // Fontaneros/Plomeros (trabajadores con herramientas)
       fontanero: [
@@ -949,7 +1023,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=90",
         "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=90",
         "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=90",
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=90",
+        "https://images.unsplash.com/photo-1629909613654-28e377c37b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=90", // Estética Avanzada - Clinic image
         "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=90",
       ],
       // Spas (negocios, no profesionales)
@@ -962,11 +1036,11 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       ],
       // Manicura y Pedicura (profesionales trabajando con uñas)
       unas: [
-        "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1522338242992-e1a54906a8da?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1492106087820-3f1b6c6f04fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
+        "https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // María González
+        "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Ana Martínez
+        "https://images.unsplash.com/photo-1610992015732-2449b76344bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Laura Rodríguez
+        "https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Carmen López - Nail technician
+        "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Sofía Hernández - NEW unique
       ],
       // Default (Salud)
       default: [
@@ -1213,8 +1287,8 @@ export class DemoModalComponent implements OnInit, OnDestroy {
             "Especialista en técnicas de coloración avanzada, mechas y balayage.",
         },
         {
-          name: "Sofía Hernández",
-          title: "Barbería",
+          name: "Carlos Hernández",
+          title: "Barbero",
           rating: 4.8,
           reviews: 156,
           distance: "2.1km",
@@ -1792,7 +1866,14 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     console.log("🟡 serviceIdLower:", serviceIdLower);
     console.log("🟡 serviceNameLower:", serviceNameLower);
 
-    if (
+    // PRIORITY: Exact ID matches for professional services (most reliable)
+    if (serviceIdLower === "abogado") {
+      category = "abogado";
+      console.log("✅✅✅ DETECTED ABOGADO category by exact ID!");
+    } else if (serviceIdLower === "contador") {
+      category = "contador";
+      console.log("✅✅✅ DETECTED CONTADOR category by exact ID!");
+    } else if (
       serviceIdLower === "dentista" ||
       serviceIdLower.includes("dentist") ||
       serviceNameLower.includes("dental") ||

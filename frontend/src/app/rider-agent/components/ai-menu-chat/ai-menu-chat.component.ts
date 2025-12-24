@@ -6,6 +6,8 @@ import { VoiceService } from "../../../shared/services/voice.service";
 import { CartService, CartItem } from "../../../shared/services/cart.service";
 import { UserSessionService } from "../../services/user-session.service";
 import { StateMachineService } from "../../services/state-machine.service";
+import { RiderAgentService } from "../../services/rider-agent.service";
+import { AgentOrchestratorService } from "../../../shared/services/agent-orchestrator.service";
 
 interface MenuCard extends CartItem {
   bestValue?: boolean;
@@ -30,7 +32,9 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
   private cartService = inject(CartService);
   private router = inject(Router);
   public session = inject(UserSessionService);
-  private stateMachine = inject(StateMachineService); // Inject State Machine
+  private stateMachine = inject(StateMachineService); // Keep for state read
+  private riderAgent = inject(RiderAgentService); // Use for actions
+  private orchestrator = inject(AgentOrchestratorService); // Use for switching
   private location = inject(Location);
 
   inputText = signal("");
@@ -315,7 +319,38 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
 
     // Check if we intercepted it above?
     // Actually, creating a valid `result` object is better.
-    let result = this.stateMachine.handleTransition(inputKey, type);
+    // let result = this.stateMachine.handleTransition(inputKey, type);
+    // const agentResponse = this.riderAgent.handleInput(inputKey, type);
+    // Fix type mapping: 'intent' -> 'text'
+    const agentInputType = type === "select" ? "select" : "text";
+    const agentResponse = this.riderAgent.handleInput(inputKey, agentInputType);
+    let result: any = null;
+
+    if (agentResponse) {
+      // Handle Agent Switching
+      if (agentResponse.switchToAgent) {
+        this.orchestrator.activateAgent(
+          agentResponse.switchToAgent.agentType,
+          agentResponse.switchToAgent.context
+        );
+      }
+
+      // Handle Navigation
+      if (agentResponse.navigate) {
+        this.router.navigate([agentResponse.navigate.route], {
+          queryParams: agentResponse.navigate.params,
+        });
+      }
+
+      // Map AgentResponse to local result format for UI compatibility
+      result = {
+        id: agentResponse["id"],
+        response: agentResponse["text"], // Map text -> response
+        suggestions: agentResponse.suggestions || [],
+        category: agentResponse["category"],
+        cards: agentResponse.cards,
+      };
+    }
 
     // Fix for Postres if normal transition failed OR if we want to force it
     if (
@@ -429,7 +464,7 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
 
           // Filter out suggestions that are present in the cards
           // Matches strict and partial (e.g. "Sushi Set" vs "🍣 Sushi Set")
-          finalSuggestions = finalSuggestions.filter((s) => {
+          finalSuggestions = finalSuggestions.filter((s: string) => {
             const sClean = normalize(s);
             // Check reciprocal containment
             const isCard = cardNames.some(
@@ -444,38 +479,21 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
         this.suggestions.set(finalSuggestions);
         this.showOptions.set(true);
 
-        // Check for new items in StateMachine memory to add to CartService
-        const lastItem =
-          this.stateMachine.memory.order[
-            this.stateMachine.memory.order.length - 1
-          ];
-        if (lastItem && !this.cart().find((i) => i.name === lastItem.name)) {
-          this.cartService.addToCart({
-            id: Date.now().toString(),
-            name: lastItem.name,
-            price: 10.0, // Mock price
-            quantity: 1,
-            image: "assets/food_images/caesar_salad.webp", // Mock image
-          });
-        }
-
-        // Check for Navigation Triggers
-        if (res.category === "reservation_entry") {
-          // Detect Trigger
-          setTimeout(() => {
-            this.router.navigate(["/rider/reservations"]);
-          }, 1000);
-        }
-
         if (res.category === "delivery_action" || res.category === "checkout") {
           // INTERCEPT: Don't go to checkout immediately. Ask for preference.
           // However, if the user explicitly clicked "A domicilio" (which we might need to detecting), proceed.
           // If the text was generic "pagar" or "finalizar", ask.
 
           if (this.inputText().toLowerCase().includes("domicilio")) {
-            setTimeout(() => {
-              this.router.navigate(["/rider/checkout"]);
-            }, 1000);
+            // Let Orchestrator/Agent handle it via 'navigate' response
+            // But if we are here, it means we didn't use 'navigate' yet?
+            // Actually, RiderAgentService returns 'navigate' for delivery_action.
+            // So this code block might be skipped if we handled 'navigate' in sendMessage.
+            // BUT sendMessage continues execution unless we return.
+            // I didn't add 'return' inside 'if (agentResponse)'.
+            // So this logic still runs.
+            // Redundant but specific fallback?
+            // "domicilio" navigation is handled by RiderAgentService now.
           } else {
             // Fallback default response if we hit this state via means other than "Ya lo tengo todo" intent
             const askText =

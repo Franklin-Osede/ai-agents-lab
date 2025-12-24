@@ -1,69 +1,74 @@
 <div class="chat-messages">
   @for (message of messages; track message) {
+  <div
+    class="message-wrapper"
+    [class.user]="message.sender === 'user'"
+    [class.agent]="message.sender === 'agent' && !message.isSystem"
+    [class.system]="message.isSystem"
+  >
+    <!-- Agent Avatar (Only for agent messages) -->
+    @if (message.sender === 'agent' && !message.isSystem) {
     <div
-      class="message-wrapper"
-      [class.user]="message.sender === 'user'"
-      [class.agent]="message.sender === 'agent' && !message.isSystem"
-      [class.system]="message.isSystem"
-      >
-      <!-- Agent Avatar (Only for agent messages) -->
-      @if (message.sender === 'agent' && !message.isSystem) {
-        <div
-          class="avatar"
-          style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAJLiRLqi1eaD2iUDLwr5PBlpbmCoOiCZWPqWDh1xKGoNxnLsb4a4_t4xVn21F3dG2o-exhsLLzxcwhyp06o2lLYaiYRuy-m6JuhIy7vKbU_nzoM1XI5mP53ARaNMSOSf1RU9O9_gjlqriwm4o9jW-zFWiM9EDV0C1XW4mhNG13v7qCcR8sWvhdAe5HI_nlYefwxXYTvGoYU-rkSYFdTYSOoBQK7kjggn88Hh6h_338g1dMPeD1vVD7LyZZLgDoPdl_EZgrd4ZjEH4Q");'
-        ></div>
-      }
-      <div class="message-content">
-        @if (!message.isSystem) {
-          <div class="sender-info">
-            {{ message.sender === 'user' ? 'Tú' : 'Agente' }} • {{ message.timestamp | date:'HH:mm' }}
-          </div>
-        }
-        <!-- WhatsApp-Style Audio Message (for agent audio messages) -->
-        @if (message.isAudioMessage && message.sender === 'agent') {
-          <div class="audio-message-container">
-            <div class="audio-player">
-              <span class="material-symbols-outlined mic-icon">mic</span>
-              <div class="waveform" [class.playing]="message.audioPlaying">
-                <span></span><span></span><span></span><span></span>
-                <span></span><span></span><span></span><span></span>
-              </div>
-              <span class="duration">{{ message.audioDuration || '0:03' }}</span>
-            </div>
-            <!-- Transcript removed - audio waveform is enough -->
-          </div>
-        }
-        <!-- Regular text message (for non-audio or user messages) -->
-        @if (!message.isAudioMessage || message.sender === 'user') {
-          <div
-            class="message-bubble"
-            [class.user]="message.sender === 'user'"
-            [class.agent]="message.sender === 'agent'"
-            [class.system]="message.isSystem">
-            <p>{{ message.content }}</p>
-          </div>
-        }
+      class="avatar"
+      style="
+        background-image: url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200&h=200');
+      "
+    ></div>
+    }
+    <div class="message-content">
+      @if (!message.isSystem) {
+      <div class="sender-info">
+        {{ message.sender === "user" ? "Tú" : "Agente" }} •
+        {{ message.timestamp | date : "HH:mm" }}
       </div>
+      }
+      <!-- WhatsApp-Style Audio Message (for agent audio messages) -->
+      @if (message.isAudioMessage && message.sender === 'agent') {
+      <div class="audio-message-container">
+        <div class="audio-player">
+          <span class="material-symbols-outlined mic-icon">mic</span>
+          <div class="waveform" [class.playing]="message.audioPlaying">
+            <span></span><span></span><span></span><span></span> <span></span
+            ><span></span><span></span><span></span>
+          </div>
+          <span class="duration">{{ message.audioDuration || "0:03" }}</span>
+        </div>
+        <!-- Transcript removed - audio waveform is enough -->
+      </div>
+      }
+      <!-- Regular text message (for non-audio or user messages) -->
+      @if (!message.isAudioMessage || message.sender === 'user') {
+      <div
+        class="message-bubble"
+        [class.user]="message.sender === 'user'"
+        [class.agent]="message.sender === 'agent'"
+        [class.system]="message.isSystem"
+      >
+        <p>{{ message.content }}</p>
+      </div>
+      }
     </div>
+  </div>
   }
 
   <!-- Typing Indicator -->
   @if (isLoading) {
-    <div class="message-wrapper agent">
-      <div
-        class="avatar"
-        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAJLiRLqi1eaD2iUDLwr5PBlpbmCoOiCZWPqWDh1xKGoNxnLsb4a4_t4xVn21F3dG2o-exhsLLzxcwhyp06o2lLYaiYRuy-m6JuhIy7vKbU_nzoM1XI5mP53ARaNMSOSf1RU9O9_gjlqriwm4o9jW-zFWiM9EDV0C1XW4mhNG13v7qCcR8sWvhdAe5HI_nlYefwxXYTvGoYU-rkSYFdTYSOoBQK7kjggn88Hh6h_338g1dMPeD1vVD7LyZZLgDoPdl_EZgrd4ZjEH4Q");'
-      ></div>
-      <div class="message-content">
-        <div class="message-bubble agent">
-          <div class="typing-indicator">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-          </div>
+  <div class="message-wrapper agent">
+    <div
+      class="avatar"
+      style="
+        background-image: url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200&h=200');
+      "
+    ></div>
+    <div class="message-content">
+      <div class="message-bubble agent">
+        <div class="typing-indicator">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
         </div>
       </div>
     </div>
+  </div>
   }
 </div>
-

@@ -1,5 +1,6 @@
 <div
   class="modal-overlay"
+  [class.booking-agent-bg]="agent.id === 'booking'"
   (click)="onClose()"
   (keydown.enter)="onClose()"
   tabindex="0"
@@ -381,6 +382,7 @@
       @if (currentStep === 1) {
       <div class="step-view chat-view">
         <!-- Calendar Modal Overlay -->
+        @if (showCalendarModal) {
         <div
           class="calendar-modal-overlay"
           (click)="showCalendarModal = false"
@@ -388,7 +390,6 @@
           tabindex="0"
           role="button"
         >
-          @if (showCalendarModal) {
           <div
             class="calendar-modal-content"
             (click)="$event.stopPropagation()"
@@ -412,8 +413,8 @@
             >
             </app-calendar>
           </div>
-          }
         </div>
+        }
         <!-- Timestamp -->
         <div class="chat-timestamp">
           <span>Hoy</span>
@@ -572,41 +573,7 @@
           <h2>Elige tu Experto</h2>
         </div>
 
-        <!-- Filter Chips -->
-        <div class="filter-chips">
-          <button
-            class="filter-chip active"
-            [class.active]="selectedFilter === 'best-rated'"
-            (click)="selectedFilter = 'best-rated'"
-          >
-            <span class="material-symbols-outlined">star</span>
-            <p>Mejor Valorados</p>
-          </button>
-          <button
-            class="filter-chip"
-            [class.active]="selectedFilter === 'nearest'"
-            (click)="selectedFilter = 'nearest'"
-          >
-            <span class="material-symbols-outlined">location_on</span>
-            <p>Más Cercanos</p>
-          </button>
-          <button
-            class="filter-chip"
-            [class.active]="selectedFilter === 'price-low'"
-            (click)="selectedFilter = 'price-low'"
-          >
-            <span class="material-symbols-outlined">attach_money</span>
-            <p>Precio Bajo</p>
-          </button>
-          <button
-            class="filter-chip"
-            [class.active]="selectedFilter === 'availability'"
-            (click)="selectedFilter = 'availability'"
-          >
-            <span class="material-symbols-outlined">calendar_today</span>
-            <p>Disponibilidad</p>
-          </button>
-        </div>
+        <!-- Filter Chips Removed -->
 
         <!-- Professional List -->
         <div class="professionals-list">

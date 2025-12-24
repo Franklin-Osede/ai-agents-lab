@@ -7,8 +7,10 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
+  signal,
 } from "@angular/core";
 import { CommonModule, isPlatformBrowser } from "@angular/common";
+import { Router } from "@angular/router";
 import { MapService } from "../../../shared/services/map.service";
 import * as L from "leaflet";
 
@@ -24,6 +26,7 @@ export class OrderTrackingComponent
 {
   private mapService = inject(MapService);
   private platformId = inject(PLATFORM_ID);
+  private router = inject(Router);
 
   // Element Ref for the map div
   @ViewChild("mapContainer") mapContainer!: ElementRef;
@@ -39,17 +42,26 @@ export class OrderTrackingComponent
   isDelivered = false;
   showLeadGenModal = false;
 
+  // Dynamic countdown signals
+  countdownMinutes = signal(0);
+  countdownSeconds = signal(24);
+  estimatedArrival = signal("");
+  statusMessage = signal("Llegando pronto");
+
   // Demo locations (Madrid)
   private restaurantLoc: [number, number] = [40.4168, -3.7038]; // Sol
   private userLoc: [number, number] = [40.4243, -3.6917]; // Cibeles/Retiro area
 
   ngOnInit() {
-    // Only run map logic in browser
-    if (isPlatformBrowser(this.platformId)) {
-      // Leaflet requires window, execute after view init usually,
-      // but in Angular 17+ `afterNextRender` is better.
-      // For simplicity in this older style class, we'll try ngAfterViewInit logic or just wait a tick.
-    }
+    // Calculate estimated arrival time (current time + 24 seconds)
+    const now = new Date();
+    const arrivalTime = new Date(now.getTime() + 24000);
+    this.estimatedArrival.set(
+      arrivalTime.toLocaleTimeString("es-ES", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    );
   }
 
   ngAfterViewInit() {
@@ -166,6 +178,24 @@ export class OrderTrackingComponent
 
     const now = Date.now();
     const elapsedSeconds = (now - this.simulationStartTime) / 1000;
+    const remainingSeconds = Math.max(0, this.totalDuration - elapsedSeconds);
+
+    // Update countdown
+    const mins = Math.floor(remainingSeconds / 60);
+    const secs = Math.floor(remainingSeconds % 60);
+    this.countdownMinutes.set(mins);
+    this.countdownSeconds.set(secs);
+
+    // Update status message based on remaining time
+    if (remainingSeconds > 15) {
+      this.statusMessage.set("En camino");
+    } else if (remainingSeconds > 5) {
+      this.statusMessage.set("Llegando pronto");
+    } else if (remainingSeconds > 0) {
+      this.statusMessage.set("¡Casi aquí!");
+    } else {
+      this.statusMessage.set("Entregado");
+    }
 
     // Get new position
     const newPos = this.mapService.interpolatePosition(
@@ -176,9 +206,6 @@ export class OrderTrackingComponent
 
     // Update Marker
     this.riderMarker.setLatLng(newPos);
-
-    // Optional: Pan camera to follow rider if zoom is high
-    // this.map.panTo(newPos, { animate: true, duration: 0.1 });
 
     if (elapsedSeconds < this.totalDuration) {
       this.animationFrameId = requestAnimationFrame(() => this.animate());
@@ -192,6 +219,11 @@ export class OrderTrackingComponent
     }
   }
 
+
+  goBack() {
+    window.history.back();
+  }
+
   onCallRider() {
     alert("Llamando a Michael... (Simulación)");
   }
@@ -202,6 +234,8 @@ export class OrderTrackingComponent
 
   closeModal() {
     this.showLeadGenModal = false;
+    // Redirect to main home page
+    this.router.navigate(["/"]);
   }
 
   submitLead(email: string) {

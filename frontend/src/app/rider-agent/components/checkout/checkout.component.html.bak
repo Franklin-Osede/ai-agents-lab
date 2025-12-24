@@ -52,7 +52,7 @@
     <!-- Addresses & Map -->
     <section class="flex flex-col gap-4">
       <div
-        class="flex items-center gap-4 bg-white dark:bg-slate-800 p-4 rounded-none border border-slate-100 dark:border-slate-700"
+        class="flex items-center gap-4 bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700"
       >
         <div class="relative">
           <img
@@ -91,7 +91,7 @@
           >
             Dirección de Entrega
           </h3>
-          <div class="relative group shadow-xl bg-white rounded-none">
+          <div class="relative group shadow-xl bg-white rounded-2xl">
             <div
               class="absolute inset-y-0 left-4 flex items-center pointer-events-none"
             >
@@ -102,7 +102,7 @@
             <input
               [(ngModel)]="address"
               (ngModelChange)="onAddressInput($event)"
-              class="block w-full border-none py-5 pl-12 pr-12 bg-transparent text-slate-900 placeholder:text-slate-400 font-medium text-sm focus:ring-2 focus:ring-indigo-500 rounded-none"
+              class="block w-full border-none py-4 pl-12 pr-12 bg-transparent text-slate-900 placeholder:text-slate-400 font-medium text-sm focus:ring-2 focus:ring-indigo-500 rounded-2xl"
               placeholder="Escribe tu dirección..."
               type="text"
             />
@@ -110,12 +110,12 @@
             <!-- Address Search Results -->
             @if (addressResults.length > 0) {
             <div
-              class="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-slate-800 rounded-none shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden max-h-56 overflow-y-auto z-[100]"
+              class="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden max-h-56 overflow-y-auto z-[100]"
             >
               @for (res of addressResults; track res.place_id) {
               <button
                 (click)="selectAddress(res)"
-                class="w-full text-left px-5 py-5 hover:bg-slate-50 border-b border-slate-50 last:border-none flex items-start gap-4 transition-colors active:bg-slate-100"
+                class="w-full text-left px-5 py-4 hover:bg-slate-50 border-b border-slate-50 last:border-none flex items-start gap-4 transition-colors active:bg-slate-100"
               >
                 <div
                   class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center shrink-0"
@@ -222,7 +222,7 @@
     <!-- AI Insight Removed as per request -->
 
     <!-- Payment Method -->
-    <section class="mb-32">
+    <section class="mb-40">
       <h3 class="text-base font-bold mb-4 px-1">Método de Pago</h3>
 
       <!-- Demo Disclaimer -->
@@ -241,7 +241,7 @@
       >
         <div class="flex justify-between items-start w-full">
           <div
-            class="w-12 h-12 rounded-none bg-white/20 backdrop-blur-md flex items-center justify-center text-white"
+            class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white"
           >
             <span class="material-symbols-outlined text-3xl">credit_card</span>
           </div>
@@ -262,28 +262,52 @@
           >
         </div>
       </button>
-
     </section>
   </main>
 
+  <!-- Sticky Footer -->
+  <div class="fixed bottom-0 left-0 right-0 z-[100] flex justify-center px-4">
+    <div class="w-full max-w-lg mx-auto relative">
+      <!-- Background Gradient constrained to max-w-lg -->
+      <div
+        class="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-white via-white/90 to-transparent dark:from-slate-950 dark:via-slate-950/90 dark:to-transparent pointer-events-none"
+      ></div>
 
-</div>
-
-  <!-- Fixed Payment Button -->
-  <div class="fixed bottom-0 left-0 right-0 z-50">
-    <div class="max-w-lg mx-auto px-0 md:px-10">
-      <button
-        (click)="placeOrder()"
-        [disabled]="isProcessing"
-        class="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-lg py-5 rounded-none shadow-2xl shadow-indigo-300 dark:shadow-none transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+      <div
+        class="relative bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 px-4 pt-4 pb-8 rounded-t-[2rem] shadow-[0_-15px_35px_rgba(0,0,0,0.06)]"
       >
-        @if (isProcessing) {
-          <span class="animate-spin material-symbols-outlined text-xl">autorenew</span>
-          <span>Procesando...</span>
-        } @else {
-          <span>Pagar €{{ totalPrice().toFixed(2) }}</span>
-          <span class="material-symbols-outlined">arrow_forward</span>
-        }
-      </button>
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center justify-center gap-1.5">
+            <span class="material-symbols-outlined text-amber-500 text-sm"
+              >info</span
+            >
+            <span
+              class="text-[10px] font-bold text-slate-400 uppercase tracking-wider"
+              >Pago Ficticio</span
+            >
+          </div>
+
+          <button
+            (click)="placeOrder()"
+            [disabled]="isProcessing"
+            class="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-base py-3.5 rounded-2xl shadow-lg shadow-indigo-200 dark:shadow-none transition-all active:scale-[0.98] flex items-center justify-center gap-2 relative overflow-hidden"
+          >
+            @if (isProcessing) {
+            <span class="animate-spin material-symbols-outlined text-xl"
+              >autorenew</span
+            >
+            <span>Procesando...</span>
+            } @else {
+            <span class="tracking-tight"
+              >Pagar €{{ totalPrice().toFixed(2) }}</span
+            >
+            <span class="material-symbols-outlined font-black"
+              >arrow_forward</span
+            >
+            }
+          </button>
+        </div>
+      </div>
     </div>
   </div>
+</div>

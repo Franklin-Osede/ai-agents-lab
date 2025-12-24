@@ -6,7 +6,7 @@
     class="absolute top-0 left-0 right-0 z-40 pt-14 pb-4 px-6 flex items-center justify-between pointer-events-none"
   >
     <button
-      routerLink="/rider/chat"
+      (click)="goBack()"
       class="pointer-events-auto size-12 flex items-center justify-center rounded-full glass-panel shadow-[0_10px_30px_-5px_rgba(0,0,0,0.08)] active:scale-95 transition-transform text-slate-900 hover:bg-white"
     >
       <span class="material-symbols-outlined">arrow_back</span>
@@ -71,7 +71,7 @@
                   class="relative inline-flex rounded-full h-2 w-2 bg-[#ee8c2b]"
                 ></span>
               </span>
-              Llegando Pronto
+              {{ statusMessage() }}
             </div>
 
             <!-- Timer Big -->
@@ -79,7 +79,7 @@
               <div class="flex flex-col items-center">
                 <span
                   class="text-7xl font-extrabold text-[#ee8c2b] tracking-tighter tabular-nums leading-none drop-shadow-sm"
-                  >05</span
+                  >{{ countdownMinutes().toString().padStart(2, "0") }}</span
                 >
                 <span
                   class="text-[10px] font-bold text-[#ee8c2b]/60 uppercase tracking-widest mt-1"
@@ -93,7 +93,7 @@
               <div class="flex flex-col items-center">
                 <span
                   class="text-7xl font-extrabold text-slate-900 tracking-tighter tabular-nums leading-none"
-                  >24</span
+                  >{{ countdownSeconds().toString().padStart(2, "0") }}</span
                 >
                 <span
                   class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1"
@@ -108,7 +108,8 @@
               <span class="material-symbols-outlined text-[16px] text-slate-400"
                 >schedule</span
               >
-              Llegada Estimada <span class="text-slate-900">1:50 PM</span>
+              Llegada Estimada
+              <span class="text-slate-900">{{ estimatedArrival() }}</span>
             </p>
           </div>
 

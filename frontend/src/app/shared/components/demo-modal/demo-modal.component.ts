@@ -106,6 +106,14 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   detectedDayOptions: { day: string; date: Date; label: string }[] = [];
   selectedDayOption: { day: string; date: Date; label: string } | null = null;
 
+  // Conversation flow state for multi-step booking
+  conversationFlow: {
+    currentStep: number;
+    totalSteps: number;
+    responses: Record<string, any>;
+    serviceType: string;
+  } | null = null;
+
   // Navigation
   activeTab: "inicio" | "reservas" | "avisos" | "perfil" = "inicio";
 
@@ -355,8 +363,20 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     ) {
       const professionalName = this.selectedProfessionalData.name;
       const serviceId = this.selectedService.id.toLowerCase();
+      const serviceName = this.selectedService.name;
+
       let welcomeMessage = "";
       let options: string[] = [];
+
+      // Initialize conversation flow state
+      if (!this.conversationFlow) {
+        this.conversationFlow = {
+          currentStep: 1,
+          totalSteps: 5,
+          responses: {},
+          serviceType: serviceId,
+        };
+      }
 
       // Logic to determine the flow based on service/category
       if (
@@ -364,63 +384,84 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         serviceId.includes("medic") ||
         serviceId.includes("doctor")
       ) {
-        // 1. DENTIST / DOCTOR
-        welcomeMessage = `¡Hola! Soy el asistente del ${professionalName}. Veo que quieres agendar una consulta. Para darte la mejor atención, ¿es una primera visita o una revisión de seguimiento?`;
-        options = ["Primera Visita", "Revisión / Seguimiento", "Urgencia"];
+        // 1. MÉDICO / DOCTOR - 5 pasos
+        welcomeMessage = `Hola, soy el asistente del ${professionalName}. Para preparar mejor tu consulta, cuéntame: ¿cuál es el motivo principal de tu visita?`;
+        options = [
+          "🩺 Consulta general",
+          "📊 Resultados de pruebas",
+          "💊 Tratamiento / medicación",
+          "🫀 Síntomas concretos",
+          "✍️ Otro motivo",
+        ];
+        this.conversationFlow.totalSteps = 5;
+      } else if (serviceId === "dentista" || serviceId.includes("dental")) {
+        // 2. DENTISTA - 5 pasos
+        welcomeMessage = `Bienvenido/a a ${serviceName}. Para atenderte mejor, ¿qué tipo de consulta necesitas?`;
+        options = [
+          "🦷 Revisión general",
+          "😬 Dolor o molestia dental",
+          "✨ Limpieza dental",
+          "😁 Estética dental",
+          "🦷 Otro motivo",
+        ];
+        this.conversationFlow.totalSteps = 5;
       } else if (serviceId === "fisioterapia" || serviceId.includes("fisio")) {
-        // 2. FISIOTERAPIA
-        welcomeMessage = `Hola, aquí el asistente de ${professionalName}. Para preparar la sesión, ¿qué zona necesitas tratar o qué molestia tienes?`;
+        // 3. FISIOTERAPIA - 5 pasos
+        welcomeMessage = `Hola, soy el asistente de ${professionalName}. Para preparar bien tu sesión, cuéntame: ¿qué zona necesitas tratar?`;
         options = [
-          "Dolor de Espalda/Cuello",
-          "Lesión Deportiva",
-          "Rehabilitación",
-          "Masaje Descontracturante",
+          "🦴 Dolor de espalda / cuello",
+          "🏃 Lesión deportiva",
+          "♿ Rehabilitación",
+          "💆 Masaje descontracturante",
         ];
-      } else if (serviceId === "peluqueria" || serviceId.includes("pelu")) {
-        // 3. PELUQUERIA
-        welcomeMessage = `¡Hola! Estaré encantada de atenderte hoy. ¿Qué cambio de look tienes en mente con ${professionalName}?`;
-        options = [
-          "Corte de Pelo",
-          "Tinte / Mechas",
-          "Peinado / Brushing",
-          "Tratamiento Capilar",
-        ];
+        this.conversationFlow.totalSteps = 5;
       } else if (serviceId === "estetica" || serviceId.includes("belleza")) {
-        // 4. ESTETICA
-        welcomeMessage = `Bienvenido/a. ¿Qué tratamiento te gustaría realizarte hoy para mimarte?`;
+        // 4. ESTÉTICA MÉDICA - 6 pasos
+        welcomeMessage = `Bienvenido/a a ${serviceName}. ¿Qué tipo de tratamiento estético estás buscando?`;
         options = [
-          "Limpieza Facial",
-          "Depilación Láser",
-          "Tratamiento Corporal",
-          "Lifting de Pestañas",
+          "💉 Tratamientos faciales (botox, rellenos)",
+          "✨ Rejuvenecimiento facial",
+          "🔥 Tratamientos corporales estéticos",
+          "👁️ Zona ocular (ojeras, párpados)",
+          "❓ Aún no lo tengo claro",
         ];
+        this.conversationFlow.totalSteps = 6;
       } else if (
         serviceId === "unas" ||
         serviceId.includes("manicura") ||
         serviceId.includes("nail")
       ) {
-        // 5. MANICURA
-        welcomeMessage = `¡Hola! Listos para dejar tus manos perfectas. ¿Qué tipo de manicura prefieres?`;
+        // 5. MANICURA - 6 pasos
+        welcomeMessage = `¡Hola! Vamos a dejar tus manos perfectas 💅 ¿Qué tipo de manicura prefieres?`;
         options = [
-          "Manicura Tradicional",
-          "Semipermanente",
-          "Uñas de Gel / Acrílico",
-          "Retirada de esmalte",
+          "💅 Manicura tradicional",
+          "✨ Semipermanente",
+          "💎 Uñas de gel / acrílico",
+          "🧴 Retirada de esmalte",
         ];
-      } else if (
-        serviceId === "abogado" ||
-        serviceId.includes("legal") ||
-        serviceId === "contador" ||
-        serviceId.includes("aseosria")
-      ) {
-        // 6. LEGAL / ASESORIA
-        welcomeMessage = `Buenos días. Soy el asistente virtual del despacho. Para asignarle el tiempo adecuado con ${professionalName}, ¿su consulta está relacionada con qué área?`;
+        this.conversationFlow.totalSteps = 6;
+      } else if (serviceId === "abogado" || serviceId.includes("legal")) {
+        // 6. DESPACHO LEGAL - 6 pasos
+        welcomeMessage = `Buenos días. Soy el asistente virtual de ${serviceName}. Para asignarle el especialista adecuado, ¿su consulta está relacionada con qué área?`;
         options = [
-          "Laboral / Despidos",
-          "Fiscal / Declaración Renta",
-          "Herencias / Familia",
-          "Creación de Empresas",
+          "⚖️ Laboral / despidos",
+          "💼 Fiscal / declaración de la renta",
+          "👨‍👩‍👧 Herencias / familia",
+          "🏢 Creación de empresas",
+          "📄 Otro asunto",
         ];
+        this.conversationFlow.totalSteps = 6;
+      } else if (serviceId === "contador" || serviceId.includes("fiscal")) {
+        // 7. ASESORÍA FISCAL - 6 pasos
+        welcomeMessage = `Buenos días. Soy el asistente virtual de ${serviceName}. ¿Sobre qué tema fiscal necesita asesoramiento?`;
+        options = [
+          "🧾 Declaración de la renta",
+          "🏢 Fiscalidad de autónomos / empresas",
+          "📊 Impuestos y liquidaciones",
+          "🌍 Fiscalidad internacional",
+          "📄 Otro asunto",
+        ];
+        this.conversationFlow.totalSteps = 6;
       } else {
         // DEFAULT FALLBACK
         welcomeMessage = `¡Perfecto! Has seleccionado a ${professionalName}. ¿Para qué fecha te gustaría agendar tu cita?`;
@@ -430,6 +471,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "La próxima semana",
           "Ver disponibilidad",
         ];
+        this.conversationFlow.totalSteps = 1;
       }
 
       this.messages.push({
@@ -451,6 +493,311 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       // Update example messages (Chips) with the specific options
       this.exampleMessages = options;
     }
+  }
+
+  /**
+   * Handle conversation flow progression based on user responses
+   * This method processes each step of the booking conversation
+   */
+  handleConversationStep(userResponse: string): void {
+    if (!this.conversationFlow || !this.selectedService) {
+      return;
+    }
+
+    const { currentStep, serviceType } = this.conversationFlow;
+
+    // Store the user's response
+    this.conversationFlow.responses[`step${currentStep}`] = userResponse;
+
+    let nextMessage = "";
+    let nextOptions: string[] = [];
+
+    // Progress to next step
+    this.conversationFlow.currentStep++;
+    const newStep = this.conversationFlow.currentStep;
+
+    // MÉDICO / DOCTOR FLOW
+    if (serviceType === "clinica" || serviceType.includes("medic")) {
+      if (newStep === 2) {
+        nextMessage = "¿Cómo describirías la urgencia de tu consulta?";
+        nextOptions = [
+          "🚨 Urgente (próximos días)",
+          "⏳ Normal",
+          "📅 Flexible",
+        ];
+      } else if (newStep === 3) {
+        nextMessage = `¿Ya has sido atendido antes por ${this.selectedProfessionalData?.name}?`;
+        nextOptions = [
+          "🆕 No, es mi primera vez",
+          "🔁 Sí, ya he tenido consulta",
+        ];
+      } else if (newStep === 4) {
+        nextMessage =
+          "Para mostrarte los mejores horarios, ¿qué franja te viene mejor?";
+        nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
+      } else if (newStep === 5) {
+        this.showCalendarWithContext();
+        return;
+      }
+    }
+
+    // DENTISTA FLOW
+    else if (serviceType === "dentista" || serviceType.includes("dental")) {
+      if (newStep === 2) {
+        nextMessage = "¿Qué zona o diente está relacionado con tu consulta?";
+        nextOptions = [
+          "🦷 Un diente concreto",
+          "😬 Varias zonas",
+          "👄 Encías",
+          "❓ No lo tengo claro",
+        ];
+      } else if (newStep === 3) {
+        nextMessage = "¿Cómo describirías la molestia actualmente?";
+        nextOptions = [
+          "🔴 Dolor fuerte",
+          "🟠 Dolor moderado",
+          "🟢 Molestia leve",
+          "❓ No hay dolor",
+        ];
+      } else if (newStep === 4) {
+        nextMessage = "¿Desde cuándo notas este problema?";
+        nextOptions = [
+          "🕒 Desde hoy / ayer",
+          "📅 Desde hace unos días",
+          "📆 Desde hace semanas",
+          "❓ No lo recuerdo",
+        ];
+      } else if (newStep === 5) {
+        nextMessage =
+          "Para mostrarte los mejores horarios disponibles, ¿qué franja prefieres?";
+        nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
+      } else if (newStep === 6) {
+        this.showCalendarWithContext();
+        return;
+      }
+    }
+
+    // FISIOTERAPIA FLOW
+    else if (serviceType === "fisioterapia" || serviceType.includes("fisio")) {
+      if (newStep === 2) {
+        nextMessage = "¿Cómo describirías tu molestia ahora mismo?";
+        nextOptions = [
+          "🔴 Dolor fuerte",
+          "🟠 Dolor moderado",
+          "🟢 Molestia leve",
+          "❓ No estoy seguro",
+        ];
+      } else if (newStep === 3) {
+        nextMessage = "¿Desde cuándo tienes esta molestia?";
+        nextOptions = [
+          "🕒 Menos de 1 semana",
+          "📅 Entre 1 y 4 semanas",
+          "📆 Más de 1 mes",
+          "❓ No lo recuerdo",
+        ];
+      } else if (newStep === 4) {
+        nextMessage = `¿Es tu primera sesión con ${this.selectedProfessionalData?.name}?`;
+        nextOptions = ["🆕 Sí, es la primera vez", "🔁 No, ya he venido antes"];
+      } else if (newStep === 5) {
+        nextMessage =
+          "Para mostrarte los mejores horarios disponibles, ¿qué franja prefieres?";
+        nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
+      } else if (newStep === 6) {
+        this.showCalendarWithContext();
+        return;
+      }
+    }
+
+    // ESTÉTICA MÉDICA FLOW
+    else if (serviceType === "estetica" || serviceType.includes("belleza")) {
+      if (newStep === 2) {
+        nextMessage = "¿En qué zona te gustaría realizar el tratamiento?";
+        nextOptions = [
+          "👤 Rostro",
+          "👁️ Zona ocular",
+          "🦵 Corporal",
+          "🔁 Varias zonas",
+        ];
+      } else if (newStep === 3) {
+        nextMessage =
+          "¿Cuál es el objetivo principal que buscas con el tratamiento?";
+        nextOptions = [
+          "✨ Rejuvenecer el aspecto",
+          "🔄 Corregir o definir una zona concreta",
+          "📉 Reducir volumen / grasa localizada",
+          "🌿 Mejora general de la piel",
+          "❓ No lo tengo claro",
+        ];
+      } else if (newStep === 4) {
+        nextMessage =
+          "En este momento, ¿cómo te encuentras respecto al tratamiento?";
+        nextOptions = [
+          "✅ Quiero realizarlo cuanto antes",
+          "🤔 Quiero valoración profesional",
+          "📄 Solo informarme por ahora",
+        ];
+      } else if (newStep === 5) {
+        nextMessage =
+          "Para mostrarte los mejores horarios disponibles, ¿qué franja prefieres?";
+        nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
+      } else if (newStep === 6) {
+        this.showCalendarWithContext();
+        return;
+      }
+    }
+
+    // MANICURA FLOW
+    else if (serviceType === "unas" || serviceType.includes("manicura")) {
+      if (newStep === 2) {
+        nextMessage = "¿Qué acabado te gustaría?";
+        nextOptions = [
+          "🎨 Color liso",
+          "🤍 Francesa",
+          "🎨✨ Con diseño / nail art",
+          "❓ Aún no lo tengo claro",
+        ];
+      } else if (newStep === 3) {
+        nextMessage = "¿Qué longitud o estilo prefieres?";
+        nextOptions = [
+          "✂️ Cortas / naturales",
+          "📏 Medias",
+          "💅 Largas",
+          "❓ Me dejo asesorar",
+        ];
+      } else if (newStep === 4) {
+        nextMessage = "¿Cómo tienes ahora mismo las uñas?";
+        nextOptions = [
+          "💅 Sin esmalte",
+          "✨ Con esmalte semipermanente",
+          "💎 Con gel o acrílico",
+          "🧴 Necesito retirada",
+        ];
+      } else if (newStep === 5) {
+        nextMessage =
+          "Para mostrarte los mejores horarios disponibles, ¿qué franja prefieres?";
+        nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
+      } else if (newStep === 6) {
+        this.showCalendarWithContext();
+        return;
+      }
+    }
+
+    // DESPACHO LEGAL FLOW
+    else if (serviceType === "abogado" || serviceType.includes("legal")) {
+      if (newStep === 2) {
+        nextMessage = "¿Qué tipo de ayuda necesita principalmente?";
+        nextOptions = [
+          "📝 Asesoramiento legal",
+          "📄 Revisión de documentos",
+          "🛡️ Defensa o representación",
+          "🤝 Mediación / negociación",
+          "❓ Aún no lo tengo claro",
+        ];
+      } else if (newStep === 3) {
+        nextMessage = "¿En qué punto se encuentra su caso?";
+        nextOptions = [
+          "🆕 Inicio / consulta inicial",
+          "📂 Caso en curso",
+          "⏳ Situación urgente",
+          "❓ Prefiero explicarlo más adelante",
+        ];
+      } else if (newStep === 4) {
+        nextMessage = "Para la primera reunión, ¿qué modalidad prefiere?";
+        nextOptions = [
+          "💻 Videollamada",
+          "🏢 Presencial en el despacho",
+          "🕒 Indiferente",
+        ];
+      } else if (newStep === 5) {
+        nextMessage =
+          "Para mostrarle los mejores horarios disponibles, ¿qué franja le viene mejor?";
+        nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
+      } else if (newStep === 6) {
+        this.showCalendarWithContext();
+        return;
+      }
+    }
+
+    // ASESORÍA FISCAL FLOW
+    else if (serviceType === "contador" || serviceType.includes("fiscal")) {
+      if (newStep === 2) {
+        nextMessage = "Para orientar mejor la consulta, ¿cuál es su situación?";
+        nextOptions = [
+          "👤 Particular",
+          "🧑‍💼 Autónomo",
+          "🏢 Empresa / sociedad",
+          "❓ Prefiero comentarlo después",
+        ];
+      } else if (newStep === 3) {
+        nextMessage = "¿En qué punto se encuentra su consulta fiscal?";
+        nextOptions = [
+          "🆕 Consulta inicial",
+          "📂 Trámite en curso",
+          "⏳ Plazo próximo / urgencia",
+          "❓ No lo tengo claro",
+        ];
+      } else if (newStep === 4) {
+        nextMessage = "¿Cómo le gustaría realizar la consulta?";
+        nextOptions = [
+          "💻 Videollamada",
+          "🏢 Presencial en la oficina",
+          "🕒 Indiferente",
+        ];
+      } else if (newStep === 5) {
+        nextMessage =
+          "Para mostrarle los mejores horarios disponibles, ¿qué franja le viene mejor?";
+        nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
+      } else if (newStep === 6) {
+        this.showCalendarWithContext();
+        return;
+      }
+    }
+
+    // Add the next message to the chat
+    if (nextMessage) {
+      this.messages.push({
+        id: `flow-step-${newStep}`,
+        content: nextMessage,
+        sender: "agent",
+        timestamp: new Date(),
+      });
+
+      // Play audio
+      if (this.enableVoice) {
+        this.playMessageAudio(nextMessage);
+      }
+
+      // Update options
+      this.exampleMessages = nextOptions;
+    }
+  }
+
+  /**
+   * Show calendar with context from the conversation flow
+   */
+  private showCalendarWithContext(): void {
+    const professionalName =
+      this.selectedProfessionalData?.name || "el profesional";
+    const message = `Perfecto 👍 Según lo que me indicas, estas son las mejores opciones disponibles con ${professionalName}:`;
+
+    this.messages.push({
+      id: "show-calendar",
+      content: message,
+      sender: "agent",
+      timestamp: new Date(),
+    });
+
+    if (this.enableVoice) {
+      this.playMessageAudio(message);
+    }
+
+    // Clear options and show calendar
+    this.exampleMessages = [];
+
+    // Trigger calendar display (step 2)
+    this.safeSetTimeout(() => {
+      this.currentStep = 2;
+    }, 500);
   }
 
   /**
@@ -2423,7 +2770,29 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   }
 
   useExample(example: string): void {
-    // Clear suggestions immediately when one is selected
+    // Check if we're in an active conversation flow
+    if (
+      this.conversationFlow &&
+      this.conversationFlow.currentStep > 0 &&
+      this.conversationFlow.currentStep < this.conversationFlow.totalSteps
+    ) {
+      // Add user's response to chat
+      this.messages.push({
+        id: Date.now().toString(),
+        content: example,
+        sender: "user",
+        timestamp: new Date(),
+      });
+
+      // Progress the conversation flow
+      this.handleConversationStep(example);
+
+      // Clear suggestions
+      this.exampleMessages = [];
+      return;
+    }
+
+    // Default behavior for non-flow interactions
     this.exampleMessages = [];
     this.currentMessage = example;
     this.sendMessage();

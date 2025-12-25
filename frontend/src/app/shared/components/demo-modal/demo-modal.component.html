@@ -9,11 +9,7 @@
   <!-- Desktop Abandoned Cart Demo -->
   @if ((agent.id === 'cart' || agent.id === 'cart-recovery' || agent.id ===
   'abandoned-cart') && !isMobile()) {
-  <app-welcome-chat
-    [dialog]="true"
-    (modalClose)="onClose()"
-    (click)="$event.stopPropagation()"
-  ></app-welcome-chat>
+  <iframe src="/abandoned-cart" class="agent-iframe"></iframe>
   }
 
   <!-- Mobile Container mimicking the snippet -->

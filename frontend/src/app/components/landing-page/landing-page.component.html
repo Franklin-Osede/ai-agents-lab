@@ -1,12 +1,19 @@
 <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-  <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/10 blur-[100px]"></div>
-  <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-400/10 blur-[100px]"></div>
+  <!-- Gradient Overlays -->
+  <div
+    class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/10 blur-[100px]"
+  ></div>
+  <div
+    class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-400/10 blur-[100px]"
+  ></div>
 </div>
 
 <header class="w-full max-w-7xl mx-auto px-6 pt-6 pb-12 animate-fade-in-up">
   <!-- Top Navigation -->
   <div class="flex justify-between items-center mb-20">
-    <div class="text-xl font-semibold tracking-tight flex items-center gap-2 text-slate-900 dark:text-white">
+    <div
+      class="text-xl font-semibold tracking-tight flex items-center gap-2 text-slate-900 dark:text-white"
+    >
       Agentics
     </div>
     <!-- Buttons hidden as requested - will be re-enabled when needed -->
@@ -18,147 +25,221 @@
       Soy Cliente
     </button>
   </div> -->
-</div>
-
-<!-- Hero Section -->
-<div class="grid lg:grid-cols-2 gap-12 items-center">
-  <!-- Text Content -->
-  <div class="md:max-w-2xl text-center lg:text-left">
-    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 text-indigo-600 dark:text-indigo-300 text-xs font-semibold mb-6 tracking-wide uppercase">
-      <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-      Inteligencia Artificial Avanzada
-    </div>
-    <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-gradient-main" style="line-height: 1.15;">
-      Revoluciona tu Negocio con <br/>
-      <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600">Agentes IA</span>
-    </h1>
-    <p class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed font-light mb-8">
-      Automatiza citas, atención al cliente y seguimiento de leads con agentes autónomos diseñados para la excelencia operativa.
-    </p>
-    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-      <button class="px-8 py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90 transition-all shadow-xl hover:translate-y-[-2px]">
-        Ver Demo General
-      </button>
-      <button class="px-8 py-4 rounded-xl bg-transparent border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
-        Conocer más
-      </button>
-    </div>
   </div>
 
-  <!-- Hero Image -->
-  <div class="relative group">
-    <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-[2rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-    <div class="relative rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl bg-slate-900 aspect-video">
-      <!-- Using version 2 (simple/clean) as requested -->
-      <img src="assets/hero-image-v2.png" alt="Agentics Dashboard" class="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity duration-700 scale-105 hover:scale-100 transform transition-transform duration-700">
-
-      <!-- Floating Badge 1 -->
-      <div class="absolute top-6 right-6 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl flex items-center gap-3 animate-fade-in-up" style="animation-delay: 0.5s;">
-        <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
-          <span class="material-symbols-outlined text-sm">check</span>
-        </div>
-        <div>
-          <div class="text-xs text-slate-300">Estado</div>
-          <div class="text-sm font-bold text-white">Sistema Activo</div>
-        </div>
+  <!-- Hero Section -->
+  <div class="grid lg:grid-cols-2 gap-12 items-center">
+    <!-- Text Content -->
+    <div class="md:max-w-2xl text-center lg:text-left">
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 text-indigo-600 dark:text-indigo-300 text-xs font-semibold mb-6 tracking-wide uppercase"
+      >
+        <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+        Inteligencia Artificial Avanzada
       </div>
+      <h1
+        class="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-gradient-main"
+        style="line-height: 1.15"
+      >
+        Revoluciona tu Negocio con <br />
+        <span
+          class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600"
+          >Agentes IA</span
+        >
+      </h1>
+      <p
+        class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed font-light mb-8"
+      >
+        Automatiza citas, atención al cliente y seguimiento de leads con agentes
+        autónomos diseñados para la excelencia operativa.
+      </p>
+      <div
+        class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+      >
+        <button
+          class="px-8 py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90 transition-all shadow-xl hover:translate-y-[-2px]"
+        >
+          Ver Demo General
+        </button>
+        <button
+          class="px-8 py-4 rounded-xl bg-transparent border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+        >
+          Conocer más
+        </button>
+      </div>
+    </div>
 
-      <!-- Floating Badge 2 -->
-      <div class="absolute bottom-6 left-6 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl flex items-center gap-3 animate-fade-in-up" style="animation-delay: 0.8s;">
-        <div class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400">
-          <span class="material-symbols-outlined text-sm">auto_awesome</span>
+    <!-- Hero Image -->
+    <div class="relative group">
+      <div
+        class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-[2rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"
+      ></div>
+      <div
+        class="relative rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl bg-slate-900 aspect-video"
+      >
+        <!-- Using version 2 (simple/clean) as requested -->
+        <img
+          src="assets/hero-image-v2.png"
+          alt="Agentics Dashboard"
+          class="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity duration-700 scale-105 hover:scale-100 transform transition-transform duration-700"
+        />
+
+        <!-- Floating Badge 1 -->
+        <div
+          class="absolute top-6 right-6 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl flex items-center gap-3 animate-fade-in-up"
+          style="animation-delay: 0.5s"
+        >
+          <div
+            class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400"
+          >
+            <span class="material-symbols-outlined text-sm">check</span>
+          </div>
+          <div>
+            <div class="text-xs text-slate-300">Estado</div>
+            <div class="text-sm font-bold text-white">Sistema Activo</div>
+          </div>
         </div>
-        <div>
-          <div class="text-xs text-slate-300">Eficiencia</div>
-          <div class="text-sm font-bold text-white">+85% Automatizado</div>
+
+        <!-- Floating Badge 2 -->
+        <div
+          class="absolute bottom-6 left-6 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl flex items-center gap-3 animate-fade-in-up"
+          style="animation-delay: 0.8s"
+        >
+          <div
+            class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400"
+          >
+            <span class="material-symbols-outlined text-sm">auto_awesome</span>
+          </div>
+          <div>
+            <div class="text-xs text-slate-300">Eficiencia</div>
+            <div class="text-sm font-bold text-white">+85% Automatizado</div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 </header>
 
-<main class="w-full max-w-7xl mx-auto px-4 pb-24 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+<main
+  class="w-full max-w-7xl mx-auto px-4 pb-24 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
+>
   <!-- DYNAMIC AGENT CARDS -->
   @for (agent of filteredAgents; track agent) {
+  <div
+    class="group relative rounded-[2rem] p-1 border hover:-translate-y-1 transition-all duration-500 animate-fade-in-up"
+    [ngClass]="{
+      'gradient-blue border-blue-100 dark:border-blue-900/50 hover:shadow-glow-blue':
+        agent.color === 'blue',
+      'gradient-rose border-rose-100 dark:border-rose-900/50 hover:shadow-glow-rose':
+        agent.color === 'rose',
+      'gradient-purple border-purple-100 dark:border-purple-900/50 hover:shadow-glow-purple':
+        agent.color === 'purple',
+      'gradient-amber border-amber-100 dark:border-amber-900/50 hover:shadow-glow-amber':
+        agent.color === 'amber',
+      'gradient-emerald border-emerald-100 dark:border-emerald-900/50 hover:shadow-glow-emerald':
+        agent.color === 'emerald',
+      'gradient-orange border-orange-100 dark:border-orange-900/50 hover:shadow-glow-orange':
+        agent.color === 'orange'
+    }"
+  >
     <div
-      class="group relative rounded-[2rem] p-1 border hover:-translate-y-1 transition-all duration-500 animate-fade-in-up"
-         [ngClass]="{
-            'gradient-blue border-blue-100 dark:border-blue-900/50 hover:shadow-glow-blue': agent.color === 'blue',
-            'gradient-rose border-rose-100 dark:border-rose-900/50 hover:shadow-glow-rose': agent.color === 'rose',
-            'gradient-purple border-purple-100 dark:border-purple-900/50 hover:shadow-glow-purple': agent.color === 'purple',
-            'gradient-amber border-amber-100 dark:border-amber-900/50 hover:shadow-glow-amber': agent.color === 'amber',
-            'gradient-emerald border-emerald-100 dark:border-emerald-900/50 hover:shadow-glow-emerald': agent.color === 'emerald',
-            'gradient-orange border-orange-100 dark:border-orange-900/50 hover:shadow-glow-orange': agent.color === 'orange'
-         }">
-      <div class="absolute inset-0 bg-white/40 dark:bg-dark-800/40 rounded-[2rem] backdrop-blur-sm -z-10"></div>
-      <div class="h-full rounded-[1.8rem] bg-white/60 dark:bg-dark-900/80 p-6 md:p-8 flex flex-col relative overflow-hidden">
-        <!-- Bg Icon -->
-        <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
-          <span class="material-symbols-outlined text-9xl rotate-12 transform translate-x-4 -translate-y-4"
-                      [ngClass]="{
-                          'text-blue-600 dark:text-blue-400': agent.color === 'blue',
-                          'text-rose-600 dark:text-rose-400': agent.color === 'rose',
-                          'text-purple-600 dark:text-purple-400': agent.color === 'purple',
-                          'text-amber-600 dark:text-amber-400': agent.color === 'amber',
-                          'text-emerald-600 dark:text-emerald-400': agent.color === 'emerald',
-                          'text-orange-600 dark:text-orange-400': agent.color === 'orange'
-                      }">
-            {{ agent.icon }}
-          </span>
-        </div>
-        <div class="relative z-10 flex flex-col h-full justify-between">
-          <div>
-            <!-- Icon Box -->
-            <div class="w-14 h-14 rounded-2xl text-white flex items-center justify-center shadow-lg mb-6 group-hover:scale-110 transition-transform duration-300"
-                         [ngClass]="{
-                             'bg-blue-500 shadow-blue-500/30': agent.color === 'blue',
-                             'bg-rose-500 shadow-rose-500/30': agent.color === 'rose',
-                             'bg-purple-500 shadow-purple-500/30': agent.color === 'purple',
-                             'bg-amber-500 shadow-amber-500/30': agent.color === 'amber',
-                             'bg-emerald-500 shadow-emerald-500/30': agent.color === 'emerald',
-                             'bg-orange-500 shadow-orange-500/30': agent.color === 'orange'
-                         }">
-              <span class="material-symbols-outlined text-3xl">{{ agent.icon }}</span>
+      class="absolute inset-0 bg-white/40 dark:bg-dark-800/40 rounded-[2rem] backdrop-blur-sm -z-10"
+    ></div>
+    <div
+      class="h-full rounded-[1.8rem] bg-white/60 dark:bg-dark-900/80 p-6 md:p-8 flex flex-col relative overflow-hidden"
+    >
+      <!-- Bg Icon -->
+      <div
+        class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity duration-500"
+      >
+        <span
+          class="material-symbols-outlined text-9xl rotate-12 transform translate-x-4 -translate-y-4"
+          [ngClass]="{
+            'text-blue-600 dark:text-blue-400': agent.color === 'blue',
+            'text-rose-600 dark:text-rose-400': agent.color === 'rose',
+            'text-purple-600 dark:text-purple-400': agent.color === 'purple',
+            'text-amber-600 dark:text-amber-400': agent.color === 'amber',
+            'text-emerald-600 dark:text-emerald-400': agent.color === 'emerald',
+            'text-orange-600 dark:text-orange-400': agent.color === 'orange'
+          }"
+        >
+          {{ agent.icon }}
+        </span>
+      </div>
+      <div class="relative z-10 flex flex-col h-full justify-between">
+        <div>
+          <!-- Icon Box -->
+          <div
+            class="w-14 h-14 rounded-2xl text-white flex items-center justify-center shadow-lg mb-6 group-hover:scale-110 transition-transform duration-300"
+            [ngClass]="{
+              'bg-blue-500 shadow-blue-500/30': agent.color === 'blue',
+              'bg-rose-500 shadow-rose-500/30': agent.color === 'rose',
+              'bg-purple-500 shadow-purple-500/30': agent.color === 'purple',
+              'bg-amber-500 shadow-amber-500/30': agent.color === 'amber',
+              'bg-emerald-500 shadow-emerald-500/30': agent.color === 'emerald',
+              'bg-orange-500 shadow-orange-500/30': agent.color === 'orange'
+            }"
+          >
+            <span class="material-symbols-outlined text-3xl">{{
+              agent.icon
+            }}</span>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+            {{ agent.name }}
+          </h2>
+          <p
+            class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-8"
+          >
+            {{ agent.description }}
+          </p>
+          <!-- Features List (Only for Booking/Rider usually, but generic here) -->
+          @if (agent.features) {
+          <div class="space-y-3">
+            @for (feat of agent.features; track feat) {
+            <div
+              class="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300"
+            >
+              <span
+                class="material-symbols-outlined text-[20px]"
+                [ngClass]="{
+                  'text-blue-500': agent.color === 'blue',
+                  'text-rose-500': agent.color === 'rose',
+                  'text-purple-500': agent.color === 'purple',
+                  'text-amber-500': agent.color === 'amber',
+                  'text-emerald-500': agent.color === 'emerald',
+                  'text-orange-500': agent.color === 'orange'
+                }"
+                >check_circle</span
+              >
+              <span>{{ feat }}</span>
             </div>
-            <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">{{ agent.name }}</h2>
-            <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-8">
-              {{ agent.description }}
-            </p>
-            <!-- Features List (Only for Booking/Rider usually, but generic here) -->
-            @if (agent.features) {
-              <div class="space-y-3">
-                @for (feat of agent.features; track feat) {
-                  <div class="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
-                    <span class="material-symbols-outlined text-[20px]"
-                                  [ngClass]="{
-                                      'text-blue-500': agent.color === 'blue',
-                                      'text-rose-500': agent.color === 'rose',
-                                      'text-purple-500': agent.color === 'purple',
-                                      'text-amber-500': agent.color === 'amber',
-                                      'text-emerald-500': agent.color === 'emerald',
-                                      'text-orange-500': agent.color === 'orange'
-                                  }">check_circle</span>
-                    <span>{{ feat }}</span>
-                  </div>
-                }
-              </div>
             }
           </div>
-          <button (click)="openDemo(agent.id)" class="w-full group/btn relative overflow-hidden rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold py-4 px-6 transition-all duration-300 hover:shadow-lg mt-8">
-            <span class="relative z-10 flex items-center justify-center gap-2">
-              Probar Demo
-              <span class="material-symbols-outlined text-lg transition-transform group-hover/btn:translate-x-1">arrow_forward</span>
-            </span>
-          </button>
+          }
         </div>
+        <button
+          (click)="openDemo(agent.id)"
+          class="w-full group/btn relative overflow-hidden rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold py-4 px-6 transition-all duration-300 hover:shadow-lg mt-8"
+        >
+          <span class="relative z-10 flex items-center justify-center gap-2">
+            Probar Demo
+            <span
+              class="material-symbols-outlined text-lg transition-transform group-hover/btn:translate-x-1"
+              >arrow_forward</span
+            >
+          </span>
+        </button>
       </div>
     </div>
+  </div>
   }
 </main>
 
 <div class="fixed bottom-8 right-8 z-50">
-  <button class="w-12 h-12 flex items-center justify-center bg-white/90 dark:bg-dark-800/90 text-slate-800 dark:text-white rounded-full shadow-lg backdrop-blur-md hover:scale-110 transition-transform focus:outline-none border border-slate-200 dark:border-slate-700" (click)="toggleDarkMode()">
+  <button
+    class="w-12 h-12 flex items-center justify-center bg-white/90 dark:bg-dark-800/90 text-slate-800 dark:text-white rounded-full shadow-lg backdrop-blur-md hover:scale-110 transition-transform focus:outline-none border border-slate-200 dark:border-slate-700"
+    (click)="toggleDarkMode()"
+  >
     <span class="material-symbols-outlined block dark:hidden">dark_mode</span>
     <span class="material-symbols-outlined hidden dark:block">light_mode</span>
   </button>
@@ -166,8 +247,6 @@
 
 <!-- Modal Container -->
 @if (selectedAgent) {
-  <app-demo-modal
-    [agent]="selectedAgent"
-    (modalClose)="closeDemo()">
-  </app-demo-modal>
+<app-demo-modal [agent]="selectedAgent" (modalClose)="closeDemo()">
+</app-demo-modal>
 }

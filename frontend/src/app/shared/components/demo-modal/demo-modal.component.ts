@@ -395,7 +395,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         ];
         this.conversationFlow.totalSteps = 5;
       } else if (serviceId === "dentista" || serviceId.includes("dental")) {
-        // 2. DENTISTA - 5 pasos
+        // 2. DENTISTA - 6 pasos (5 preguntas + calendario)
         welcomeMessage = `Bienvenido/a a ${serviceName}. Para atenderte mejor, ¿qué tipo de consulta necesitas?`;
         options = [
           "🦷 Revisión general",
@@ -404,9 +404,9 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "😁 Estética dental",
           "🦷 Otro motivo",
         ];
-        this.conversationFlow.totalSteps = 5;
+        this.conversationFlow.totalSteps = 6; // CORREGIDO: era 5
       } else if (serviceId === "fisioterapia" || serviceId.includes("fisio")) {
-        // 3. FISIOTERAPIA - 5 pasos
+        // 3. FISIOTERAPIA - 6 pasos (5 preguntas + calendario)
         welcomeMessage = `Hola, soy el asistente de ${professionalName}. Para preparar bien tu sesión, cuéntame: ¿qué zona necesitas tratar?`;
         options = [
           "🦴 Dolor de espalda / cuello",
@@ -414,7 +414,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "♿ Rehabilitación",
           "💆 Masaje descontracturante",
         ];
-        this.conversationFlow.totalSteps = 5;
+        this.conversationFlow.totalSteps = 6; // CORREGIDO: era 5
       } else if (serviceId === "estetica" || serviceId.includes("belleza")) {
         // 4. ESTÉTICA MÉDICA - 6 pasos
         welcomeMessage = `Bienvenido/a a ${serviceName}. ¿Qué tipo de tratamiento estético estás buscando?`;
@@ -516,7 +516,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     this.conversationFlow.currentStep++;
     const newStep = this.conversationFlow.currentStep;
 
-    // MÉDICO / DOCTOR FLOW
+    // MÉDICO / DOCTOR FLOW (4 preguntas + calendario = 5 pasos totales)
     if (serviceType === "clinica" || serviceType.includes("medic")) {
       if (newStep === 2) {
         nextMessage = "¿Cómo describirías la urgencia de tu consulta?";
@@ -536,12 +536,13 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "Para mostrarte los mejores horarios, ¿qué franja te viene mejor?";
         nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
       } else if (newStep === 5) {
+        // Paso 5: Mostrar calendario
         this.showCalendarWithContext();
         return;
       }
     }
 
-    // DENTISTA FLOW
+    // DENTISTA FLOW (5 preguntas + calendario = 6 pasos totales)
     else if (serviceType === "dentista" || serviceType.includes("dental")) {
       if (newStep === 2) {
         nextMessage = "¿Qué zona o diente está relacionado con tu consulta?";
@@ -572,12 +573,13 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "Para mostrarte los mejores horarios disponibles, ¿qué franja prefieres?";
         nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
       } else if (newStep === 6) {
+        // Paso 6: Mostrar calendario
         this.showCalendarWithContext();
         return;
       }
     }
 
-    // FISIOTERAPIA FLOW
+    // FISIOTERAPIA FLOW (5 preguntas + calendario = 6 pasos totales)
     else if (serviceType === "fisioterapia" || serviceType.includes("fisio")) {
       if (newStep === 2) {
         nextMessage = "¿Cómo describirías tu molestia ahora mismo?";
@@ -603,6 +605,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "Para mostrarte los mejores horarios disponibles, ¿qué franja prefieres?";
         nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
       } else if (newStep === 6) {
+        // Paso 6: Mostrar calendario
         this.showCalendarWithContext();
         return;
       }

@@ -38,7 +38,9 @@ async function bootstrap() {
     'http://localhost:5173',
   ];
   const envOrigins = process.env.CORS_ORIGIN
-    ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim()).filter(Boolean)
+    ? process.env.CORS_ORIGIN.split(',')
+        .map((o) => o.trim())
+        .filter(Boolean)
     : [];
   const allowedOrigins = envOrigins.length > 0 ? envOrigins : defaultOrigins;
 
@@ -50,25 +52,16 @@ async function bootstrap() {
       }
 
       // Always allow localhost variants for dev
-      if (
-        origin.startsWith('http://localhost:') ||
-        origin.startsWith('http://127.0.0.1:')
-      ) {
+      if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
         return callback(null, true);
       }
 
       // Explicit allowlist from env/default
-      if (
-        allowedOrigins.includes('*') ||
-        allowedOrigins.some((o) => o === origin)
-      ) {
+      if (allowedOrigins.includes('*') || allowedOrigins.some((o) => o === origin)) {
         return callback(null, true);
       }
 
-      return callback(
-        new Error(`Origin ${origin} not allowed by CORS configuration`),
-        false,
-      );
+      return callback(new Error(`Origin ${origin} not allowed by CORS configuration`), false);
     },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,

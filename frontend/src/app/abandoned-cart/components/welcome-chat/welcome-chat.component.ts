@@ -6,6 +6,7 @@ import {
   booleanAttribute,
   Output,
   EventEmitter,
+  OnDestroy,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule, Router } from "@angular/router";
@@ -228,7 +229,7 @@ import { CartMetrics } from "../../models/cart.model";
     `,
   ],
 })
-export class WelcomeChatComponent {
+export class WelcomeChatComponent implements OnDestroy {
   private voiceService = inject(VoiceService);
   private router = inject(Router);
   private orchestrator = inject(AgentOrchestratorService);
@@ -351,5 +352,18 @@ export class WelcomeChatComponent {
    */
   goToDashboard(): void {
     this.router.navigate(["/abandoned-cart/dashboard"]);
+  }
+
+  /**
+   * Cleanup when component is destroyed
+   */
+  ngOnDestroy(): void {
+    // Stop and cleanup audio
+    if (this.greetingAudio) {
+      this.greetingAudio.pause();
+      this.greetingAudio.currentTime = 0;
+      this.greetingAudio = null;
+    }
+    this.isAgentSpeaking.set(false);
   }
 }

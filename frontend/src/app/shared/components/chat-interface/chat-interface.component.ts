@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatMessage } from '../../models/agent.model';
 
@@ -12,10 +12,10 @@ import { ChatMessage } from '../../models/agent.model';
 export class ChatInterfaceComponent {
   @Input() messages: ChatMessage[] = [];
   @Input() isLoading = false;
+  @Output() toggleAudio = new EventEmitter<ChatMessage>();
 
   getMessageClass(message: ChatMessage): string {
     if (message.isSystem) return 'message-system';
     return message.sender === 'user' ? 'message-user' : 'message-agent';
   }
 }
-

@@ -6,6 +6,8 @@ import {
   OnInit,
   OnDestroy,
   inject,
+  ChangeDetectorRef,
+  NgZone,
 } from "@angular/core";
 import { GoogleMapsAutocompleteComponent } from "../google-maps-autocomplete/google-maps-autocomplete.component";
 import { Agent, AgentResponse } from "../../models/agent.model";
@@ -93,6 +95,8 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   currentAudio: HTMLAudioElement | null = null;
   isPlayingAudio = false;
   enableVoice = true; // Enable voice for booking agent
+  awaitingCalendar = false;
+  private currentlyPlayingMessage: ChatMessage | null = null;
 
   // Helper methods for template type safety
   isStep(step: number): boolean {
@@ -148,6 +152,8 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
   private voiceService = inject(VoiceService);
+  private cdr = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
 
   isMobile(): boolean {
     return window.innerWidth < 768; // Tailwind md breakpoint
@@ -758,6 +764,9 @@ export class DemoModalComponent implements OnInit, OnDestroy {
 
     // Add the next message to the chat
     if (nextMessage) {
+      console.log("🟢 Adding next message to chat:", nextMessage);
+      console.log("🟢 Next options:", nextOptions);
+
       this.messages.push({
         id: `flow-step-${newStep}`,
         content: nextMessage,
@@ -765,23 +774,46 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         timestamp: new Date(),
       });
 
-      // Play audio
+      // Update options FIRST, before playing audio - Force array reference change
+      this.ngZone.run(() => {
+        // CRITICAL: Clear the array first to force Angular to detect the change
+        this.exampleMessages = [];
+        this.cdr.detectChanges(); // Detect the clear
+
+        // Then set the new values with new array reference
+        this.exampleMessages = [...nextOptions];
+        console.log("🟢 exampleMessages updated to:", this.exampleMessages);
+        console.log("🟢 detectedDayOptions:", this.detectedDayOptions);
+        console.log("🟢 currentStep (modal step):", this.currentStep);
+        console.log(
+          "🟢 Should show chips?",
+          this.exampleMessages.length > 0 &&
+            this.detectedDayOptions.length === 0
+        );
+
+        // Force Angular change detection inside NgZone
+        this.cdr.detectChanges();
+        console.log("🟢 Change detection triggered inside NgZone");
+      });
+
+      // Play audio AFTER updating chips
       if (this.enableVoice) {
         this.playMessageAudio(nextMessage);
       }
-
-      // Update options
-      this.exampleMessages = nextOptions;
+    } else {
+      console.log("⚠️ NO nextMessage - this should not happen!");
+      console.log("⚠️ newStep:", newStep);
+      console.log("⚠️ serviceType:", serviceType);
     }
   }
 
   /**
-   * Show calendar with context from the conversation flow
+   * Prompt user before showing calendar; calendar opens after explicit tap
    */
   private showCalendarWithContext(): void {
     const professionalName =
       this.selectedProfessionalData?.name || "el profesional";
-    const message = `Perfecto 👍 Según lo que me indicas, estas son las mejores opciones disponibles con ${professionalName}:`;
+    const message = `Perfecto 👍 pulsa "Ver disponibilidad" para abrir el calendario y ver horarios con ${professionalName} en los próximos días y semanas.`;
 
     this.messages.push({
       id: "show-calendar",
@@ -794,13 +826,41 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       this.playMessageAudio(message);
     }
 
-    // Clear options and show calendar
+    // Offer an explicit chip to open the calendar
+    this.exampleMessages = [];
+    this.awaitingCalendar = true;
+  }
+
+  /**
+   * Actually display the calendar (after user confirms)
+   */
+  private openCalendar(): void {
+    this.awaitingCalendar = false;
     this.exampleMessages = [];
 
-    // Trigger calendar display (step 2)
-    this.safeSetTimeout(() => {
-      this.currentStep = 2;
-    }, 500);
+    const prompt =
+      "Aquí tienes la disponibilidad. Elige el día y la hora que mejor te vaya.";
+    this.messages.push({
+      id: "calendar-open",
+      content: prompt,
+      sender: "agent",
+      timestamp: new Date(),
+    });
+    if (this.enableVoice) {
+      this.playMessageAudio(prompt);
+    }
+
+    // If calendar CTA button is already visible, let the user tap it; otherwise open inline
+    const shouldOpenInline =
+      !this.messages.length ||
+      !this.conversationFlow ||
+      this.conversationFlow.currentStep >= this.conversationFlow.totalSteps;
+
+    if (shouldOpenInline) {
+      this.safeSetTimeout(() => {
+        this.currentStep = 2;
+      }, 300);
+    }
   }
 
   /**
@@ -2663,6 +2723,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       this.selectedService = null;
       this.cachedServiceId = null;
       this.cachedProfessionals = [];
+      this.awaitingCalendar = false;
     }
     this.currentStep = step;
   }
@@ -2700,6 +2761,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     this.availableSlots = [];
     this.detectedDayOptions = [];
     this.selectedDayOption = null;
+    this.awaitingCalendar = false;
     this.selectedProfessional = null;
     this.selectedProfessionalData = null;
     this.showCalendarModal = false;
@@ -2774,11 +2836,29 @@ export class DemoModalComponent implements OnInit, OnDestroy {
 
   useExample(example: string): void {
     // Check if we're in an active conversation flow
+    console.log("🔵 useExample called with:", example);
+    console.log("🔵 conversationFlow state:", this.conversationFlow);
+
+    // If awaiting calendar confirmation, handle it first
+    if (this.awaitingCalendar) {
+      const lower = example.toLowerCase();
+      if (
+        lower.includes("disponibil") ||
+        lower.includes("ver calendario") ||
+        lower.includes("calendario")
+      ) {
+        this.openCalendar();
+        return;
+      }
+    }
+
     if (
       this.conversationFlow &&
       this.conversationFlow.currentStep > 0 &&
-      this.conversationFlow.currentStep < this.conversationFlow.totalSteps
+      this.conversationFlow.currentStep <= this.conversationFlow.totalSteps // FIXED: was <, now <=
     ) {
+      console.log("✅ Entering conversation flow handler");
+
       // Add user's response to chat
       this.messages.push({
         id: Date.now().toString(),
@@ -2789,12 +2869,10 @@ export class DemoModalComponent implements OnInit, OnDestroy {
 
       // Progress the conversation flow
       this.handleConversationStep(example);
-
-      // Clear suggestions
-      this.exampleMessages = [];
       return;
     }
 
+    console.log("⚠️ NOT in conversation flow, using default sendMessage");
     // Default behavior for non-flow interactions
     this.exampleMessages = [];
     this.currentMessage = example;
@@ -4231,18 +4309,22 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       message.isAudioMessage = true;
       message.audioPlaying = true;
       message.showTranscript = false; // Hide transcript while playing
-
-      this.isPlayingAudio = true;
-
-      // Stop any current audio
-      if (this.currentAudio) {
+      // Stop any current audio (and mark it as not playing)
+      if (
+        this.currentAudio &&
+        this.currentlyPlayingMessage &&
+        this.currentlyPlayingMessage !== message
+      ) {
         this.currentAudio.pause();
-        this.currentAudio = null;
+        this.currentlyPlayingMessage.audioPlaying = false;
       }
+      this.isPlayingAudio = true;
 
       // Generate and play audio
       const audioBuffer = await this.voiceService.generateGreeting(textContent);
       this.currentAudio = this.voiceService.playAudioBlob(audioBuffer);
+      message.audioElement = this.currentAudio;
+      this.currentlyPlayingMessage = message;
 
       // Handle audio end
       if (this.currentAudio) {
@@ -4250,6 +4332,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           this.isPlayingAudio = false;
           message.audioPlaying = false;
           message.showTranscript = true; // Show transcript after audio finishes
+          this.currentlyPlayingMessage = null;
         };
       }
     } catch (error) {
@@ -4257,10 +4340,53 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       this.isPlayingAudio = false;
       // Show transcript on error
       if (typeof messageOrText !== "string") {
-        messageOrText.audioPlaying = false;
-        messageOrText.showTranscript = true;
+      messageOrText.audioPlaying = false;
+      messageOrText.showTranscript = true;
       }
     }
+  }
+
+  onToggleAudio(message: ChatMessage): void {
+    // If we already have an audio element for this message
+    if (message.audioElement) {
+      // If it's currently playing, pause it
+      if (!message.audioElement.paused) {
+        message.audioElement.pause();
+        message.audioPlaying = false;
+        this.isPlayingAudio = false;
+        return;
+      }
+
+      // Otherwise resume from current position
+      if (this.currentAudio && this.currentAudio !== message.audioElement) {
+        this.currentAudio.pause();
+        if (this.currentlyPlayingMessage) {
+          this.currentlyPlayingMessage.audioPlaying = false;
+        }
+      }
+
+      this.currentAudio = message.audioElement;
+      this.currentlyPlayingMessage = message;
+      message.audioElement
+        .play()
+        .then(() => {
+          message.audioPlaying = true;
+          this.isPlayingAudio = true;
+          message.audioElement!.onended = () => {
+            message.audioPlaying = false;
+            this.isPlayingAudio = false;
+            this.currentlyPlayingMessage = null;
+          };
+        })
+        .catch((err) => {
+          console.warn("Failed to resume audio, regenerating:", err);
+          this.playMessageAudio(message);
+        });
+      return;
+    }
+
+    // No cached audio element yet, generate and play
+    this.playMessageAudio(message);
   }
 
   ngOnDestroy(): void {

@@ -423,6 +423,7 @@
         <app-chat-interface
           [messages]="messages"
           [isLoading]="isLoading"
+          (toggleAudio)="onToggleAudio($event)"
         ></app-chat-interface>
 
         <!-- Day Options Display (when agent offers days) -->
@@ -480,8 +481,10 @@
         }
 
         <!-- Button to open calendar if no availability shown yet -->
+        <!-- ONLY show if NOT in an active conversation flow -->
         @if (availableSlots.length === 0 && !checkingAvailability &&
-        messages.length > 2) {
+        messages.length > 2 && (!conversationFlow ||
+        conversationFlow.currentStep >= conversationFlow.totalSteps)) {
         <div class="calendar-cta">
           <button class="open-calendar-btn-large" (click)="openCalendarModal()">
             <span class="material-symbols-outlined">calendar_today</span>
@@ -1157,7 +1160,6 @@
     <!-- BOTTOM INPUT AREA (Only on Chat Step 1) -->
     @if (currentStep === 1) {
     <div class="mobile-footer">
-      <!-- Chips -->
       @if (exampleMessages.length > 0 && detectedDayOptions.length === 0) {
       <div class="chips-scroll">
         @for (ex of exampleMessages; track ex) {

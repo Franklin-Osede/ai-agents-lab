@@ -25,14 +25,20 @@
       <!-- WhatsApp-Style Audio Message (for agent audio messages) -->
       @if (message.isAudioMessage && message.sender === 'agent') {
       <div class="audio-message-container">
-        <div class="audio-player">
-          <span class="material-symbols-outlined mic-icon">mic</span>
+        <button
+          type="button"
+          class="audio-player"
+          (click)="toggleAudio.emit(message)"
+        >
+          <span class="material-symbols-outlined mic-icon">
+            {{ message.audioPlaying ? "pause" : "play_arrow" }}
+          </span>
           <div class="waveform" [class.playing]="message.audioPlaying">
             <span></span><span></span><span></span><span></span> <span></span
             ><span></span><span></span><span></span>
           </div>
           <span class="duration">{{ message.audioDuration || "0:03" }}</span>
-        </div>
+        </button>
         <!-- Transcript removed - audio waveform is enough -->
       </div>
       }

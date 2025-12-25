@@ -32,8 +32,44 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggingInterceptor(), new TransformInterceptor());
 
   // CORS
+  const defaultOrigins = [
+    'http://localhost:4200',
+    'http://localhost:4201',
+    'http://localhost:5173',
+  ];
+  const envOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim()).filter(Boolean)
+    : [];
+  const allowedOrigins = envOrigins.length > 0 ? envOrigins : defaultOrigins;
+
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: (origin, callback) => {
+      // Allow server-to-server or same-origin calls (no Origin header)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      // Always allow localhost variants for dev
+      if (
+        origin.startsWith('http://localhost:') ||
+        origin.startsWith('http://127.0.0.1:')
+      ) {
+        return callback(null, true);
+      }
+
+      // Explicit allowlist from env/default
+      if (
+        allowedOrigins.includes('*') ||
+        allowedOrigins.some((o) => o === origin)
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(
+        new Error(`Origin ${origin} not allowed by CORS configuration`),
+        false,
+      );
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
@@ -50,7 +86,7 @@ async function bootstrap() {
     .addTag('dm-response-agent', 'Direct message response agent')
     .addTag('follow-up-agent', 'Automated follow-up agent')
     .addBearerAuth()
-    .addServer(process.env.API_URL || 'http://localhost:3001', 'Development server')
+    .addServer(process.env.API_URL || 'http://localhost:3003', 'Development server')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -62,7 +98,7 @@ async function bootstrap() {
     },
   });
 
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 3003;
   await app.listen(port);
 
   logger.log(`🚀 Application is running on: http://localhost:${port}`);

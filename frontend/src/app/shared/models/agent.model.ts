@@ -53,5 +53,5 @@ export interface ChatMessage {
   audioPlaying?: boolean;
   audioDuration?: number;
   showTranscript?: boolean;
+  audioElement?: HTMLAudioElement;
 }
-

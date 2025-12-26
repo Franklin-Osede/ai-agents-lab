@@ -7,7 +7,7 @@ import { RouterModule } from "@angular/router";
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: "./search-results.component.html",
-  styleUrl: "./search-results.component.css",
+  styleUrl: "./search-results.component.scss",
 })
 export class SearchResultsComponent implements OnInit {
   showGreeting = true; // Show immediately for debugging

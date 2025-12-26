@@ -57,4 +57,40 @@ export class VoiceController {
       res.status(500).json({ error: 'Voice interaction failed' });
     }
   }
+
+  @Post('generate-greeting')
+  async generateGreeting(@Body() body: { text: string; agentType?: string }, @Res() res: Response) {
+    try {
+      // Map agent types to optimized voices
+      const voiceMap = {
+        cart: 'nova', // Warm, friendly female voice
+        rider: 'nova', // Warm, friendly female voice
+        booking: 'echo', // Clear, professional male voice
+        default: 'nova', // Default to nova
+      };
+
+      const voice = voiceMap[body.agentType || 'default'];
+
+      console.log(
+        `🎙️ Generating greeting for agent: ${body.agentType || 'default'} with voice: ${voice}`,
+      );
+
+      // Generate audio with optimized settings
+      const audioBuffer = await this.openAi.generateAudio(body.text, {
+        voice,
+        model: 'tts-1-hd', // Higher quality model
+        speed: 1.0, // Natural speaking speed
+      });
+
+      res.set({
+        'Content-Type': 'audio/mpeg',
+        'Cache-Control': 'public, max-age=86400', // Cache for 24 hours
+      });
+
+      res.send(audioBuffer);
+    } catch (error) {
+      console.error('Greeting generation error:', error);
+      res.status(500).json({ error: 'Greeting generation failed' });
+    }
+  }
 }

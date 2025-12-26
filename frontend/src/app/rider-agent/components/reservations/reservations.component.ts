@@ -15,7 +15,7 @@ interface TimeSlot {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: "./reservations.component.html",
-  styleUrls: ["./reservations.component.css"], // Note: using CSS file, but we might want SCSS later.
+  styleUrls: ["./reservations.component.scss"],
 })
 export class ReservationsComponent implements OnInit {
   private router = inject(Router);

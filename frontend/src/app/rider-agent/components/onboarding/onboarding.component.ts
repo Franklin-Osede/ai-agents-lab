@@ -16,7 +16,7 @@ import { Location } from "@angular/common";
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: "./onboarding.component.html",
-  styleUrls: ["./onboarding.component.css"],
+  styleUrls: ["./onboarding.component.scss"],
 })
 export class OnboardingComponent implements OnInit, OnDestroy {
   name = "";

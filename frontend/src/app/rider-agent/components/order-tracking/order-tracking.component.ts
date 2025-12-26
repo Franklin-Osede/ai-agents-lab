@@ -19,7 +19,7 @@ import * as L from "leaflet";
   standalone: true,
   imports: [CommonModule],
   templateUrl: "./order-tracking.component.html",
-  styleUrls: ["./order-tracking.component.css"],
+  styleUrls: ["./order-tracking.component.scss"],
 })
 export class OrderTrackingComponent
   implements OnInit, OnDestroy, AfterViewInit
@@ -218,7 +218,6 @@ export class OrderTrackingComponent
       }
     }
   }
-
 
   goBack() {
     window.history.back();

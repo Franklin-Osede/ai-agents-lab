@@ -109,8 +109,10 @@ export class VoiceService {
   /**
    * Generate greeting audio from text (TTS only, no STT)
    * Uses cache to avoid regenerating same messages
+   * @param text - The text to convert to speech
+   * @param agentType - Optional agent type for voice optimization (cart, booking, rider)
    */
-  async generateGreeting(text: string): Promise<Blob> {
+  async generateGreeting(text: string, agentType?: string): Promise<Blob> {
     // Check cache first
     const cacheKey = text.toLowerCase().trim();
     if (this.audioCache.has(cacheKey)) {
@@ -124,7 +126,7 @@ export class VoiceService {
       const response = await firstValueFrom(
         this.http.post(
           `${this.apiUrl}/generate-greeting`,
-          { text },
+          { text, agentType }, // Pass agentType to backend
           { responseType: "blob" }
         )
       );

@@ -24,7 +24,7 @@ interface ChatMessage {
   standalone: true,
   imports: [RouterModule, CommonModule, FormsModule],
   templateUrl: "./restaurant-details.component.html",
-  styleUrl: "./restaurant-details.component.css",
+  styleUrl: "./restaurant-details.component.scss",
 })
 export class RestaurantDetailsComponent {
   private voiceService = inject(VoiceService);

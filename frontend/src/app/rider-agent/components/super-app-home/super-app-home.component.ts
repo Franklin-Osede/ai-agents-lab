@@ -19,7 +19,7 @@ import { UserSessionService } from "../../services/user-session.service";
 @Component({
   selector: "app-super-app-home",
   templateUrl: "./super-app-home.component.html",
-  styleUrls: [], // No separate style file used as Tailwind is used in HTML
+  styleUrl: "./super-app-home.component.scss",
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
 })

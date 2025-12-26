@@ -84,18 +84,29 @@ Respond with JSON format: {"intent": "INTENT_NAME", "confidence": 0.0-1.0}`;
     }
   }
 
-  async generateAudio(text: string): Promise<Buffer> {
+  async generateAudio(
+    text: string,
+    options?: {
+      voice?: 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer';
+      model?: 'tts-1' | 'tts-1-hd';
+      speed?: number;
+    },
+  ): Promise<Buffer> {
     try {
-      // Use more natural and cheerful Spanish voices
-      // nova = female, warm, natural
-      // shimmer = female, expressive, cheerful
-      const spanishVoices: Array<'nova' | 'shimmer'> = ['nova', 'shimmer'];
-      const randomVoice = spanishVoices[Math.floor(Math.random() * spanishVoices.length)];
+      const {
+        voice = 'nova', // Default to nova (warm, friendly female)
+        model = 'tts-1-hd', // Default to HD quality
+        speed = 1.0, // Default to natural speed
+      } = options || {};
+
+      console.log(`🎙️ Generating audio with voice: ${voice}, model: ${model}, speed: ${speed}`);
 
       const mp3 = await this.client.audio.speech.create({
-        model: 'tts-1',
-        voice: randomVoice,
+        model,
+        voice,
         input: text,
+        speed,
+        response_format: 'mp3', // Explicit format
       });
 
       const buffer = Buffer.from(await mp3.arrayBuffer());

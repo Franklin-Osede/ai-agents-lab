@@ -120,29 +120,6 @@ import { CartMetrics } from "../../models/cart.model";
             <div
               class="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-card-soft border border-slate-100 mb-6"
             >
-              <div class="flex items-start gap-4 mb-4">
-                <div class="flex-shrink-0">
-                  <div
-                    class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center"
-                  >
-                    <span class="material-symbols-outlined text-white text-xl">
-                      waving_hand
-                    </span>
-                  </div>
-                </div>
-                <div class="flex-1">
-                  <h2 class="text-lg font-bold text-slate-800 mb-2">
-                    ¡Hola! 👋
-                  </h2>
-                  <p class="text-slate-600 text-sm leading-relaxed">
-                    Soy tu <strong>Agente Recuperador de Carritos</strong>. Dale
-                    a continuar y podrás
-                    <strong>maximizar las ventas</strong> de usuarios que
-                    dejaron items en el carrito.
-                  </p>
-                </div>
-              </div>
-
               <!-- Audio Indicator (when playing) -->
               @if (isAgentSpeaking()) {
               <div

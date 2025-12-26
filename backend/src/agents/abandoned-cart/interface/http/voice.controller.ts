@@ -62,7 +62,7 @@ export class VoiceController {
   async generateGreeting(@Body() body: { text: string; agentType?: string }, @Res() res: Response) {
     try {
       // Map agent types to optimized voices
-      const voiceMap = {
+      const voiceMap: Record<string, 'nova' | 'echo' | 'alloy' | 'fable' | 'onyx' | 'shimmer'> = {
         cart: 'nova', // Warm, friendly female voice
         rider: 'nova', // Warm, friendly female voice
         booking: 'echo', // Clear, professional male voice

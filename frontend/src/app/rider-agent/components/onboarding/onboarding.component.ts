@@ -9,6 +9,7 @@ import { CommonModule, isPlatformBrowser } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { UserSessionService } from "../../services/user-session.service";
+import { PollyTTSService } from "../../../shared/services/polly-tts.service";
 import { Location } from "@angular/common";
 
 @Component({
@@ -22,6 +23,7 @@ export class OnboardingComponent implements OnInit, OnDestroy {
   name = "";
   router = inject(Router);
   session = inject(UserSessionService);
+  private pollyService = inject(PollyTTSService);
   location = inject(Location);
   platformId = inject(PLATFORM_ID);
 
@@ -35,7 +37,7 @@ export class OnboardingComponent implements OnInit, OnDestroy {
       sessionStorage.removeItem("rider_welcome_played");
 
       // Stop any existing audio first
-      window.speechSynthesis.cancel();
+      this.pollyService.stop();
 
       // Small delay to ensure clean state
       setTimeout(() => {
@@ -46,7 +48,7 @@ export class OnboardingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (isPlatformBrowser(this.platformId)) {
-      window.speechSynthesis.cancel();
+      this.pollyService.stop();
     }
   }
 
@@ -56,13 +58,9 @@ export class OnboardingComponent implements OnInit, OnDestroy {
 
     const text =
       "Hola, bienvenido a Rider Agent. Escríbenos tu nombre y continúa con el pedido.";
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel(); // Safety cancel
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "es-ES";
-      utterance.rate = 1.0;
-      window.speechSynthesis.speak(utterance);
-    }
+
+    // Use Polly Service for Neural voice
+    this.pollyService.speak(text);
   }
 
   continue() {

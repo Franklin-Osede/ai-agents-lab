@@ -11,7 +11,7 @@ import {
 import { CommonModule } from "@angular/common";
 import { RouterModule, Router } from "@angular/router";
 import { VoiceService } from "../../../shared/services/voice.service";
-import { BrowserTTSService } from "../../../shared/services/browser-tts.service";
+import { PollyTTSService } from "../../../shared/services/polly-tts.service";
 import { AgentOrchestratorService } from "../../../shared/services/agent-orchestrator.service";
 import { AbandonedCartAgentService } from "../../services/abandoned-cart-agent.service";
 import { AbandonedCartService } from "../../services/abandoned-cart.service";
@@ -209,7 +209,7 @@ import { CartMetrics } from "../../models/cart.model";
 })
 export class WelcomeChatComponent implements OnDestroy {
   private voiceService = inject(VoiceService);
-  private browserTTS = inject(BrowserTTSService);
+  private pollyService = inject(PollyTTSService);
   private router = inject(Router);
   private orchestrator = inject(AgentOrchestratorService);
   private cartAgent = inject(AbandonedCartAgentService);
@@ -218,7 +218,9 @@ export class WelcomeChatComponent implements OnDestroy {
   // State signals
   currentTime = signal<string>("9:41");
   metrics = signal<CartMetrics | null>(null);
-  isAgentSpeaking = signal<boolean>(false);
+
+  // Bind directly to Polly Service signal
+  isAgentSpeaking = this.pollyService.isAgentSpeaking;
 
   // Audio
   private greetingAudio: HTMLAudioElement | null = null;
@@ -284,28 +286,14 @@ export class WelcomeChatComponent implements OnDestroy {
    * Migrated from OpenAI TTS for 93% faster response (2200ms → 150ms)
    */
   private playGreeting() {
-    if (!this.browserTTS.isSupported()) {
-      console.warn("⚠️ Browser TTS not supported");
-      return;
-    }
+    // 1. Stop any background audio immediately using Polly Service
+    this.pollyService.stop();
 
     const greetingText =
       "¡Hola! Soy tu Agente Recuperador de Carritos. Dale a continuar y podrás maximizar las ventas de usuarios que dejaron items en el carrito.";
 
-    this.browserTTS.speak(greetingText, {
-      rate: 1.0,
-      pitch: 1.0,
-      onStart: () => {
-        this.isAgentSpeaking.set(true);
-      },
-      onEnd: () => {
-        this.isAgentSpeaking.set(false);
-      },
-      onError: (error) => {
-        console.error("Error playing greeting:", error);
-        this.isAgentSpeaking.set(false);
-      },
-    });
+    // Use Polly Service to speak
+    this.pollyService.speak(greetingText);
   }
 
   /**
@@ -341,7 +329,7 @@ export class WelcomeChatComponent implements OnDestroy {
    */
   ngOnDestroy(): void {
     // Stop Browser TTS speech
-    this.browserTTS.stop();
+    this.pollyService.stop();
     this.isAgentSpeaking.set(false);
   }
 }

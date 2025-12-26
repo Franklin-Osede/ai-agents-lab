@@ -12,15 +12,18 @@
   </div>
 
   <div class="fixed inset-0 pointer-events-none z-0">
+    <!-- Restaurant Background Overlay -->
     <div
-      class="absolute top-[10%] left-[20%] w-[300px] h-[300px] bg-indigo-100 rounded-full orb-blur animate-float opacity-60"
+      class="absolute inset-0 bg-cover bg-center"
+      style="
+        background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1000&auto=format&fit=crop');
+      "
     ></div>
-    <div
-      class="absolute bottom-[20%] right-[10%] w-[250px] h-[250px] bg-orange-50 rounded-full orb-blur animate-float opacity-60"
-      style="animation-delay: -2s"
-    ></div>
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
+
+    <!-- Subtle noise texture -->
     <svg
-      class="absolute inset-0 w-full h-full opacity-[0.03] mix-blend-overlay pointer-events-none"
+      class="absolute inset-0 w-full h-full opacity-[0.05] mix-blend-overlay pointer-events-none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <filter id="noiseFilter">
@@ -108,18 +111,18 @@
           >
         </div>
         <h1
-          class="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight leading-tight"
+          class="text-3xl md:text-4xl font-bold text-white tracking-tight leading-tight"
         >
           Hola, bienvenido a<br />
           <span
-            class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-indigo-400"
+            class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-indigo-200"
             >Rider Agent.</span
           >
         </h1>
       </div>
 
       <div
-        class="pt-8 w-full opacity-0 animate-fade-in-delayed"
+        class="pt-8 w-full animate-fade-in-delayed"
         style="animation-delay: 0.6s"
       >
         <div class="relative group mx-auto w-full max-w-[320px]">

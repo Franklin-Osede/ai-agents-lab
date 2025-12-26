@@ -35,8 +35,9 @@ export class AbandonedCartService {
     // Try API first, fallback to mock data
     return this.http.get<Cart[]>(`${this.baseUrl}/list`).pipe(
       map((carts) => carts.map(this.mapToCart)),
-      catchError(() => {
-        // Fallback to mock data if API fails
+      catchError((error) => {
+        console.warn("API list failed, using mock data:", error);
+        // Fallback to mock data if API fails (including 404)
         return of(this.getMockCarts());
       })
     );

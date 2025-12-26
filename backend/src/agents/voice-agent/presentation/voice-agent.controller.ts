@@ -20,6 +20,7 @@ import {
   IAiProvider,
   AI_PROVIDER_TOKEN,
 } from '../../../core/domain/agents/interfaces/ai-provider.interface';
+import { PollyService } from '../../../core/services/polly.service';
 
 @ApiTags('Voice Agent')
 @Controller('agents/voice')
@@ -27,6 +28,7 @@ export class VoiceAgentController {
   constructor(
     private readonly voiceAgentService: VoiceAgentService,
     @Inject(AI_PROVIDER_TOKEN) private readonly aiProvider: IAiProvider,
+    private readonly pollyService: PollyService,
   ) {}
 
   @Post('generate')
@@ -131,7 +133,15 @@ export class VoiceAgentController {
         return res.status(400).json({ error: 'Text is required' });
       }
 
-      const audioBuffer = await this.aiProvider.generateAudio(text);
+      // Use AWS Polly Neural voice (Lucia by default)
+      const audioStream = await this.pollyService.synthesizeSpeech(text, 'Lucia');
+
+      // Convert stream to buffer
+      const chunks: Buffer[] = [];
+      for await (const chunk of audioStream) {
+        chunks.push(Buffer.from(chunk));
+      }
+      const audioBuffer = Buffer.concat(chunks);
 
       res.setHeader('Content-Type', 'audio/mpeg');
       res.setHeader('Content-Length', audioBuffer.length.toString());

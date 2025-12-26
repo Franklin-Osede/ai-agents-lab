@@ -7,7 +7,7 @@ import {
   inject,
 } from "@angular/core";
 import { VoiceService } from "../../../shared/services/voice.service";
-import { BrowserTTSService } from "../../../shared/services/browser-tts.service";
+import { PollyTTSService } from "../../../shared/services/polly-tts.service";
 import { Router, ActivatedRoute } from "@angular/router";
 import { AgentOrchestratorService } from "../../../shared/services/agent-orchestrator.service";
 
@@ -51,7 +51,7 @@ export class VoiceBookingComponent implements OnInit, OnDestroy {
   });
 
   private voiceService = inject(VoiceService);
-  private browserTTS = inject(BrowserTTSService);
+  private pollyService = inject(PollyTTSService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private orchestrator = inject(AgentOrchestratorService);
@@ -178,25 +178,8 @@ export class VoiceBookingComponent implements OnInit, OnDestroy {
     const question = this.currentQuestion();
     if (!question) return;
 
-    if (!this.browserTTS.isSupported()) {
-      console.warn("⚠️ Browser TTS not supported");
-      return;
-    }
-
-    this.browserTTS.speak(question.question, {
-      rate: 1.0,
-      pitch: 1.0,
-      onStart: () => {
-        this.isPlayingAudio.set(true);
-      },
-      onEnd: () => {
-        this.isPlayingAudio.set(false);
-      },
-      onError: (error) => {
-        console.error("Error playing question:", error);
-        this.isPlayingAudio.set(false);
-      },
-    });
+    // Use Polly Service to speak
+    this.pollyService.speak(question.question);
   }
 
   selectOption(option: VoiceOption): void {
@@ -255,6 +238,6 @@ export class VoiceBookingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     // Stop Browser TTS speech
-    this.browserTTS.stop();
+    this.pollyService.stop();
   }
 }

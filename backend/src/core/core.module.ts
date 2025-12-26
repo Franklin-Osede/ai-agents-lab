@@ -6,6 +6,8 @@ import { IAiProvider, AI_PROVIDER_TOKEN } from './domain/agents/interfaces/ai-pr
 import { HealthModule } from './shared/health/health.module';
 import { SecurityModule } from './security/security.module';
 import { IntegrationsModule } from './integrations/integrations.module';
+import { PollyService } from './services/polly.service';
+import { VoiceController } from './controllers/voice.controller';
 
 /**
  * Core Module - Provides shared infrastructure and domain services
@@ -24,9 +26,12 @@ import { IntegrationsModule } from './integrations/integrations.module';
     }),
     HealthModule,
     SecurityModule,
+    SecurityModule,
     IntegrationsModule,
   ],
+  controllers: [VoiceController],
   providers: [
+    PollyService,
     OpenAiProvider,
     LangChainProvider,
     {
@@ -64,6 +69,6 @@ import { IntegrationsModule } from './integrations/integrations.module';
       inject: [ConfigService, OpenAiProvider, LangChainProvider],
     },
   ],
-  exports: [AI_PROVIDER_TOKEN, 'IAiProvider', LangChainProvider, OpenAiProvider],
+  exports: [AI_PROVIDER_TOKEN, 'IAiProvider', LangChainProvider, OpenAiProvider, PollyService],
 })
 export class CoreModule {}

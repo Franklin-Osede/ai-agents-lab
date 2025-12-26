@@ -10,6 +10,7 @@ import { RiderAgentService } from "../../services/rider-agent.service";
 import { AgentOrchestratorService } from "../../../shared/services/agent-orchestrator.service";
 
 import { MenuDataService, MenuCard } from "../../services/menu-data.service";
+import { PollyTTSService } from "../../../shared/services/polly-tts.service";
 
 interface ChatMessage {
   role: "user" | "ai";
@@ -18,10 +19,21 @@ interface ChatMessage {
   cards?: MenuCard[]; // Use MenuCard for now, logic below might adapt
 }
 
+import { MenuGridComponent } from "./components/menu-grid/menu-grid.component";
+import { MenuCategoriesComponent } from "./components/menu-categories/menu-categories.component";
+import { CartSummaryComponent } from "./components/cart-summary/cart-summary.component";
+
 @Component({
   selector: "app-ai-menu-chat",
   standalone: true,
-  imports: [RouterModule, CommonModule, FormsModule],
+  imports: [
+    RouterModule,
+    CommonModule,
+    FormsModule,
+    MenuGridComponent,
+    MenuCategoriesComponent,
+    CartSummaryComponent,
+  ],
   templateUrl: "./ai-menu-chat.component.html",
   styleUrls: ["./ai-menu-chat.component.scss"],
 })
@@ -35,10 +47,14 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
   private orchestrator = inject(AgentOrchestratorService); // Use for switching
   private menuDataService = inject(MenuDataService);
   private location = inject(Location);
+  private pollyService = inject(PollyTTSService); // New Polly Service
 
   inputText = signal("");
   isRecording = signal(false);
   cart = this.cartService.cartItems;
+
+  // Bind directly to service signal
+  isAgentSpeaking = this.pollyService.isAgentSpeaking;
 
   get cartTotal(): number {
     return this.cartService.total;
@@ -53,7 +69,7 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
   restaurantName = "Rider Agent";
   cuisineType = "General";
   showOptions = signal(true);
-  isAgentSpeaking = signal(false);
+  // isAgentSpeaking = signal(false); // Removed local signal
 
   suggestions = signal<string[]>([]);
 
@@ -62,10 +78,8 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
   );
 
   ngOnInit() {
-    // 1. Stop any background audio immediately
-    if (typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
+    // 1. Stop any background audio immediately using Polly Service
+    this.pollyService.stop();
 
     // 2. Get User Name
     const user = this.session.user();
@@ -142,9 +156,8 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
+    // Stop any existing Polly audio
+    this.pollyService.stop();
   }
 
   async toggleRecording() {
@@ -620,78 +633,19 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     this.sendMessage();
   }
 
-  // Audio State
-  currentUtterance: SpeechSynthesisUtterance | null = null;
+  // Audio State (Polly-based)
   currentlySpeakingMessageText = signal<string | null>(null);
 
   speak(text: string) {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-
-    // Stop any current audio first
-    window.speechSynthesis.cancel();
-    this.currentUtterance = null;
-    this.currentlySpeakingMessageText.set(null);
-    this.isAgentSpeaking.set(false);
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    // CRITICAL: Set language so browser can auto-select if manual selection fails
-    utterance.lang = "es-ES";
-
-    const voices = window.speechSynthesis.getVoices();
-    this.applyVoiceAndSpeak(utterance, voices);
-  }
-
-  private applyVoiceAndSpeak(
-    utterance: SpeechSynthesisUtterance,
-    voices: SpeechSynthesisVoice[]
-  ) {
-    // 1. Try preferred Spanish voices (Google, Monica, Paulina)
-    let spanishVoice = voices.find(
-      (v) =>
-        v.lang.includes("es") &&
-        (v.name.includes("Google") ||
-          v.name.includes("Monica") ||
-          v.name.includes("Paulina"))
-    );
-
-    // 2. Fallback to ANY Spanish voice
-    if (!spanishVoice) {
-      spanishVoice = voices.find((v) => v.lang.includes("es"));
-    }
-
-    if (spanishVoice) {
-      utterance.voice = spanishVoice;
-    }
-
-    utterance.onstart = () => {
-      this.isAgentSpeaking.set(true);
-      this.currentlySpeakingMessageText.set(utterance.text);
-    };
-
-    utterance.onend = () => {
-      this.isAgentSpeaking.set(false);
-      this.currentlySpeakingMessageText.set(null);
-      this.currentUtterance = null;
-    };
-
-    utterance.onerror = (e) => {
-      console.error("Speech error", e);
-      this.isAgentSpeaking.set(false);
-      this.currentlySpeakingMessageText.set(null);
-      this.currentUtterance = null;
-    };
-
-    this.currentUtterance = utterance;
-    window.speechSynthesis.speak(utterance);
+    this.currentlySpeakingMessageText.set(text);
+    this.pollyService.speak(text);
   }
 
   toggleAudio(text: string) {
     // If clicking the same message that is playing -> Pause/Stop
     if (this.currentlySpeakingMessageText() === text) {
-      window.speechSynthesis.cancel();
+      this.pollyService.stop();
       this.currentlySpeakingMessageText.set(null);
-      this.isAgentSpeaking.set(false);
-      this.currentUtterance = null;
     } else {
       // Otherwise -> Play new message (speak() handles cancellation of others)
       this.speak(text);

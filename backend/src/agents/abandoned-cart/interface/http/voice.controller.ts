@@ -10,10 +10,14 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { OpenAiProvider } from '../../../../core/infrastructure/ai/openai.provider';
+import { PollyService } from '../../../../core/services/polly.service';
 
 @Controller('agents/voice')
 export class VoiceController {
-  constructor(private readonly openAi: OpenAiProvider) {}
+  constructor(
+    private readonly openAi: OpenAiProvider,
+    private readonly pollyService: PollyService,
+  ) {}
 
   @Post('interact')
   @UseInterceptors(FileInterceptor('audio'))
@@ -61,26 +65,29 @@ export class VoiceController {
   @Post('generate-greeting')
   async generateGreeting(@Body() body: { text: string; agentType?: string }, @Res() res: Response) {
     try {
-      // Map agent types to optimized voices
-      const voiceMap: Record<string, 'nova' | 'echo' | 'alloy' | 'fable' | 'onyx' | 'shimmer'> = {
-        cart: 'nova', // Warm, friendly female voice
-        rider: 'nova', // Warm, friendly female voice
-        booking: 'echo', // Clear, professional male voice
-        default: 'nova', // Default to nova
+      // Use AWS Polly Neural voices (premium quality)
+      const voiceMap: Record<string, 'Lucia' | 'Sergio' | 'Mia'> = {
+        cart: 'Lucia', // Spanish Neural Female
+        rider: 'Sergio', // Spanish Neural Male
+        booking: 'Mia', // Mexican Neural Female
+        default: 'Lucia',
       };
 
-      const voice = voiceMap[body.agentType || 'default'];
+      const voiceId = voiceMap[body.agentType || 'default'];
 
       console.log(
-        `🎙️ Generating greeting for agent: ${body.agentType || 'default'} with voice: ${voice}`,
+        `🎙️ [Polly] Generating greeting for agent: ${body.agentType || 'default'} with voice: ${voiceId}`,
       );
 
-      // Generate audio with optimized settings
-      const audioBuffer = await this.openAi.generateAudio(body.text, {
-        voice,
-        model: 'tts-1-hd', // Higher quality model
-        speed: 1.0, // Natural speaking speed
-      });
+      // Use Polly Service instead of OpenAI
+      const audioStream = await this.pollyService.synthesizeSpeech(body.text, voiceId);
+
+      // Convert stream to buffer
+      const chunks: Buffer[] = [];
+      for await (const chunk of audioStream) {
+        chunks.push(Buffer.from(chunk));
+      }
+      const audioBuffer = Buffer.concat(chunks);
 
       res.set({
         'Content-Type': 'audio/mpeg',

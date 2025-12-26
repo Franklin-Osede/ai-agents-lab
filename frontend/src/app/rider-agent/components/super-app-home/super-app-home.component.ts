@@ -14,6 +14,7 @@ import { RouterModule, Router } from "@angular/router";
 import { HttpClient } from "@angular/common/http";
 import { FormsModule } from "@angular/forms";
 import { VoiceService } from "../../../shared/services/voice.service";
+import { PollyTTSService } from "../../../shared/services/polly-tts.service";
 import { UserSessionService } from "../../services/user-session.service";
 
 @Component({
@@ -88,6 +89,7 @@ export class SuperAppHomeComponent implements OnInit, OnDestroy {
   private greetingTimeout: any;
   private router = inject(Router);
   private voiceService = inject(VoiceService);
+  private pollyService = inject(PollyTTSService);
   private http = inject(HttpClient);
   public session = inject(UserSessionService);
 
@@ -110,48 +112,14 @@ export class SuperAppHomeComponent implements OnInit, OnDestroy {
   }
 
   playGreeting() {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-
     // Get user details
     const user = this.session.user();
     const userName = user?.name || "Amigo";
     const greeting = user?.gender === "female" ? "bienvenida" : "bienvenido";
     const text = `Hola ${userName}, ${greeting}! ¿Qué te apetece comer hoy?`;
 
-    // Stop any existing speech
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    // CRITICAL: Set language so browser can auto-select if manual selection fails
-    utterance.lang = "es-ES";
-
-    const voices = window.speechSynthesis.getVoices();
-
-    // Try to select a Spanish voice
-    const spanishVoice = voices.find(
-      (v) =>
-        v.lang.includes("es") &&
-        (v.name.includes("Google") ||
-          v.name.includes("Monica") ||
-          v.name.includes("Paulina"))
-    );
-    // Fallback to any 'es' voice
-    const fallbackVoice =
-      spanishVoice || voices.find((v) => v.lang.includes("es"));
-
-    if (fallbackVoice) {
-      utterance.voice = fallbackVoice;
-    }
-
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-
-    // Animation control
-    utterance.onstart = () => this.isAgentSpeaking.set(true);
-    utterance.onend = () => this.isAgentSpeaking.set(false);
-    utterance.onerror = () => this.isAgentSpeaking.set(false);
-
-    window.speechSynthesis.speak(utterance);
+    // Use Polly Service for Neural voice
+    this.pollyService.speak(text);
   }
 
   async toggleRecording() {
@@ -235,9 +203,8 @@ export class SuperAppHomeComponent implements OnInit, OnDestroy {
     if (this.greetingTimeout) {
       clearTimeout(this.greetingTimeout);
     }
-    if (typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
+    // Stop Polly audio
+    this.pollyService.stop();
   }
 
   updateTime() {

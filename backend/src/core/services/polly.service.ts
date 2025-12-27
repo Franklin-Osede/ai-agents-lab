@@ -105,7 +105,7 @@ export class PollyService implements OnModuleInit {
 
     // Enhanced SSML with natural pauses for more natural speech
     // Neural voices benefit from natural pauses - using simpler SSML for better compatibility
-    let processedText = text
+    const processedText = text
       // Natural pauses at punctuation (longer pauses for questions/exclamations)
       .replace(/\. /g, '.<break time="300ms"/> ')
       .replace(/\, /g, ',<break time="200ms"/> ')

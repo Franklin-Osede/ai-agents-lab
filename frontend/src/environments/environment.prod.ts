@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  // Backend API URL - Updated 2025-12-27 12:31
   apiBaseUrl: "https://ai-agents-lab.onrender.com/api/v1",
   googleMapsApiKey: "AIzaSyAkqMXaq13jJWUMaUAJAtQniiAOmNyh2BA", // Usage of dev key for demo
   firebase: {

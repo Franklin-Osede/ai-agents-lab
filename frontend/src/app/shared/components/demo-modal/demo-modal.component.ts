@@ -18,7 +18,7 @@ import { Router } from "@angular/router";
 import { VoiceService } from "../../services/voice.service";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import { WelcomeChatComponent } from "../../../abandoned-cart/components/welcome-chat/welcome-chat.component";
+
 import { ChatInterfaceComponent } from "../chat-interface/chat-interface.component";
 import { ServiceSelectorComponent } from "../service-selector/service-selector.component";
 import { CalendarComponent } from "../calendar/calendar.component";
@@ -30,7 +30,7 @@ import { CalendarComponent } from "../calendar/calendar.component";
   imports: [
     CommonModule,
     FormsModule,
-    WelcomeChatComponent,
+
     ChatInterfaceComponent,
     ServiceSelectorComponent,
     CalendarComponent,
@@ -4340,8 +4340,8 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       this.isPlayingAudio = false;
       // Show transcript on error
       if (typeof messageOrText !== "string") {
-      messageOrText.audioPlaying = false;
-      messageOrText.showTranscript = true;
+        messageOrText.audioPlaying = false;
+        messageOrText.showTranscript = true;
       }
     }
   }

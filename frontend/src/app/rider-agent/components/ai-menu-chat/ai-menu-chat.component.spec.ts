@@ -60,17 +60,17 @@ class MockCartService {
   // Use a writable signal for testing
   cartItems: WritableSignal<CartItem[]> = signal([]);
 
-  addToCart(item: any) {}
-  removeFromCart(item: any) {}
+  addToCart(item: any) {
+    // mock
+  }
+  removeFromCart(item: any) {
+    // mock
+  }
   getQuantity(name: string) {
     return 0;
   }
-  get total() {
-    return 0;
-  }
-  get count() {
-    return 0;
-  }
+  readonly total = 0;
+  readonly count = 0;
 }
 
 // Mock Polly Service

@@ -66,8 +66,8 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
 
   messages = signal<ChatMessage[]>([]);
 
-  restaurantName = "Rider Agent";
-  cuisineType = "General";
+  readonly restaurantName = "Rider Agent";
+  readonly cuisineType = "General";
   showOptions = signal(true);
   // isAgentSpeaking = signal(false); // Removed local signal
 

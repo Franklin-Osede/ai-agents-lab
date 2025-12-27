@@ -32,7 +32,7 @@ import { CommonModule } from "@angular/common";
   styles: [],
 })
 export class CartSummaryComponent {
-  @Input() count: number = 0;
-  @Input() total: number = 0;
+  @Input() count = 0;
+  @Input() total = 0;
   @Output() viewOrder = new EventEmitter<void>();
 }

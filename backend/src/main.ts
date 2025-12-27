@@ -36,6 +36,15 @@ async function bootstrap() {
     'http://localhost:4200',
     'http://localhost:4201',
     'http://localhost:5173',
+    // Production frontends (wildcards handled below)
+    'https://ai-agents-lab-peach.vercel.app',
+    'https://ai-agents-lab-git-main-fran1014s-projects.vercel.app',
+    'https://ai-agents-algyow5h7-fran1014s-projects.vercel.app',
+  ];
+  const allowedOriginPatterns = [
+    /\.vercel\.app$/,
+    /\.vercel\.dev$/,
+    /\.onrender\.com$/,
   ];
   const envOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(',')
@@ -58,6 +67,11 @@ async function bootstrap() {
 
       // Explicit allowlist from env/default
       if (allowedOrigins.includes('*') || allowedOrigins.some((o) => o === origin)) {
+        return callback(null, true);
+      }
+
+      // Pattern allowlist for Vercel preview/custom domains and Render host
+      if (allowedOriginPatterns.some((pattern) => pattern.test(origin))) {
         return callback(null, true);
       }
 

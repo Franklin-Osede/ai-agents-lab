@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 # 3. Dependencies
 # Copy package.json and lock file first to leverage caching
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # 4. Source Code
 COPY . .
@@ -23,7 +23,7 @@ FROM node:20-alpine As production
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm install --only=production
 
 COPY --from=build /usr/src/app/dist ./dist
 

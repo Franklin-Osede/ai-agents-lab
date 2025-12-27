@@ -103,21 +103,18 @@ export class PollyService implements OnModuleInit {
     // Cache miss - generate from Polly
     this.logger.log(`[Polly] 🔄 Generating speech for: ${voiceId}`);
 
-    // Enhanced SSML with natural pauses and prosody for more natural speech
-    // Neural voices benefit from subtle prosody variations and natural pauses
-    const processedText = text
+    // Enhanced SSML with natural pauses for more natural speech
+    // Neural voices benefit from natural pauses - using simpler SSML for better compatibility
+    let processedText = text
       // Natural pauses at punctuation (longer pauses for questions/exclamations)
-      .replace(/\. /g, '.<break time="350ms"/> ')
-      .replace(/\, /g, ',<break time="250ms"/> ')
-      .replace(/\? /g, '?<break time="450ms"/> ')
-      .replace(/\! /g, '!<break time="450ms"/> ')
-      // Slight pause after "Hola" for more natural greeting
-      .replace(/^(Hola|Hola,)/i, '<break time="200ms"/>$1');
+      .replace(/\. /g, '.<break time="300ms"/> ')
+      .replace(/\, /g, ',<break time="200ms"/> ')
+      .replace(/\? /g, '?<break time="400ms"/> ')
+      .replace(/\! /g, '!<break time="400ms"/> ');
 
-    // Use prosody with subtle variations for more conversational tone
-    // rate="medium" = natural speed, pitch="+5%" = slightly higher pitch for friendliness
-    // This makes Neural voices sound more human-like and less robotic
-    const ssmlText = `<speak><prosody rate="medium" pitch="+3%">${processedText}</prosody></speak>`;
+    // Wrap in speak tags with prosody for natural intonation
+    // Using rate="medium" only (pitch variations can cause issues with some Neural voices)
+    const ssmlText = `<speak><prosody rate="medium">${processedText}</prosody></speak>`;
 
     const command = new SynthesizeSpeechCommand({
       Engine: Engine.NEURAL,

@@ -391,7 +391,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         serviceId.includes("doctor")
       ) {
         // 1. MÉDICO / DOCTOR - 5 pasos
-        welcomeMessage = `Hola, soy el asistente del ${professionalName}. Para preparar mejor tu consulta, cuéntame: ¿cuál es el motivo principal de tu visita?`;
+        welcomeMessage = `Hola, le atiende el asistente del doctor ${professionalName}. Dígame, ¿qué le preocupa hoy?`;
         options = [
           "🩺 Consulta general",
           "📊 Resultados de pruebas",
@@ -402,7 +402,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         this.conversationFlow.totalSteps = 5;
       } else if (serviceId === "dentista" || serviceId.includes("dental")) {
         // 2. DENTISTA - 6 pasos (5 preguntas + calendario)
-        welcomeMessage = `Bienvenido/a a ${serviceName}. Para atenderte mejor, ¿qué tipo de consulta necesitas?`;
+        welcomeMessage = `Bienvenido a ${serviceName}. ¿Viene por una revisión, o le duele alguna pieza?`;
         options = [
           "🦷 Revisión general",
           "😬 Dolor o molestia dental",
@@ -413,7 +413,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         this.conversationFlow.totalSteps = 6; // CORREGIDO: era 5
       } else if (serviceId === "fisioterapia" || serviceId.includes("fisio")) {
         // 3. FISIOTERAPIA - 6 pasos (5 preguntas + calendario)
-        welcomeMessage = `Hola, soy el asistente de ${professionalName}. Para preparar bien tu sesión, cuéntame: ¿qué zona necesitas tratar?`;
+        welcomeMessage = `Hola. Soy el asistente de ${professionalName}. Cuénteme... ¿dónde tiene la lesión o el dolor exactamente?`;
         options = [
           "🦴 Dolor de espalda / cuello",
           "🏃 Lesión deportiva",
@@ -423,7 +423,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         this.conversationFlow.totalSteps = 6; // CORREGIDO: era 5
       } else if (serviceId === "estetica" || serviceId.includes("belleza")) {
         // 4. ESTÉTICA MÉDICA - 6 pasos
-        welcomeMessage = `Bienvenido/a a ${serviceName}. ¿Qué tipo de tratamiento estético estás buscando?`;
+        welcomeMessage = `Hola, bienvenida a ${serviceName}. ¿Qué tratamiento te apetece hoy para dedicarte un rato para ti?`;
         options = [
           "💉 Tratamientos faciales (botox, rellenos)",
           "✨ Rejuvenecimiento facial",
@@ -438,7 +438,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         serviceId.includes("nail")
       ) {
         // 5. MANICURA - 6 pasos
-        welcomeMessage = `¡Hola! Vamos a dejar tus manos perfectas 💅 ¿Qué tipo de manicura prefieres?`;
+        welcomeMessage = `¡Hola! Bienvenida a ${serviceName}. ¿Lista para dejar esas manos perfectas? ¿Qué idea tienes hoy?`;
         options = [
           "💅 Manicura tradicional",
           "✨ Semipermanente",
@@ -448,7 +448,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         this.conversationFlow.totalSteps = 6;
       } else if (serviceId === "abogado" || serviceId.includes("legal")) {
         // 6. DESPACHO LEGAL - 6 pasos
-        welcomeMessage = `Buenos días. Soy el asistente virtual de ${serviceName}. Para asignarle el especialista adecuado, ¿su consulta está relacionada con qué área?`;
+        welcomeMessage = `Buenos días. Le hablo desde ${serviceName}. ¿En qué asunto legal podemos ayudarle?`;
         options = [
           "⚖️ Laboral / despidos",
           "💼 Fiscal / declaración de la renta",
@@ -525,21 +525,21 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     // MÉDICO / DOCTOR FLOW (4 preguntas + calendario = 5 pasos totales)
     if (serviceType === "clinica" || serviceType.includes("medic")) {
       if (newStep === 2) {
-        nextMessage = "¿Cómo describirías la urgencia de tu consulta?";
+        nextMessage =
+          "¿Es algo urgente que requiere atención ya, o prefiere una cita ordinaria?";
         nextOptions = [
           "🚨 Urgente (próximos días)",
           "⏳ Normal",
           "📅 Flexible",
         ];
       } else if (newStep === 3) {
-        nextMessage = `¿Ya has sido atendido antes por ${this.selectedProfessionalData?.name}?`;
+        nextMessage = `¿Es la primera vez que visita nuestra consulta?`;
         nextOptions = [
           "🆕 No, es mi primera vez",
           "🔁 Sí, ya he tenido consulta",
         ];
       } else if (newStep === 4) {
-        nextMessage =
-          "Para mostrarte los mejores horarios, ¿qué franja te viene mejor?";
+        nextMessage = "Bien. Para buscar hueco... ¿prefiere mañanas o tardes?";
         nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
       } else if (newStep === 5) {
         // Paso 5: Mostrar calendario
@@ -551,7 +551,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     // DENTISTA FLOW (5 preguntas + calendario = 6 pasos totales)
     else if (serviceType === "dentista" || serviceType.includes("dental")) {
       if (newStep === 2) {
-        nextMessage = "¿Qué zona o diente está relacionado con tu consulta?";
+        nextMessage = "¿Podría indicarme qué pieza o zona le molesta?";
         nextOptions = [
           "🦷 Un diente concreto",
           "😬 Varias zonas",
@@ -559,7 +559,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "❓ No lo tengo claro",
         ];
       } else if (newStep === 3) {
-        nextMessage = "¿Cómo describirías la molestia actualmente?";
+        nextMessage = "¿Siente dolor agudo ahora mismo?";
         nextOptions = [
           "🔴 Dolor fuerte",
           "🟠 Dolor moderado",
@@ -567,7 +567,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "❓ No hay dolor",
         ];
       } else if (newStep === 4) {
-        nextMessage = "¿Desde cuándo notas este problema?";
+        nextMessage = "¿Desde cuándo tiene la molestia?";
         nextOptions = [
           "🕒 Desde hoy / ayer",
           "📅 Desde hace unos días",
@@ -575,8 +575,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "❓ No lo recuerdo",
         ];
       } else if (newStep === 5) {
-        nextMessage =
-          "Para mostrarte los mejores horarios disponibles, ¿qué franja prefieres?";
+        nextMessage = "Vamos a ver la agenda. ¿Le viene mejor mañana o tarde?";
         nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
       } else if (newStep === 6) {
         // Paso 6: Mostrar calendario
@@ -588,7 +587,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     // FISIOTERAPIA FLOW (5 preguntas + calendario = 6 pasos totales)
     else if (serviceType === "fisioterapia" || serviceType.includes("fisio")) {
       if (newStep === 2) {
-        nextMessage = "¿Cómo describirías tu molestia ahora mismo?";
+        nextMessage = "¿El dolor le impide moverse con normalidad?";
         nextOptions = [
           "🔴 Dolor fuerte",
           "🟠 Dolor moderado",
@@ -596,7 +595,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "❓ No estoy seguro",
         ];
       } else if (newStep === 3) {
-        nextMessage = "¿Desde cuándo tienes esta molestia?";
+        nextMessage = "¿Lleva mucho tiempo con esta dolencia?";
         nextOptions = [
           "🕒 Menos de 1 semana",
           "📅 Entre 1 y 4 semanas",
@@ -604,11 +603,11 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "❓ No lo recuerdo",
         ];
       } else if (newStep === 4) {
-        nextMessage = `¿Es tu primera sesión con ${this.selectedProfessionalData?.name}?`;
+        nextMessage = `¿Ya ha acudido antes a nuestro centro?`;
         nextOptions = ["🆕 Sí, es la primera vez", "🔁 No, ya he venido antes"];
       } else if (newStep === 5) {
         nextMessage =
-          "Para mostrarte los mejores horarios disponibles, ¿qué franja prefieres?";
+          "De acuerdo. Para la cita... ¿prefiere horario de mañana o de tarde?";
         nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
       } else if (newStep === 6) {
         // Paso 6: Mostrar calendario
@@ -620,7 +619,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     // ESTÉTICA MÉDICA FLOW
     else if (serviceType === "estetica" || serviceType.includes("belleza")) {
       if (newStep === 2) {
-        nextMessage = "¿En qué zona te gustaría realizar el tratamiento?";
+        nextMessage = "¿En qué zona nos enfocamos hoy?";
         nextOptions = [
           "👤 Rostro",
           "👁️ Zona ocular",
@@ -628,8 +627,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "🔁 Varias zonas",
         ];
       } else if (newStep === 3) {
-        nextMessage =
-          "¿Cuál es el objetivo principal que buscas con el tratamiento?";
+        nextMessage = "¿Qué resultados espera conseguir hoy?";
         nextOptions = [
           "✨ Rejuvenecer el aspecto",
           "🔄 Corregir o definir una zona concreta",
@@ -638,8 +636,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "❓ No lo tengo claro",
         ];
       } else if (newStep === 4) {
-        nextMessage =
-          "En este momento, ¿cómo te encuentras respecto al tratamiento?";
+        nextMessage = "¿Desea reservar ya, o prefiere una valoración previa?";
         nextOptions = [
           "✅ Quiero realizarlo cuanto antes",
           "🤔 Quiero valoración profesional",
@@ -647,7 +644,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         ];
       } else if (newStep === 5) {
         nextMessage =
-          "Para mostrarte los mejores horarios disponibles, ¿qué franja prefieres?";
+          "Perfecto. ¿Te va mejor venir por la mañana o por la tarde?";
         nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
       } else if (newStep === 6) {
         this.showCalendarWithContext();
@@ -658,7 +655,8 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     // MANICURA FLOW
     else if (serviceType === "unas" || serviceType.includes("manicura")) {
       if (newStep === 2) {
-        nextMessage = "¿Qué acabado te gustaría?";
+        nextMessage =
+          "¿Qué te apetece? ¿Algo sencillo y elegante, o nos atrevemos con un diseño especial?";
         nextOptions = [
           "🎨 Color liso",
           "🤍 Francesa",
@@ -666,7 +664,8 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "❓ Aún no lo tengo claro",
         ];
       } else if (newStep === 3) {
-        nextMessage = "¿Qué longitud o estilo prefieres?";
+        nextMessage =
+          "¿Y de largo? ¿Las quieres cortitas cómodas o largas divinas?";
         nextOptions = [
           "✂️ Cortas / naturales",
           "📏 Medias",
@@ -674,7 +673,8 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "❓ Me dejo asesorar",
         ];
       } else if (newStep === 4) {
-        nextMessage = "¿Cómo tienes ahora mismo las uñas?";
+        nextMessage =
+          "Por cierto... ¿llevas algo puesto ahora que tengamos que quitar?";
         nextOptions = [
           "💅 Sin esmalte",
           "✨ Con esmalte semipermanente",
@@ -683,7 +683,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         ];
       } else if (newStep === 5) {
         nextMessage =
-          "Para mostrarte los mejores horarios disponibles, ¿qué franja prefieres?";
+          "¡Genial! ¿Cuándo te viene bien pasarte? ¿Mañana o tarde?";
         nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
       } else if (newStep === 6) {
         this.showCalendarWithContext();
@@ -694,7 +694,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     // DESPACHO LEGAL FLOW
     else if (serviceType === "abogado" || serviceType.includes("legal")) {
       if (newStep === 2) {
-        nextMessage = "¿Qué tipo de ayuda necesita principalmente?";
+        nextMessage = "¿Necesita asesoría... o defensa legal en juicio?";
         nextOptions = [
           "📝 Asesoramiento legal",
           "📄 Revisión de documentos",
@@ -703,7 +703,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "❓ Aún no lo tengo claro",
         ];
       } else if (newStep === 3) {
-        nextMessage = "¿En qué punto se encuentra su caso?";
+        nextMessage = "¿Hay ya algún procedimiento abierto?";
         nextOptions = [
           "🆕 Inicio / consulta inicial",
           "📂 Caso en curso",
@@ -711,7 +711,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "❓ Prefiero explicarlo más adelante",
         ];
       } else if (newStep === 4) {
-        nextMessage = "Para la primera reunión, ¿qué modalidad prefiere?";
+        nextMessage = "¿Prefiere reunirse por videollamada o presencialmente?";
         nextOptions = [
           "💻 Videollamada",
           "🏢 Presencial en el despacho",
@@ -719,7 +719,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         ];
       } else if (newStep === 5) {
         nextMessage =
-          "Para mostrarle los mejores horarios disponibles, ¿qué franja le viene mejor?";
+          "De acuerdo. ¿Qué franja horaria le encaja mejor para la reunión?";
         nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
       } else if (newStep === 6) {
         this.showCalendarWithContext();
@@ -813,7 +813,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   private showCalendarWithContext(): void {
     const professionalName =
       this.selectedProfessionalData?.name || "el profesional";
-    const message = `Perfecto 👍 pulsa "Ver disponibilidad" para abrir el calendario y ver horarios con ${professionalName} en los próximos días y semanas.`;
+    const message = `Aquí tiene la disponibilidad. Revísela y elija el hueco que mejor se adapte a usted.`;
 
     this.messages.push({
       id: "show-calendar",
@@ -838,8 +838,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     this.awaitingCalendar = false;
     this.exampleMessages = [];
 
-    const prompt =
-      "Aquí tienes la disponibilidad. Elige el día y la hora que mejor te vaya.";
+    const prompt = "Aquí tiene mi agenda. Elija el día y hora que prefiera.";
     this.messages.push({
       id: "calendar-open",
       content: prompt,

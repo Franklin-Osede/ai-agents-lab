@@ -290,7 +290,7 @@ export class WelcomeChatComponent implements OnDestroy {
     this.pollyService.stop();
 
     const greetingText =
-      "¡Hola! Soy tu Agente Recuperador de Carritos. Dale a continuar y podrás maximizar las ventas de usuarios que dejaron items en el carrito.";
+      "¡Epa! 🛒 He visto que hay carritos abandonados por ahí. No te preocupes... yo me encargo de traer a esos clientes de vuelta. ¡Dale a continuar y verás!";
 
     // Use Polly Service to speak
     this.pollyService.speak(greetingText);

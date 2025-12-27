@@ -290,7 +290,7 @@ export class WelcomeChatComponent implements OnDestroy {
     this.pollyService.stop();
 
     const greetingText =
-      "¡Epa! 🛒 He visto que hay carritos abandonados por ahí. No te preocupes... yo me encargo de traer a esos clientes de vuelta. ¡Dale a continuar y verás!";
+      "Hola. He detectado que quedaron productos en el carrito sin finalizar. Si continúa ahora, puedo ayudarle a recuperar esa venta.";
 
     // Use Polly Service to speak
     this.pollyService.speak(greetingText);

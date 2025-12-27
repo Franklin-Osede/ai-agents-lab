@@ -282,7 +282,7 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       // 2. Add AI Response directly
       setTimeout(() => {
         const responseText =
-          "¡Oído cocina! 👨‍🍳 ¿Prefieres que te lo llevemos a casa 🛵... o te guardo una mesa en el local? 📅";
+          "Tomo nota de su pedido. Para finalizar, ¿prefiere envío a domicilio... o reservar una mesa en el local?";
 
         this.messages.update((msgs) => [
           ...msgs,
@@ -427,11 +427,11 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           const userName = this.session.user()?.name;
           if (userName) {
             if (res.id === "japanese.default") {
-              responseText = `¡Excelente elección! 🍣 La cocina japonesa de hoy tiene una pinta espectacular. Mire las opciones:`;
+              responseText = `Excelente elección. Nuestra cocina japonesa es una de las favoritas. Aquí tiene las opciones disponibles:`;
             } else if (res.id === "italian.default") {
-              responseText = `¡Mamma mia! 🍕 Muy bien elegido. Aquí tiene nuestras especialidades italianas.`;
+              responseText = `Muy bien elegido. Le muestro nuestras especialidades italianas, que preparamos al momento.`;
             } else if (res.id === "fast_food.default") {
-              responseText = `¡Marchando comida rápida! 🍔 A veces es justo lo que el cuerpo pide. Aquí tiene el menú.`;
+              responseText = `Perfecto. Aquí tiene nuestro menú de hamburguesas y complementos para cuando le apetezca algo rápido.`;
             } else {
               // Check if response already has "Hola" (case insensitive)
               if (!responseText.toLowerCase().includes("hola")) {
@@ -509,7 +509,7 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           } else {
             // Fallback default response if we hit this state via means other than "Ya lo tengo todo" intent
             const askText =
-              "¡Oído cocina! 👨‍🍳 ¿Prefieres delivery a casa 🛵... o te reservo mesa en el restaurante? 📅";
+              "Tomo nota de su pedido. Para finalizar, ¿prefiere envío a domicilio... o reservar una mesa en el local?";
             this.speak(askText);
             this.suggestions.set(["🛵 A domicilio", "📅 Reservar Mesa"]);
 
@@ -531,7 +531,7 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       // Fallback
       setTimeout(() => {
         const fallbackText =
-          "Disculpa, se me ha cortado la onda 📶. No te he entendido bien. ¿Puedes repetir?";
+          "Disculpe, no le he escuchado bien. ¿Podría repetírmelo o seleccionar una opción de la pantalla?";
         this.messages.update((msgs) => [
           ...msgs,
           {

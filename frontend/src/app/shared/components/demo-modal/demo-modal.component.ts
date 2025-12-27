@@ -391,7 +391,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         serviceId.includes("doctor")
       ) {
         // 1. MÉDICO / DOCTOR - 5 pasos
-        welcomeMessage = `Hola, le atiende el asistente del doctor ${professionalName}. Dígame, ¿qué le preocupa hoy?`;
+        welcomeMessage = `Hola, le atiende el asistente del doctor ${professionalName}. Por favor, dígame brevemente el motivo de su consulta para poder ayudarle.`;
         options = [
           "🩺 Consulta general",
           "📊 Resultados de pruebas",
@@ -402,7 +402,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         this.conversationFlow.totalSteps = 5;
       } else if (serviceId === "dentista" || serviceId.includes("dental")) {
         // 2. DENTISTA - 6 pasos (5 preguntas + calendario)
-        welcomeMessage = `Bienvenido a ${serviceName}. ¿Viene por una revisión, o le duele alguna pieza?`;
+        welcomeMessage = `Bienvenido a ${serviceName}. ¿Desea realizar una revisión rutinaria o tiene alguna molestia específica?`;
         options = [
           "🦷 Revisión general",
           "😬 Dolor o molestia dental",
@@ -413,7 +413,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         this.conversationFlow.totalSteps = 6; // CORREGIDO: era 5
       } else if (serviceId === "fisioterapia" || serviceId.includes("fisio")) {
         // 3. FISIOTERAPIA - 6 pasos (5 preguntas + calendario)
-        welcomeMessage = `Hola. Soy el asistente de ${professionalName}. Cuénteme... ¿dónde tiene la lesión o el dolor exactamente?`;
+        welcomeMessage = `Hola, soy el asistente de ${professionalName}. Cuénteme, ¿en qué zona del cuerpo siente la molestia o lesión?`;
         options = [
           "🦴 Dolor de espalda / cuello",
           "🏃 Lesión deportiva",
@@ -423,7 +423,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         this.conversationFlow.totalSteps = 6; // CORREGIDO: era 5
       } else if (serviceId === "estetica" || serviceId.includes("belleza")) {
         // 4. ESTÉTICA MÉDICA - 6 pasos
-        welcomeMessage = `Hola, bienvenida a ${serviceName}. ¿Qué tratamiento te apetece hoy para dedicarte un rato para ti?`;
+        welcomeMessage = `Hola, bienvenida a ${serviceName}. ¿En qué tratamiento estético o de belleza estaba interesada?`;
         options = [
           "💉 Tratamientos faciales (botox, rellenos)",
           "✨ Rejuvenecimiento facial",
@@ -438,7 +438,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         serviceId.includes("nail")
       ) {
         // 5. MANICURA - 6 pasos
-        welcomeMessage = `¡Hola! Bienvenida a ${serviceName}. ¿Lista para dejar esas manos perfectas? ¿Qué idea tienes hoy?`;
+        welcomeMessage = `Bienvenida a ${serviceName}. Queremos cuidar sus manos. ¿Qué tipo de manicura tenía pensada para hoy?`;
         options = [
           "💅 Manicura tradicional",
           "✨ Semipermanente",
@@ -448,7 +448,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         this.conversationFlow.totalSteps = 6;
       } else if (serviceId === "abogado" || serviceId.includes("legal")) {
         // 6. DESPACHO LEGAL - 6 pasos
-        welcomeMessage = `Buenos días. Le hablo desde ${serviceName}. ¿En qué asunto legal podemos ayudarle?`;
+        welcomeMessage = `Buenos días, le atiende el despacho ${serviceName}. Explíqueme brevemente su caso para derivarle al especialista adecuado.`;
         options = [
           "⚖️ Laboral / despidos",
           "💼 Fiscal / declaración de la renta",
@@ -526,7 +526,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     if (serviceType === "clinica" || serviceType.includes("medic")) {
       if (newStep === 2) {
         nextMessage =
-          "¿Es algo urgente que requiere atención ya, o prefiere una cita ordinaria?";
+          "¿Considera que es una urgencia para ver hoy mismo... o prefiere agendar una cita normal para otro día?";
         nextOptions = [
           "🚨 Urgente (próximos días)",
           "⏳ Normal",

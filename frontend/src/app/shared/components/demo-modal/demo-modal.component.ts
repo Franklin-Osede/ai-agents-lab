@@ -1341,13 +1341,13 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Dr. Javier Morales - Male dentist
       ],
       // Médicos (imágenes COMPLETAMENTE DIFERENTES - ninguna duplicada con dentistas)
-      // Imagen específica para Sofía Ramírez (Cardióloga) - índice 2
+      // Orden: mujer (Ana), hombre (Roberto), mujer (Sofía), hombre (Luis), mujer (Carmen)
       medico: [
-        "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1629909613654-28e377c37b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Sofía Ramírez - Cardióloga
-        "https://images.unsplash.com/photo-1551601651-2a8555f1a136?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
-        "https://images.unsplash.com/photo-1537368910025-700350fe46c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90",
+        "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Dra. Ana García - Pediatra (mujer)
+        "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Dr. Roberto Martínez - Médico General (hombre)
+        "https://images.unsplash.com/photo-1629909613654-28e377c37b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Dra. Sofía Ramírez - Cardióloga (mujer)
+        "https://images.unsplash.com/photo-1551601651-2a8555f1a136?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Dr. Luis Hernández - Dermatólogo (hombre)
+        "https://images.unsplash.com/photo-1537368910025-700350fe46c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=90", // Dra. Carmen Vega - Ginecóloga (mujer)
       ],
       // Fisioterapeutas (profesionales con caras visibles)
       fisioterapeuta: [
@@ -1531,7 +1531,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       ],
       medico: [
         {
-          name: "Dr. Ana García",
+          name: "Dra. Ana García",
           title: "Pediatra",
           rating: 4.9,
           reviews: 120,
@@ -2245,7 +2245,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       ],
       default: [
         {
-          name: "Dr. Ana García",
+          name: "Dra. Ana García",
           title: "Pediatra",
           rating: 4.9,
           reviews: 120,

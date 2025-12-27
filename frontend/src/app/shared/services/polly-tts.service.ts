@@ -11,25 +11,30 @@ export class PollyTTSService {
   public isAgentSpeaking: WritableSignal<boolean> = signal(false);
 
   // Dynamic Voice Selection
-  // Lucia (ES), Sergio (ES), Mia (MX) - All support Neural Engine
-  private readonly AVAILABLE_VOICES = ["Lucia", "Sergio", "Mia"];
-  private assignedVoiceId = "Lucia";
+  // User requested more variety. Adding Mexican and US Spanish Neural voices to the pool.
+  private readonly AVAILABLE_VOICES = [
+    "Lucia",
+    "Sergio",
+    "Mia",
+    "Andres",
+    "Lupe",
+  ];
+  public assignedVoiceId = "Lucia";
 
   constructor() {
-    this.assignRandomVoice();
+    this.randomizeVoice();
   }
 
   /**
    * Assigns a random voice for this session to create variety.
+   * Public so it can be triggered when starting a new flow.
    */
-  private assignRandomVoice() {
+  public randomizeVoice() {
     const randomIndex = Math.floor(
       Math.random() * this.AVAILABLE_VOICES.length
     );
     this.assignedVoiceId = this.AVAILABLE_VOICES[randomIndex];
-    console.log(
-      `[PollyTTS] Assigned Voice for this session: ${this.assignedVoiceId}`
-    );
+    console.log(`[PollyTTS] 🎲 Assigned New Voice: ${this.assignedVoiceId}`);
   }
 
   /**

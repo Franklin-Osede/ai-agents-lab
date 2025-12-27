@@ -16,6 +16,7 @@ import { AuthService } from "../../services/auth.service";
 import { ChatMessage } from "../../models/agent.model";
 import { Router } from "@angular/router";
 import { VoiceService } from "../../services/voice.service";
+import { PollyTTSService } from "../../../shared/services/polly-tts.service";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 
@@ -41,6 +42,8 @@ import { CalendarComponent } from "../calendar/calendar.component";
 export class DemoModalComponent implements OnInit, OnDestroy {
   @Input() agent!: Agent;
   @Output() modalClose = new EventEmitter<void>();
+
+  private pollyService = inject(PollyTTSService);
 
   messages: ChatMessage[] = [];
   currentMessage = "";
@@ -161,6 +164,10 @@ export class DemoModalComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     console.log("DemoModalComponent ngOnInit - agent:", this.agent);
+
+    // Randomize voice for this new session (Variety & Continuity)
+    this.pollyService.randomizeVoice();
+
     if (!this.agent) {
       console.error("No agent provided to DemoModalComponent!");
       return;
@@ -4319,8 +4326,13 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       }
       this.isPlayingAudio = true;
 
-      // Generate and play audio
-      const audioBuffer = await this.voiceService.generateGreeting(textContent);
+      // Generate and play audio using the consistent randomized voice for this session
+      const voiceId = this.pollyService.assignedVoiceId;
+      const audioBuffer = await this.voiceService.generateGreeting(
+        textContent,
+        undefined,
+        voiceId
+      );
       this.currentAudio = this.voiceService.playAudioBlob(audioBuffer);
       message.audioElement = this.currentAudio;
       this.currentlyPlayingMessage = message;

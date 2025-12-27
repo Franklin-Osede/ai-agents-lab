@@ -270,6 +270,9 @@ export class WelcomeChatComponent implements OnDestroy {
     // Load metrics for preview (optional)
     this.loadMetrics();
 
+    // Ensure we start with a fresh random voice
+    this.pollyService.randomizeVoice();
+
     // Play automatic greeting immediately (no delay)
     this.playGreeting();
   }

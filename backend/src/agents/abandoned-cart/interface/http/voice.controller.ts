@@ -63,7 +63,10 @@ export class VoiceController {
   }
 
   @Post('generate-greeting')
-  async generateGreeting(@Body() body: { text: string; agentType?: string }, @Res() res: Response) {
+  async generateGreeting(
+    @Body() body: { text: string; agentType?: string; voiceId?: string },
+    @Res() res: Response,
+  ) {
     try {
       // Use AWS Polly Neural voices (premium quality)
       const voiceMap: Record<string, 'Lucia' | 'Sergio' | 'Mia'> = {
@@ -73,10 +76,13 @@ export class VoiceController {
         default: 'Lucia',
       };
 
-      const voiceId = voiceMap[body.agentType || 'default'];
+      // Priority: 1. Manual voiceId (from frontend randomizer), 2. Map based on Agent, 3. Default
+      const voiceId = body.voiceId || voiceMap[body.agentType || 'default'];
 
       console.log(
-        `🎙️ [Polly] Generating greeting for agent: ${body.agentType || 'default'} with voice: ${voiceId}`,
+        `🎙️ [Polly] Generating greeting for agent: ${
+          body.agentType || 'default'
+        } with voice: ${voiceId}`,
       );
 
       // Use Polly Service instead of OpenAI

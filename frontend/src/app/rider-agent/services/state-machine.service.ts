@@ -132,6 +132,79 @@ export class StateMachineService {
       };
     }
 
+    // fallback: GLOBAL INTERCEPT
+    // If input is a known Cuisine Selection intent, force jump to that context's default state
+
+    // fallback: GLOBAL INTERCEPT
+    if (type === "intent") {
+      // 1. Cuisine Selection
+      if (input.startsWith("choose_cuisine_")) {
+        const targetContext = input.replace(
+          "choose_cuisine_",
+          ""
+        ) as StateContext;
+        this.currentState.set({
+          context: targetContext,
+          category: "default",
+        });
+
+        const newNode = this.getCurrentStateNode();
+        if (newNode) return this.createResult(newNode);
+      }
+
+      // 2. Global Drinks
+      if (input === "choose_global_drinks") {
+        // Redirect to a specialized context for drinks selection
+        this.currentState.set({
+          context: "general",
+          category: "choose_drinks_context",
+        });
+        const newNode = this.getCurrentStateNode();
+        if (newNode) return this.createResult(newNode);
+      }
+
+      // 3. Global Cheap / Kids -> Map to specific defaults?
+      // "Cheap" -> Fast Food Default
+      if (input === "choose_global_cheap") {
+        this.currentState.set({ context: "fast_food", category: "default" });
+        const newNode = this.getCurrentStateNode();
+        if (newNode) {
+          const res = this.createResult(newNode);
+          res.response =
+            "Para opciones económicas, nuestro menú Fast Food es inmejorable. " +
+            res.response;
+          return res;
+        }
+      }
+
+      // "Kids" -> Italian Kids (Generic choice)
+      if (input === "choose_global_kids") {
+        this.currentState.set({ context: "italian", category: "kids" });
+        const newNode = this.getCurrentStateNode();
+        if (newNode) {
+          const res = this.createResult(newNode);
+          res.response =
+            "A los peques les encanta nuestra pasta y pizza. " + res.response;
+          return res;
+        }
+      }
+
+      // 4. Allergy Intercept (Does not change state, just warns? Or redirects to Healthy?)
+      if (input === "identify_allergy") {
+        // Stay in context but warn? Or move to Japanese (assumed safest)?
+        // Let's move to Japanese with a disclaimer.
+        this.currentState.set({ context: "japanese", category: "default" });
+        const newNode = this.getCurrentStateNode();
+        if (newNode) {
+          const res = this.createResult(newNode);
+          res.response =
+            "Tomamos muy en serio las alergias. La cocina japonesa suele ser la más segura (sin gluten/lactosa). " +
+            res.response;
+          return res;
+        }
+      }
+    }
+
     // No transition found? Stay or Handle Fallback
     return null;
   }
@@ -139,5 +212,15 @@ export class StateMachineService {
   reset() {
     this.currentState.set({ context: "general", category: "default" });
     this.memory = { order: [], spicy_level: null, delivery_method: null };
+  }
+
+  private createResult(node: StateNode) {
+    return {
+      id: node.id,
+      response: node.response,
+      suggestions: node.suggestions,
+      category: node.id.split(".")[1],
+      cards: [],
+    };
   }
 }

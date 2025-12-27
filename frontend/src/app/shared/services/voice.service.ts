@@ -111,10 +111,15 @@ export class VoiceService {
    * Uses cache to avoid regenerating same messages
    * @param text - The text to convert to speech
    * @param agentType - Optional agent type for voice optimization (cart, booking, rider)
+   * @param voiceId - Optional explicit voice ID (overrides agent default)
    */
-  async generateGreeting(text: string, agentType?: string): Promise<Blob> {
+  async generateGreeting(
+    text: string,
+    agentType?: string,
+    voiceId?: string
+  ): Promise<Blob> {
     // Check cache first
-    const cacheKey = text.toLowerCase().trim();
+    const cacheKey = `${text.toLowerCase().trim()}:${voiceId || "default"}`;
     if (this.audioCache.has(cacheKey)) {
       console.log("🎵 Audio cache HIT for:", text.substring(0, 50));
       return this.audioCache.get(cacheKey)!;
@@ -126,7 +131,7 @@ export class VoiceService {
       const response = await firstValueFrom(
         this.http.post(
           `${this.apiUrl}/generate-greeting`,
-          { text, agentType }, // Pass agentType to backend
+          { text, agentType, voiceId }, // Pass voiceId to backend
           { responseType: "blob" }
         )
       );

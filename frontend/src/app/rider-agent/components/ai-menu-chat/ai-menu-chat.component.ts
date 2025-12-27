@@ -97,7 +97,7 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     }
 
     // 3. Initialize State Machine
-    this.stateMachine.reset();
+    // this.stateMachine.reset(); // REMOVED: Do not reset state on init, persist it for navigation (back/forth)
 
     // 4. Check for incoming intent from Home Screen
     const navState = history.state as any;
@@ -153,6 +153,9 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
         setTimeout(() => this.speak(welcomeText), 500);
       }
     }
+
+    // Ensure variety: Randomize voice (likely picking a different one than Booking if luck holds, or at least refreshing)
+    this.pollyService.randomizeVoice();
   }
 
   ngOnDestroy() {
@@ -427,11 +430,24 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           const userName = this.session.user()?.name;
           if (userName) {
             if (res.id === "japanese.default") {
-              responseText = `Excelente elección. Nuestra cocina japonesa es una de las favoritas. Aquí tiene las opciones disponibles:`;
+              const input = this.inputText().toLowerCase();
+              if (
+                input.includes("healthy") ||
+                input.includes("fit") ||
+                input.includes("sano") ||
+                input.includes("diet") ||
+                input.includes("saludab")
+              ) {
+                responseText = `¡Oído cocina! Para una opción saludable y fit 🥗, nuestra cocina japonesa es ideal. Aquí tienes sushi y platos ligeros:`;
+              } else {
+                responseText = `Excelente elección. Nuestra cocina japonesa es una de las favoritas. Aquí tiene las opciones disponibles:`;
+              }
             } else if (res.id === "italian.default") {
               responseText = `Muy bien elegido. Le muestro nuestras especialidades italianas, que preparamos al momento.`;
             } else if (res.id === "fast_food.default") {
               responseText = `Perfecto. Aquí tiene nuestro menú de hamburguesas y complementos para cuando le apetezca algo rápido.`;
+            } else if (res.id === "spanish.default") {
+              responseText = `¡Buena elección! Nada como nuestra gastronomía. Aquí tiene tapas y platos clásicos.`;
             } else {
               // Check if response already has "Hola" (case insensitive)
               if (!responseText.toLowerCase().includes("hola")) {
@@ -577,7 +593,8 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     // Fast Food
     if (
       t.includes("fast") ||
-      t.includes("hamburguesa") ||
+      t.includes("fast") ||
+      t.includes("hamburg") || // Matches 'hamburguesa', 'hamburg', etc.
       t.includes("burger") ||
       t.includes("perrito") ||
       t.includes("nugget") ||
@@ -594,9 +611,72 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       t.includes("croqueta") ||
       t.includes("jamon") ||
       t.includes("bravas") ||
-      t.includes("racion")
+      t.includes("racion") ||
+      t.includes("iberico")
     )
       return "choose_cuisine_spanish";
+
+    // Healthy / Green / Fit -> Map to Japanese (Sushi) as best proxy
+    if (
+      t.includes("healthy") ||
+      t.includes("sano") ||
+      t.includes("sana") ||
+      t.includes("saludable") ||
+      t.includes("fit") ||
+      t.includes("diet") ||
+      t.includes("ensalada") ||
+      t.includes("poké") ||
+      t.includes("vegetariano") ||
+      t.includes("vegan") ||
+      t.includes("green")
+    )
+      return "choose_cuisine_japanese";
+
+    // Global: Drinks / Thirsty
+    if (
+      t.includes("sed") ||
+      t.includes("beber") ||
+      t.includes("bebida") ||
+      t.includes("agua") ||
+      t.includes("cerveza") ||
+      t.includes("vino") ||
+      t.includes("refresco") ||
+      t.includes("copa")
+    )
+      return "choose_global_drinks";
+
+    // Global: Kids / Family
+    if (
+      t.includes("niñ") || // niño, niña, niños
+      t.includes("hijo") ||
+      t.includes("peque") ||
+      t.includes("infantil") ||
+      t.includes("kid")
+    )
+      return "choose_global_kids";
+
+    // Global: Price / Cheap
+    if (
+      t.includes("barato") ||
+      t.includes("economico") ||
+      t.includes("económico") ||
+      t.includes("oferta") ||
+      t.includes("promocion") ||
+      t.includes("ahorro")
+    )
+      return "choose_global_cheap";
+
+    // Global: Allergy / Dietary
+    if (
+      t.includes("gluten") ||
+      t.includes("alerg") || // alergia, alergico
+      t.includes("intoleran") ||
+      t.includes("lactosa") ||
+      t.includes("celiac") ||
+      t.includes("sugar") ||
+      t.includes("azucar")
+    )
+      return "identify_allergy";
 
     // Actions
     if (
@@ -605,10 +685,13 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       t.includes("mi orden")
     )
       return "view_order";
+
     if (
       t.includes("pagar") ||
+      t.includes("terminar") ||
       t.includes("finalizar") ||
       t.includes("cuenta") ||
+      t.includes("cobrar") ||
       t.includes("checkout") ||
       t.includes("ya lo tengo todo") ||
       t.includes("tengo todo")

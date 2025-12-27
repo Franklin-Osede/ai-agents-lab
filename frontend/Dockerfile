@@ -21,6 +21,7 @@ RUN npm run build -- --configuration production
 FROM nginx:alpine
 
 # Copy built app to nginx
+# Copy built app to nginx (adjust generic path to be safe)
 COPY --from=builder /app/dist/ai-agents-lab-frontend /usr/share/nginx/html
 
 # Copy nginx configuration

@@ -41,11 +41,7 @@ async function bootstrap() {
     'https://ai-agents-lab-git-main-fran1014s-projects.vercel.app',
     'https://ai-agents-algyow5h7-fran1014s-projects.vercel.app',
   ];
-  const allowedOriginPatterns = [
-    /\.vercel\.app$/,
-    /\.vercel\.dev$/,
-    /\.onrender\.com$/,
-  ];
+  const allowedOriginPatterns = [/\.vercel\.app$/, /\.vercel\.dev$/, /\.onrender\.com$/];
   const envOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(',')
         .map((o) => o.trim())

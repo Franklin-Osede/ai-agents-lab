@@ -105,7 +105,7 @@ export class PollyService implements OnModuleInit {
 
     // Enhanced SSML with natural pauses and prosody for more natural speech
     // Neural voices benefit from subtle prosody variations and natural pauses
-    let processedText = text
+    const processedText = text
       // Natural pauses at punctuation (longer pauses for questions/exclamations)
       .replace(/\. /g, '.<break time="350ms"/> ')
       .replace(/\, /g, ',<break time="250ms"/> ')
@@ -113,7 +113,7 @@ export class PollyService implements OnModuleInit {
       .replace(/\! /g, '!<break time="450ms"/> ')
       // Slight pause after "Hola" for more natural greeting
       .replace(/^(Hola|Hola,)/i, '<break time="200ms"/>$1');
-    
+
     // Use prosody with subtle variations for more conversational tone
     // rate="medium" = natural speed, pitch="+5%" = slightly higher pitch for friendliness
     // This makes Neural voices sound more human-like and less robotic

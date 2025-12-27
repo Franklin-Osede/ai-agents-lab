@@ -1,31 +1,18 @@
-# 1. Base Image (Lightweight Node)
-FROM node:20-alpine As build
+# Base Image
+FROM node:20-alpine
 
-# 2. Workdir
+# Workdir
 WORKDIR /usr/src/app
 
-# 3. Dependencies
-# Copy package.json and lock file first to leverage caching
+# Dependencies
 COPY package*.json ./
 RUN npm install
 
-# 4. Source Code
+# Source Code
 COPY . .
 
-# 5. Build
+# Build
 RUN npm run build
 
-# ---
-
-# 6. Production Image
-FROM node:20-alpine As production
-
-WORKDIR /usr/src/app
-
-COPY package*.json ./
-RUN npm install --only=production
-
-COPY --from=build /usr/src/app/dist ./dist
-
-# 7. Start
+# Start
 CMD ["node", "dist/main"]

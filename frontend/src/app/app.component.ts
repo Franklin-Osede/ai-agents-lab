@@ -11,7 +11,7 @@ import { ThemeService } from "./shared/services/theme.service";
 export class AppComponent implements OnInit {
   private readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
-  title = "Agentics";
+  title = "AgentMinds";
   isAbandonedCartRoute = false;
 
   ngOnInit(): void {

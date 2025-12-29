@@ -399,10 +399,16 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       ) {
         // 1. MÉDICO / DOCTOR - 5 pasos
         // Evitar duplicar "doctor" si el nombre ya lo incluye (Dr., Dra., doctor)
-        const hasDoctorPrefix = /^(Dr\.|Dra\.|doctor|Doctor)/i.test(professionalName.trim());
-        const greetingPrefix = hasDoctorPrefix 
-          ? `Hola, le atiende el asistente de ${professionalName}`
-          : `Hola, le atiende el asistente del doctor ${professionalName}`;
+        const nameLower = professionalName.trim().toLowerCase();
+        let greetingPrefix = "";
+
+        if (nameLower.startsWith('dra.') || nameLower.startsWith('doctora')) {
+           greetingPrefix = `Hola, le atiende el asistente de la ${professionalName}`;
+        } else if (nameLower.startsWith('dr.') || nameLower.startsWith('doctor')) {
+           greetingPrefix = `Hola, le atiende el asistente del ${professionalName}`;
+        } else {
+           greetingPrefix = `Hola, le atiende el asistente del doctor ${professionalName}`;
+        }
         welcomeMessage = `${greetingPrefix}. Por favor, dígame brevemente el motivo de su consulta para poder ayudarle.`;
         options = [
           "🩺 Consulta general",

@@ -168,7 +168,12 @@
 }
 
 .category-header:hover {
-  background: #f9fafb;
+  background-color: #e0e7ff; /* Indigo-100: Stronger light blue on hover */
+}
+
+.category-accordion.expanded .category-header {
+  background-color: #dbeafe; /* Blue-100: Kept active slightly different or same as hover */
+  border-bottom: 1px solid #e2e8f0; /* Separator */
 }
 
 .category-icon-wrapper {
@@ -220,8 +225,9 @@
 /* Services Dropdown */
 .services-dropdown {
   border-top: 1px solid #e5e7eb;
-  background: #f9fafb;
+  background-color: #f1f5f9; /* Slate-100: Light gray background for the area */
   animation: slideDown 0.3s ease;
+  padding: 0.5rem; /* Padding for card effect */
 }
 
 @keyframes slideDown {
@@ -239,11 +245,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1rem 1rem 3.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 1rem;
+  border: 1px solid transparent; /* Hidden border */
+  border-radius: 0.5rem; /* Rounded */
   cursor: pointer;
   transition: all 0.2s;
-  background: white;
+  background-color: white; /* White cards */
+  margin-bottom: 0.5rem; /* Spacing */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* Tiny shadow */
 }
 
 .service-item:last-child {

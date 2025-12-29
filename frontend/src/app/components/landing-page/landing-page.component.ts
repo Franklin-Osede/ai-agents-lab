@@ -134,4 +134,16 @@ export class LandingPageComponent implements OnInit {
   toggleDarkMode(): void {
     document.documentElement.classList.toggle("dark");
   }
+
+  scrollToAgents(): void {
+    const element = document.getElementById("agents-section");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  openContact(): void {
+    const calendlyUrl = "https://calendly.com/agentminds";
+    window.open(calendlyUrl, "_blank");
+  }
 }

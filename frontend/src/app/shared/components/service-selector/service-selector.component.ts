@@ -41,7 +41,7 @@ export class ServiceSelectorComponent {
       icon: "health_and_safety",
       color: "text-blue-600",
       bgColor: "bg-blue-50",
-      expanded: true,
+      expanded: false,
       services: [
         {
           id: "clinica",
@@ -72,7 +72,7 @@ export class ServiceSelectorComponent {
       icon: "spa",
       color: "text-pink-600",
       bgColor: "bg-pink-50",
-      expanded: true,
+      expanded: false,
       services: [
         {
           id: "peluqueria",

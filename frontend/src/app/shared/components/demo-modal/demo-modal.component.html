@@ -23,7 +23,7 @@
     role="dialog"
   >
     <!-- HEADER (Hidden on Step -1: Role Selector, Step 3: Professional Selection, Step 9: Payment) -->
-    @if (currentStep >= 0 && currentStep !== 3 && currentStep !== 9) {
+    @if (currentStep >= 0 && currentStep !== 3 && currentStep !== 9 && currentStep !== 4) {
     <header class="mobile-header">
       <button
         class="icon-btn"
@@ -823,11 +823,7 @@
                 <div class="detail-content">
                   <p class="detail-label">Fecha</p>
                   <p class="detail-value">
-                    {{
-                      calendarData.currentDate
-                        | date : "EEEE, d 'de' MMMM"
-                        | titlecase
-                    }}
+                    {{ getFormattedDate(calendarData.currentDate) }}
                   </p>
                 </div>
               </div>
@@ -970,14 +966,16 @@
               </div>
             </div>
           </div>
-
-          <!-- Bottom Action Bar - Dentro del contenido, sticky al final -->
-          <div class="confirmation-actions">
-            <button class="reschedule-btn" (click)="rescheduleBooking()">
+          <div class="confirmation-actions" style="display: flex; gap: 10px; padding: 12px 16px;">
+            <button class="home-btn" (click)="onClose()" style="flex: 1; padding: 12px 4px; background: #000; color: white; border-radius: 12px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 4px;">
+              <span class="material-symbols-outlined" style="font-size: 1.1rem;">home</span>
+              Inicio
+            </button>
+            <button class="reschedule-btn" (click)="rescheduleBooking()" style="flex: 1; padding: 12px 4px; border: 1px solid #e5e7eb; background: white; color: #374151; border-radius: 12px; font-weight: 500; font-size: 0.9rem;">
               Reagendar
             </button>
-            <button class="cancel-btn" (click)="cancelBooking()">
-              Cancelar Cita
+            <button class="cancel-btn" (click)="cancelBooking()" style="flex: 1; padding: 12px 4px; background: #fee2e2; color: #991b1b; border: none; border-radius: 12px; font-weight: 500; font-size: 0.9rem;">
+              Cancelar
             </button>
           </div>
         </div>
@@ -1463,7 +1461,7 @@
     }
 
     <!-- Bottom Navigation (Fixed) -->
-    @if (currentStep >= 0 && currentStep < 10) {
+    @if (currentStep >= 0 && currentStep < 9) {
     <nav class="bottom-nav-fixed">
       <div class="flex justify-between items-center max-w-xs mx-auto w-full">
         <button

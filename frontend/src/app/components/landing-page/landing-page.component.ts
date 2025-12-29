@@ -27,6 +27,19 @@ export class LandingPageComponent implements OnInit {
       color: "blue",
     },
     {
+      id: "rider", // NEW RIDER AGENT
+      name: "Rider Agent",
+      description: "Control Tower para logística. Rastreo en tiempo real.",
+      icon: "two_wheeler",
+      features: [
+        "Mapa en Vivo",
+        "Alertas de Tráfico",
+        "Predicción de Retrasos",
+      ],
+      endpoint: "/agents/rider",
+      color: "orange", // New color
+    },
+    {
       id: "cart", // ID matched with environment.ts
       name: "Abandoned Cart",
       description:
@@ -58,19 +71,6 @@ export class LandingPageComponent implements OnInit {
       features: ["Escalamiento Inteligente", "Multicanal", "Amigable"],
       endpoint: "/agents/invoice",
       color: "amber",
-    },
-    {
-      id: "rider", // NEW RIDER AGENT
-      name: "Rider Agent",
-      description: "Control Tower para logística. Rastreo en tiempo real.",
-      icon: "two_wheeler",
-      features: [
-        "Mapa en Vivo",
-        "Alertas de Tráfico",
-        "Predicción de Retrasos",
-      ],
-      endpoint: "/agents/rider",
-      color: "orange", // New color
     },
     {
       id: "voice", // ID matched with environment.ts

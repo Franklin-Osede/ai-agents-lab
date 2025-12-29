@@ -407,7 +407,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         } else if (nameLower.startsWith('dr.') || nameLower.startsWith('doctor')) {
            greetingPrefix = `Hola, le atiende el asistente del ${professionalName}`;
         } else {
-           greetingPrefix = `Hola, le atiende el asistente del doctor ${professionalName}`;
+           greetingPrefix = `Hola, le atiende el asistente de ${professionalName}`;
         }
         welcomeMessage = `${greetingPrefix}. Por favor, dígame brevemente el motivo de su consulta para poder ayudarle.`;
         options = [
@@ -520,10 +520,43 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Stops any currently playing audio and resets state
+   */
+  private stopCurrentAudio(): void {
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
+    if (this.currentlyPlayingMessage) {
+      this.currentlyPlayingMessage.audioPlaying = false;
+      // Don't nullify currentlyPlayingMessage here if you want to keep track of it, 
+      // but for "stopping" purposes it's safer to clear the state.
+      // However, onended also clears it. Let's strictly pause.
+      this.currentlyPlayingMessage = null; 
+    }
+    this.isPlayingAudio = false;
+  }
+
+  /**
+   * Scrolls the chat container to the bottom
+   */
+  private scrollToBottom(): void {
+    try {
+      const chatContainer = document.querySelector('.chat-messages');
+      if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+    } catch (err) {
+      console.warn('Scroll to bottom failed:', err);
+    }
+  }
+
+  /**
    * Handle conversation flow progression based on user responses
    * This method processes each step of the booking conversation
    */
   handleConversationStep(userResponse: string): void {
+    this.stopCurrentAudio(); // Stop any previous audio to prevent overlap/glitch
     if (!this.conversationFlow || !this.selectedService) {
       return;
     }
@@ -544,7 +577,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     if (serviceType === "clinica" || serviceType.includes("medic")) {
       if (newStep === 2) {
         nextMessage =
-          "¿Considera que es una urgencia para ver hoy mismo... o prefiere agendar una cita normal para otro día?";
+          "¿Considera que es una urgencia para hoy mismo? ¿O prefiere agendar una cita normal para otro día?";
         nextOptions = [
           "🚨 Urgente (próximos días)",
           "⏳ Normal",
@@ -557,7 +590,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "🔁 Sí, ya he tenido consulta",
         ];
       } else if (newStep === 4) {
-        nextMessage = "Bien. Para buscar hueco... ¿prefiere mañanas o tardes?";
+        nextMessage = "Bien. Para buscar un hueco. ¿Prefiere venir por la mañana? ¿O por la tarde?";
         nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
       } else if (newStep === 5) {
         // Paso 5: Mostrar calendario
@@ -811,6 +844,12 @@ export class DemoModalComponent implements OnInit, OnDestroy {
 
         // Force Angular change detection inside NgZone
         this.cdr.detectChanges();
+        
+        // Auto-scroll to show new options
+        setTimeout(() => {
+          this.scrollToBottom();
+        }, 100);
+        
         console.log("🟢 Change detection triggered inside NgZone");
       });
 
@@ -2725,6 +2764,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   }
 
   goToStep(step: number) {
+    this.stopCurrentAudio();
     // If going back to service selector (step 0), clear chat messages
     if (step === 0) {
       this.messages = [];
@@ -4420,6 +4460,18 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     if (this.currentAudio) {
       this.currentAudio.pause();
       this.currentAudio = null;
+    }
+  }
+
+  getFormattedDate(date: Date): string {
+    if (!date) return '';
+    try {
+      const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long' };
+      const dateString = date.toLocaleDateString('es-ES', options);
+      // Capitalize first letter of weekday
+      return dateString.charAt(0).toUpperCase() + dateString.slice(1);
+    } catch (e) {
+      return date.toDateString();
     }
   }
 

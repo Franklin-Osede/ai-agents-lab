@@ -20,16 +20,20 @@ export class PollyService implements OnModuleInit {
 
   // ALL possible phrases from all agents (for 100% cache coverage)
   private readonly COMMON_PHRASES = [
-    // Abandoned Cart Agent
+    // 1. Rider Agent - Welcome (Critical for low latency)
+    'Hola, bienvenido a Rider Agent. Escríbenos tu nombre y continúa con el pedido.',
+
+    // 2. Abandoned Cart Agent
     '¡Hola! Soy tu Agente Recuperador de Carritos. Dale a continuar y podrás maximizar las ventas de usuarios que dejaron items en el carrito.',
 
-    // Booking Agent - Restaurant
+    // 3. Booking Agent - Restaurant
     '¡Hola! Soy tu asistente de reservas. ¿Qué te gustaría hacer hoy?',
+
+    // 4. Booking Agent - Dentist
+    'Clínica Dental Sonrisas. ¿En qué puedo ayudarte?',
+
     '¿Para cuántas personas necesitas la mesa?',
     '¿Prefieres comer o cenar?',
-
-    // Booking Agent - Dentist
-    'Clínica Dental Sonrisas. ¿En qué puedo ayudarte?',
 
     // Booking Agent - Medical
     'Consulta Médica. ¿Tienen disponibilidad esta semana? (Simulado)',
@@ -71,8 +75,8 @@ export class PollyService implements OnModuleInit {
   async onModuleInit() {
     this.logger.log('🔥 PollyService Initializing with Enhanced Voice Support (Enrique/Sergio)...');
 
-    // SMART WARMING: Only pre-generate the first 3 phrases (Greetings) to avoid AWS Throttling in Dev
-    const essentialPhrases = this.COMMON_PHRASES.slice(0, 3);
+    // SMART WARMING: Only pre-generate the first 4 phrases (Greetings + Rider) to avoid AWS Throttling in Dev
+    const essentialPhrases = this.COMMON_PHRASES.slice(0, 4);
     const voices = ['Sergio', 'Enrique', 'Lucia']; // Prioritize our active voices
 
     this.logger.log(

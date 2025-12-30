@@ -30,8 +30,8 @@
     </div>
     }
 
-    <!-- HEADER (Hidden on Step -1: Role Selector, Step 3: Professional Selection, Step 9: Payment) -->
-    @if (currentStep >= 0 && currentStep !== 3 && currentStep !== 9 && currentStep !== 4) {
+    <!-- HEADER (Hidden on Step -1: Role Selector, Step 3: Professional Selection, Step 9: Payment, Step 10: Reservas, Step 11: Avisos, Step 12: Perfil, Step 4: Confirmation) -->
+    @if (currentStep >= 0 && currentStep !== 3 && currentStep !== 9 && currentStep !== 4 && currentStep !== 10 && currentStep !== 11 && currentStep !== 12) {
     <header class="mobile-header">
       <button
         class="icon-btn"
@@ -51,6 +51,8 @@
     }
 
     <!-- MAIN CONTENT AREA SWITCHER -->
+    <!-- MAIN CONTENT AREA SWITCHER (Reference: Line 159 Task) -->
+    @if (currentStep !== 10 && currentStep !== 11 && currentStep !== 12) {
     <main class="mobile-main">
       <!-- LEAD CAPTURE MODAL (Shows after 3-5 interactions) -->
       <!-- LEAD CAPTURE MODAL (Shows after success) -->
@@ -796,7 +798,7 @@
       <div class="step-view confirmation-view-new">
         <!-- Top App Bar -->
         <div class="confirmation-header">
-          <button class="back-btn" (click)="goToStep(1)">
+          <button class="back-btn" (click)="backFromDetails()">
             <span class="material-symbols-outlined">arrow_back_ios_new</span>
           </button>
           <h2>Detalles de la Cita</h2>
@@ -1173,6 +1175,7 @@
       </div>
       }
     </main>
+    }
 
     <!-- BOTTOM INPUT AREA (Only on Chat Step 1) -->
     @if (currentStep === 1) {
@@ -1217,134 +1220,7 @@
     </div>
     }
 
-    <!-- STEP 4: BOOKING CONFIRMATION -->
-    @if (isStep(4) && selectedBooking) {
-    <div class="step-view booking-confirmation-view">
-      <div class="confirmation-header">
-        <button class="icon-btn" (click)="navigateToTab('inicio')">
-          <span class="material-symbols-outlined">arrow_back_ios_new</span>
-        </button>
-        <h2>Detalles de la Cita</h2>
-      </div>
 
-      <div class="confirmation-content">
-        <!-- Status Card -->
-        <div class="status-card">
-          <div class="status-icon">
-            <span class="material-symbols-outlined">check</span>
-          </div>
-          <h3>Reservación Confirmada</h3>
-          <p>Tu cita ha sido programada exitosamente.</p>
-          <button class="btn-add-calendar" (click)="addToCalendar()">
-            <span class="material-symbols-outlined">calendar_add_on</span>
-            Añadir a Calendario
-          </button>
-        </div>
-
-        <!-- Details List -->
-        <div class="details-section">
-          <h4>Información</h4>
-          <div class="details-card">
-            <div class="detail-item">
-              <div class="detail-icon">
-                <span class="material-symbols-outlined">calendar_today</span>
-              </div>
-              <div>
-                <p class="detail-label">Fecha</p>
-                <p class="detail-value">
-                  {{ formatDate(selectedBooking.date) }}
-                </p>
-              </div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-icon">
-                <span class="material-symbols-outlined">schedule</span>
-              </div>
-              <div>
-                <p class="detail-label">Hora</p>
-                <p class="detail-value">
-                  {{ selectedBooking.time }} -
-                  {{ getEndTime(selectedBooking.time) }} (1h)
-                </p>
-              </div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-icon">
-                <span class="material-symbols-outlined">content_cut</span>
-              </div>
-              <div>
-                <p class="detail-label">Servicio</p>
-                <p class="detail-value">{{ selectedBooking.service }}</p>
-              </div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-icon">
-                <span class="material-symbols-outlined">person</span>
-              </div>
-              <div>
-                <p class="detail-label">Profesional</p>
-                <p class="detail-value">{{ selectedBooking.professional }}</p>
-              </div>
-            </div>
-            @if (selectedBooking.amount) {
-            <div class="detail-item payment-item">
-              <div class="detail-icon payment-icon">
-                <span class="material-symbols-outlined">payments</span>
-              </div>
-              <div class="flex-1">
-                <div class="flex justify-between items-center mb-1">
-                  <p class="detail-label">Costo Total</p>
-                  <span
-                    class="payment-badge"
-                    [class.paid]="selectedBooking.paymentStatus === 'paid'"
-                  >
-                    {{
-                      selectedBooking.paymentStatus === "paid"
-                        ? "Pagado"
-                        : "Pendiente"
-                    }}
-                  </span>
-                </div>
-                <p class="detail-value price">
-                  ${{ selectedBooking.amount.toFixed(2) }} MXN
-                </p>
-                @if (selectedBooking.paymentStatus === 'pending') {
-                <button
-                  class="btn-pay-test"
-                  (click)="
-                    processTestPayment(
-                      selectedBooking.id,
-                      selectedBooking.amount
-                    )
-                  "
-                >
-                  Pagar con Dinero de Prueba
-                </button>
-                }
-              </div>
-            </div>
-            }
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom Actions -->
-      <div class="bottom-actions">
-        <button
-          class="btn-secondary"
-          (click)="reagendarBooking(selectedBooking.id)"
-        >
-          Reagendar
-        </button>
-        <button
-          class="btn-danger"
-          (click)="cancelBookingById(selectedBooking.id)"
-        >
-          Cancelar Cita
-        </button>
-      </div>
-    </div>
-    }
 
     <!-- STEP 10: RESERVAS VIEW -->
     @if (isStep(10)) {

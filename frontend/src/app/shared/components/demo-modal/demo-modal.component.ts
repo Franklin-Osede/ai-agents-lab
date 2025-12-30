@@ -3841,15 +3841,65 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       const savedBookings = localStorage.getItem(this.STORAGE_KEY_BOOKINGS);
       if (savedBookings) {
         this.bookings = JSON.parse(savedBookings);
+      } else {
+        // Mock bookings if empty
+        this.bookings = [
+          {
+            id: 'mock_1',
+            date: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow
+            time: '10:00',
+            service: 'Limpieza Dental',
+            professional: 'Dra. Ana García',
+            status: 'confirmed',
+            amount: 50,
+            paymentStatus: 'paid'
+          },
+          {
+            id: 'mock_2',
+            date: new Date(Date.now() - 172800000).toISOString().split('T')[0], // 2 days ago
+            time: '16:30',
+            service: 'Revisión General',
+            professional: 'Dr. Carlos Ruiz',
+            status: 'completed',
+            amount: 30,
+            paymentStatus: 'paid'
+          }
+        ];
+        this.saveState();
       }
       
       const savedNotifs = localStorage.getItem(this.STORAGE_KEY_NOTIFS);
       if (savedNotifs) {
         this.notifications = JSON.parse(savedNotifs);
-        this.notifications = this.notifications.map(n => ({
+        this.notifications = this.notifications.map((n: any) => ({
             ...n,
             timestamp: new Date(n.timestamp)
         }));
+      } else {
+        // Mock notifications if empty
+        this.notifications = [
+          {
+            id: 'notif_1',
+            type: 'reminder',
+            title: 'Recordatorio de Cita',
+            message: 'Tu cita con Dra. Ana García es mañana a las 10:00',
+            timestamp: new Date(Date.now() - 3600000), // 1 hour ago
+            read: false,
+            icon: 'calendar_today',
+            color: 'blue'
+          },
+          {
+            id: 'notif_2',
+            type: 'offer',
+            title: 'Descuento Exclusivo',
+            message: 'Obtén un 20% de descuento en tu próximo blanqueamiento.',
+            timestamp: new Date(Date.now() - 86400000), // 1 day ago
+            read: true,
+            icon: 'percent',
+            color: 'green'
+          }
+        ];
+        this.saveState();
       }
     } catch (e) { console.error('Error loading state', e); }
   }
@@ -3857,6 +3907,14 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   viewBookingDetails(booking: any): void {
     this.selectedBooking = booking;
     this.currentStep = 4; // Show confirmation/details view
+  }
+
+  backFromDetails(): void {
+    if (this.activeTab === 'reservas') {
+      this.currentStep = 10; // Volver a Lista de Reservas
+    } else {
+      this.currentStep = 1; // Volver al Chat
+    }
   }
 
   getNotificationGroups(): { label: string; notifications: any[] }[] {

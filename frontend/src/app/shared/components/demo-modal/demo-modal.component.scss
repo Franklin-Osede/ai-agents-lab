@@ -1103,6 +1103,8 @@
   height: 100%;
   overflow-y: auto;
   padding-bottom: 6rem;
+  justify-content: flex-start; // Ensure content starts at the top
+
 
   .reservas-header {
     display: flex;

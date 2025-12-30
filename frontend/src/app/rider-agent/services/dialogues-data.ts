@@ -44,9 +44,11 @@ export const DIALOGUES = {
       id: "general.add_to_order",
       response:
         "Perfecto, lo añado a tu pedido. ¿Quieres algo más o finalizamos?",
-      suggestions: ["➕ Seguir pidiendo", "✅ Finalizar"],
+      suggestions: ["➕ Seguir pidiendo", "🥤 Bebidas", "🍰 Postres", "✅ Finalizar"],
       on_select: {
         "➕ Seguir pidiendo": { context: "general", category: "default" },
+        "🥤 Bebidas": { context: "general", category: "choose_drinks_context" },
+        "🍰 Postres": { context: "general", category: "choose_dessert_context" },
         "✅ Finalizar": { context: "general", category: "confirm_order" },
       },
       on_intent: {
@@ -354,8 +356,8 @@ export const DIALOGUES = {
     {
       id: "japanese.added_main",
       response:
-        "¡Excelente elección! 😋 ¿Te pongo algo de beber, postre o cerramos?",
-      suggestions: ["🥤 Bebidas", "🍰 Postres", "✅ Ya lo tengo todo"],
+        "¡Excelente elección! 😋 ¿Qué más te apetece? Puedes elegir entrantes, bebidas o postres.",
+      suggestions: ["🥗 Entrantes", "🥤 Bebidas", "🍰 Postres", "✅ Ya lo tengo todo"],
       on_select: {
         "Sushi Set Deluxe": {
           context: "japanese",
@@ -384,6 +386,7 @@ export const DIALOGUES = {
             image: "assets/food_images/bento_box.webp",
           },
         },
+        "🥗 Entrantes": { context: "japanese", category: "starters" },
         "🥤 Bebidas": { context: "japanese", category: "drinks" },
         "🍰 Postres": { context: "japanese", category: "dessert" },
         "✅ Ya lo tengo todo": {
@@ -415,14 +418,14 @@ export const DIALOGUES = {
       suggestions: ["🍜 Tonkotsu", "🍜 Miso", "⬅️ Volver"],
       on_select: {
         "🍜 Tonkotsu": {
-          context: "general",
-          category: "add_to_order",
-          add_item: { name: "Tonkotsu Ramen", tags: ["ramen", "japanese"] },
+          context: "japanese",
+          category: "added_main",
+          add_item: { name: "Tonkotsu Ramen", tags: ["ramen", "japanese", "main"] },
         },
         "🍜 Miso": {
-          context: "general",
-          category: "add_to_order",
-          add_item: { name: "Miso Ramen", tags: ["ramen", "japanese"] },
+          context: "japanese",
+          category: "added_main",
+          add_item: { name: "Miso Ramen", tags: ["ramen", "japanese", "main"] },
         },
         "⬅️ Volver": { context: "japanese", category: "menu" },
       },
@@ -626,6 +629,170 @@ export const DIALOGUES = {
         "🍕 Pizza": { context: "italian", category: "menu_pizza" },
         "🍝 Pasta": { context: "italian", category: "menu_pasta" },
         "⬅️ Volver": { context: "italian", category: "default" },
+      },
+    },
+
+    {
+      id: "italian.menu_pizza",
+      response: "Pizzas artesanales al horno. Elige tu favorita:",
+      suggestions: [
+        "🍕 Margherita",
+        "🍕 Carbonara",
+        "🍕 Cuatro Quesos",
+        "⬅️ Volver",
+      ],
+      on_select: {
+        "Margherita Pizza": {
+          context: "italian",
+          category: "added_main",
+          add_item: {
+            name: "Margherita Pizza",
+            price: 13.9,
+            image: "assets/food_images/pizza_margherita.webp",
+            tags: ["italian", "main", "pizza"],
+          },
+        },
+        "Pizza Margherita": {
+          context: "italian",
+          category: "added_main",
+          add_item: {
+            name: "Margherita Pizza",
+            price: 13.9,
+            image: "assets/food_images/pizza_margherita.webp",
+            tags: ["italian", "main", "pizza"],
+          },
+        },
+        "🍕 Margherita": {
+          context: "italian",
+          category: "added_main",
+          add_item: {
+            name: "Margherita Pizza",
+            price: 13.9,
+            image: "assets/food_images/pizza_margherita.webp",
+            tags: ["italian", "main", "pizza"],
+          },
+        },
+        "⬅️ Volver": { context: "italian", category: "menu" },
+      },
+    },
+
+    {
+      id: "italian.menu_pasta",
+      response: "Pastas frescas caseras. ¿Cuál prefieres?",
+      suggestions: [
+        "🍝 Carbonara",
+        "🍝 Lasagna",
+        "🍝 Risotto",
+        "⬅️ Volver",
+      ],
+      on_select: {
+        Carbonara: {
+          context: "italian",
+          category: "added_main",
+          add_item: {
+            name: "Carbonara",
+            price: 15.5,
+            image: "assets/food_images/carbonara.webp",
+            tags: ["italian", "main", "pasta"],
+          },
+        },
+        "🍝 Carbonara": {
+          context: "italian",
+          category: "added_main",
+          add_item: {
+            name: "Carbonara",
+            price: 15.5,
+            image: "assets/food_images/carbonara.webp",
+            tags: ["italian", "main", "pasta"],
+          },
+        },
+        Lasagna: {
+          context: "italian",
+          category: "added_main",
+          add_item: {
+            name: "Lasagna",
+            price: 16.0,
+            image: "assets/food_images/lasagna.webp",
+            tags: ["italian", "main", "pasta"],
+          },
+        },
+        "🍝 Lasagna": {
+          context: "italian",
+          category: "added_main",
+          add_item: {
+            name: "Lasagna",
+            price: 16.0,
+            image: "assets/food_images/lasagna.webp",
+            tags: ["italian", "main", "pasta"],
+          },
+        },
+        "Risotto Funghi": {
+          context: "italian",
+          category: "added_main",
+          add_item: {
+            name: "Risotto Funghi",
+            price: 18.0,
+            image: "assets/food_images/risotto_funghi.webp",
+            tags: ["italian", "main", "pasta"],
+          },
+        },
+        "🍝 Risotto": {
+          context: "italian",
+          category: "added_main",
+          add_item: {
+            name: "Risotto Funghi",
+            price: 18.0,
+            image: "assets/food_images/risotto_funghi.webp",
+            tags: ["italian", "main", "pasta"],
+          },
+        },
+        "⬅️ Volver": { context: "italian", category: "menu" },
+      },
+    },
+
+    {
+      id: "italian.added_main",
+      response:
+        "¡Excelente elección! 😋 ¿Qué más te apetece? Puedes elegir entrantes, bebidas o postres.",
+      suggestions: ["🥗 Entrantes", "🥤 Bebidas", "🍰 Postres", "✅ Ya lo tengo todo"],
+      on_select: {
+        "Margherita Pizza": {
+          context: "italian",
+          category: "added_main",
+          add_item: {
+            name: "Margherita Pizza",
+            price: 13.9,
+            image: "assets/food_images/pizza_margherita.webp",
+            tags: ["italian", "main", "pizza"],
+          },
+        },
+        Carbonara: {
+          context: "italian",
+          category: "added_main",
+          add_item: {
+            name: "Carbonara",
+            price: 15.5,
+            image: "assets/food_images/carbonara.webp",
+            tags: ["italian", "main", "pasta"],
+          },
+        },
+        Lasagna: {
+          context: "italian",
+          category: "added_main",
+          add_item: {
+            name: "Lasagna",
+            price: 16.0,
+            image: "assets/food_images/lasagna.webp",
+            tags: ["italian", "main", "pasta"],
+          },
+        },
+        "🥗 Entrantes": { context: "italian", category: "starters" },
+        "🥤 Bebidas": { context: "italian", category: "drinks" },
+        "🍰 Postres": { context: "italian", category: "dessert" },
+        "✅ Ya lo tengo todo": {
+          context: "general",
+          category: "confirm_order",
+        },
       },
     },
 
@@ -1181,18 +1348,159 @@ export const DIALOGUES = {
     {
       id: "spanish.menu",
       response: "Tenemos tapas y raciones. ¿Qué prefieres?",
-      suggestions: ["🥘 Tapas", "🍽️ Raciones", "⬅️ Volver"],
+      suggestions: ["🥘 Tapas", "🍽️ Raciones"],
       on_select: {
         "🥘 Tapas": { context: "spanish", category: "menu_tapas" },
         "🍽️ Raciones": { context: "spanish", category: "menu_raciones" },
-        "⬅️ Volver": { context: "spanish", category: "default" },
+      },
+    },
+
+    {
+      id: "spanish.menu_tapas",
+      response: "Aquí tienes nuestras tapas más populares. Elige la que más te apetezca:",
+      suggestions: ["✅ Ya lo tengo todo"],
+      on_select: {
+        "Croquetas": {
+          context: "spanish",
+          category: "added_main",
+          add_item: {
+            name: "Croquetas",
+            price: 10.0,
+            image: "assets/food_images/croquetas.webp",
+            tags: ["spanish", "tapas", "main"],
+          },
+        },
+        "Patatas Bravas": {
+          context: "spanish",
+          category: "added_main",
+          add_item: {
+            name: "Patatas Bravas",
+            price: 8.5,
+            image: "assets/food_images/patatas_bravas.webp",
+            tags: ["spanish", "tapas", "main"],
+          },
+        },
+        "Tortilla Española": {
+          context: "spanish",
+          category: "added_main",
+          add_item: {
+            name: "Tortilla Española",
+            price: 9.0,
+            image: "assets/food_images/tortilla_espanola.webp",
+            tags: ["spanish", "tapas", "main"],
+          },
+        },
+        "✅ Ya lo tengo todo": {
+          context: "general",
+          category: "confirm_order",
+        },
+      },
+    },
+
+    {
+      id: "spanish.menu_raciones",
+      response: "Nuestras raciones más destacadas. Elige la que más te apetezca:",
+      suggestions: ["✅ Ya lo tengo todo"],
+      on_select: {
+        "Jamón Ibérico": {
+          context: "spanish",
+          category: "added_main",
+          add_item: {
+            name: "Jamón Ibérico",
+            price: 22.0,
+            image: "assets/food_images/jamon_iberico.webp",
+            tags: ["spanish", "raciones", "main"],
+          },
+        },
+        "Paella Mixta": {
+          context: "spanish",
+          category: "added_main",
+          add_item: {
+            name: "Paella Mixta",
+            price: 18.0,
+            image: "assets/food_images/paella.webp",
+            tags: ["spanish", "raciones", "main"],
+          },
+        },
+        "✅ Ya lo tengo todo": {
+          context: "general",
+          category: "confirm_order",
+        },
+      },
+    },
+
+    {
+      id: "spanish.added_main",
+      response:
+        "¡Excelente elección! 😋 ¿Qué más te apetece?",
+      suggestions: ["🥘 Más tapas", "🍽️ Raciones", "🥤 Bebidas", "🍰 Postres", "➕ Seguir pidiendo", "✅ Ya lo tengo todo"],
+      on_select: {
+        "🥘 Más tapas": { context: "spanish", category: "menu_tapas" },
+        "🍽️ Raciones": { context: "spanish", category: "menu_raciones" },
+        "➕ Seguir pidiendo": { context: "spanish", category: "menu" },
+        "Jamón Ibérico": {
+          context: "spanish",
+          category: "added_main",
+          add_item: {
+            name: "Jamón Ibérico",
+            price: 22.0,
+            image: "assets/food_images/jamon_iberico.webp",
+            tags: ["spanish", "raciones", "main"],
+          },
+        },
+        "Paella Mixta": {
+          context: "spanish",
+          category: "added_main",
+          add_item: {
+            name: "Paella Mixta",
+            price: 18.0,
+            image: "assets/food_images/paella.webp",
+            tags: ["spanish", "raciones", "main"],
+          },
+        },
+        "Croquetas": {
+          context: "spanish",
+          category: "added_main",
+          add_item: {
+            name: "Croquetas",
+            price: 10.0,
+            image: "assets/food_images/croquetas.webp",
+            tags: ["spanish", "tapas", "main"],
+          },
+        },
+        "Patatas Bravas": {
+          context: "spanish",
+          category: "added_main",
+          add_item: {
+            name: "Patatas Bravas",
+            price: 8.5,
+            image: "assets/food_images/patatas_bravas.webp",
+            tags: ["spanish", "tapas", "main"],
+          },
+        },
+        "Tortilla Española": {
+          context: "spanish",
+          category: "added_main",
+          add_item: {
+            name: "Tortilla Española",
+            price: 9.0,
+            image: "assets/food_images/tortilla_espanola.webp",
+            tags: ["spanish", "tapas", "main"],
+          },
+        },
+        "🥤 Bebidas": { context: "spanish", category: "drinks" },
+        "🍰 Postres": { context: "spanish", category: "dessert" },
+        "✅ Ya lo tengo todo": {
+          context: "general",
+          category: "confirm_order",
+        },
       },
     },
 
     {
       id: "spanish.kids",
       response: "Para peques: tortilla suave o croquetas. ¿Qué prefieres?",
-      suggestions: ["🥔 Tortilla", "🧆 Croquetas", "⬅️ Volver"],
+      suggestions: ["🥔 Tortilla", "🧆 Croquetas"],
       on_select: {
         "🥔 Tortilla": {
           context: "general",
@@ -1204,14 +1512,13 @@ export const DIALOGUES = {
           category: "add_to_order",
           add_item: { name: "Croquetas", tags: ["kids", "spanish"] },
         },
-        "⬅️ Volver": { context: "spanish", category: "default" },
       },
     },
 
     {
       id: "spanish.spicy_level",
       response: "Modo picante 🌶️. ¿Suave o fuerte?",
-      suggestions: ["🌶️ Suave", "🌶️🌶️ Fuerte", "⬅️ Volver"],
+      suggestions: ["🌶️ Suave", "🌶️🌶️ Fuerte"],
       on_select: {
         "🌶️ Suave": {
           context: "spanish",
@@ -1223,7 +1530,6 @@ export const DIALOGUES = {
           category: "spicy_pick",
           set_memory: { spicy_level: "hot" },
         },
-        "⬅️ Volver": { context: "spanish", category: "default" },
       },
     },
 
@@ -1234,27 +1540,29 @@ export const DIALOGUES = {
         "🥔 Patatas bravas",
         "🌶️ Chorizo picante",
         "⬅️ Cambiar",
-        "⬅️ Volver",
       ],
       on_select: {
         "🥔 Patatas bravas": {
-          context: "general",
-          category: "add_to_order",
+          context: "spanish",
+          category: "added_main",
           add_item: {
             name: "Patatas bravas",
-            tags: ["spicy", "spanish"],
+            price: 8.5,
+            image: "assets/food_images/patatas_bravas.webp",
+            tags: ["spicy", "spanish", "main"],
           },
         },
         "🌶️ Chorizo picante": {
-          context: "general",
-          category: "add_to_order",
+          context: "spanish",
+          category: "added_main",
           add_item: {
             name: "Chorizo picante",
-            tags: ["spicy", "spanish"],
+            price: 9.0,
+            image: "assets/food_images/chorizo_sidra.webp",
+            tags: ["spicy", "spanish", "main"],
           },
         },
         "⬅️ Cambiar": { context: "spanish", category: "spicy_level" },
-        "⬅️ Volver": { context: "spanish", category: "default" },
       },
     },
 

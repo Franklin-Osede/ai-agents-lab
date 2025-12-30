@@ -111,7 +111,7 @@ export class GoogleMapsService {
       this.autocompleteService.getPlacePredictions(
         {
           input: input,
-          componentRestrictions: { country: 'mx' }, // Mexico
+          // Removed country restriction to allow global addresses
           types: ['address'] // Only addresses
         },
         (predictions: any[], status: string) => {

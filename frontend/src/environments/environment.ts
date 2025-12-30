@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiBaseUrl: "http://localhost:3005/api/v1",
+  apiBaseUrl: "http://localhost:3003/api/v1",
   googleMapsApiKey: "AIzaSyAkqMXaq13jJWUMaUAJAtQniiAOmNyh2BA",
   firebase: {
     apiKey: "YOUR_API_KEY",

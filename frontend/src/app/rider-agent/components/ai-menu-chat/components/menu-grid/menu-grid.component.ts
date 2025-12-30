@@ -75,7 +75,7 @@ import { CartService } from "../../../../../shared/services/cart.service";
               getQuantity(card)
             }}</span>
             <button
-              (click)="$event.stopPropagation(); add.emit(card)"
+              (click)="handleAddClick($event, card)"
               class="w-8 h-full flex items-center justify-center text-slate-600 hover:text-green-600"
             >
               <span class="material-symbols-outlined text-sm">add</span>
@@ -83,7 +83,7 @@ import { CartService } from "../../../../../shared/services/cart.service";
           </div>
           } @else {
           <button
-            (click)="$event.stopPropagation(); add.emit(card)"
+            (click)="handleAddClick($event, card)"
             class="w-full h-9 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium text-sm transition-colors relative z-20"
           >
             Añadir
@@ -117,5 +117,12 @@ export class MenuGridComponent {
 
   getQuantity(item: MenuCard): number {
     return this.cartService.getQuantity(item.name);
+  }
+
+  handleAddClick(event: Event, card: MenuCard) {
+    event.stopPropagation();
+    event.preventDefault();
+    console.log("📦 MenuGridComponent: Emitting add event for:", card.name);
+    this.add.emit(card);
   }
 }

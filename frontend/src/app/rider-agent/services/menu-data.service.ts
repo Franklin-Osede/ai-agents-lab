@@ -328,6 +328,49 @@ export class MenuDataService {
         },
       ];
     } else if (type.includes("spanish")) {
+      if (category === "menu_tapas" || category === "tapas") {
+        return [
+          {
+            name: "Croquetas",
+            price: 10.0,
+            image: img("croquetas.webp"),
+            tags: ["spanish", "tapas", "main"],
+            description: "Bechamel cremosa con jamón frita.",
+          },
+          {
+            name: "Patatas Bravas",
+            price: 8.5,
+            image: img("patatas_bravas.webp"),
+            tags: ["spanish", "tapas", "main", "Spicy"],
+            description: "Patatas fritas con salsa picante.",
+          },
+          {
+            name: "Tortilla Española",
+            price: 9.0,
+            image: img("tortilla_espanola.webp"),
+            tags: ["spanish", "tapas", "main", "Vegetarian"],
+            description: "Tortilla de patatas y huevo.",
+          },
+        ];
+      }
+      if (category === "menu_raciones" || category === "raciones") {
+        return [
+          {
+            name: "Jamón Ibérico",
+            price: 22.0,
+            image: img("jamon_iberico.webp"),
+            tags: ["spanish", "raciones", "main", "Premium"],
+            description: "Jamón curado de bellota cortado a mano.",
+          },
+          {
+            name: "Paella Mixta",
+            price: 18.0,
+            image: img("paella.webp"),
+            tags: ["spanish", "raciones", "main", "Classic"],
+            description: "Arroz con marisco y pollo.",
+          },
+        ];
+      }
       if (category === "kids") {
         return [
           {
@@ -346,7 +389,7 @@ export class MenuDataService {
           },
         ];
       }
-      if (category === "spicy") {
+      if (category === "spicy" || category === "spicy_pick") {
         return [
           {
             name: "Patatas Bravas",
@@ -400,6 +443,7 @@ export class MenuDataService {
           },
         ];
       }
+      // Default: show all Spanish dishes
       return [
         {
           name: "Jamón Ibérico",

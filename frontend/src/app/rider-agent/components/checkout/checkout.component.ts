@@ -9,7 +9,7 @@ import {
 import { CommonModule, Location, isPlatformBrowser } from "@angular/common";
 import { RouterModule, Router } from "@angular/router";
 import { FormsModule } from "@angular/forms";
-import { CartService } from "../../../shared/services/cart.service";
+import { CartService, CartItem } from "../../../shared/services/cart.service";
 import { UserSessionService } from "../../services/user-session.service";
 import { MapService } from "../../../shared/services/map.service";
 import {
@@ -112,12 +112,17 @@ export class CheckoutComponent implements AfterViewInit {
       boxZoom: false,
     }).setView(this.selectedCoordinates || [40.4168, -3.7038], 15);
 
+    // Use a more modern map style
     L.tileLayer(
       "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
       {
         maxZoom: 19,
+        attribution: '',
       }
     ).addTo(this.previewMap);
+    
+    // Add a subtle shadow effect to the map
+    this.previewMapContainer.nativeElement.style.filter = 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))';
 
     this.updateMapMarker();
 
@@ -182,7 +187,15 @@ export class CheckoutComponent implements AfterViewInit {
     this.previewMarker = L.marker(this.selectedCoordinates, { icon }).addTo(
       this.previewMap
     );
+    // Center and zoom to show the selected address in Madrid
     this.previewMap.setView(this.selectedCoordinates, 15);
+    
+    // Ensure map is properly sized
+    setTimeout(() => {
+      if (this.previewMap) {
+        this.previewMap.invalidateSize();
+      }
+    }, 100);
   }
 
   toggleEditAddress() {
@@ -215,12 +228,28 @@ export class CheckoutComponent implements AfterViewInit {
     this.addressQuery = "";
     this.addressResults = [];
 
-    // Update the mini-map
+    // Update the mini-map to show the selected address in Madrid
     this.updateMapPreview();
+    
+    // Ensure map is visible and centered on the selected location
+    if (this.previewMap && this.selectedCoordinates) {
+      this.previewMap.setView(this.selectedCoordinates, 15);
+    }
   }
 
   goBack() {
-    this.router.navigate(["/rider/chat"]);
+    // Use location.back() to go to previous page naturally
+    // This works better than router.navigate as it respects browser history
+    if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      // Fallback if no history - go back to chat to add more items
+      this.router.navigate(["/rider/chat"]);
+    }
+  }
+
+  removeItem(item: CartItem) {
+    this.cartService.removeFromCart(item);
   }
 
   processPayment() {
@@ -235,8 +264,14 @@ export class CheckoutComponent implements AfterViewInit {
       // Show success confirmation for 1.5 seconds before navigating
       setTimeout(() => {
         this.cartService.clearCart();
-        // Navegar a la pantalla de seguimiento
-        this.router.navigate(["/rider/tracking"]);
+        // Navegar a la pantalla de seguimiento con la dirección seleccionada
+        this.router.navigate(["/rider/tracking"], {
+          queryParams: {
+            lat: this.selectedCoordinates?.[0],
+            lng: this.selectedCoordinates?.[1],
+            address: this.address,
+          },
+        });
       }, 1500);
     }, 2000);
   }

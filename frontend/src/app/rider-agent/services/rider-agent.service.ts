@@ -155,6 +155,13 @@ export class RiderAgentService implements Agent {
       };
     }
 
+    // Handle view_order - navigate directly to checkout
+    if (result.category === "view_order") {
+      response.navigate = {
+        route: "/rider/checkout",
+      };
+    }
+
     return response;
   }
 

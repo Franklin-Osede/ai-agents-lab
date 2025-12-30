@@ -1,4 +1,13 @@
-import { Controller, Post, Body, UploadedFile, UseInterceptors, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UploadedFile,
+  UseInterceptors,
+  Logger,
+  Get,
+  Query,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -9,6 +18,7 @@ import { RiderOrder, RiderOrderStatus } from '../domain/entities/rider-order.ent
 import { CreateRideDto } from './dtos/create-ride.dto';
 import { RiderResponseDto, AiIntent, AiInterpretationDto } from './dtos/rider-response.dto';
 import { RestaurantService } from '../application/services/restaurant.service';
+import { RiderProfileFactory } from '../application/services/rider-profile.factory';
 
 @Controller('rider')
 export class RiderAgentController {
@@ -18,10 +28,17 @@ export class RiderAgentController {
     private readonly bedrockService: RiderBedrockService,
     private readonly locationService: RiderLocationService,
     private readonly simulationService: SimulationService,
-    private readonly restaurantService: RestaurantService, // Injected RestaurantService
+    private readonly restaurantService: RestaurantService,
+    private readonly riderProfileFactory: RiderProfileFactory,
     @InjectRepository(RiderOrder)
     private readonly riderOrderRepository: Repository<RiderOrder>,
   ) {}
+
+  @Get('profile-preview')
+  async getProfilePreview(@Query('name') name: string) {
+    if (!name) return {};
+    return await this.riderProfileFactory.generateProfile(name);
+  }
 
   @Post('interact')
   @UseInterceptors(FileInterceptor('audio'))
@@ -105,10 +122,11 @@ export class RiderAgentController {
 
       // 4. Trigger Simulation (Ghost Driver)
       // This makes the "driver" start moving immediately for the demo
-      this.simulationService.startSimulation(
+      await this.simulationService.startSimulation(
         body.userId, // Using userId as tenantId/sessionId for simplicity
         { lat: pickupCoords.lat, lng: pickupCoords.lng },
         { lat: dropoffCoords.lat, lng: dropoffCoords.lng },
+        body.riderName,
       );
     }
 

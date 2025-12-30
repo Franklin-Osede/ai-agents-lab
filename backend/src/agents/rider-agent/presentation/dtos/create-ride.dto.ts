@@ -7,6 +7,10 @@ export class CreateRideDto {
 
   @IsNotEmpty()
   @IsString()
+  @IsString()
   @IsUUID()
   userId: string;
+
+  @IsString()
+  riderName?: string;
 }

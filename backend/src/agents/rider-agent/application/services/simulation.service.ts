@@ -1,19 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { Server } from 'socket.io';
 import { Rider } from '../../domain/entities/rider.entity';
+import { RiderProfileFactory } from './rider-profile.factory';
 
 @Injectable()
 export class SimulationService {
   private server: Server;
   private activeSimulations: Map<string, NodeJS.Timeout> = new Map();
 
+  constructor(private readonly riderProfileFactory: RiderProfileFactory) {}
+
   // Basic "Rider" state
-  private activeRider: Rider = new Rider(
-    'rider-123',
-    'tenant-demo', // Default demo tenant
-    'Marco Rossi',
-    'delivering',
-  );
+  private activeRider: Rider;
 
   // A simple straight line path for demo (Lat/Lng) - Approx 1km distance
   // Just a few points to interpolate between
@@ -32,14 +30,28 @@ export class SimulationService {
   /**
    * Generates a dynamic route and starts simulation
    */
-  startSimulation(
+  async startSimulation(
     tenantId: string,
     from?: { lat: number; lng: number },
     to?: { lat: number; lng: number },
+    riderName: string = 'Marco Rossi', // Default if not provided
   ) {
     if (this.activeSimulations.has(tenantId)) {
       clearInterval(this.activeSimulations.get(tenantId));
     }
+
+    // Generate Profile based on Name
+    const profile = await this.riderProfileFactory.generateProfile(riderName);
+
+    // Initialize Rider with new profile
+    this.activeRider = new Rider(
+      `rider-${Date.now()}`,
+      tenantId,
+      riderName,
+      'delivering',
+      profile.profileImageUrl,
+      profile.vehicleDesc,
+    );
 
     // Use dynamic points if provided, otherwise fallback to default Madrid route
     let points = this.routePoints;
@@ -51,7 +63,7 @@ export class SimulationService {
     const totalSteps = points.length;
 
     console.log(
-      `[Simulation] Started for ${tenantId} from ${from?.lat},${from?.lng} to ${to?.lat},${to?.lng}`,
+      `[Simulation] Started for ${tenantId} (Rider: ${riderName}) from ${from?.lat},${from?.lng} to ${to?.lat},${to?.lng}`,
     );
 
     const interval = setInterval(() => {
@@ -60,6 +72,7 @@ export class SimulationService {
       }
 
       this.activeRider.current_location = points[step];
+      this.activeRider.last_active = new Date(); // Update activity
 
       // Emit Event
       if (this.server) {

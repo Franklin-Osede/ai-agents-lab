@@ -1,4 +1,5 @@
-import { Injectable, signal } from "@angular/core";
+import { Injectable, signal, PLATFORM_ID, inject } from "@angular/core";
+import { isPlatformBrowser } from "@angular/common";
 
 export interface CartItem {
   id?: string;
@@ -14,7 +15,17 @@ export interface CartItem {
   providedIn: "root",
 })
 export class CartService {
+  private platformId = inject(PLATFORM_ID);
+  private readonly CART_STORAGE_KEY = "rider_cart_items";
+
   cartItems = signal<CartItem[]>([]);
+
+  constructor() {
+    // Load cart from localStorage on initialization
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadCartFromStorage();
+    }
+  }
 
   get total() {
     return this.cartItems().reduce(
@@ -33,27 +44,37 @@ export class CartService {
   addToCart(item: CartItem) {
     this.cartItems.update((items) => {
       const existing = items.find((i) => i.name === item.name);
+      let newItems: CartItem[];
       if (existing) {
         // Increment quantity logic if we tracked it per item,
         // but for now simple array push or update quantity
         // Ideally we should use immutable update for signal
-        return items.map((i) =>
+        newItems = items.map((i) =>
           i.name === item.name ? { ...i, quantity: (i.quantity || 1) + 1 } : i
         );
+      } else {
+        newItems = [...items, { ...item, quantity: 1 }];
       }
-      return [...items, { ...item, quantity: 1 }];
+      // Save to localStorage
+      this.saveCartToStorage(newItems);
+      return newItems;
     });
   }
 
   removeFromCart(item: CartItem) {
     this.cartItems.update((items) => {
       const existing = items.find((i) => i.name === item.name);
+      let newItems: CartItem[];
       if (existing && (existing.quantity || 1) > 1) {
-        return items.map((i) =>
+        newItems = items.map((i) =>
           i.name === item.name ? { ...i, quantity: (i.quantity || 1) - 1 } : i
         );
+      } else {
+        newItems = items.filter((i) => i.name !== item.name);
       }
-      return items.filter((i) => i.name !== item.name);
+      // Save to localStorage
+      this.saveCartToStorage(newItems);
+      return newItems;
     });
   }
 
@@ -64,5 +85,36 @@ export class CartService {
 
   clearCart() {
     this.cartItems.set([]);
+    this.saveCartToStorage([]);
+  }
+
+  /**
+   * Save cart to localStorage for persistence
+   */
+  private saveCartToStorage(items: CartItem[]): void {
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        localStorage.setItem(this.CART_STORAGE_KEY, JSON.stringify(items));
+      } catch (error) {
+        console.warn("Failed to save cart to localStorage:", error);
+      }
+    }
+  }
+
+  /**
+   * Load cart from localStorage on initialization
+   */
+  private loadCartFromStorage(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        const stored = localStorage.getItem(this.CART_STORAGE_KEY);
+        if (stored) {
+          const items = JSON.parse(stored) as CartItem[];
+          this.cartItems.set(items);
+        }
+      } catch (error) {
+        console.warn("Failed to load cart from localStorage:", error);
+      }
+    }
   }
 }

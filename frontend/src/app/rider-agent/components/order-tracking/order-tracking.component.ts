@@ -10,7 +10,9 @@ import {
   signal,
 } from "@angular/core";
 import { CommonModule, isPlatformBrowser } from "@angular/common";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
+import { HttpClient } from "@angular/common/http";
+import { environment } from "../../../../environments/environment";
 import { MapService } from "../../../shared/services/map.service";
 import * as L from "leaflet";
 
@@ -27,6 +29,12 @@ export class OrderTrackingComponent
   private mapService = inject(MapService);
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
+  private http = inject(HttpClient);
+  private route = inject(ActivatedRoute);
+
+  // Dynamic Rider Profile
+  riderName = signal("Michael B.");
+  riderProfile = signal<any>(null);
 
   // Element Ref for the map div
   @ViewChild("mapContainer") mapContainer!: ElementRef;
@@ -37,27 +45,42 @@ export class OrderTrackingComponent
 
   // Simulation State
   private simulationStartTime = 0;
-  private totalDuration = 24; // Fast demo (24s)
+  private totalDuration = 10; // Always 10 seconds regardless of distance
   private animationFrameId: any;
   isDelivered = false;
   showLeadGenModal = false;
 
   // Dynamic countdown signals
   countdownMinutes = signal(0);
-  countdownSeconds = signal(24);
+  countdownSeconds = signal(10);
   estimatedArrival = signal("");
   statusMessage = signal("Llegando pronto");
 
   // Demo locations (Madrid)
-  private restaurantLoc: [number, number] = [40.4168, -3.7038]; // Sol
-  private userLoc: [number, number] = [40.4243, -3.6917]; // Cibeles/Retiro area
+  // Rider always starts from Gran Vía (center of Madrid)
+  private riderStartLoc: [number, number] = [40.4192, -3.7032]; // Gran Vía, Madrid
+  private userLoc: [number, number] = [40.4243, -3.6917]; // Default: Cibeles/Retiro area
 
   ngOnInit() {
-    // Calculate estimated arrival time (current time + 24 seconds)
+    // Get user location from query params (set by checkout)
+    this.route.queryParams.subscribe((params) => {
+      if (params["lat"] && params["lng"]) {
+        // Use the address coordinates from checkout
+        this.userLoc = [parseFloat(params["lat"]), parseFloat(params["lng"])];
+      }
+      
+      if (params["name"]) {
+        this.riderName.set(params["name"]);
+        this.fetchRiderProfile(params["name"]);
+      }
+    });
+
+    // Estimated arrival time will be calculated when route is loaded in startSimulation
+    // Set a default for now
     const now = new Date();
-    const arrivalTime = new Date(now.getTime() + 24000);
+    const defaultArrivalTime = new Date(now.getTime() + 12000); // Default 12 seconds
     this.estimatedArrival.set(
-      arrivalTime.toLocaleTimeString("es-ES", {
+      defaultArrivalTime.toLocaleTimeString("es-ES", {
         hour: "2-digit",
         minute: "2-digit",
       })
@@ -86,10 +109,13 @@ export class OrderTrackingComponent
     if (!this.mapContainer) return;
 
     // 1. Initialize Map
+    // Center map between rider start (Sol) and user destination
+    const centerLat = (this.riderStartLoc[0] + this.userLoc[0]) / 2;
+    const centerLng = (this.riderStartLoc[1] + this.userLoc[1]) / 2;
     this.map = L.map(this.mapContainer.nativeElement, {
       zoomControl: false, // We want a clean app look
       attributionControl: false,
-    }).setView(this.restaurantLoc, 15);
+    }).setView([centerLat, centerLng], 13);
 
     // 2. Add Tiles (CartoDB Voyager is great for apps, clean look)
     L.tileLayer(
@@ -113,10 +139,13 @@ export class OrderTrackingComponent
     });
 
     // 4. Place Static Markers
-    L.marker(this.restaurantLoc, { icon: restaurantIcon }).addTo(this.map);
+    // Restaurant marker at rider start location (Gran Vía - Centro de Madrid)
+    L.marker(this.riderStartLoc, { icon: restaurantIcon }).addTo(this.map);
+    // User destination marker
     L.marker(this.userLoc, { icon: userIcon }).addTo(this.map);
 
     // 5. Create Rider Marker (We'll move this one)
+    // Rider always starts from Gran Vía (center of Madrid)
     const riderIcon = L.divIcon({
       html: `
         <div style="
@@ -138,22 +167,46 @@ export class OrderTrackingComponent
       iconAnchor: [20, 20], // Center it
     });
 
-    this.riderMarker = L.marker(this.restaurantLoc, {
+    // Rider starts from Gran Vía (center of Madrid), not from restaurant
+    this.riderMarker = L.marker(this.riderStartLoc, {
       icon: riderIcon,
       zIndexOffset: 1000,
     }).addTo(this.map);
   }
 
   private startSimulation() {
+    // Rider always starts from Gran Vía (center of Madrid), goes to user destination
     this.mapService
-      .getRoute(this.restaurantLoc, this.userLoc)
+      .getRoute(this.riderStartLoc, this.userLoc)
       .subscribe((route) => {
         if (!route || !this.map) return;
 
         this.routePath = route.coordinates;
-        this.routePath = route.coordinates;
-        this.totalDuration = 24; // Speed up demo to 24 seconds
+        
+        // Calculate duration based on distance (10-15 seconds)
+        // Distance is in meters, we'll scale it to 10-15 seconds
+        const distanceKm = route.distance / 1000; // Convert to kilometers
+        // For distances up to 2km: 10 seconds, for longer distances: up to 15 seconds
+        // Linear interpolation: 0km = 10s, 5km+ = 15s
+        const minDuration = 10;
+        const maxDuration = 15;
+        const maxDistanceKm = 5; // 5km = max duration
+        const duration = Math.min(
+          maxDuration,
+          Math.max(minDuration, minDuration + (distanceKm / maxDistanceKm) * (maxDuration - minDuration))
+        );
+        this.totalDuration = duration;
         this.simulationStartTime = Date.now();
+        
+        // Update estimated arrival time based on calculated duration
+        const now = new Date();
+        const arrivalTime = new Date(now.getTime() + duration * 1000);
+        this.estimatedArrival.set(
+          arrivalTime.toLocaleTimeString("es-ES", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        );
 
         // Draw the path line
         L.polyline(this.routePath, {
@@ -237,8 +290,17 @@ export class OrderTrackingComponent
     this.router.navigate(["/"]);
   }
 
-  submitLead(email: string) {
-    alert(`Gracias! Enviaremos la guía a ${email}`);
-    this.closeModal();
+  // Removed submitLead - now using direct calendar link
+
+  private fetchRiderProfile(name: string) {
+    this.http
+      .get(`${environment.apiBaseUrl}/rider/profile-preview?name=${name}`)
+      .subscribe({
+        next: (profile: any) => {
+          console.log("Fetched Rider Profile:", profile);
+          this.riderProfile.set(profile);
+        },
+        error: (err) => console.error("Error fetching rider profile:", err),
+      });
   }
 }

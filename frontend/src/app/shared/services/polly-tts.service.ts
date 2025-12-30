@@ -79,7 +79,12 @@ export class PollyTTSService {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, voiceId: this.assignedVoiceId }),
     })
-      .then((response) => response.blob())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.blob();
+      })
       .then((blob) => {
         if (!this.currentAudio) return; // Stopped before load
 

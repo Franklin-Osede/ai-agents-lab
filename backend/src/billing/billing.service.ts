@@ -16,7 +16,7 @@ export class BillingService {
     const stripeKey = this.configService.get<string>('STRIPE_SECRET_KEY');
     if (stripeKey) {
       this.stripe = new Stripe(stripeKey, {
-        apiVersion: '2025-11-17.clover',
+        apiVersion: '2025-12-15.clover',
       });
     } else {
       this.logger.warn('STRIPE_SECRET_KEY not set, billing features disabled');

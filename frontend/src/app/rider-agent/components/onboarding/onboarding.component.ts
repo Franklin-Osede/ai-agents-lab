@@ -10,6 +10,7 @@ import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { UserSessionService } from "../../services/user-session.service";
 import { PollyTTSService } from "../../../shared/services/polly-tts.service";
+import { VoiceService } from "../../../shared/services/voice.service";
 import { Location } from "@angular/common";
 
 @Component({
@@ -24,10 +25,12 @@ export class OnboardingComponent implements OnInit, OnDestroy {
   router = inject(Router);
   session = inject(UserSessionService);
   private pollyService = inject(PollyTTSService);
+  private voiceService = inject(VoiceService);
   location = inject(Location);
   platformId = inject(PLATFORM_ID);
 
   private welcomeAudioPlayed = false;
+  isRecording = false;
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -57,7 +60,7 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     this.welcomeAudioPlayed = true;
 
     const text =
-      "Hola, bienvenido a Rider Agent. Escríbenos tu nombre y continúa con el pedido.";
+      "Hola, bienvenido a Rider Agent. Escribe o dinos tu nombre y continúa con el pedido.";
 
     // Use Polly Service for Neural voice
     this.pollyService.speak(text);
@@ -80,5 +83,26 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     // Actually, user wants to go back from this screen.
     // If this is the entry point /rider, going back might mean root /
     this.router.navigate(["/"]);
+  }
+
+  async toggleRecording() {
+    if (this.isRecording) {
+      this.isRecording = false;
+      this.voiceService.stopListening();
+    } else {
+      this.isRecording = true;
+      try {
+        const transcript = await this.voiceService.listen();
+        this.isRecording = false;
+        if (transcript && transcript.trim()) {
+          this.name = transcript.trim();
+        }
+      } catch (error) {
+        console.error("Voice recognition error:", error);
+        this.isRecording = false;
+        // Show user-friendly error message
+        alert("No se pudo reconocer el audio. Por favor, intenta de nuevo o escribe tu nombre.");
+      }
+    }
   }
 }

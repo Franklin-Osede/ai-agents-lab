@@ -37,26 +37,33 @@ export class GoogleMapsAutocompleteComponent implements OnInit, OnDestroy {
       this.addressValue = this.initialValue;
     }
 
-    // Setup search debounce
-    this.searchSubject.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(query => {
-        this.isLoading = true;
-        return this.googleMapsService.getPlacePredictions(query);
-      }),
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (predictions) => {
-        this.predictions = predictions || [];
-        this.showPredictions = this.predictions.length > 0;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error getting predictions:', error);
-        this.isLoading = false;
-        this.predictions = [];
-        this.showPredictions = false;
+    // Wait for Google Maps to load before setting up search
+    this.googleMapsService.waitForLoad().subscribe(loaded => {
+      if (loaded) {
+        // Setup search debounce
+        this.searchSubject.pipe(
+          debounceTime(300),
+          distinctUntilChanged(),
+          switchMap(query => {
+            this.isLoading = true;
+            return this.googleMapsService.getPlacePredictions(query);
+          }),
+          takeUntil(this.destroy$)
+        ).subscribe({
+          next: (predictions) => {
+            this.predictions = predictions || [];
+            this.showPredictions = this.predictions.length > 0;
+            this.isLoading = false;
+          },
+          error: (error) => {
+            console.error('Error getting predictions:', error);
+            this.isLoading = false;
+            this.predictions = [];
+            this.showPredictions = false;
+          }
+        });
+      } else {
+        console.error('Google Maps API failed to load');
       }
     });
   }

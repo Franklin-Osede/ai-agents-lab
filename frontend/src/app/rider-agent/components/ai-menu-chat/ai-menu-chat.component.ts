@@ -5,7 +5,7 @@ import { FormsModule } from "@angular/forms";
 import { VoiceService } from "../../../shared/services/voice.service";
 import { CartService, CartItem } from "../../../shared/services/cart.service";
 import { UserSessionService } from "../../services/user-session.service";
-import { StateMachineService } from "../../services/state-machine.service";
+import { StateMachineService, StateContext } from "../../services/state-machine.service";
 import { RiderAgentService } from "../../services/rider-agent.service";
 import { AgentOrchestratorService } from "../../../shared/services/agent-orchestrator.service";
 
@@ -99,32 +99,57 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     // 3. Initialize State Machine
     // this.stateMachine.reset(); // REMOVED: Do not reset state on init, persist it for navigation (back/forth)
 
-    // 4. Check for incoming intent from Home Screen
+    // 4. Check for incoming intent from Home Screen (only on fresh navigation, not on back navigation)
+    // IMPORTANT: Only process if it's a valid cuisine type from Home screen navigation
+    // Ignore residual history.state data from other navigations (like checkout)
     const navState = history.state as any;
+    const validCuisineTypes = ["japanese", "italian", "fast_food", "spanish", "burger", "pizza", "sushi"];
     if (navState && navState.data && navState.data.type) {
-      // We have a query! Skip welcome and process it.
-      const query = navState.data.type;
-      // Small delay to allow View to init
-      setTimeout(() => {
-        this.inputText.set(query);
-        this.sendMessage();
-      }, 100);
-      return;
+      const query = navState.data.type.toLowerCase();
+      // Only process if it's a valid cuisine type (not residual data from checkout/other navigations)
+      if (validCuisineTypes.some(type => query.includes(type))) {
+        // We have a valid query from Home screen! Skip welcome and process it.
+        // Small delay to allow View to init
+        setTimeout(() => {
+          this.inputText.set(navState.data.type);
+          this.sendMessage();
+        }, 100);
+        return;
+      }
+      // If it's not a valid cuisine type, ignore it and continue with normal flow
     }
 
     // 5. Normal Flow (Welcome OR Restore)
+    // IMPORTANT: Only restore if we're actually navigating back from another route
+    // Don't restore on initial page load or when user is actively using the chat
     const storedMessages = this.stateMachine.memory.messages;
-    if (storedMessages && storedMessages.length > 0) {
-      // Restore state
-      this.messages.set(storedMessages);
-
-      // Also restore suggestions based on current state node
+    const currentState = this.stateMachine.currentState();
+    
+    // Only restore if:
+    // 1. We have stored messages
+    // 2. Current state is NOT the default (meaning user was in a flow)
+    // 3. We're NOT coming from home screen with a query
+    const shouldRestore = storedMessages && 
+                         storedMessages.length > 0 && 
+                         (currentState.context !== "general" || currentState.category !== "default") &&
+                         !navState?.data?.type; // Not coming from home screen with a query
+    
+    if (shouldRestore) {
       const currentNode = this.stateMachine.getCurrentStateNode();
+      
+      // If we have stored messages and a valid current state, restore everything
       if (currentNode) {
+        this.messages.set(storedMessages);
         this.suggestions.set(currentNode.suggestions);
         this.showOptions.set(true);
+        // Don't speak again when restoring - user is just navigating back
+        return; // Exit early, state is restored
       }
-    } else {
+      // If current state is invalid, fall through to fresh start
+    }
+    
+    // 6. Fresh Start (no stored messages or not navigating back)
+    {
       // Fresh Start
       const initialState = this.stateMachine.getCurrentStateNode();
 
@@ -154,8 +179,11 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       }
     }
 
-    // Ensure variety: Randomize voice (likely picking a different one than Booking if luck holds, or at least refreshing)
-    this.pollyService.randomizeVoice();
+    // Set voice to female (Maria or Lupe) for consistency
+    // Don't randomize - keep it consistent for better UX
+    const femaleVoices = ["Maria", "Lupe"];
+    const selectedVoice = femaleVoices[0]; // Always use Maria for consistency
+    this.pollyService.setVoice(selectedVoice);
   }
 
   ngOnDestroy() {
@@ -231,6 +259,98 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       this.router.navigate(["/rider/reservations"]);
       return;
     }
+    // Handle "Ver pedido" - navigate directly to checkout
+    if (
+      text.toLowerCase().includes("ver pedido") ||
+      text.toLowerCase().includes("🛒") ||
+      text.toLowerCase().includes("ver pedido")
+    ) {
+      this.router.navigate(["/rider/checkout"]);
+      return;
+    }
+
+    // Handle "Seguir pidiendo" - maintain current context and show menu options
+    if (
+      text.toLowerCase().includes("seguir pidiendo") ||
+      text.toLowerCase().includes("➕ seguir") ||
+      text === "➕ Seguir pidiendo"
+    ) {
+      const currentState = this.stateMachine.currentState();
+      let targetCategory = "menu";
+      const targetContext = currentState.context;
+      
+      // If we're in added_main, go back to menu to show all options
+      // If we're already in menu, stay there or go to default
+      if (currentState.category === "added_main" || currentState.category === "add_to_order") {
+        targetCategory = "menu";
+      } else if (currentState.category === "menu") {
+        // Already in menu, show default options for that cuisine
+        targetCategory = "default";
+      }
+      
+      // If we're in a specific cuisine context, show its menu options
+      if (targetContext === "spanish" || targetContext === "japanese" || 
+          targetContext === "italian" || targetContext === "fast_food") {
+        this.stateMachine.currentState.set({
+          context: targetContext,
+          category: targetCategory,
+        });
+        const newNode = this.stateMachine.getCurrentStateNode();
+        if (newNode) {
+          const cards = targetCategory === "menu" ? this.getCardsForCuisine(targetContext, "menu") : [];
+          // Update state machine memory
+          this.stateMachine.memory.messages = [...this.messages()];
+          setTimeout(() => {
+            this.messages.update((msgs) => [
+              ...msgs,
+              {
+                role: "ai" as const,
+                text: newNode.response,
+                time: new Date().toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
+                cards: cards.length > 0 ? cards : undefined,
+              },
+            ]);
+            this.speak(newNode.response);
+            this.suggestions.set(newNode.suggestions);
+            this.showOptions.set(true);
+          }, 500);
+          return; // IMPORTANT: Return here to prevent fallthrough
+        }
+      } else if (targetContext === "general") {
+        // If in general context, go back to cuisine selection
+        this.stateMachine.currentState.set({
+          context: "general",
+          category: "default",
+        });
+        const newNode = this.stateMachine.getCurrentStateNode();
+        if (newNode) {
+          // Update state machine memory
+          this.stateMachine.memory.messages = [...this.messages()];
+          setTimeout(() => {
+            this.messages.update((msgs) => [
+              ...msgs,
+              {
+                role: "ai" as const,
+                text: newNode.response,
+                time: new Date().toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
+              },
+            ]);
+            this.speak(newNode.response);
+            this.suggestions.set(newNode.suggestions);
+            this.showOptions.set(true);
+          }, 500);
+          return; // IMPORTANT: Return here to prevent fallthrough
+        }
+      }
+      // If no valid transition found, try to use state machine normally
+      // Don't return here - let it fall through to normal flow
+    }
 
     // GLOBAL INTERCEPT: "Postres" (Desserts)
     // Because we dynamically add "Postres" to suggestions in addToCart,
@@ -274,13 +394,36 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     }
 
     // --- INTERCEPT: Checkout / Finalize ---
-    // If user says "Ya lo tengo todo", we skip the 'confirmation' step and go straight to "Delivery or Table?"
+    // If user says "Ya lo tengo todo" or "Finalizar", we skip the 'confirmation' step and go straight to "Delivery or Table?"
     if (
       text.toLowerCase().includes("ya lo tengo todo") ||
       text.toLowerCase().includes("tengo todo") ||
-      text.toLowerCase().includes("finalizar") ||
+      (text.toLowerCase().includes("finalizar") && !text.toLowerCase().includes("pedido")) ||
       text.toLowerCase().includes("pagar")
     ) {
+      // Check if cart has items
+      const cartItems = this.cartService.cartItems();
+      if (cartItems.length === 0) {
+        // Cart is empty, don't proceed to checkout
+        setTimeout(() => {
+          const responseText = "Tu pedido está vacío. ¿Qué te apetece comer hoy?";
+          this.messages.update((msgs) => [
+            ...msgs,
+            {
+              role: "ai" as const,
+              text: responseText,
+              time: new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+            },
+          ]);
+          this.speak(responseText);
+          this.suggestions.set(["🍣 Japonesa", "🍕 Italiana", "🍔 Fast Food", "🥘 Española"]);
+        }, 500);
+        return;
+      }
+
       // 1. Add User Message (already added above)
       // 2. Add AI Response directly
       setTimeout(() => {
@@ -315,11 +458,51 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     let type: "select" | "intent" = "intent";
     let inputKey = text;
 
+    // Check for exact match first (button selection)
     if (
       currentNode?.on_select &&
       Object.keys(currentNode.on_select).includes(text)
     ) {
       type = "select";
+    } 
+    // Special handling for "Seguir pidiendo" if it's in suggestions but not matched above
+    else if (
+      (text === "➕ Seguir pidiendo" || text.toLowerCase().includes("seguir pidiendo")) &&
+      currentNode?.suggestions?.some((s: string) => s.includes("Seguir pidiendo"))
+    ) {
+      // If "Seguir pidiendo" is in suggestions, try to handle it via state machine
+      // Check if there's a continue_ordering intent
+      if (currentNode?.on_intent?.["continue_ordering"]) {
+        type = "intent";
+        inputKey = "continue_ordering";
+      } else {
+        // Use the interceptor logic we added above - it should have caught this
+        // But if we're here, manually handle it
+        const currentContext = this.stateMachine.currentState().context;
+        if (currentContext === "spanish") {
+          this.stateMachine.currentState.set({ context: "spanish", category: "menu" });
+          const newNode = this.stateMachine.getCurrentStateNode();
+          if (newNode) {
+            setTimeout(() => {
+              this.messages.update((msgs) => [
+                ...msgs,
+                {
+                  role: "ai" as const,
+                  text: newNode.response,
+                  time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+                  cards: this.getCardsForCuisine("spanish", "menu"),
+                },
+              ]);
+              this.speak(newNode.response);
+              this.suggestions.set(newNode.suggestions);
+              this.showOptions.set(true);
+            }, 500);
+            return;
+          }
+        }
+        // Fallback to normal mapping
+        inputKey = this.mapTextToIntent(text);
+      }
     } else if (
       currentNode?.on_intent &&
       Object.keys(currentNode.on_intent).includes(text)
@@ -395,6 +578,46 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
 
     if (result) {
       const res = result; // Local capture for closure safety
+      
+      // Handle add_item from dialogues (e.g., spanish.kids -> Tortilla/Croquetas)
+      // Check if the last item in memory.order was just added
+      const lastOrderItem = this.stateMachine.memory.order[this.stateMachine.memory.order.length - 1];
+      if (lastOrderItem && res.category === "add_to_order") {
+        // Add the item to cart if it's not already there
+        const existingItem = this.cartService.cartItems().find(i => i.name === lastOrderItem.name);
+        if (!existingItem) {
+          this.cartService.addToCart({
+            id: Date.now().toString(),
+            name: lastOrderItem.name,
+            price: lastOrderItem.price || 10.0,
+            quantity: 1,
+            image: lastOrderItem.image || "assets/food_images/default.webp",
+            tags: lastOrderItem.tags || [],
+          });
+          
+          // After adding item, transition to added_main to show next options
+          const currentContext = this.stateMachine.currentState().context;
+          const tags = (lastOrderItem.tags || []).map((t: string) => t.toLowerCase());
+          const isKids = tags.some((t: string) => t.includes("kids") || t.includes("infantil"));
+          
+          if (isKids || tags.some((t: string) => t.includes("main"))) {
+            // Transition to added_main to show smart suggestions
+            this.stateMachine.currentState.set({
+              context: currentContext,
+              category: "added_main",
+            });
+            // Get the added_main state node
+            const addedMainNode = this.stateMachine.getCurrentStateNode();
+            if (addedMainNode) {
+              res.id = addedMainNode.id;
+              res.response = addedMainNode.response;
+              res.suggestions = addedMainNode.suggestions;
+              res.category = "added_main";
+            }
+          }
+        }
+      }
+      
       // Enforce specific "Meals" logic for visual cards if applicable
       let localCards: any[] = [];
       const currentState = this.stateMachine.currentState();
@@ -414,6 +637,11 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           "kids",
           "menu_ramen",
           "menu_hot",
+          "menu_pizza",
+          "menu_pasta",
+          "menu_tapas",
+          "menu_raciones",
+          "added_main",
         ].includes(category)
       ) {
         localCards = this.getCardsForCuisine(
@@ -504,7 +732,151 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           });
         }
 
-        this.suggestions.set(finalSuggestions);
+        // SMART SUGGESTIONS: Update suggestions based on what's missing in the cart
+        const cartItems = this.cartService.cartItems();
+        const missingCategories = this.getMissingCategories(cartItems);
+        
+        // Filter suggestions to only show what's missing
+        let smartSuggestions = finalSuggestions.filter((suggestion: string) => {
+          const lower = suggestion.toLowerCase();
+          // Always keep navigation and action buttons
+          if (lower.includes("volver") || lower.includes("cambiar") || lower.includes("seguir pidiendo")) {
+            return true;
+          }
+          // Keep "Ya lo tengo todo" and "Finalizar" - but we'll filter them later based on requirements
+          if (lower.includes("ya lo tengo todo") || lower.includes("finalizar")) {
+            return true;
+          }
+          // Filter based on missing categories - show suggestions for what's NOT in cart
+          if (lower.includes("entrantes") || lower.includes("🥗")) {
+            return !missingCategories.hasStarter;
+          }
+          if (lower.includes("bebidas") || lower.includes("🥤")) {
+            return !missingCategories.hasDrink;
+          }
+          if (lower.includes("postres") || lower.includes("🍰")) {
+            return !missingCategories.hasDessert;
+          }
+          if (lower.includes("menú infantil") || lower.includes("menu infantil") || lower.includes("👶")) {
+            return !missingCategories.hasKids;
+          }
+          // Keep other suggestions
+          return true;
+        });
+        
+        // Ensure we always have at least one option to continue
+        if (smartSuggestions.length === 0) {
+          // Fallback: add basic options
+          smartSuggestions = ["➕ Seguir pidiendo", "✅ Finalizar"];
+        }
+
+        // Filter "Ya lo tengo todo" based on requirements (main + drink)
+        // But ALWAYS keep "Finalizar" available so user can always proceed
+        const hasMainAndDrink = missingCategories.hasMain && missingCategories.hasDrink;
+        
+        // Remove "Ya lo tengo todo" if requirements not met
+        if (!hasMainAndDrink) {
+          smartSuggestions = smartSuggestions.filter((s: string) => 
+            !s.toLowerCase().includes("ya lo tengo todo")
+          );
+        } else {
+          // If only dessert is missing and we have main + drink, change "Ya lo tengo todo" to "Finalizar"
+          if (
+            missingCategories.hasDessert &&
+            !missingCategories.hasStarter &&
+            missingCategories.hasDrink &&
+            missingCategories.hasMain
+          ) {
+            smartSuggestions = smartSuggestions.map((s: string) =>
+              s.includes("Ya lo tengo todo") ? "✅ Finalizar" : s
+            );
+          }
+        }
+        
+        // CRITICAL: Always ensure "Finalizar" is available as a last resort option
+        // This prevents users from getting stuck, especially in add_to_order state
+        if (!smartSuggestions.some((s: string) => 
+          s.toLowerCase().includes("finalizar") || 
+          s.toLowerCase().includes("ya lo tengo todo") ||
+          s.toLowerCase().includes("seguir pidiendo")
+        )) {
+          // Add fallback options based on context
+          const currentState = this.stateMachine.currentState();
+          if (currentState.context === "japanese") {
+            smartSuggestions.push("🥤 Bebidas", "✅ Finalizar");
+          } else {
+            smartSuggestions.push("➕ Seguir pidiendo", "✅ Finalizar");
+          }
+        }
+
+        // If we're in added_main state, make smart suggestions based on what's missing
+        if (res.id.includes("added_main")) {
+          // Get current state and context
+          const currentState = this.stateMachine.currentState();
+          const cartItems = this.cartService.cartItems();
+          const missingCategories = this.getMissingCategories(cartItems);
+          
+          // Build smart suggestions based on context and what's missing
+          const contextSuggestions: string[] = [];
+          
+          // Special logic for Spanish cuisine: upsell tapas/raciones
+          if (currentState.context === "spanish") {
+            // If they have tapas but NOT raciones, suggest raciones (upsell)
+            if (missingCategories.hasTapas && !missingCategories.hasRaciones) {
+              contextSuggestions.push("🍽️ Raciones");
+            }
+            // If they have raciones but NOT tapas, suggest tapas (upsell)
+            else if (missingCategories.hasRaciones && !missingCategories.hasTapas) {
+              contextSuggestions.push("🥘 Más tapas");
+            }
+            // If they have both, they can still add more of either
+            else if (missingCategories.hasTapas && missingCategories.hasRaciones) {
+              contextSuggestions.push("🥘 Más tapas");
+              contextSuggestions.push("🍽️ Raciones");
+            }
+            // If they have neither (shouldn't happen in added_main, but just in case)
+            else {
+              contextSuggestions.push("🥘 Más tapas");
+              contextSuggestions.push("🍽️ Raciones");
+            }
+          }
+          
+          // General suggestions for all cuisines
+          if (!missingCategories.hasStarter && currentState.context !== "spanish") {
+            contextSuggestions.push("🥗 Entrantes");
+          }
+          if (!missingCategories.hasDrink) {
+            contextSuggestions.push("🥤 Bebidas");
+          }
+          if (!missingCategories.hasDessert) {
+            contextSuggestions.push("🍰 Postres");
+          }
+          
+          // Only show "Ya lo tengo todo" if they have at least one main dish AND a drink
+          // For Spanish: show if they have both tapas AND raciones AND a drink (complete meal)
+          if (currentState.context === "spanish") {
+            const hasBothTapasAndRaciones = missingCategories.hasTapas && missingCategories.hasRaciones;
+            const hasCompleteMeal = hasBothTapasAndRaciones && missingCategories.hasDrink;
+            const hasMainWithDrink = missingCategories.hasMain && missingCategories.hasDrink;
+            
+            // Only show "Ya lo tengo todo" if they have a complete meal (main + drink)
+            if (hasCompleteMeal || (hasMainWithDrink && !missingCategories.hasDessert)) {
+              contextSuggestions.push("✅ Ya lo tengo todo");
+            }
+          } else {
+            // For other cuisines, show if they have main AND drink
+            if (missingCategories.hasMain && missingCategories.hasDrink) {
+              contextSuggestions.push("✅ Ya lo tengo todo");
+            }
+          }
+          
+          // If we built context suggestions, use them (they're smarter)
+          if (contextSuggestions.length > 0) {
+            smartSuggestions = contextSuggestions;
+          }
+        }
+
+        this.suggestions.set(smartSuggestions);
         this.showOptions.set(true);
 
         if (res.category === "delivery_action" || res.category === "checkout") {
@@ -544,24 +916,63 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
         }
       }, 1000);
     } else {
-      // Fallback
-      setTimeout(() => {
-        const fallbackText =
-          "Disculpe, no le he escuchado bien. ¿Podría repetírmelo o seleccionar una opción de la pantalla?";
-        this.messages.update((msgs) => [
-          ...msgs,
-          {
-            role: "ai",
-            text: fallbackText,
-            time: new Date().toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
-          },
-        ]);
-        this.speak(fallbackText);
-        this.showOptions.set(true);
-      }, 1000);
+      // Fallback - we couldn't process the message
+      // Check if the input was mapped to an intent but still failed
+      const mappedIntent = this.mapTextToIntent(text);
+      const isCuisineIntent = mappedIntent.startsWith("choose_cuisine_");
+      
+      // If it's a cuisine intent but we got no result, something went wrong - try manual transition
+      if (isCuisineIntent && !result) {
+        const targetContext = mappedIntent.replace("choose_cuisine_", "") as StateContext;
+        if (targetContext === "spanish" || targetContext === "japanese" || 
+            targetContext === "italian" || targetContext === "fast_food") {
+          // Manual transition as fallback - this should have been handled by state machine
+          this.stateMachine.currentState.set({
+            context: targetContext,
+            category: "default",
+          });
+          const newNode = this.stateMachine.getCurrentStateNode();
+          if (newNode) {
+            // Create result and process it normally through the flow below
+            result = {
+              id: newNode.id,
+              response: newNode.response,
+              suggestions: newNode.suggestions,
+              category: "default",
+              cards: this.getCardsForCuisine(targetContext, "default"),
+            };
+            // Continue to process result in the normal flow below
+          }
+        }
+      }
+      
+      // If we still don't have a result, show error
+      if (!result) {
+        setTimeout(() => {
+          const fallbackText =
+            "Disculpe, no le he escuchado bien. ¿Podría repetírmelo o seleccionar una opción de la pantalla?";
+          this.messages.update((msgs) => [
+            ...msgs,
+            {
+              role: "ai",
+              text: fallbackText,
+              time: new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+            },
+          ]);
+          this.speak(fallbackText);
+          // Show current suggestions if available
+          const currentNode = this.stateMachine.getCurrentStateNode();
+          if (currentNode && currentNode.suggestions) {
+            this.suggestions.set(currentNode.suggestions);
+          }
+          this.showOptions.set(true);
+        }, 1000);
+        return; // Exit early if no result
+      }
+      // If we have a result now (from manual fallback), continue to process it in the normal flow below
     }
   }
 
@@ -711,6 +1122,11 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       this.router.navigate(["/rider/checkout"]);
       return;
     }
+    // Handle "Ver pedido" - navigate directly to checkout
+    if (option.includes("Ver pedido") || option.includes("🛒")) {
+      this.router.navigate(["/rider/checkout"]);
+      return;
+    }
 
     this.inputText.set(option);
     this.sendMessage();
@@ -735,11 +1151,184 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     }
   }
 
+  handleAddToCart(item: MenuCard) {
+    console.log("📦 handleAddToCart called with item:", item);
+    this.addToCart(item);
+  }
+
   addToCart(item: MenuCard) {
+    console.log("🛒 addToCart called with item:", item);
     this.cartService.addToCart(item);
 
-    // Contextual Suggestions Logic
+    // Update state machine to reflect that an item was added
+    // This ensures the state machine knows we've added a main dish
+    const currentState = this.stateMachine.currentState();
+    console.log("📍 Current state before update:", currentState);
     const tags = (item.tags || []).map((t) => t.toLowerCase());
+    console.log("🏷️ Item tags:", tags);
+    
+    // Determine if this is a main, starter, drink, dessert, or kids menu
+    const isKids = tags.some((t) => t.includes("kids") || t.includes("infantil") || t.includes("child"));
+    const isMain = tags.some((t) => t.includes("main") || t.includes("principal")) ||
+      item.name.toLowerCase().includes("sushi") ||
+      item.name.toLowerCase().includes("curry") ||
+      item.name.toLowerCase().includes("bento") ||
+      item.name.toLowerCase().includes("pizza") ||
+      item.name.toLowerCase().includes("carbonara") ||
+      item.name.toLowerCase().includes("lasagna") ||
+      item.name.toLowerCase().includes("hamburguesa") ||
+      item.name.toLowerCase().includes("burger") ||
+      item.name.toLowerCase().includes("paella") ||
+      item.name.toLowerCase().includes("jamón") ||
+      item.name.toLowerCase().includes("jamon") ||
+      item.name.toLowerCase().includes("croquetas") ||
+      item.name.toLowerCase().includes("patatas bravas") ||
+      item.name.toLowerCase().includes("tortilla") ||
+      item.name.toLowerCase().includes("ramen") ||
+      item.name.toLowerCase().includes("tonkotsu") ||
+      item.name.toLowerCase().includes("miso") ||
+      tags.some((t) => t.includes("tapas") || t.includes("raciones") || t.includes("ramen"));
+    
+    // Tapas and raciones are considered mains for Spanish cuisine
+    const isStarter = tags.some((t) => t.includes("starter") || t.includes("entrante")) && 
+      !tags.some((t) => t.includes("tapas") || t.includes("raciones"));
+    const isDrink = tags.some((t) => t.includes("drink") || t.includes("beverage"));
+    const isDessert = tags.some((t) => t.includes("dessert") || t.includes("sweet"));
+
+    // Update state based on what was added
+    if (isKids) {
+      // Kids menu items should transition to added_main to show next options
+      this.stateMachine.currentState.set({
+        context: currentState.context,
+        category: "added_main",
+      });
+    } else if (isMain && (currentState.context === "japanese" || currentState.context === "italian" || currentState.context === "fast_food" || currentState.context === "spanish")) {
+      // Transition to added_main state
+      this.stateMachine.currentState.set({
+        context: currentState.context,
+        category: "added_main",
+      });
+    } else if (isStarter && currentState.context === "japanese") {
+      this.stateMachine.currentState.set({
+        context: currentState.context,
+        category: "added_starter",
+      });
+    } else if (isDrink) {
+      this.stateMachine.currentState.set({
+        context: currentState.context,
+        category: "added_drink",
+      });
+    } else if (isDessert) {
+      this.stateMachine.currentState.set({
+        context: currentState.context,
+        category: "added_dessert",
+      });
+    }
+
+    // Get updated state after transition
+    const updatedState = this.stateMachine.currentState();
+    console.log("📍 Updated state after transition:", updatedState);
+    console.log("🔍 Checking if category is added_main:", updatedState.category === "added_main");
+    
+    // Use smart suggestions logic for added_main state (especially for Spanish)
+    if (updatedState.category === "added_main") {
+      console.log("✅ Entering added_main logic");
+      const cartItems = this.cartService.cartItems();
+      const missingCategories = this.getMissingCategories(cartItems);
+      
+      // DEBUG: Log to understand what's happening
+      console.log("🔍 DEBUG addToCart - Spanish flow:", {
+        updatedState: updatedState,
+        cartItemsCount: cartItems.length,
+        cartItems: cartItems.map(i => ({ name: i.name, tags: i.tags })),
+        missingCategories: missingCategories
+      });
+      
+      // Build smart suggestions based on context and what's missing
+      const contextSuggestions: string[] = [];
+      
+      // Special logic for Spanish cuisine: upsell tapas/raciones
+      if (updatedState.context === "spanish") {
+        // If they have tapas but NOT raciones, suggest raciones (upsell)
+        if (missingCategories.hasTapas && !missingCategories.hasRaciones) {
+          console.log("✅ DEBUG: Has tapas, suggesting raciones");
+          contextSuggestions.push("🍽️ Raciones");
+        }
+        // If they have raciones but NOT tapas, suggest tapas (upsell)
+        else if (missingCategories.hasRaciones && !missingCategories.hasTapas) {
+          contextSuggestions.push("🥘 Más tapas");
+        }
+        // If they have both, they can still add more of either
+        else if (missingCategories.hasTapas && missingCategories.hasRaciones) {
+          contextSuggestions.push("🥘 Más tapas");
+          contextSuggestions.push("🍽️ Raciones");
+        }
+        // If they have neither (shouldn't happen in added_main, but just in case)
+        else {
+          contextSuggestions.push("🥘 Más tapas");
+          contextSuggestions.push("🍽️ Raciones");
+        }
+      }
+      
+      // General suggestions for all cuisines
+      if (!missingCategories.hasStarter && updatedState.context !== "spanish") {
+        contextSuggestions.push("🥗 Entrantes");
+      }
+      if (!missingCategories.hasKids) {
+        contextSuggestions.push("👶 Menú Infantil");
+      }
+      if (!missingCategories.hasDrink) {
+        contextSuggestions.push("🥤 Bebidas");
+      }
+      if (!missingCategories.hasDessert) {
+        contextSuggestions.push("🍰 Postres");
+      }
+      
+      // Only show "Ya lo tengo todo" if they have at least one main dish AND a drink
+      // For Spanish: show if they have both tapas AND raciones AND a drink (complete meal)
+      if (updatedState.context === "spanish") {
+        const hasBothTapasAndRaciones = missingCategories.hasTapas && missingCategories.hasRaciones;
+        const hasMainWithDrink = missingCategories.hasMain && missingCategories.hasDrink;
+        const hasCompleteMeal = hasBothTapasAndRaciones && missingCategories.hasDrink;
+        
+        // Only show "Ya lo tengo todo" if they have a complete meal (main + drink)
+        if (hasCompleteMeal || (hasMainWithDrink && !missingCategories.hasDessert)) {
+          contextSuggestions.push("✅ Ya lo tengo todo");
+        }
+      } else {
+        // For other cuisines, show if they have main AND drink
+        if (missingCategories.hasMain && missingCategories.hasDrink) {
+          contextSuggestions.push("✅ Ya lo tengo todo");
+        }
+      }
+      
+      // Use smart suggestions if available
+      if (contextSuggestions.length > 0) {
+        // Add confirmation message when item is added
+        const confirmationText = updatedState.context === "spanish" 
+          ? `¡Perfecto! He añadido ${item.name} a tu pedido. ¿Qué más te apetece?`
+          : `¡Perfecto! He añadido ${item.name} a tu pedido. ¿Qué más te apetece?`;
+        
+        this.messages.update((msgs) => [
+          ...msgs,
+          {
+            role: "ai" as const,
+            text: confirmationText,
+            time: new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          },
+        ]);
+        
+        this.speak(confirmationText);
+        this.suggestions.set(contextSuggestions);
+        this.showOptions.set(true);
+        return; // Exit early, we've set smart suggestions
+      }
+    }
+
+    // Contextual Suggestions Logic (fallback for non-added_main states)
     let nextOptions: string[] = [];
 
     // 0. DESSERT -> FINISH (Usually last step)
@@ -831,34 +1420,37 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
 
     // SMART FILTERING: Don't suggest what they already have
     const cartItems = this.cartService.cartItems();
+    const missingCategories = this.getMissingCategories(cartItems);
 
-    // Check for categories present in cart
-    const hasDessert = cartItems.some((i) =>
-      (i.tags || []).some((t) => {
-        const lower = t.toLowerCase();
-        return lower.includes("dessert") || lower.includes("sweet");
-      })
-    );
-    const hasDrink = cartItems.some((i) =>
-      (i.tags || []).some((t) => {
-        const lower = t.toLowerCase();
-        return lower.includes("drink") || lower.includes("beverage");
-      })
-    );
-
-    // Suggest items NOT present.
-    // If we have dessert, don't ask for dessert.
-    if (hasDessert) {
-      nextOptions = nextOptions.filter((o) => !o.includes("Postres"));
+    // Filter suggestions based on what's missing
+    if (!missingCategories.hasStarter) {
+      nextOptions = nextOptions.filter((o: string) => !o.includes("Entrantes") && !o.includes("🥗"));
     }
-    // If we have drinks, don't ask for drinks.
-    if (hasDrink) {
-      nextOptions = nextOptions.filter((o) => !o.includes("Bebidas"));
+    if (!missingCategories.hasDrink) {
+      nextOptions = nextOptions.filter((o: string) => !o.includes("Bebidas") && !o.includes("🥤"));
+    }
+    if (!missingCategories.hasDessert) {
+      nextOptions = nextOptions.filter((o: string) => !o.includes("Postres") && !o.includes("🍰"));
+    }
+
+    // Only show "Ya lo tengo todo" if they have main AND drink (complete meal)
+    // Filter out "Ya lo tengo todo" if they don't have a drink yet
+    if (!missingCategories.hasDrink || !missingCategories.hasMain) {
+      nextOptions = nextOptions.filter((o: string) => 
+        !o.includes("Ya lo tengo todo") && !o.includes("Finalizar")
+      );
+    }
+
+    // If only dessert is missing and they have main + drink, change "Ya lo tengo todo" to "Finalizar"
+    if (missingCategories.hasDessert && !missingCategories.hasStarter && missingCategories.hasDrink && missingCategories.hasMain) {
+      nextOptions = nextOptions.map((o: string) => 
+        o.includes("Ya lo tengo todo") ? "✅ Finalizar" : o
+      );
     }
 
     // REMOVE "VER PEDIDO" text options as requested (since we have the floating button)
     nextOptions = nextOptions.filter(
-      (o) =>
+      (o: string) =>
         !o.toLowerCase().includes("ver pedido") &&
         !o.toLowerCase().includes("confirmar")
     );
@@ -867,6 +1459,139 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     nextOptions = [...new Set(nextOptions)];
 
     this.suggestions.set(nextOptions);
+  }
+
+  /**
+   * Analyzes the cart and determines what categories are missing
+   * Returns an object indicating what's missing: starter, main, drink, dessert, tapas, raciones
+   */
+  private getMissingCategories(cartItems: CartItem[]): {
+    hasStarter: boolean;
+    hasMain: boolean;
+    hasDrink: boolean;
+    hasDessert: boolean;
+    hasTapas: boolean;
+    hasRaciones: boolean;
+    hasKids: boolean;
+  } {
+    const hasStarter = cartItems.some((item: CartItem) => {
+      const tags = (item.tags || []).map((t: string) => t.toLowerCase());
+      const name = item.name.toLowerCase();
+      return (
+        tags.some((t: string) => t.includes("starter") || t.includes("entrante")) ||
+        name.includes("edamame") ||
+        name.includes("gyoza") ||
+        name.includes("miso") ||
+        name.includes("ensalada") ||
+        name.includes("calamares")
+      );
+    });
+
+    // Detect tapas specifically (Spanish small plates)
+    const hasTapas = cartItems.some((item: CartItem) => {
+      const tags = (item.tags || []).map((t: string) => t.toLowerCase());
+      const name = item.name.toLowerCase();
+      const hasTapasTag = tags.some((t: string) => t.includes("tapas"));
+      const hasTapasName = name.includes("croquetas") || 
+                          name.includes("patatas bravas") || 
+                          (name.includes("tortilla") && name.includes("española"));
+      const result = hasTapasTag || hasTapasName;
+      if (result) {
+        console.log("🔍 Found tapas in item:", { name, tags, hasTapasTag, hasTapasName });
+      }
+      return result;
+    });
+
+    // Detect raciones specifically (Spanish large plates)
+    const hasRaciones = cartItems.some((item: CartItem) => {
+      const tags = (item.tags || []).map((t: string) => t.toLowerCase());
+      const name = item.name.toLowerCase();
+      return (
+        tags.some((t: string) => t.includes("raciones")) ||
+        name.includes("paella") ||
+        name.includes("jamón") ||
+        name.includes("jamon")
+      );
+    });
+
+    const hasMain = cartItems.some((item: CartItem) => {
+      const tags = (item.tags || []).map((t: string) => t.toLowerCase());
+      const name = item.name.toLowerCase();
+      return (
+        tags.some((t: string) => t.includes("main") || t.includes("principal")) ||
+        name.includes("sushi") ||
+        name.includes("curry") ||
+        name.includes("bento") ||
+        name.includes("pizza") ||
+        name.includes("carbonara") ||
+        name.includes("lasagna") ||
+        name.includes("hamburguesa") ||
+        name.includes("burger") ||
+        hasTapas || // Tapas count as main for Spanish
+        hasRaciones // Raciones count as main for Spanish
+      );
+    });
+
+    const hasDrink = cartItems.some((item: CartItem) => {
+      const tags = (item.tags || []).map((t: string) => t.toLowerCase());
+      const name = item.name.toLowerCase();
+      return (
+        tags.some((t: string) => 
+          t.includes("drink") || 
+          t.includes("beverage") || 
+          t.includes("alcohol") || 
+          t.includes("soda") || 
+          t.includes("water")
+        ) ||
+        name.includes("cerveza") ||
+        name.includes("vino") ||
+        name.includes("sake") ||
+        name.includes("asahi") ||
+        name.includes("cola") ||
+        name.includes("agua") ||
+        name.includes("bebida") ||
+        name.includes("refresco")
+      );
+    });
+
+    const hasDessert = cartItems.some((item: CartItem) => {
+      const tags = (item.tags || []).map((t: string) => t.toLowerCase());
+      const name = item.name.toLowerCase();
+      return (
+        tags.some((t: string) => t.includes("dessert") || t.includes("sweet")) ||
+        name.includes("mochi") ||
+        name.includes("tiramisu") ||
+        name.includes("churros") ||
+        name.includes("brownie") ||
+        name.includes("sundae") ||
+        name.includes("postre") ||
+        name.includes("crema catalana") ||
+        name.includes("panna cotta") ||
+        name.includes("cannoli")
+      );
+    });
+
+    const hasKids = cartItems.some((item: CartItem) => {
+      const tags = (item.tags || []).map((t: string) => t.toLowerCase());
+      const name = item.name.toLowerCase();
+      return (
+        tags.some((t: string) => t.includes("kids") || t.includes("infantil") || t.includes("child")) ||
+        name.includes("menú infantil") ||
+        name.includes("menu infantil") ||
+        name.includes("kids menu") ||
+        name.includes("happy meal")
+      );
+    });
+
+    return {
+      hasStarter,
+      hasMain,
+      hasDrink,
+      hasDessert,
+      hasTapas,
+      hasRaciones,
+      hasKids,
+    };
   }
 
   goHome() {

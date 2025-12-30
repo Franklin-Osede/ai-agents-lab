@@ -165,7 +165,10 @@
                   <img
                     alt="Driver Portrait"
                     class="w-full h-full rounded-full object-cover"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTOyCzaIZCpAniDKEDhOyzRr67PAVCjcMOFsDCVmAGAKDDLeYUosc39EhX4rksgbP-wWlYRmSX6PvsFGZOeuS8VbtGkC_Z8S8OZ6XAvJrJ4DdOSGxl0Vjl6txGJaKUSMeorLZvZHYlXXoomp1z1zc9JT7LD44rvYVzDCEXP3AL7UkEesO7Te7qRXH89szXd6owBPXWKN6BVbgPiL88JL_Pfbs7E4EXbpKULfVMY7HuUn1BwJ2R8qDVABaz5ydZLPtct2Ca1-ahg0A"
+                    [src]="
+                      riderProfile()?.profileImageUrl ||
+                      'https://lh3.googleusercontent.com/aida-public/AB6AXuDTOyCzaIZCpAniDKEDhOyzRr67PAVCjcMOFsDCVmAGAKDDLeYUosc39EhX4rksgbP-wWlYRmSX6PvsFGZOeuS8VbtGkC_Z8S8OZ6XAvJrJ4DdOSGxl0Vjl6txGJaKUSMeorLZvZHYlXXoomp1z1zc9JT7LD44rvYVzDCEXP3AL7UkEesO7Te7qRXH89szXd6owBPXWKN6BVbgPiL88JL_Pfbs7E4EXbpKULfVMY7HuUn1BwJ2R8qDVABaz5ydZLPtct2Ca1-ahg0A'
+                    "
                   />
                 </div>
                 <div
@@ -174,7 +177,7 @@
               </div>
               <div class="flex flex-col">
                 <h3 class="text-lg font-bold text-slate-900 leading-tight">
-                  Michael B.
+                  {{ riderName() }}
                 </h3>
                 <div class="flex items-center gap-2 mt-1">
                   <div class="flex items-center gap-1">
@@ -185,10 +188,11 @@
                     <span class="text-xs font-bold text-slate-900">4.9</span>
                   </div>
                   <span class="text-xs text-gray-300">•</span>
-                  <span class="text-xs text-slate-500 font-medium"
-                    >Toyota Camry (Blanco)</span
-                  >
+                  <span class="text-xs text-slate-500 font-medium">{{
+                    riderProfile()?.vehicleDesc || "Toyota Camry (Blanco)"
+                  }}</span>
                 </div>
+                <!-- Plate Number (Mock) -->
                 <div
                   class="text-[10px] font-bold text-slate-400 bg-gray-100 px-1.5 py-0.5 rounded w-fit mt-1"
                 >
@@ -267,23 +271,18 @@
         </div>
         <h3 class="text-2xl font-bold text-slate-900">¡Pedido Entregado!</h3>
         <p class="text-slate-500 text-sm leading-relaxed">
-          Esperamos que hayas disfrutado de la demo. Déjanos tu email para
-          enviarte una guía exclusiva sobre Agentes AI.
+          Esperamos que hayas disfrutado de la demo. ¿Te gustaría agendar una cita para conocer más sobre nuestros Agentes AI?
         </p>
 
-        <input
-          #emailInput
-          type="email"
-          placeholder="tu@email.com"
-          class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#ee8c2b] transition-all text-sm font-medium"
-        />
-
-        <button
-          (click)="submitLead(emailInput.value)"
-          class="w-full bg-slate-900 text-white font-bold py-3.5 rounded-xl hover:bg-slate-800 transition-colors shadow-lg active:scale-95"
+        <a
+          href="https://calendly.com/tu-calendario/consulta-agentes-ai"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="w-full bg-indigo-600 text-white font-bold py-3.5 rounded-xl hover:bg-indigo-700 transition-colors shadow-lg active:scale-95 flex items-center justify-center gap-2"
         >
-          Enviar Guía
-        </button>
+          <span class="material-symbols-outlined">calendar_today</span>
+          Agendar Cita
+        </a>
         <button
           (click)="closeModal()"
           class="text-xs font-bold text-slate-400 hover:text-slate-600 uppercase tracking-wide py-2"

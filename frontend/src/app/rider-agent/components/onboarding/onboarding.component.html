@@ -132,21 +132,26 @@
           <div
             class="relative flex items-center bg-white/90 backdrop-blur-xl rounded-full border border-white/50 shadow-sm px-2 py-2 transition-all duration-300 group-focus-within:scale-[1.01]"
           >
-            <label for="nameInput" class="sr-only">Escribe tu nombre</label>
+            <label for="nameInput" class="sr-only">Escribe o di tu nombre</label>
             <input
               id="nameInput"
               type="text"
               [(ngModel)]="name"
               (keydown.enter)="continue()"
               class="custom-input flex-1 font-sans text-slate-900 placeholder-slate-400 pl-5 pr-2 py-2 text-base bg-transparent border-0 focus:ring-0"
-              placeholder="Escribe tu nombre..."
+              placeholder="Escribe o di tu nombre..."
               autocomplete="off"
             />
             <div class="flex items-center space-x-1 pr-1">
               <button
+                (click)="toggleRecording()"
+                [class.bg-red-100]="isRecording"
+                [class.text-red-600]="isRecording"
+                [class.animate-pulse]="isRecording"
                 class="p-2 rounded-full text-slate-400 hover:text-[#ee8c2b] hover:bg-orange-50 transition-colors"
+                [attr.aria-label]="isRecording ? 'Detener grabación' : 'Grabar nombre'"
               >
-                <span class="material-symbols-outlined text-[22px]">mic</span>
+                <span class="material-symbols-outlined text-[22px]">{{ isRecording ? 'mic' : 'mic' }}</span>
               </button>
               <button
                 (click)="continue()"

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from "@angular/core";
+import { Component, OnInit, inject, ChangeDetectorRef } from "@angular/core";
 import { Router } from "@angular/router";
 import { Agent } from "../../shared/models/agent.model";
 import { environment } from "../../../environments/environment"; // Import Environment
@@ -13,6 +13,12 @@ export class LandingPageComponent implements OnInit {
   filteredAgents: any[] = []; // List to be displayed
 
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
+
+  constructor() {
+    // Initialize filteredAgents immediately to avoid ExpressionChangedAfterItHasBeenCheckedError
+    this.filterAgents();
+  }
 
   // Source of truth for all agents
   private allAgents = [
@@ -85,10 +91,17 @@ export class LandingPageComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    // Avoid ExpressionChangedAfterItHasBeenCheckedError
+    // filteredAgents is already initialized in constructor
+    // Only update if needed (e.g., environment changed)
+    // Use setTimeout to ensure it runs after view initialization
     setTimeout(() => {
+      const currentCount = this.filteredAgents.length;
       this.filterAgents();
-    });
+      // Only trigger change detection if the count actually changed
+      if (this.filteredAgents.length !== currentCount) {
+        this.cdr.detectChanges();
+      }
+    }, 0);
   }
 
   filterAgents() {

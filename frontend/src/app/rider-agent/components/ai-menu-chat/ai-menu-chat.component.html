@@ -131,7 +131,7 @@
     @if (msg.cards) {
     <app-menu-grid
       [cards]="msg.cards"
-      (add)="addToCart($event)"
+      (add)="handleAddToCart($event)"
       (remove)="removeFromCart($event)"
       (cardClicked)="viewDetails($event)"
     ></app-menu-grid>

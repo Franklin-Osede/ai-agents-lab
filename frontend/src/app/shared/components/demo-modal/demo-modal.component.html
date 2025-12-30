@@ -22,6 +22,14 @@
     tabindex="0"
     role="dialog"
   >
+    <!-- Cancellation Toast -->
+    @if (showCancellationMessage) {
+    <div class="cancellation-toast" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: #22c55e; color: white; padding: 12px 24px; border-radius: 30px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; font-weight: 500;">
+      <span class="material-symbols-outlined">check_circle</span>
+      <p>Cita cancelada correctamente</p>
+    </div>
+    }
+
     <!-- HEADER (Hidden on Step -1: Role Selector, Step 3: Professional Selection, Step 9: Payment) -->
     @if (currentStep >= 0 && currentStep !== 3 && currentStep !== 9 && currentStep !== 4) {
     <header class="mobile-header">
@@ -797,16 +805,16 @@
         <!-- Main Content - Sin contenedor scrollable, todo en una pantalla -->
         <div class="confirmation-content">
           <!-- Status Card -->
-          <div class="status-card">
+          <div class="status-card" [class.beauty-theme]="isBeautyService()">
             <div class="status-icon-wrapper">
               <span class="material-symbols-outlined status-icon">check</span>
             </div>
-            <h3>Reservación Confirmada</h3>
-            <p>Tu cita ha sido programada exitosamente.</p>
+            <h3>{{ getConfirmationTitle() }}</h3>
+            <p>{{ getConfirmationMessage() }}</p>
             <div class="add-calendar-btn-wrapper">
               <button class="add-calendar-btn" (click)="addToCalendar()">
                 <span class="material-symbols-outlined">calendar_add_on</span>
-                Añadir a Calendario
+                {{ getCalendarButtonText() }}
               </button>
             </div>
           </div>
@@ -847,7 +855,7 @@
               @if (!selectedRestaurant) {
               <div class="detail-row">
                 <div class="detail-icon">
-                  <span class="material-symbols-outlined">content_cut</span>
+                  <span class="material-symbols-outlined">{{ getServiceIcon() }}</span>
                 </div>
                 <div class="detail-content">
                   <p class="detail-label">Servicio</p>
@@ -966,6 +974,21 @@
               </div>
             </div>
           </div>
+
+          <!-- Beauty Perks Section (only for beauty services) -->
+          @if (isBeautyService() && getBeautyPerks().length > 0) {
+          <div class="perks-section">
+            <h4>Tu Experiencia Incluye:</h4>
+            <div class="perks-list">
+              @for (perk of getBeautyPerks(); track perk) {
+              <div class="perk-item">
+                <span class="perk-text">{{ perk }}</span>
+              </div>
+              }
+            </div>
+          </div>
+          }
+
           <div class="confirmation-actions" style="display: flex; gap: 10px; padding: 12px 16px;">
             <button class="home-btn" (click)="onClose()" style="flex: 1; padding: 12px 4px; background: #000; color: white; border-radius: 12px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 4px;">
               <span class="material-symbols-outlined" style="font-size: 1.1rem;">home</span>

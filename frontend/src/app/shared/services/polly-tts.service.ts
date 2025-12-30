@@ -22,7 +22,8 @@ export class PollyTTSService {
   public assignedVoiceId = "Lucia";
 
   constructor() {
-    this.randomizeVoice();
+    // Voice is now set dynamically based on service category
+    // Default voice will be used until setVoice() is called
   }
 
   /**
@@ -35,6 +36,19 @@ export class PollyTTSService {
     );
     this.assignedVoiceId = this.AVAILABLE_VOICES[randomIndex];
     console.log(`[PollyTTS] 🎲 Assigned New Voice: ${this.assignedVoiceId}`);
+  }
+
+  public setVoice(voiceId: string) {
+    if (this.AVAILABLE_VOICES.includes(voiceId)) {
+      this.assignedVoiceId = voiceId;
+      console.log(`[PollyTTS] Voice manually set to: ${voiceId}`);
+    }
+  }
+
+  public getVoiceGender(voiceId: string = this.assignedVoiceId): 'male' | 'female' {
+    // Known AWS Polly genders
+    const males = ['Sergio', 'Andres', 'Pedro'];
+    return males.includes(voiceId) ? 'male' : 'female';
   }
 
   /**

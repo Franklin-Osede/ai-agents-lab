@@ -3523,6 +3523,7 @@
   }
 }
 
+
 // Iframe for Abandoned Cart Agent
 .agent-iframe {
   width: 100%;
@@ -3531,3 +3532,157 @@
   display: block;
 }
 
+// ========================================
+// BEAUTY THEME STYLES
+// ========================================
+
+// Beauty Theme for Confirmation Card
+.status-card.beauty-theme {
+  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fbcfe8 100%);
+  border: 2px solid #f9a8d4;
+  
+  .status-icon-wrapper {
+    background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+    box-shadow: 0 8px 24px rgba(236, 72, 153, 0.3);
+  }
+  
+  h3 {
+    background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  p {
+    color: #831843;
+  }
+  
+  .add-calendar-btn {
+    background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+    border: none;
+    box-shadow: 0 4px 16px rgba(236, 72, 153, 0.3);
+    
+    &:hover {
+      background: linear-gradient(135deg, #db2777 0%, #be185d 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+    }
+  }
+}
+
+// Beauty Perks Section
+.perks-section {
+  margin: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+  border: 2px solid #f9a8d4;
+  border-radius: 16px;
+  animation: slideUp 0.3s ease;
+  
+  h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #831843;
+    margin: 0 0 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    &::before {
+      content: '✨';
+      font-size: 20px;
+    }
+  }
+  
+  .perks-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    
+    @media (max-width: 380px) {
+      grid-template-columns: 1fr;
+    }
+    
+    .perk-item {
+      padding: 12px 16px;
+      background: white;
+      border: 1px solid #f9a8d4;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      
+      .perk-text {
+        font-size: 13px;
+        font-weight: 500;
+        color: #831843;
+        display: block;
+      }
+      
+      &:hover {
+        background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+        border-color: #ec4899;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(236, 72, 153, 0.15);
+      }
+    }
+  }
+}
+
+// Alternative Gold Theme (can be toggled)
+.status-card.beauty-theme.gold-variant {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%);
+  border: 2px solid #fbbf24;
+  
+  .status-icon-wrapper {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+  }
+  
+  h3 {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  p {
+    color: #78350f;
+  }
+  
+  .add-calendar-btn {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    
+    &:hover {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    }
+  }
+}
+
+// Lavender Theme (alternative)
+.status-card.beauty-theme.lavender-variant {
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #ddd6fe 100%);
+  border: 2px solid #c4b5fd;
+  
+  .status-icon-wrapper {
+    background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+    box-shadow: 0 8px 24px rgba(167, 139, 250, 0.3);
+  }
+  
+  h3 {
+    background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  p {
+    color: #5b21b6;
+  }
+  
+  .add-calendar-btn {
+    background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+    
+    &:hover {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    }
+  }
+}

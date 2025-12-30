@@ -69,20 +69,30 @@ export class PollyService implements OnModuleInit {
    * Pre-generate common phrases on app startup
    */
   async onModuleInit() {
-    this.logger.log('🔥 Pre-generating common phrases...');
-    const voices = ['Lucia', 'Sergio', 'Mia'];
+    this.logger.log('🔥 PollyService Initializing with Enhanced Voice Support (Enrique/Sergio)...');
+
+    // SMART WARMING: Only pre-generate the first 3 phrases (Greetings) to avoid AWS Throttling in Dev
+    const essentialPhrases = this.COMMON_PHRASES.slice(0, 3);
+    const voices = ['Sergio', 'Enrique', 'Lucia']; // Prioritize our active voices
+
+    this.logger.log(
+      `🔥 Smart Warming: Pre-generating ${essentialPhrases.length * voices.length} essential greetings...`,
+    );
 
     for (const voice of voices) {
-      for (const phrase of this.COMMON_PHRASES) {
+      for (const phrase of essentialPhrases) {
         try {
+          // Add a tiny delay to be gentle with AWS API
+          await new Promise((r) => setTimeout(r, 50));
           await this.synthesizeSpeech(phrase, voice);
         } catch (error) {
-          this.logger.warn(`Failed to pre-generate: ${phrase} (${voice})`);
+          // Silent fail only for warming - don't crash app
+          this.logger.warn(`Warm-up skipped for: ${phrase.substring(0, 10)}...`);
         }
       }
     }
 
-    this.logger.log(`✅ Cache warmed: ${this.audioCache.size} phrases ready`);
+    this.logger.log(`✅ Smart Cache Ready: Greetings for ${voices.join(', ')} pre-loaded.`);
   }
 
   async synthesizeSpeech(text: string, voiceId: string = 'Lucia'): Promise<Readable> {
@@ -103,24 +113,45 @@ export class PollyService implements OnModuleInit {
     // Cache miss - generate from Polly
     this.logger.log(`[Polly] 🔄 Generating speech for: ${voiceId}`);
 
-    // Enhanced SSML with natural pauses for more natural speech
-    // Neural voices benefit from natural pauses - using simpler SSML for better compatibility
-    const processedText = text
-      // Natural pauses at punctuation (longer pauses for questions/exclamations)
-      .replace(/\. /g, '.<break time="300ms"/> ')
-      .replace(/\, /g, ',<break time="200ms"/> ')
-      .replace(/\? /g, '?<break time="400ms"/> ')
-      .replace(/\! /g, '!<break time="400ms"/> ');
+    // Advanced SSML processing for natural speech
+    const ssmlText = this.enhanceTextWithSSML(text, voiceId);
 
-    // Wrap in speak tags with prosody for natural intonation
-    // Using rate="medium" only (pitch variations can cause issues with some Neural voices)
-    const ssmlText = `<speak><prosody rate="medium">${processedText}</prosody></speak>`;
+    try {
+      return await this.executePollyCommand(ssmlText, voiceId, cacheKey, startTime);
+    } catch (error) {
+      this.logger.warn(
+        `[Polly] ⚠️ Advanced SSML failed for ${voiceId}, retrying with basic SSML...`,
+      );
+
+      // FALLBACK: Basic SSML (just wrapping in speak tag)
+      // This solves issues with voices like Sergio that might not support breathing/prosody fully
+      const basicSsml = `<speak>${text}</speak>`;
+      try {
+        return await this.executePollyCommand(basicSsml, voiceId, cacheKey, startTime);
+      } catch (retryError) {
+        this.logger.error('Polly Synthesis Failed (even with fallback)', retryError);
+        throw retryError;
+      }
+    }
+  }
+
+  private async executePollyCommand(
+    text: string,
+    voiceId: string,
+    cacheKey: string,
+    startTime: number,
+  ): Promise<Readable> {
+    // Determine Engine based on Voice.
+    // Neural voices: Lucia, Mia, Sergio, Lupe.
+    // Standard only: Enrique, Conchita.
+    const standardVoices = ['Enrique', 'Conchita', 'Miguel', 'Penelope'];
+    const engine = standardVoices.includes(voiceId) ? Engine.STANDARD : Engine.NEURAL;
 
     const command = new SynthesizeSpeechCommand({
-      Engine: Engine.NEURAL,
+      Engine: engine,
       OutputFormat: OutputFormat.MP3,
       SampleRate: '24000',
-      Text: ssmlText,
+      Text: text,
       TextType: TextType.SSML,
       VoiceId: voiceId as VoiceId,
     });
@@ -129,30 +160,32 @@ export class PollyService implements OnModuleInit {
       const response = await this.client.send(command);
 
       if (response.AudioStream instanceof Readable) {
-        // Convert stream to buffer for caching
         const chunks: Buffer[] = [];
         for await (const chunk of response.AudioStream) {
           chunks.push(Buffer.from(chunk));
         }
         const audioBuffer = Buffer.concat(chunks);
 
-        // Cache for future use
         this.audioCache.set(cacheKey, audioBuffer);
-
         const duration = Date.now() - startTime;
         this.logger.log(
-          `[Polly] ✅ Generated & cached (${duration}ms) - ${text.substring(0, 30)}...`,
+          `[Polly] ✅ Generated & cached (${duration}ms) [${engine}] - ${text.substring(0, 30)}...`,
         );
 
-        // Return as readable stream
         return Readable.from(audioBuffer);
       }
-
-      throw new Error('Invalid audio stream format returned from Polly');
     } catch (error) {
-      this.logger.error('Polly Synthesis Failed', error);
+      // Voice Fallback logic
+      if (voiceId === 'Enrique') {
+        this.logger.warn(
+          `[Polly] ⚠️ Voice 'Enrique' failed, falling back to 'Sergio' (Male Neural)`,
+        );
+        return this.executePollyCommand(text, 'Sergio', cacheKey, startTime);
+      }
       throw error;
     }
+
+    throw new Error('Invalid audio stream format returned from Polly');
   }
 
   /**
@@ -163,5 +196,49 @@ export class PollyService implements OnModuleInit {
       size: this.audioCache.size,
       phrases: Array.from(this.audioCache.keys()).map((k) => k.split(':')[1]),
     };
+  }
+
+  /**
+   * Enhance text with SSML for more natural speech
+   * Adds breathing, emphasis, pauses, and prosody
+   */
+
+  private enhanceTextWithSSML(text: string, voiceId: string = 'Lucia'): string {
+    let enhanced = text;
+
+    // 1. Add natural breathing at the start of greetings (Supported by Neural)
+    // Only for Neural voices usually, but Standard ignores amazon:breath gracefully or we can exclude
+    if (enhanced.match(/^(¡Hola|Hola|Buenos días|Buenas tardes|Bienvenid)/i)) {
+      enhanced = `<amazon:breath duration="short" volume="x-soft"/>${enhanced}`;
+    }
+
+    // 2. Emphasis removed to avoid "Unsupported Neural feature" errors
+
+    // 3. Reduce pause after exclamations at start
+    enhanced = enhanced.replace(/^(¡[^!]+!)\s+/, '$1<break time="150ms"/> ');
+
+    // 4. Natural pauses at punctuation
+    enhanced = enhanced
+      .replace(/,\s+/g, ',<break time="180ms"/> ')
+      .replace(/\.\s+(?!$)/g, '.<break time="250ms"/> ')
+      .replace(/\?\s+/g, '?<break time="350ms"/> ')
+      .replace(/(?<!^¡[^!]+)!\s+/g, '!<break time="300ms"/> ');
+
+    // 5. Pitch distinctiveness
+    // If Enrique (Standard), use 'low' pitch to sound different/more senior than Sergio
+    let pitch = 'default';
+    if (voiceId === 'Enrique') {
+      pitch = 'low';
+    }
+
+    // 6. Use standard rate tags + pitch
+    if (pitch === 'default') {
+      enhanced = `<prosody rate="medium">${enhanced}</prosody>`;
+    } else {
+      enhanced = `<prosody rate="medium" pitch="${pitch}">${enhanced}</prosody>`;
+    }
+
+    // 7. Wrap in speak tag
+    return `<speak>${enhanced}</speak>`;
   }
 }

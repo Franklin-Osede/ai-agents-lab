@@ -127,14 +127,22 @@ export class VoiceAgentController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Generate greeting audio from text (TTS only)' })
   @ApiResponse({ status: 200, description: 'Returns audio file' })
-  async generateGreeting(@Body('text') text: string, @Res() res: Response) {
+  async generateGreeting(
+    @Body('text') text: string,
+    @Body('voiceId') voiceId: string,
+    @Res() res: Response,
+  ) {
     try {
       if (!text) {
         return res.status(400).json({ error: 'Text is required' });
       }
 
-      // Use AWS Polly Neural voice (Lucia by default)
-      const audioStream = await this.pollyService.synthesizeSpeech(text, 'Lucia');
+      // Use the provided voiceId or default to Lucia (Spanish female)
+      const selectedVoice = voiceId || 'Lucia';
+      console.log(`🎤 Generating greeting with voice: ${selectedVoice}`);
+
+      // Use AWS Polly Neural voice
+      const audioStream = await this.pollyService.synthesizeSpeech(text, selectedVoice);
 
       // Convert stream to buffer
       const chunks: Buffer[] = [];

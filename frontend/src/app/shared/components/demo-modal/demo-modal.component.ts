@@ -153,6 +153,9 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     icon: string;
     color: string;
   }[] = [];
+  
+  // Cached notification groups to avoid recalculation
+  private cachedNotificationGroups: { label: string; notifications: any[] }[] = [];
 
   // Selected booking for details
   selectedBooking: any = null;
@@ -173,6 +176,21 @@ export class DemoModalComponent implements OnInit, OnDestroy {
 
     // Voice is now set dynamically based on service category in onServiceSelected()
     // No need to randomize here
+
+    // Force cleanup of potentially corrupted notification data
+    try {
+      const savedNotifs = localStorage.getItem(this.STORAGE_KEY_NOTIFS);
+      if (savedNotifs) {
+        const parsed = JSON.parse(savedNotifs);
+        if (!Array.isArray(parsed) || parsed.length < 4) {
+          console.log('Removing corrupted notification data from localStorage');
+          localStorage.removeItem(this.STORAGE_KEY_NOTIFS);
+        }
+      }
+    } catch (e) {
+      console.log('Cleaning up corrupted localStorage');
+      localStorage.removeItem(this.STORAGE_KEY_NOTIFS);
+    }
 
     // Load persisted state
     this.loadState();
@@ -3533,11 +3551,15 @@ export class DemoModalComponent implements OnInit, OnDestroy {
 
   // Navigation methods
   navigateToTab(tab: "inicio" | "reservas" | "avisos" | "perfil"): void {
+    console.log('navigateToTab called with:', tab);
+    console.log('Current notifications:', this.notifications);
     this.activeTab = tab;
     if (tab === "reservas") {
       this.currentStep = 10; // Reservas view
     } else if (tab === "avisos") {
       this.currentStep = 11; // Avisos view
+      console.log('Set currentStep to 11 (Avisos)');
+      console.log('Notifications count:', this.notifications.length);
     } else if (tab === "inicio") {
       this.currentStep = 0; // Service selector
     }
@@ -3870,38 +3892,84 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       
       const savedNotifs = localStorage.getItem(this.STORAGE_KEY_NOTIFS);
       if (savedNotifs) {
-        this.notifications = JSON.parse(savedNotifs);
-        this.notifications = this.notifications.map((n: any) => ({
-            ...n,
-            timestamp: new Date(n.timestamp)
-        }));
-      } else {
-        // Mock notifications if empty
-        this.notifications = [
-          {
-            id: 'notif_1',
-            type: 'reminder',
-            title: 'Recordatorio de Cita',
-            message: 'Tu cita con Dra. Ana García es mañana a las 10:00',
-            timestamp: new Date(Date.now() - 3600000), // 1 hour ago
-            read: false,
-            icon: 'calendar_today',
-            color: 'blue'
-          },
-          {
-            id: 'notif_2',
-            type: 'offer',
-            title: 'Descuento Exclusivo',
-            message: 'Obtén un 20% de descuento en tu próximo blanqueamiento.',
-            timestamp: new Date(Date.now() - 86400000), // 1 day ago
-            read: true,
-            icon: 'percent',
-            color: 'green'
+        try {
+          this.notifications = JSON.parse(savedNotifs);
+          this.notifications = this.notifications.map((n: any) => ({
+              ...n,
+              timestamp: new Date(n.timestamp)
+          }));
+          // If notifications are empty or invalid, reset to mock data
+          if (!Array.isArray(this.notifications) || this.notifications.length === 0) {
+            console.log('Notifications array is empty or invalid, loading mock data');
+            this.notifications = this.getMockNotifications();
+            this.saveState();
           }
-        ];
+        } catch (e) {
+          console.error('Error parsing notifications', e);
+          this.notifications = this.getMockNotifications();
+          this.saveState();
+        }
+      } else {
+        // No saved notifications - use mock data immediately
+        console.log('No saved notifications found, loading mock data');
+        this.notifications = this.getMockNotifications();
         this.saveState();
       }
     } catch (e) { console.error('Error loading state', e); }
+  }
+
+  private getMockNotifications(): {
+    id: string;
+    type: "reminder" | "payment" | "action" | "offer" | "message" | "security";
+    title: string;
+    message: string;
+    timestamp: Date;
+    read: boolean;
+    icon: string;
+    color: string;
+  }[] {
+    return [
+      {
+        id: 'notif_1',
+        type: 'reminder' as const,
+        title: 'Recordatorio de Cita',
+        message: 'Tu cita con Dra. Ana García es mañana a las 10:00',
+        timestamp: new Date(Date.now() - 3600000), // 1 hour ago
+        read: false,
+        icon: 'calendar_today',
+        color: 'blue'
+      },
+      {
+        id: 'notif_2',
+        type: 'offer' as const,
+        title: 'Descuento Exclusivo',
+        message: 'Obtén un 20% de descuento en tu próximo blanqueamiento.',
+        timestamp: new Date(Date.now() - 86400000), // 1 day ago
+        read: false,
+        icon: 'percent',
+        color: 'green'
+      },
+      {
+        id: 'notif_3',
+        type: 'payment' as const,
+        title: 'Pago Confirmado',
+        message: 'Tu pago de €50.00 ha sido procesado exitosamente.',
+        timestamp: new Date(Date.now() - 172800000), // 2 days ago
+        read: true,
+        icon: 'check_circle',
+        color: 'green'
+      },
+      {
+        id: 'notif_4',
+        type: 'message' as const,
+        title: 'Nuevo Mensaje',
+        message: 'Dr. Carlos Ruiz te ha enviado un mensaje sobre tu próxima cita.',
+        timestamp: new Date(Date.now() - 259200000), // 3 days ago
+        read: true,
+        icon: 'mail',
+        color: 'blue'
+      }
+    ];
   }
 
   viewBookingDetails(booking: any): void {
@@ -3918,15 +3986,27 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   }
 
   getNotificationGroups(): { label: string; notifications: any[] }[] {
+    // Return cached groups if available and notifications haven't changed
+    if (this.cachedNotificationGroups.length > 0 && 
+        this.cachedNotificationGroups[0]?.notifications?.length === this.notifications.length) {
+      return this.cachedNotificationGroups;
+    }
+    
     // Return a single group 'Recientes' to ensure all notifications are shown
     const groups: { label: string; notifications: any[] }[] = [];
-    if (this.notifications.length === 0) return [];
+    console.log('getNotificationGroups called, notifications:', this.notifications);
+    if (this.notifications.length === 0) {
+      console.warn('No notifications found!');
+      return [];
+    }
 
     groups.push({
       label: "Recientes",
       notifications: [...this.notifications].reverse(),
     });
 
+    console.log('Notification groups:', groups);
+    this.cachedNotificationGroups = groups;
     return groups;
   }
 

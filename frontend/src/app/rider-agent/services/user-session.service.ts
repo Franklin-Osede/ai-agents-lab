@@ -29,12 +29,14 @@ export class UserSessionService {
 
   login(name: string) {
     const isFemale = this.isFemaleName(name);
-    const avatarUrl = this.getRandomAvatar(isFemale ? "female" : "male");
+    const isAfrican = this.isAfricanName(name);
+    const gender = isFemale ? "female" : "male";
+    const avatarUrl = this.getRandomAvatar(gender, isAfrican);
 
     const profile: UserProfile = {
       name,
       avatarUrl,
-      gender: isFemale ? "female" : "male",
+      gender,
     };
 
     this.user.set(profile);
@@ -126,24 +128,52 @@ export class UserSessionService {
     return femaleExceptions.some((ex) => n.includes(ex)); // More loose matching for composite names like "Maria del Carmen"
   }
 
-  private getRandomAvatar(gender: "male" | "female"): string {
+  private isAfricanName(name: string): boolean {
+    const n = name.trim().toLowerCase();
+    const africanNames = [
+      "franklin", "kwame", "kofi", "malik", "jamal", "tyrone",
+      "deshawn", "marcus", "jerome", "lamar", "terrell", "darius",
+      "rashad", "khalil", "isaiah", "elijah", "amari", "jabari",
+      "zuri", "nia", "amara", "aaliyah", "imani", "keisha",
+      "latoya", "shaniqua", "tamika", "ebony", "precious"
+    ];
+    return africanNames.includes(n);
+  }
+
+  private getRandomAvatar(gender: "male" | "female", isAfrican = false): string {
+    // African/Black avatars
+    const africanMaleAvatars = [
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    ];
+
+    const africanFemaleAvatars = [
+      "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    ];
+
+    // Default diverse avatars
     const maleAvatars = [
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
     ];
 
     const femaleAvatars = [
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       "https://images.unsplash.com/photo-1520813792240-56fc4a37b1a9?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
     ];
 
-    const pool = gender === "female" ? femaleAvatars : maleAvatars;
+    let pool: string[];
+    if (isAfrican) {
+      pool = gender === "female" ? africanFemaleAvatars : africanMaleAvatars;
+    } else {
+      pool = gender === "female" ? femaleAvatars : maleAvatars;
+    }
+
     return pool[Math.floor(Math.random() * pool.length)];
   }
 }

@@ -249,15 +249,25 @@ export class NameOriginService {
       );
 
       return {
-        isAfrican: africanProb > 0.3 || (africanProb > asianProb && africanProb > latinoProb && africanProb > caucasianProb),
-        isAsian: asianProb > 0.3 || (asianProb > africanProb && asianProb > latinoProb && asianProb > caucasianProb),
-        isLatino: latinoProb > 0.3 || (latinoProb > africanProb && latinoProb > asianProb && latinoProb > caucasianProb),
-        isCaucasian: caucasianProb > 0.3 || (caucasianProb > africanProb && caucasianProb > asianProb && caucasianProb > latinoProb),
+        isAfrican:
+          africanProb > 0.3 ||
+          (africanProb > asianProb && africanProb > latinoProb && africanProb > caucasianProb),
+        isAsian:
+          asianProb > 0.3 ||
+          (asianProb > africanProb && asianProb > latinoProb && asianProb > caucasianProb),
+        isLatino:
+          latinoProb > 0.3 ||
+          (latinoProb > africanProb && latinoProb > asianProb && latinoProb > caucasianProb),
+        isCaucasian:
+          caucasianProb > 0.3 ||
+          (caucasianProb > africanProb && caucasianProb > asianProb && caucasianProb > latinoProb),
         confidence,
         topCountries: topCountries.slice(0, 5),
       };
     } catch (error) {
-      this.logger.warn(`Failed to validate name origin for "${firstName}": ${error.message}. Falling back to heuristics.`);
+      this.logger.warn(
+        `Failed to validate name origin for "${firstName}": ${error.message}. Falling back to heuristics.`,
+      );
       // Fallback to heuristics
       return this.fallbackHeuristics(firstName);
     }
@@ -278,15 +288,54 @@ export class NameOriginService {
     const normalizedName = name.toLowerCase().trim();
 
     // African names
-    const africanNames = ['franklin', 'jamal', 'tyrone', 'malik', 'dante', 'kobe', 'lebron', 'omar', 'kendrick', 'darius', 'marcus', 'andre'];
+    const africanNames = [
+      'franklin',
+      'jamal',
+      'tyrone',
+      'malik',
+      'dante',
+      'kobe',
+      'lebron',
+      'omar',
+      'kendrick',
+      'darius',
+      'marcus',
+      'andre',
+    ];
     const isAfrican = africanNames.some((n) => normalizedName.includes(n) || normalizedName === n);
 
     // Asian names
-    const asianNames = ['hiro', 'kenji', 'wei', 'lee', 'jin', 'akira', 'tanaka', 'chen', 'wang', 'li', 'zhang', 'kim'];
+    const asianNames = [
+      'hiro',
+      'kenji',
+      'wei',
+      'lee',
+      'jin',
+      'akira',
+      'tanaka',
+      'chen',
+      'wang',
+      'li',
+      'zhang',
+      'kim',
+    ];
     const isAsian = asianNames.some((n) => normalizedName.includes(n) || normalizedName === n);
 
     // Latino names
-    const latinoNames = ['jose', 'juan', 'carlos', 'luis', 'miguel', 'pedro', 'jesus', 'antonio', 'raul', 'julio', 'ricardo', 'fernando'];
+    const latinoNames = [
+      'jose',
+      'juan',
+      'carlos',
+      'luis',
+      'miguel',
+      'pedro',
+      'jesus',
+      'antonio',
+      'raul',
+      'julio',
+      'ricardo',
+      'fernando',
+    ];
     const isLatino = latinoNames.some((n) => normalizedName.includes(n) || normalizedName === n);
 
     // Default to caucasian if none match
@@ -302,4 +351,3 @@ export class NameOriginService {
     };
   }
 }
-

@@ -49,6 +49,11 @@ export class OrderTrackingComponent
   private animationFrameId: any;
   isDelivered = false;
   showLeadGenModal = false;
+  
+  // Trail and auto-zoom properties
+  private trailPolyline: L.Polyline | undefined;
+  private trailPoints: [number, number][] = [];
+  private hasAutoZoomed = false;
 
   // Dynamic countdown signals
   countdownMinutes = signal(0);
@@ -259,6 +264,26 @@ export class OrderTrackingComponent
 
     // Update Marker
     this.riderMarker.setLatLng(newPos);
+    
+    // Update trail
+    this.trailPoints.push(newPos);
+    // Keep only last 20 points for trail
+    if (this.trailPoints.length > 20) {
+      this.trailPoints.shift();
+    }
+    
+    // Redraw trail
+    if (this.trailPolyline) {
+      this.map.removeLayer(this.trailPolyline);
+    }
+    if (this.trailPoints.length > 1) {
+      this.trailPolyline = L.polyline(this.trailPoints, {
+        color: '#4f46e5',
+        weight: 3,
+        opacity: 0.6,
+        dashArray: '5, 10',
+      }).addTo(this.map);
+    }
 
     if (elapsedSeconds < this.totalDuration) {
       this.animationFrameId = requestAnimationFrame(() => this.animate());

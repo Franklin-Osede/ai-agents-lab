@@ -103,20 +103,28 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     // IMPORTANT: Only process if it's a valid cuisine type from Home screen navigation
     // Ignore residual history.state data from other navigations (like checkout)
     const navState = history.state as any;
-    const validCuisineTypes = ["japanese", "italian", "fast_food", "spanish", "burger", "pizza", "sushi"];
+    let isComingFromHomeWithCuisine = false;
+    
     if (navState && navState.data && navState.data.type) {
       const query = navState.data.type.toLowerCase();
-      // Only process if it's a valid cuisine type (not residual data from checkout/other navigations)
-      if (validCuisineTypes.some(type => query.includes(type))) {
-        // We have a valid query from Home screen! Skip welcome and process it.
+      
+      // Use mapTextToIntent to check if this is a cuisine-related query
+      // This handles ALL cuisine keywords: pasta, sushi, burger, tapas, etc.
+      const detectedIntent = this.mapTextToIntent(query);
+      const isCuisineIntent = detectedIntent.startsWith("choose_cuisine_");
+      
+      if (isCuisineIntent) {
+        // We have a valid cuisine query from Home screen! Skip welcome and process it.
+        isComingFromHomeWithCuisine = true;
+        
         // Small delay to allow View to init
         setTimeout(() => {
           this.inputText.set(navState.data.type);
           this.sendMessage();
         }, 100);
-        return;
+        // DON'T return here - we need to skip Fresh Start block below
       }
-      // If it's not a valid cuisine type, ignore it and continue with normal flow
+      // If it's not a cuisine type, ignore it and continue with normal flow
     }
 
     // 5. Normal Flow (Welcome OR Restore)
@@ -149,13 +157,21 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     }
     
     // 6. Fresh Start (no stored messages or not navigating back)
-    {
+    // SKIP THIS if coming from home with cuisine selection
+    if (!isComingFromHomeWithCuisine) {
       // Fresh Start
       const initialState = this.stateMachine.getCurrentStateNode();
 
       if (initialState) {
         // Compose Welcome Message
-        const welcomeText = `Hola ${userName}. ${initialState.response}`;
+        // Only add "Hola {userName}" if we're in the general.default state (initial cuisine selection)
+        // Don't add it if user is coming from onboarding with a cuisine already selected
+        let welcomeText = initialState.response;
+        
+        // Only prepend "Hola {userName}" for the very first general.default state
+        if (initialState.id === "general.default") {
+          welcomeText = `Hola ${userName}. ${initialState.response}`;
+        }
 
         const initialMsg = {
           role: "ai" as const,
@@ -704,6 +720,8 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           this.stateMachine.memory.messages = newMsgs;
           return newMsgs;
         });
+        
+        // Always speak the response
         this.speak(responseText);
         // SMART UI: Filter out suggestions that are already shown as cards
         let finalSuggestions = res.suggestions;
@@ -980,40 +998,67 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
   mapTextToIntent(text: string): string {
     const t = text.toLowerCase();
 
-    // Japanese
+    // Japanese - Include sushi, ramen, and related words
     if (
       t.includes("japon") ||
       t.includes("sushi") ||
       t.includes("ramen") ||
       t.includes("miso") ||
-      t.includes("tempura")
+      t.includes("tempura") ||
+      t.includes("edamame") ||
+      t.includes("gyoza") ||
+      t.includes("sake") ||
+      t.includes("teriyaki") ||
+      t.includes("udon") ||
+      t.includes("sashimi") ||
+      t.includes("nigiri") ||
+      t.includes("maki")
     )
       return "choose_cuisine_japanese";
 
-    // Italian
+    // Italian - Include pasta, pizza, risotto, and related words
     if (
       t.includes("italian") ||
       t.includes("pizza") ||
       t.includes("pasta") ||
       t.includes("espagueti") ||
+      t.includes("spaghetti") ||
       t.includes("macarron") ||
-      t.includes("lasaña")
+      t.includes("lasaña") ||
+      t.includes("lasagna") ||
+      t.includes("risotto") ||
+      t.includes("carbonara") ||
+      t.includes("bolognesa") ||
+      t.includes("bolognese") ||
+      t.includes("parmigiana") ||
+      t.includes("ravioli") ||
+      t.includes("gnocchi") ||
+      t.includes("tiramisu") ||
+      t.includes("margherita")
     )
       return "choose_cuisine_italian";
 
-    // Fast Food
+    // Fast Food - Include burgers, fries, and handle typos
     if (
-      t.includes("fast") ||
       t.includes("fast") ||
       t.includes("hamburg") || // Matches 'hamburguesa', 'hamburg', etc.
       t.includes("burger") ||
+      t.includes("vurger") || // Common typo
+      t.includes("burguer") || // Spanish spelling
       t.includes("perrito") ||
+      t.includes("hot dog") ||
+      t.includes("hotdog") ||
       t.includes("nugget") ||
-      t.includes("patatas")
+      t.includes("patatas") ||
+      t.includes("fries") ||
+      t.includes("papas") ||
+      t.includes("mcdonalds") ||
+      t.includes("kfc") ||
+      t.includes("whopper")
     )
       return "choose_cuisine_fast_food";
 
-    // Spanish
+    // Spanish - Include tapas, paella, jamón, and related words
     if (
       t.includes("españ") ||
       t.includes("tapa") ||
@@ -1021,9 +1066,17 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       t.includes("tortilla") ||
       t.includes("croqueta") ||
       t.includes("jamon") ||
+      t.includes("jamón") ||
       t.includes("bravas") ||
       t.includes("racion") ||
-      t.includes("iberico")
+      t.includes("iberico") ||
+      t.includes("ibérico") ||
+      t.includes("chorizo") ||
+      t.includes("gazpacho") ||
+      t.includes("sangria") ||
+      t.includes("patatas bravas") ||
+      t.includes("pulpo") ||
+      t.includes("gambas")
     )
       return "choose_cuisine_spanish";
 
@@ -1131,6 +1184,13 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     this.inputText.set(option);
     this.sendMessage();
   }
+
+  // Handle cuisine chip clicks
+  selectCuisine(cuisine: string) {
+    this.inputText.set(cuisine);
+    this.sendMessage();
+  }
+
 
   // Audio State (Polly-based)
   currentlySpeakingMessageText = signal<string | null>(null);

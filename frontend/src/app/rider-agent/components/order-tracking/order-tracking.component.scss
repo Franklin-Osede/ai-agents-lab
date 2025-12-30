@@ -62,3 +62,18 @@
     opacity: 0;
   }
 }
+
+// Rider pulse animation
+@keyframes rider-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+  }
+}
+
+.rider-pulse {
+  animation: rider-pulse 2s infinite;
+}

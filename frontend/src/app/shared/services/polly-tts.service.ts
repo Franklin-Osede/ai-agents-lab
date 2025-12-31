@@ -128,6 +128,34 @@ export class PollyTTSService {
       });
   }
 
+  /**
+   * Pre-loads audio for a specific text so it can be played instantly later.
+   * Returns a promise that resolves to the audio URL (blob).
+   */
+  preload(text: string): Promise<string> {
+    if (!text) return Promise.reject("No text provided");
+
+    const params = new URLSearchParams({
+      text: text,
+      voiceId: this.assignedVoiceId,
+    });
+
+    return fetch(`${environment.apiBaseUrl}/voice/speak`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, voiceId: this.assignedVoiceId }),
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.blob();
+      })
+      .then((blob) => {
+        const url = URL.createObjectURL(blob);
+        console.log(`[PollyTTS] 💾 Pre-loaded audio for: "${text.substring(0, 30)}..."`);
+        return url;
+      });
+  }
+
   stop() {
     if (this.currentAudio) {
       this.currentAudio.pause();

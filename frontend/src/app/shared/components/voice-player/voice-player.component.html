@@ -38,12 +38,13 @@
     <!-- Metadata -->
     @if (duration || estimatedCost) {
       <div class="metadata-section">
-        @if (duration) {
+        <!-- Duration removed as per user request -->
+        <!-- @if (duration) {
           <div class="metadata-item">
             <span class="metadata-label">⏱️ Duración:</span>
             <span class="metadata-value">{{ formatDuration(duration) }}</span>
           </div>
-        }
+        } -->
         @if (estimatedCost) {
           <div class="metadata-item">
             <span class="metadata-label">💰 Costo estimado:</span>

@@ -424,6 +424,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       // Determine assistant gender based on voice
       const gender = this.pollyService.getVoiceGender();
       const article = gender === 'female' ? 'la' : 'el';
+      console.log(`🟣 VOICE GENDER CHECK: voiceId=${this.pollyService.assignedVoiceId}, gender=${gender}, article=${article}`);
 
       if (
         serviceId === "clinica" ||
@@ -442,7 +443,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         } else {
            greetingPrefix = `Hola, le atiende ${article} asistente de ${professionalName}`;
         }
-        welcomeMessage = `${greetingPrefix}. Por favor, dígame brevemente el motivo de su consulta para poder ayudarle.`;
+        welcomeMessage = `${greetingPrefix}. Por favor, dígame brevemente el motivo de su consulta, para poder ayudarle.`;
         options = [
           "🩺 Consulta general",
           "📊 Resultados de pruebas",
@@ -453,7 +454,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         this.conversationFlow.totalSteps = 5;
       } else if (serviceId === "dentista" || serviceId.includes("dental")) {
         // 2. DENTISTA - 6 pasos (5 preguntas + calendario)
-        welcomeMessage = `Bienvenido a ${serviceName}. ¿Desea realizar una revisión rutinaria o tiene alguna molestia específica?`;
+        welcomeMessage = `Bienvenido a ${serviceName}. ¿Desea realizar una revisión rutinaria, o tiene alguna molestia específica?`;
         options = [
           "🦷 Revisión general",
           "😬 Dolor o molestia dental",
@@ -511,7 +512,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         this.conversationFlow.totalSteps = 4;
       } else if (serviceId === "abogado" || serviceId.includes("legal")) {
         // 6. DESPACHO LEGAL - 6 pasos
-        welcomeMessage = `Buenos días. Le atiende el equipo de ${serviceName}. Explíqueme brevemente su caso para derivarle al especialista adecuado.`;
+        welcomeMessage = `Buenos días. Le atiende el equipo de ${serviceName}. Explíqueme brevemente su caso, para derivarle al especialista adecuado.`;
         options = [
           "⚖️ Laboral / despidos",
           "💼 Fiscal / declaración de la renta",
@@ -830,7 +831,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         const previousResponse = this.conversationFlow.responses['step1'] || '';
         
         if (previousResponse.includes('Solo manicura')) {
-          nextMessage = "¿Clásica y elegante o gel que dura semanas?";
+          nextMessage = "¿Clásica y elegante, o gel que dura semanas?";
           nextOptions = [
             "💅 Manicura clásica",
             "✨ Semipermanente (gel)",
@@ -853,6 +854,13 @@ export class DemoModalComponent implements OnInit, OnDestroy {
             "🎨 Manicura gel + Pedicura clásica",
             "🎯 Personalizado",
           ];
+        } else if (previousResponse.includes('Solo retirada')) {
+          nextMessage = "Perfecto. ¿De qué tipo de uñas hablamos?";
+          nextOptions = [
+            "💅 Retirada de gel/semipermanente",
+            "💎 Retirada de acrílicas",
+            "🔧 Retirada completa + manicura básica",
+          ];
         } else {
           nextMessage = "¿Qué tipo de servicio prefieres?";
           nextOptions = [
@@ -862,6 +870,14 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           ];
         }
       } else if (newStep === 3) {
+        const previousResponse = this.conversationFlow.responses['step1'] || '';
+        
+        // Si eligió "Solo retirada", ir directo al calendario
+        if (previousResponse.includes('Solo retirada')) {
+          this.showCalendarWithContext();
+          return;
+        }
+        
         nextMessage = "Ahora lo divertido: ¿qué diseño te hace ilusión?";
         nextOptions = [
           "🎨 Color liso (Elegancia atemporal)",
@@ -908,8 +924,11 @@ export class DemoModalComponent implements OnInit, OnDestroy {
 
     // ASESORÍA FISCAL FLOW (Contador/Fiscal) - 6 Pasos
     else if (serviceType === "contador" || serviceType.includes("fiscal")) {
+      console.log(`🟡 FISCAL FLOW - newStep: ${newStep}, totalSteps: ${this.conversationFlow.totalSteps}`);
+      
        if (newStep === 2) {
         const previousResponse = this.conversationFlow.responses['step1'] || '';
+        console.log(`🟡 FISCAL FLOW Step 2 - previousResponse: ${previousResponse}`);
         
         if (previousResponse.includes('Renta')) {
           nextMessage = "¿La declaración es individual o conjunta?";
@@ -922,6 +941,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
            nextOptions = ["👤 Particular", "🏢 Empresa/Autónomo", "❓ Desconozco mi régimen"];
         }
       } else if (newStep === 3) {
+        console.log(`🟡 FISCAL FLOW Step 3`);
         nextMessage = "¿Tiene alguna fecha límite o requerimiento de Hacienda urgente?";
         nextOptions = [
           "🛑 Sí, es urgente (esta semana)",
@@ -930,14 +950,19 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           "📨 He recibido una notificación hoy",
         ];
       } else if (newStep === 4) {
+        console.log(`🟡 FISCAL FLOW Step 4`);
         nextMessage = "¿Lleva la contabilidad al día?";
         nextOptions = ["📊 Sí, todo ordenado", "📉 Más o menos", "❌ Necesito ponerla al día", "🚫 No aplica"];
       } else if (newStep === 5) {
+        console.log(`🟡 FISCAL FLOW Step 5`);
         nextMessage = "Perfecto. ¿Qué horario le viene mejor para videollamada o reunión?";
         nextOptions = ["🌅 Mañana", "🌇 Tarde", "🕒 Indiferente"];
       } else if (newStep === 6) {
+        console.log(`🟡 FISCAL FLOW Step 6 - Showing calendar`);
         this.showCalendarWithContext();
         return;
+      } else {
+        console.warn(`🟡 FISCAL FLOW - Unexpected step: ${newStep}`);
       }
     }
 
@@ -2948,15 +2973,17 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   const selectedServiceId = (service.id || '').toLowerCase();
   let voiceId = 'Lucia'; // Default (Medical - Female, Spain)
 
-  // Health Services
-  if (selectedServiceId === 'dentista' || selectedServiceId.includes('dental')) {
-      voiceId = 'Sergio'; // Male (Spain)
+  // Health & Professional Services - Male voices
+  if (selectedServiceId === 'clinica' || selectedServiceId.includes('medic') || selectedServiceId.includes('doctor')) {
+      voiceId = 'Sergio'; // Male (Spain) - Medical
+  } else if (selectedServiceId === 'dentista' || selectedServiceId.includes('dental')) {
+      voiceId = 'Sergio'; // Male (Spain) - Dentist
   } else if (selectedServiceId === 'fisioterapia' || selectedServiceId.includes('fisio')) {
-      voiceId = 'Lucia'; // Female (Spain)
+      voiceId = 'Sergio'; // Male (Spain) - Physiotherapy
   } else if (selectedServiceId === 'abogado' || selectedServiceId.includes('legal')) {
-      voiceId = 'Sergio'; // Male (Spain)
+      voiceId = 'Sergio'; // Male (Spain) - Lawyer
   } else if (selectedServiceId === 'contador' || selectedServiceId.includes('fiscal')) {
-      voiceId = 'Enrique'; // Male (Spain - Standard) - Different from Sergio (Neural)
+      voiceId = 'Enrique'; // Male (Spain - Standard) - Fiscal/Accounting
   } 
   // Beauty Services - All Female, Different Voices
   else if (selectedServiceId === 'peluqueria' || selectedServiceId.includes('peluqueria')) {
@@ -2972,6 +2999,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   // Clear audio cache to force regeneration with new voice
   this.voiceService.clearCache();
   console.log(`🎤 Voice changed to ${voiceId}, audio cache cleared`);
+  console.log(`🎤 VERIFY: pollyService.assignedVoiceId = ${this.pollyService.assignedVoiceId}`);
 
   // CLEAR ALL CHAT MESSAGES when changing service to avoid mixing conversations
     this.messages = [];
@@ -4692,6 +4720,11 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         messageOrText.showTranscript = true;
       }
     }
+  }
+
+  getAgentGender(): 'male' | 'female' {
+    // Get gender from polly service based on current voice
+    return this.pollyService.getVoiceGender();
   }
 
   onToggleAudio(message: ChatMessage): void {

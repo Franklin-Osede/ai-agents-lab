@@ -19,14 +19,32 @@
   z-index: 9999;
   animation: fadeIn 0.3s ease;
 
+  // Remove centering on mobile to fill entire screen
+  @media (max-width: 1023px) {
+    align-items: stretch;
+    justify-content: stretch;
+    padding: 0;
+  }
+
   &.booking-agent-bg {
-    @media (min-width: 768px) {
+    @media (min-width: 1024px) {
       background-image: url("https://images.unsplash.com/photo-1596178065887-1198b6148b2b?q=80&w=2070&auto=format&fit=crop");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      background-color: rgba(0, 0, 0, 0.4); // Fallback color
-      background-blend-mode: overlay; // Darken the image slightly
+      background-color: rgba(0, 0, 0, 0.4);
+      background-blend-mode: overlay;
+    }
+  }
+
+  &.abandoned-cart-bg {
+    @media (min-width: 1024px) {
+      background-image: url("https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: rgba(0, 0, 0, 0.3);
+      background-blend-mode: overlay;
     }
   }
 }
@@ -52,10 +70,12 @@
     0
   ); // Fix for overflow:hidden with border-radius on Safari/Chrome
 
-  @media (max-width: 428px) {
+  @media (max-width: 1023px) {
     max-width: 100%;
     max-height: 100vh;
     border-radius: 0;
+    box-shadow: none;
+    animation: none;
   }
 }
 

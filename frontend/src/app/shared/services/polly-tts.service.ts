@@ -18,6 +18,7 @@ export class PollyTTSService {
     "Mia",
     "Andres",
     "Lupe",
+    "Enrique",
   ];
   public assignedVoiceId = "Lucia";
 
@@ -47,7 +48,7 @@ export class PollyTTSService {
 
   public getVoiceGender(voiceId: string = this.assignedVoiceId): 'male' | 'female' {
     // Known AWS Polly genders
-    const males = ['Sergio', 'Andres', 'Pedro'];
+    const males = ['Sergio', 'Andres', 'Pedro', 'Enrique'];
     return males.includes(voiceId) ? 'male' : 'female';
   }
 

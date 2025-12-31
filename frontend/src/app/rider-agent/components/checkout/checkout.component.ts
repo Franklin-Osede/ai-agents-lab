@@ -5,12 +5,14 @@ import {
   ElementRef,
   PLATFORM_ID,
   AfterViewInit,
+  OnInit,
 } from "@angular/core";
 import { CommonModule, Location, isPlatformBrowser } from "@angular/common";
 import { RouterModule, Router } from "@angular/router";
 import { FormsModule } from "@angular/forms";
 import { CartService, CartItem } from "../../../shared/services/cart.service";
 import { UserSessionService } from "../../services/user-session.service";
+import { PollyTTSService } from "../../../shared/services/polly-tts.service";
 import { MapService } from "../../../shared/services/map.service";
 import {
   Subject,
@@ -38,7 +40,7 @@ import * as L from "leaflet";
     `,
   ],
 })
-export class CheckoutComponent implements AfterViewInit {
+export class CheckoutComponent implements OnInit, AfterViewInit {
   cartService = inject(CartService);
   session = inject(UserSessionService);
   mapService = inject(MapService);
@@ -49,6 +51,8 @@ export class CheckoutComponent implements AfterViewInit {
   @ViewChild("previewMapContainer") previewMapContainer!: ElementRef;
   private previewMap: L.Map | undefined;
   private previewMarker: L.Marker | undefined;
+  
+  preloadedAudioUrl: string | null = null;
 
   isProcessing = false;
   isSuccess = false;
@@ -91,6 +95,16 @@ export class CheckoutComponent implements AfterViewInit {
           this.addressResults = [];
         },
       });
+  }
+
+  ngOnInit() {
+    // Pre-load the success audio message so it's ready instantly
+    const userName = this.session.user()?.name || "amigo";
+    const message = `¡Genial ${userName}! Tu pedido va de camino. Relájate, llegamos en un momento.`;
+    
+    this.polly.preload(message).then(url => {
+      this.preloadedAudioUrl = url;
+    }).catch(err => console.error("[Checkout] Audio preload failed", err));
   }
 
   ngAfterViewInit() {
@@ -252,6 +266,8 @@ export class CheckoutComponent implements AfterViewInit {
     this.cartService.removeFromCart(item);
   }
 
+  polly = inject(PollyTTSService);
+
   processPayment() {
     if (this.isProcessing) return;
     this.isProcessing = true;
@@ -260,6 +276,17 @@ export class CheckoutComponent implements AfterViewInit {
     setTimeout(() => {
       this.isProcessing = false;
       this.isSuccess = true;
+
+      // Play success audio INSTANTLY from preload
+      if (this.preloadedAudioUrl) {
+        const audio = new Audio(this.preloadedAudioUrl);
+        audio.play().catch(err => console.error("Error playing preloaded audio:", err));
+      } else {
+        // Fallback if preload failed/didn't finish
+        const userName = this.session.user()?.name || "amigo";
+        const message = `¡Genial ${userName}! Tu pedido va de camino. Relájate, llegamos en un momento.`;
+        this.polly.speak(message);
+      }
 
       // Show success confirmation for 1.5 seconds before navigating
       setTimeout(() => {
@@ -272,7 +299,7 @@ export class CheckoutComponent implements AfterViewInit {
             address: this.address,
           },
         });
-      }, 1500);
+      }, 3500); // Wait for audio
     }, 2000);
   }
 }

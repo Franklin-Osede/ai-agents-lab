@@ -1,6 +1,7 @@
 <div
   class="modal-overlay"
   [class.booking-agent-bg]="agent.id === 'booking'"
+  [class.abandoned-cart-bg]="agent.id === 'cart' || agent.id === 'cart-recovery' || agent.id === 'abandoned-cart'"
   (click)="onClose()"
   (keydown.enter)="onClose()"
   tabindex="0"
@@ -421,14 +422,15 @@
           </div>
         </div>
         }
-        <!-- Timestamp -->
-        <div class="chat-timestamp">
+        <!-- Timestamp removed - not needed for booking flow -->
+        <!-- <div class="chat-timestamp">
           <span>Hoy</span>
-        </div>
+        </div> -->
 
         <app-chat-interface
           [messages]="messages"
           [isLoading]="isLoading"
+          [agentGender]="getAgentGender()"
           (toggleAudio)="onToggleAudio($event)"
         ></app-chat-interface>
 

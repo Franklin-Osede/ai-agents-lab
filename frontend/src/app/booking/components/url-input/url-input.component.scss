@@ -1,0 +1,65 @@
+:host {
+  display: block;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Custom Gradient */
+.bg-custom-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Gradient Text */
+.text-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Smooth transitions */
+.transition-all-300 {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom Colors */
+.bg-primary {
+  background-color: #5048e5;
+}
+
+.bg-primary-dark {
+  background-color: #4338ca;
+}
+
+.text-primary {
+  color: #5048e5;
+}
+
+.text-primary-dark {
+  color: #4338ca;
+}
+
+/* Shadow */
+.shadow-soft {
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+}
+
+/* Spinner */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Material Icons */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}

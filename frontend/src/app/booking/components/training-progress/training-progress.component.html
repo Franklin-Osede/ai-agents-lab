@@ -1,0 +1,114 @@
+<div class="relative flex h-full min-h-screen w-full flex-col bg-background-light dark:bg-background-dark font-display overflow-hidden">
+  <!-- Background Layer -->
+  <div class="absolute inset-0 bg-[#1f2937]/90 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <!-- Main Card -->
+    <div class="w-full max-w-md bg-white dark:bg-[#1e1e2e] rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <!-- Header Section -->
+      <div class="pt-8 pb-4 px-6 text-center">
+        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 relative">
+          <span class="material-symbols-outlined text-primary text-4xl animate-spin-slow">settings_suggest</span>
+          <div class="absolute inset-0 rounded-full border border-primary/30 animate-ping"></div>
+        </div>
+        <h2 class="text-slate-900 dark:text-white text-2xl font-bold leading-tight mb-2">Entrenando tu Agente</h2>
+        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Analizando tu sitio web...</p>
+      </div>
+
+      <!-- Progress Bar Section -->
+      <div class="px-6 pb-6">
+        <div class="flex justify-between items-end mb-2">
+          <span class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Progreso General</span>
+          <span class="text-transparent bg-clip-text bg-progress-gradient text-3xl font-bold">{{ progress() }}%</span>
+        </div>
+        <div class="h-3 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden shadow-inner">
+          <div 
+            class="h-full bg-progress-gradient rounded-full transition-all duration-500 ease-out relative"
+            [style.width.%]="progress()">
+            <div class="absolute top-0 left-0 bottom-0 right-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-full -translate-x-full animate-shimmer"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scrollable Content Area -->
+      <div class="flex-1 overflow-y-auto px-6 pb-2 space-y-6">
+        <!-- Checklist Section -->
+        <div class="space-y-4">
+          <h3 class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-3">Pasos de Entrenamiento</h3>
+          
+          @for (step of steps(); track step.id; let isLast = $last) {
+            <div class="flex gap-4 items-start group">
+              <div class="relative flex-shrink-0 pt-0.5">
+                @if (step.status === 'completed') {
+                  <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white">
+                    <span class="material-symbols-outlined text-sm font-bold">check</span>
+                  </div>
+                } @else if (step.status === 'active') {
+                  <div class="w-6 h-6 rounded-full border-2 border-secondary flex items-center justify-center relative bg-white dark:bg-background-dark z-10">
+                    <div class="w-2 h-2 bg-secondary rounded-full animate-pulse-ring"></div>
+                  </div>
+                } @else {
+                  <div class="w-6 h-6 rounded-full border-2 border-slate-300 dark:border-slate-600 bg-transparent"></div>
+                }
+                
+                @if (!isLast) {
+                  <div 
+                    class="absolute top-6 left-3 w-0.5 h-10"
+                    [ngClass]="{
+                      'bg-primary': step.status === 'completed',
+                      'bg-slate-200 dark:bg-slate-700': step.status !== 'completed'
+                    }"></div>
+                }
+              </div>
+              
+              <div class="flex-1">
+                <p 
+                  class="text-sm font-medium"
+                  [ngClass]="{
+                    'text-slate-900 dark:text-white': step.status !== 'active',
+                    'text-secondary dark:text-purple-400': step.status === 'active'
+                  }">
+                  {{ step.label }}
+                </p>
+                <p class="text-slate-500 text-xs mt-1">{{ step.description }}</p>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Terminal Log -->
+        <div class="bg-terminal-bg rounded-lg border border-slate-700 p-4 shadow-inner">
+          <div class="flex items-center gap-2 mb-3 border-b border-slate-700 pb-2">
+            <div class="flex gap-1.5">
+              <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+            </div>
+            <span class="text-[10px] text-slate-400 font-mono ml-2">system-log.txt</span>
+          </div>
+          
+          <div class="font-mono text-xs leading-relaxed h-32 overflow-y-auto terminal-scroll flex flex-col justify-end">
+            @for (log of logs(); track $index) {
+              <div 
+                class="mb-1"
+                [class.text-slate-300]="log.type === 'info'"
+                [class.text-green-500]="log.type === 'success'"
+                [class.text-yellow-500]="log.type === 'warning'">
+                <span class="text-slate-500">[{{ log.type.toUpperCase() }}]</span> {{ log.message }}
+              </div>
+            }
+            <div class="text-primary font-bold">
+              &gt; Procesando<span class="cursor-blink">_</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Section -->
+      <div class="p-6 bg-slate-50 dark:bg-[#181825] border-t border-slate-100 dark:border-slate-800 text-center mt-auto">
+        <p class="text-xs text-slate-500 mb-4">
+          <span class="material-symbols-outlined text-sm align-middle mr-1 text-secondary">info</span>
+          Este proceso puede tardar unos minutos. Por favor no cierres la aplicación.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -134,10 +134,9 @@ export class LandingPageComponent implements OnInit {
   }
 
   openDemo(agentId: string): void {
-    const agent = this.allAgents.find((a) => a.id === agentId);
-    if (agent) {
-      this.selectedAgent = agent as any; // Cast to satisfy strict type if model differs slightly
-    }
+    // Navigate to new booking flow for all agents
+    // This replaces the old modal approach
+    this.router.navigate(['/booking', 'select-niche']);
   }
 
   closeDemo(): void {

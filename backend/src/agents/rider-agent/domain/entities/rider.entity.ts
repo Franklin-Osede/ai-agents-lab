@@ -5,6 +5,8 @@ export class Rider {
   status: 'idle' | 'delivering' | 'offline';
   profile_image_url?: string;
   vehicle_desc?: string;
+  current_location?: { lat: number; lng: number };
+  last_active: Date;
 
   constructor(
     id: string,

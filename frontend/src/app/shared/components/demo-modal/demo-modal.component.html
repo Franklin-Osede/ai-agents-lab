@@ -431,7 +431,9 @@
           [messages]="messages"
           [isLoading]="isLoading"
           [agentGender]="getAgentGender()"
+          [showBodyMap]="showBodyMap"
           (toggleAudio)="onToggleAudio($event)"
+          (bodyPartSelected)="handleBodyPartSelection($event)"
         ></app-chat-interface>
 
         <!-- Day Options Display (when agent offers days) -->

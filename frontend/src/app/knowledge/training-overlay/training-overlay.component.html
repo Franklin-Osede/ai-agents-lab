@@ -1,0 +1,50 @@
+<div class="overlay-container">
+  <div class="training-card">
+    <div class="header">
+      <h2 class="title">Entrenando tu Agente de IA</h2>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="progress()"></div>
+      </div>
+      <p class="progress-text">{{ progress() }}%</p>
+    </div>
+
+    <div class="content-grid">
+      <div class="terminal-section">
+        <div class="terminal-header">
+          <span class="terminal-dot red"></span>
+          <span class="terminal-dot yellow"></span>
+          <span class="terminal-dot green"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <div class="terminal-body">
+          @for (log of logs(); track $index) {
+            <div class="log-line" [@fadeIn]>{{ log }}</div>
+          }
+          <div class="cursor-blink">_</div>
+        </div>
+      </div>
+
+      <div class="checklist-section">
+        <h3 class="checklist-title">Progreso</h3>
+        <div class="checklist">
+          @for (item of checklist(); track $index) {
+            <div class="checklist-item" [class.completed]="item.completed">
+              <div class="checkbox">
+                @if (item.completed) {
+                  <span class="checkmark">✓</span>
+                }
+              </div>
+              <span class="label">{{ item.label }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p class="info-text">
+        Estamos analizando tu web para crear un agente personalizado...
+      </p>
+    </div>
+  </div>
+</div>

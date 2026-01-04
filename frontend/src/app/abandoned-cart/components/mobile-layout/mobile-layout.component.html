@@ -3,8 +3,12 @@
   class="absolute inset-0 w-full h-full overflow-hidden -z-10 bg-white dark:bg-[#0B0F19]"
 >
   <div
-    class="absolute inset-0 bg-cover bg-center brightness-50 blur-[5px] scale-110"
-    style="background-image: url('assets/ecommerce-background.png')"
+    class="absolute inset-0 bg-cover bg-center transition-all duration-700"
+    [style.background-image]="'url(' + bgImage + ')'"
+    [class.brightness-50]="!isBooking"
+    [class.brightness-75]="isBooking"
+    [class.blur-[5px]]="!isBooking"
+    [class.scale-110]="!isBooking"
   ></div>
   <div
     class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-blue-500/20 blur-[120px]"

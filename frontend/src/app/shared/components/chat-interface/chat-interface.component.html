@@ -55,6 +55,13 @@
   </div>
   }
 
+  <!-- Interactive Body Map (Only if active) -->
+  @if (showBodyMap && !isLoading) {
+  <div class="message-wrapper agent" style="width: 100%; max-width: 100%; justify-content: center;">
+    <app-body-selector (partSelected)="bodyPartSelected.emit($event)"></app-body-selector>
+  </div>
+  }
+
   <!-- Typing Indicator -->
   @if (isLoading) {
   <div class="message-wrapper agent">

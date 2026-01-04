@@ -14,8 +14,6 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../../environments/environment";
 import { MapService } from "../../../shared/services/map.service";
-import { PollyTTSService } from "../../../shared/services/polly-tts.service";
-import { UserSessionService } from "../../services/user-session.service";
 import * as L from "leaflet";
 
 @Component({
@@ -33,8 +31,6 @@ export class OrderTrackingComponent
   private router = inject(Router);
   private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
-  private polly = inject(PollyTTSService);
-  private session = inject(UserSessionService);
 
   // Dynamic Rider Profile
   riderName = signal("Michael B.");
@@ -53,11 +49,6 @@ export class OrderTrackingComponent
   private animationFrameId: any;
   isDelivered = false;
   showLeadGenModal = false;
-  
-  // Trail and auto-zoom properties
-  private trailPolyline: L.Polyline | undefined;
-  private trailPoints: [number, number][] = [];
-  private hasAutoZoomed = false;
 
   // Dynamic countdown signals
   countdownMinutes = signal(0);
@@ -69,9 +60,6 @@ export class OrderTrackingComponent
   // Rider always starts from Gran Vía (center of Madrid)
   private riderStartLoc: [number, number] = [40.4192, -3.7032]; // Gran Vía, Madrid
   private userLoc: [number, number] = [40.4243, -3.6917]; // Default: Cibeles/Retiro area
-
-  // Audio Preload
-  private preloadedGoodbyeAudioUrl: string | null = null;
 
   ngOnInit() {
     // Get user location from query params (set by checkout)
@@ -97,15 +85,6 @@ export class OrderTrackingComponent
         minute: "2-digit",
       })
     );
-
-    // Preload Goodbye Audio
-    const name = this.session.user()?.name || "amigo";
-    const goodbyeMessage = `Genial ${name}, tu pedido ya ha llegado. Esperamos que disfrutes de tu comida y muchas gracias por haber hecho el pedido con nosotros.`;
-    
-    this.polly.preload(goodbyeMessage).then(url => {
-        console.log("👋 Goodbye audio ready");
-        this.preloadedGoodbyeAudioUrl = url;
-    }).catch(err => console.error("Error preloading goodbye audio:", err));
   }
 
   ngAfterViewInit() {
@@ -280,43 +259,12 @@ export class OrderTrackingComponent
 
     // Update Marker
     this.riderMarker.setLatLng(newPos);
-    
-    // Update trail
-    this.trailPoints.push(newPos);
-    // Keep only last 20 points for trail
-    if (this.trailPoints.length > 20) {
-      this.trailPoints.shift();
-    }
-    
-    // Redraw trail
-    if (this.trailPolyline) {
-      this.map.removeLayer(this.trailPolyline);
-    }
-    if (this.trailPoints.length > 1) {
-      this.trailPolyline = L.polyline(this.trailPoints, {
-        color: '#4f46e5',
-        weight: 3,
-        opacity: 0.6,
-        dashArray: '5, 10',
-      }).addTo(this.map);
-    }
 
     if (elapsedSeconds < this.totalDuration) {
       this.animationFrameId = requestAnimationFrame(() => this.animate());
     } else {
       // Arrived!
       this.isDelivered = true;
-      
-      // Play Goodbye Audio
-      if (this.preloadedGoodbyeAudioUrl) {
-          const audio = new Audio(this.preloadedGoodbyeAudioUrl);
-          audio.play().catch(e => console.error("Error playing goodbye audio", e));
-      } else {
-          // Fallback if not ready
-          const name = this.session.user()?.name || "amigo";
-          this.polly.speak(`Genial ${name}, tu pedido ya ha llegado. Disfruta de tu comida.`);
-      }
-
       this.showLeadGenModal = true;
       if (this.riderMarker) {
         this.riderMarker.setLatLng(this.routePath[this.routePath.length - 1]);
@@ -342,7 +290,10 @@ export class OrderTrackingComponent
     this.router.navigate(["/"]);
   }
 
-  // Removed submitLead - now using direct calendar link
+  submitLead(email: string) {
+    alert(`Gracias! Enviaremos la guía a ${email}`);
+    this.closeModal();
+  }
 
   private fetchRiderProfile(name: string) {
     this.http

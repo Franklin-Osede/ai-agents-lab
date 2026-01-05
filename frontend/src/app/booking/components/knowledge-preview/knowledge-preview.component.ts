@@ -15,7 +15,8 @@ export class KnowledgePreviewComponent implements OnInit {
 
   niche = signal('');
   url = signal('');
-  businessName = signal(''); // New signal for scraped title
+  businessName = signal<string>('Negocio'); // New signal for scraped title
+  screenshot = signal<string | null>(null);
 
   // Data
   services: any[] = [];
@@ -56,12 +57,10 @@ export class KnowledgePreviewComponent implements OnInit {
     console.log('Mapping metadata:', metadata);
     
     // 1. Title
-    if (metadata.title) {
-      this.businessName.set(metadata.title);
-    } else {
-      this.businessName.set('Negocio Detectado');
-    }
-
+    // 4. Update Signals
+    this.businessName.set(metadata.title || metadata.businessInfo?.name || 'Negocio Detectado');
+    this.screenshot.set(metadata.screenshot || null);
+    
     // 2. Branding (Chameleon Effect)
     if (metadata.branding) {
         this.branding.tone = metadata.branding.tone || '';

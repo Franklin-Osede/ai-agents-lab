@@ -38,7 +38,7 @@ export class BedrockContentAnalysisService {
   private readonly logger = new Logger(BedrockContentAnalysisService.name);
 
   // Use Claude 3 Haiku for speed/cost balance
-  private readonly MODEL_ID = 'anthropic.claude-3-haiku-20240307-v1:0'; 
+  private readonly MODEL_ID = 'anthropic.claude-3-haiku-20240307-v1:0';
 
   constructor(private configService: ConfigService) {
     this.client = new BedrockRuntimeClient({
@@ -53,8 +53,10 @@ export class BedrockContentAnalysisService {
   async analyzeContent(text: string): Promise<ExtractedKnowledge> {
     try {
       this.logger.log(`Analyzing content with AWS Bedrock model: ${this.MODEL_ID}`);
-      
-      const truncatedText = text.substring(0, 50000);
+
+      const truncatedText = text.substring(0, 25000);
+
+      this.logger.debug(`Prompt length: ${truncatedText.length} chars`);
 
       const prompt = `
         You are an AI expert in extracting structured data into JSON from website content.
@@ -85,7 +87,7 @@ export class BedrockContentAnalysisService {
         INSTRUCTIONS:
         1. "dynamicSections": Identify UNIQUE valuable sections that are NOT services or team. Examples: "Equipment", "Methodology", "Awards", "Case Studies".
         2. "services": Extract strictly services/products offered.
-        3. Do NOT include markdown code blocks. Return ONLY valid JSON.
+        3. Do NOT include markdown code blocks (like \`\`\`json). Return ONLY valid JSON.
 
         WEBSITE CONTENT:
         ${truncatedText}
@@ -129,15 +131,20 @@ export class BedrockContentAnalysisService {
       const result = JSON.parse(jsonString);
 
       return result as ExtractedKnowledge;
-
-    } catch (error) {
-      this.logger.error('Error calling AWS Bedrock:', error);
+    } catch (error: unknown) {
+      const err = error as { $metadata?: unknown; name?: string; message?: string };
+      this.logger.error('Error calling AWS Bedrock:', err);
+      if (err.$metadata) {
+        this.logger.error('AWS Metadata:', JSON.stringify(err.$metadata));
+      }
+      this.logger.error('Error Name:', err.name);
+      this.logger.error('Error Message:', err.message);
 
       // Return a basic fallback so the process doesn't completely fail
       return {
-        summary: 'Could not analyze content with AI. Processing raw text.',
+        summary: text.substring(0, 300) + '...', // Fallback to raw text summary
         classification: { type: 'unknown', confidence: 0, tags: [] },
-        branding: { tone: 'neutral', primaryColor: '#000000' },
+        branding: { tone: 'neutral', primaryColor: undefined }, // Use undefined to let scraping take precedence
         structuredData: {
           services: [],
           team: [],

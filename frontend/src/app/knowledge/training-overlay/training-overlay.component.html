@@ -1,50 +1,37 @@
-<div class="overlay-container">
-  <div class="training-card">
-    <div class="header">
-      <h2 class="title">Entrenando tu Agente de IA</h2>
-      <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="progress()"></div>
-      </div>
-      <p class="progress-text">{{ progress() }}%</p>
-    </div>
-
-    <div class="content-grid">
-      <div class="terminal-section">
-        <div class="terminal-header">
-          <span class="terminal-dot red"></span>
-          <span class="terminal-dot yellow"></span>
-          <span class="terminal-dot green"></span>
-          <span class="terminal-title">Terminal</span>
-        </div>
-        <div class="terminal-body">
-          @for (log of logs(); track $index) {
-            <div class="log-line" [@fadeIn]>{{ log }}</div>
-          }
-          <div class="cursor-blink">_</div>
-        </div>
-      </div>
-
-      <div class="checklist-section">
-        <h3 class="checklist-title">Progreso</h3>
-        <div class="checklist">
-          @for (item of checklist(); track $index) {
-            <div class="checklist-item" [class.completed]="item.completed">
-              <div class="checkbox">
-                @if (item.completed) {
-                  <span class="checkmark">✓</span>
-                }
-              </div>
-              <span class="label">{{ item.label }}</span>
-            </div>
-          }
-        </div>
+<div class="fixed inset-0 bg-white/90 dark:bg-[#0f0b15]/95 backdrop-blur-md z-50 flex items-center justify-center transition-all duration-500">
+  <div class="relative w-full h-full sm:max-w-md sm:h-auto sm:rounded-2xl p-8 flex flex-col items-center justify-center sm:justify-start text-center bg-transparent sm:bg-white sm:dark:bg-[#1e1c30] sm:shadow-2xl sm:border sm:border-indigo-50 dark:border-indigo-900/10">
+    
+    <!-- Pulse Icon / Logo Loader -->
+    <div class="relative w-24 h-24 mb-8">
+      <div class="absolute inset-0 bg-indigo-500/20 rounded-full animate-ping"></div>
+      <div class="relative bg-white dark:bg-[#1e1c30] w-full h-full rounded-full shadow-xl flex items-center justify-center border border-indigo-100 dark:border-indigo-900/30">
+        <span class="material-symbols-outlined text-4xl text-indigo-600 dark:text-indigo-400 animate-pulse">
+          smart_toy
+        </span>
       </div>
     </div>
 
-    <div class="footer">
-      <p class="info-text">
-        Estamos analizando tu web para crear un agente personalizado...
-      </p>
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+      Analizando tu negocio
+    </h2>
+    <p class="text-slate-500 dark:text-slate-400 text-sm mb-8 max-w-xs mx-auto">
+      Nuestra IA está leyendo tu web para extraer servicios, marca y estructura.
+    </p>
+
+    <!-- Progress Indicator -->
+    <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 mb-4 overflow-hidden">
+      <div class="bg-indigo-600 h-full rounded-full transition-all duration-500 ease-out"
+           [style.width.%]="progress()">
+      </div>
     </div>
+
+    <!-- Dynamic Status Text -->
+    <div class="h-6 overflow-hidden">
+       <p class="text-sm font-medium text-indigo-600 dark:text-indigo-400 animate-fade-in">
+         {{ logs()[logs().length - 1] || 'Iniciando conexión...' }}
+       </p>
+    </div>
+
   </div>
 </div>

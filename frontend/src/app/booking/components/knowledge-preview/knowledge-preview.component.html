@@ -24,7 +24,7 @@
   <!-- Content Stack (Single Column for Mobile) -->
   <div class="flex-1 space-y-6 w-full max-w-md mx-auto">
     
-    <!-- Services Card -->
+  <!-- Services Card -->
     <div class="bg-white dark:bg-[#1e1c30] rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-3">
@@ -33,11 +33,16 @@
           </div>
           <h3 class="font-bold text-base">Servicios ({{services.length}})</h3>
         </div>
+        @if (services.length > 4) {
+          <button (click)="toggleServices()" class="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline">
+            {{ isServicesExpanded ? 'Ver menos' : 'Ver todos' }}
+          </button>
+        }
       </div>
       
       <div class="space-y-3">
         @if (services.length > 0) {
-          @for (service of services; track service.name) {
+          @for (service of visibleServices; track service.name) {
             <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
               <div class="flex items-center gap-3 overflow-hidden">
                 <span class="material-symbols-outlined text-green-500 text-[18px] shrink-0">check_circle</span>
@@ -83,6 +88,12 @@
           <span class="material-symbols-outlined text-slate-400 text-lg shrink-0">call</span>
           <p class="text-sm text-slate-600 dark:text-slate-300 leading-snug">{{ contactInfo.phone }}</p>
         </div>
+        @if (contactInfo.email) {
+            <div class="flex gap-3">
+            <span class="material-symbols-outlined text-slate-400 text-lg shrink-0">mail</span>
+            <p class="text-sm text-slate-600 dark:text-slate-300 leading-snug">{{ contactInfo.email }}</p>
+            </div>
+        }
       </div>
     </div>
 
@@ -93,23 +104,67 @@
           <div class="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-orange-500">
             <span class="material-symbols-outlined text-xl">group</span>
           </div>
-          <h3 class="font-bold text-base">Equipo</h3>
+          <h3 class="font-bold text-base">Equipo ({{team.length}})</h3>
         </div>
+        @if (team.length > 3) {
+          <button (click)="toggleTeam()" class="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline">
+            {{ isTeamExpanded ? 'Ver menos' : 'Ver todos' }}
+          </button>
+        }
       </div>
       
       <div class="flex flex-wrap gap-3">
-        @for (member of team; track member.name) {
+        @for (member of visibleTeam; track member.name) {
           <div class="flex items-center gap-2 pr-4 py-1.5 pl-1.5 rounded-full bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
             <div class="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 flex items-center justify-center text-[10px] font-bold">
               {{ member.name.charAt(0) }}
             </div>
             <div class="flex flex-col">
               <p class="text-xs font-bold leading-none">{{ member.name }}</p>
+               @if(member.role) { <p class="text-[10px] text-slate-500">{{member.role}}</p> }
             </div>
           </div>
         }
       </div>
     </div>
+
+    <!-- Dynamic Sections (AI Generated) -->
+    @for (section of dynamicSections; track section.title) {
+        <div class="bg-white dark:bg-[#1e1c30] rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-800 hover:border-indigo-100 dark:hover:border-indigo-900/30 transition-colors">
+                <button
+                    class="w-full flex items-center justify-between mb-4 cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-lg"
+                    (click)="toggleDynamic(section.title)"
+                    [attr.aria-expanded]="expandedSections[section.title]"
+                >
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400">
+                    <span class="material-symbols-outlined text-xl">dataset</span>
+                  </div>
+                  <h3 class="font-bold text-base">{{ section.title }}</h3>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-400 font-medium">{{section.items?.length || 0}} items</span>
+                    <span class="material-symbols-outlined text-slate-400 text-lg transition-transform duration-200"
+                        [class.rotate-180]="expandedSections[section.title]">
+                        expand_more
+                    </span>
+                </div>
+            </button>
+            
+            @if (expandedSections[section.title]) {
+                <div class="space-y-2 mt-2 border-t border-slate-100 dark:border-slate-800 pt-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                    @for (item of section.items; track item.headline) {
+                        <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/30 text-sm">
+                            <p class="font-semibold text-slate-800 dark:text-slate-200">{{ item.headline }}</p>
+                            @if (item.description) {
+                                <p class="text-xs text-slate-500 mt-0.5">{{ item.description }}</p>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
 
   </div>
 

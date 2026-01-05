@@ -29,13 +29,13 @@ describe('SimulationService (TDD)', () => {
     expect(service).toBeDefined();
   });
 
-  it('should start a simulation and emit rider updates', () => {
+  it('should start a simulation and emit rider updates', async () => {
     // ARRANGE
     jest.useFakeTimers();
     const tenantId = 'tenant-test-123';
 
     // ACT
-    const result = service.startSimulation(tenantId);
+    const result = await service.startSimulation(tenantId);
 
     // Fast-forward time to trigger the interval (2 seconds)
     jest.advanceTimersByTime(2000);

@@ -5,11 +5,15 @@ import { ContentClassifierService } from './domain/services/content-classifier.s
 import { PuppeteerScraperAdapter } from './infrastructure/scraping/puppeteer-scraper.adapter';
 import { KnowledgeController } from './presentation/knowledge.controller';
 
+import { ConfigModule } from '@nestjs/config';
+import { BedrockContentAnalysisService } from './infrastructure/ai/bedrock-content-analysis.service';
 import { KnowledgeEventsGateway } from './presentation/knowledge-events.gateway';
 
 @Module({
+  imports: [ConfigModule],
   providers: [
     ContentClassifierService,
+    BedrockContentAnalysisService,
     IngestWebsiteUseCase,
     KnowledgeEventsGateway,
     {

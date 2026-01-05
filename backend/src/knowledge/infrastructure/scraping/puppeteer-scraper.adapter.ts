@@ -59,6 +59,62 @@ export class PuppeteerScraperAdapter implements IScraperService {
         throw new Error('Could not access the website');
       }
 
+      // 2. Extraer Branding (Antes de limpiar)
+      let screenshot: string | undefined;
+      let styles: { primaryColor?: string } | undefined;
+      let logoUrl: string | undefined;
+
+      try {
+        // Screenshot (optimizado)
+        const buffer = await mainPage.screenshot({
+          type: 'jpeg',
+          quality: 60,
+          encoding: 'base64',
+          clip: { x: 0, y: 0, width: 1280, height: 800 }, // Hero section only
+        });
+        screenshot = buffer as string;
+
+        // Estilos y Logo
+        const brandingData = await mainPage.evaluate(() => {
+          // Find Primary Color (heuristic: background color of buttons)
+          let primaryColor = '#3b82f6'; // Default blue
+          const buttons = document.querySelectorAll(
+            'button, a.btn, input[type="submit"], a[class*="button"]',
+          );
+
+          for (const btn of Array.from(buttons)) {
+            const style = window.getComputedStyle(btn);
+            const bg = style.backgroundColor;
+            if (
+              bg &&
+              bg !== 'rgba(0, 0, 0, 0)' &&
+              bg !== 'transparent' &&
+              bg !== 'rgb(255, 255, 255)'
+            ) {
+              primaryColor = bg; // Simplest: take the first valid button color
+              break;
+            }
+          }
+
+          // Find Logo
+          let logo = '';
+          const ogImage = document.querySelector('meta[property="og:image"]');
+          if (ogImage) logo = ogImage.getAttribute('content') || '';
+
+          if (!logo) {
+            const linkIcon = document.querySelector('link[rel="icon"], link[rel="shortcut icon"]');
+            if (linkIcon) logo = linkIcon.getAttribute('href') || '';
+          }
+
+          return { primaryColor, logo };
+        });
+
+        styles = { primaryColor: brandingData.primaryColor };
+        logoUrl = brandingData.logo;
+      } catch (brandingError) {
+        this.logger.warn('Error extracting branding assets', brandingError);
+      }
+
       const homeData = await this.extractPageData(mainPage);
 
       // 2. Find links but be gentle with crawling
@@ -101,10 +157,12 @@ export class PuppeteerScraperAdapter implements IScraperService {
         title: homeData.title,
         content: combinedContent,
         rawHtml: homeData.rawHtml,
+        screenshot,
+        styles,
+        logoUrl,
       };
     } catch (error) {
       this.logger.error(`Critical error scraping ${url}`, error);
-      // Return a fallback instead of throwing 500 if possible, or rethrow friendly error
       throw new Error(`Scraping failed: ${(error as Error).message}`);
     } finally {
       if (browser) {
@@ -128,7 +186,7 @@ export class PuppeteerScraperAdapter implements IScraperService {
     // Basic Cleanup
     await page.evaluate(() => {
       document
-        .querySelectorAll('script, style, nav, footer, iframe, noscript, svg')
+        .querySelectorAll('script, style, iframe, noscript, svg')
         .forEach((el) => el.remove());
     });
 

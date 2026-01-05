@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { IScraperService } from '../../domain/repositories/scraping.service';
-import { ContentClassifierService } from '../../domain/services/content-classifier.service';
+import { BedrockContentAnalysisService } from '../../infrastructure/ai/bedrock-content-analysis.service';
 import { KnowledgeSource, KnowledgeStatus } from '../../domain/entities/knowledge-source.entity';
 
 @Injectable()
 export class IngestWebsiteUseCase {
   constructor(
     private readonly scraper: IScraperService,
-    private readonly classifier: ContentClassifierService,
+    private readonly bedrockAnalyzer: BedrockContentAnalysisService,
   ) {}
 
   async execute(
@@ -18,11 +18,19 @@ export class IngestWebsiteUseCase {
       // 1. Scrape the URL
       const scrapedData = await this.scraper.scrapeUrl(url);
 
-      // 2. Classify the content
-      const classification = await this.classifier.classify(scrapedData.content);
+      // 2. Analyze with AI (AWS Bedrock)
+      const aiAnalysis = await this.bedrockAnalyzer.analyzeContent(scrapedData.content);
 
       // 3. Create Entity
       const sourceId = `src-${Date.now()}`;
+
+      // Merge branding: Real styles > AI inference
+      const finalBranding = {
+        ...aiAnalysis.branding,
+        primaryColor: scrapedData.styles?.primaryColor || aiAnalysis.branding.primaryColor,
+        logoUrl: scrapedData.logoUrl || aiAnalysis.branding.logoUrl,
+      };
+
       const source = new KnowledgeSource({
         id: sourceId,
         url: url,
@@ -30,8 +38,13 @@ export class IngestWebsiteUseCase {
         status: KnowledgeStatus.PROCESSING,
         metadata: {
           title: scrapedData.title,
-          classification: classification,
-          summary: scrapedData.content.substring(0, 500) + '...',
+          classification: aiAnalysis.classification,
+          summary: aiAnalysis.summary,
+          branding: finalBranding,
+          screenshot: scrapedData.screenshot, // Base64 Hero Image
+          structuredData: aiAnalysis.structuredData,
+          dynamicSections: aiAnalysis.dynamicSections,
+          rawContentPreview: scrapedData.content.substring(0, 5000),
         },
       });
 

@@ -37,7 +37,7 @@ export class BedrockContentAnalysisService {
   private readonly client: BedrockRuntimeClient;
   private readonly logger = new Logger(BedrockContentAnalysisService.name);
 
-  // Use Claude 3 Haiku for speed/cost balance
+  // Use Claude 3 Haiku for speed/cost balance (AWS auto-enables on first use)
   private readonly MODEL_ID = 'anthropic.claude-3-haiku-20240307-v1:0';
 
   constructor(private configService: ConfigService) {

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject, effect } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { KnowledgeService } from '../../../knowledge/services/knowledge.service';
 
@@ -21,6 +21,7 @@ export class TrainingProgressComponent implements OnInit, OnDestroy {
   niche = signal('');
   url = signal('');
   realTrainingCompleted = signal(false);
+  screenshot = signal<string | null>(null);
 
   // Steps for UI Checklist
   steps = signal([
@@ -56,6 +57,18 @@ export class TrainingProgressComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private knowledgeService = inject(KnowledgeService);
 
+  constructor() {
+    // React to screenshot updates
+    effect(() => {
+      const progressData = this.knowledgeService.trainingProgress();
+      if (progressData.metadata?.screenshot) {
+        this.screenshot.set(progressData.metadata.screenshot);
+      }
+    }, { allowSignalWrites: true });
+  }
+
+
+
   ngOnInit() {
     this.route.params.subscribe((params) => {
       this.niche.set(params['niche'] || '');
@@ -84,6 +97,14 @@ export class TrainingProgressComponent implements OnInit, OnDestroy {
          this.realTrainingCompleted.set(true);
       }
     });
+
+
+
+    // Check for screenshot in training progress
+    const progressData = this.knowledgeService.trainingProgress();
+    if (progressData.metadata?.screenshot) {
+      this.screenshot.set(progressData.metadata.screenshot);
+    }
 
     this.startVisualSimulation();
   }
@@ -149,10 +170,19 @@ export class TrainingProgressComponent implements OnInit, OnDestroy {
   finishTraining() {
     if (this.intervalId) clearInterval(this.intervalId);
     this.addLog('success', '¡Base de conocimiento generada!');
+    this.updateStep(3, 'completed');
 
+
+
+    const trainingData = this.knowledgeService.trainingProgress();
+    if (trainingData.metadata?.screenshot) {
+      this.screenshot.set(trainingData.metadata.screenshot);
+    }
+    
     setTimeout(() => {
       this.router.navigate(['/booking', this.niche(), 'preview'], {
         queryParams: { url: this.url() },
+        state: { metadata: trainingData.metadata } // Pass metadata
       });
     }, 1000);
   }

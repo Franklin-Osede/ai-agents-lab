@@ -1,13 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { IScraperService } from '../../domain/repositories/scraping.service';
 import { BedrockContentAnalysisService } from '../../infrastructure/ai/bedrock-content-analysis.service';
-import { KnowledgeSource, KnowledgeStatus } from '../../domain/entities/knowledge-source.entity';
+import { KnowledgeStatus } from '../../domain/entities/knowledge-source.entity';
+import { KnowledgeEventsGateway } from '../../presentation/knowledge-events.gateway';
 
 @Injectable()
 export class IngestWebsiteUseCase {
+  private readonly logger = new Logger(IngestWebsiteUseCase.name);
+
   constructor(
     private readonly scraper: IScraperService,
     private readonly bedrockAnalyzer: BedrockContentAnalysisService,
+    private readonly eventsGateway: KnowledgeEventsGateway,
   ) {}
 
   async execute(
@@ -16,51 +20,144 @@ export class IngestWebsiteUseCase {
   ): Promise<{ sourceId: string; status: string; metadata: unknown }> {
     try {
       // 1. Scrape the URL
+      this.eventsGateway.emitProgress(tenantId, {
+        sourceId: 'temp',
+        progress: 20,
+        stage: 'scraping_main',
+        message: 'Conectando con el sitio web...',
+      });
       const scrapedData = await this.scraper.scrapeUrl(url);
 
-      // 2. Analyze with AI (AWS Bedrock)
-      const aiAnalysis = await this.bedrockAnalyzer.analyzeContent(scrapedData.content);
-
-      // 3. Create Entity
-      const sourceId = `src-${Date.now()}`;
-
-      // Merge branding: Real styles > AI inference
-      const finalBranding = {
-        ...aiAnalysis.branding,
-        primaryColor: scrapedData.styles?.primaryColor || aiAnalysis.branding.primaryColor,
-        logoUrl: scrapedData.logoUrl || aiAnalysis.branding.logoUrl,
-      };
-
-      const source = new KnowledgeSource({
-        id: sourceId,
-        url: url,
-        tenantId: tenantId,
-        status: KnowledgeStatus.PROCESSING,
+      // Send screenshot immediately after scraping
+      this.eventsGateway.emitProgress(tenantId, {
+        sourceId: 'temp',
+        progress: 50,
+        stage: 'scraping_subpages',
+        message: 'Analizando estructura...',
         metadata: {
-          title: scrapedData.title,
-          classification: aiAnalysis.classification,
-          summary: aiAnalysis.summary,
-          branding: finalBranding,
-          screenshot: scrapedData.screenshot, // Base64 Hero Image
-          structuredData: aiAnalysis.structuredData,
-          dynamicSections: aiAnalysis.dynamicSections,
-          rawContentPreview: scrapedData.content.substring(0, 5000),
+          screenshot: scrapedData.screenshot, // Send screenshot early!
         },
       });
+      // 2. Analyze with AI (AWS Bedrock) - WITH FALLBACK
+      this.eventsGateway.emitProgress(tenantId, {
+        sourceId: 'temp',
+        progress: 80,
+        stage: 'analyzing',
+        message: 'Analizando con IA...',
+      });
 
-      return {
-        sourceId: source.id,
-        status: source.status,
-        metadata: source.metadata,
+      let aiAnalysis;
+      try {
+        aiAnalysis = await this.bedrockAnalyzer.analyzeContent(scrapedData.content);
+
+        // Check if AI returned empty data
+        const hasServices = aiAnalysis.structuredData?.services?.length > 0;
+        const hasBusinessInfo =
+          aiAnalysis.structuredData?.businessInfo &&
+          Object.keys(aiAnalysis.structuredData.businessInfo).length > 0;
+
+        if (!hasServices && !hasBusinessInfo) {
+          this.logger.warn('AI returned empty structuredData, using fallback extraction');
+          aiAnalysis = this.extractBasicData(scrapedData);
+        }
+      } catch (aiError) {
+        this.logger.warn('AI Analysis failed, using fallback extraction', aiError);
+        // FALLBACK: Extract basic data without AI
+        aiAnalysis = this.extractBasicData(scrapedData);
+      }
+
+      // 3. Create result with metadata
+      const sourceId = `src-${Date.now()}`;
+      const metadata = {
+        title: scrapedData.title,
+        summary: aiAnalysis.summary || scrapedData.content.substring(0, 500),
+        classification: aiAnalysis.classification || 'General',
+        screenshot: scrapedData.screenshot,
+        branding: scrapedData.branding || {}, // Phase 1: Complete branding data
+        team: scrapedData.team || [], // Phase 3: Team extraction
+        structuredData: aiAnalysis.structuredData || null,
       };
+
+      const result = {
+        sourceId,
+        status: KnowledgeStatus.PROCESSING,
+        metadata,
+      };
+
+      this.eventsGateway.emitProgress(tenantId, {
+        sourceId,
+        progress: 100,
+        stage: 'completed',
+        message: 'Entrenamiento finalizado',
+        metadata, // CRITICAL: Include metadata in final event
+      });
+
+      return result;
     } catch (error) {
       // Graceful error handling - return status ERROR instead of 500 crash
-      console.error('Ingest failed:', error);
+      this.logger.error('Ingest failed:', error);
       return {
         sourceId: 'error',
         status: KnowledgeStatus.ERROR,
         metadata: { error: (error as Error).message },
       };
     }
+  }
+
+  /**
+   * Fallback extraction when AI is unavailable
+   * Extracts basic structured data using regex patterns
+   */
+  private extractBasicData(scrapedData: { content: string; title: string }): {
+    summary: string;
+    classification: string;
+    structuredData: {
+      businessInfo: { phone: string | null; email: string | null };
+      services: Array<{ name: string; price: string }>;
+    };
+  } {
+    const content = scrapedData.content || '';
+
+    // Extract phone numbers (Spanish format)
+    const phoneRegex = /(\+34|0034)?\s?(\d{3}[\s-]?\d{2,3}[\s-]?\d{2,3})/g;
+    const phones = content.match(phoneRegex) || [];
+
+    // Extract emails
+    const emailRegex = /[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}/g;
+    const emails = content.match(emailRegex) || [];
+
+    // Extract services (keywords)
+    const serviceKeywords = [
+      'fisioterapia',
+      'osteopatía',
+      'rehabilitación',
+      'masaje',
+      'pilates',
+      'yoga',
+      'entrenamiento',
+      'nutrición',
+    ];
+
+    const services: Array<{ name: string; price: string }> = [];
+    serviceKeywords.forEach((keyword) => {
+      if (content.toLowerCase().includes(keyword)) {
+        services.push({
+          name: keyword.charAt(0).toUpperCase() + keyword.slice(1),
+          price: 'Consultar',
+        });
+      }
+    });
+
+    return {
+      summary: content.substring(0, 500),
+      classification: 'Salud y Bienestar',
+      structuredData: {
+        businessInfo: {
+          phone: phones[0] || null,
+          email: emails[0] || null,
+        },
+        services: services.slice(0, 5), // Max 5 services
+      },
+    };
   }
 }

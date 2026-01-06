@@ -1,5 +1,6 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { KnowledgeService } from '../../../knowledge/services/knowledge.service';
 
@@ -13,16 +14,18 @@ export class KnowledgePreviewComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private knowledgeService = inject(KnowledgeService);
 
+  // Signals
   niche = signal('');
   url = signal('');
-  businessName = signal<string>('Negocio'); // New signal for scraped title
-  screenshot = signal<string | null>(null);
+  businessName = signal('Negocio Detectado'); // New signal for scraped title
+  screenshot = signal<string>('');
 
   // Data
   services: any[] = [];
   contactInfo: any = {};
   team: any[] = [];
   dynamicSections: any[] = [];
+  socialMedia: any = {}; // Phase 1: Social media links
   
   // Branding
   branding = {
@@ -33,8 +36,18 @@ export class KnowledgePreviewComponent implements OnInit {
 
   // UI State
   isServicesExpanded = false;
+  isContactInfoExpanded = true; // Start expanded
   isTeamExpanded = false;
   expandedSections: Record<string, boolean> = {}; // Dynamic sections state
+  
+  // Add Service State
+  addingNewService = false;
+  newServiceName = '';
+
+  // Helper for template
+  hasKeys(obj: any): boolean {
+    return obj && Object.keys(obj).length > 0;
+  }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -44,86 +57,135 @@ export class KnowledgePreviewComponent implements OnInit {
       this.url.set(params['url']);
     });
 
-    // Load data from service
-    const progress = this.knowledgeService.trainingProgress();
-    if (progress.metadata) {
-      this.mapMetadataToView(progress.metadata);
+    // Try to get metadata from router state first (passed from TrainingOverlay)
+    const navigation = this.router.getCurrentNavigation();
+    const stateMetadata = navigation?.extras?.state?.['metadata'] || history.state?.metadata;
+    
+    if (stateMetadata) {
+      console.log('Loading metadata from router state:', stateMetadata);
+      this.mapMetadataToView(stateMetadata);
     } else {
-      this.loadMockData();
+      // Fallback: Load from service
+      const progress = this.knowledgeService.trainingProgress();
+      if (progress.metadata) {
+        console.log('Loading metadata from service:', progress.metadata);
+        this.mapMetadataToView(progress.metadata);
+      } else {
+        console.warn('No metadata found, loading mock data');
+        this.loadMockData();
+      }
     }
   }
 
   mapMetadataToView(metadata: any) {
     console.log('Mapping metadata:', metadata);
+    console.log('branding:', metadata.branding);
+    console.log('structuredData:', metadata.structuredData);
     
-    // 1. Title
-    // 4. Update Signals
-    this.businessName.set(metadata.title || metadata.businessInfo?.name || 'Negocio Detectado');
+    // Set screenshot
+    if (metadata.screenshot) {
+      this.screenshot.set(metadata.screenshot);
+    }
+
+    // 1. BUSINESS NAME (from branding or title)
+    const businessName = metadata.branding?.businessName || metadata.title || 'Negocio Detectado';
+    this.businessName.set(businessName);
+    
     this.screenshot.set(metadata.screenshot || null);
     
-    // 2. Branding (Chameleon Effect)
+    // 3. BRANDING - Apply logo and colors
     if (metadata.branding) {
-        this.branding.tone = metadata.branding.tone || '';
-        this.branding.primaryColor = metadata.branding.primaryColor || this.branding.primaryColor;
-        this.branding.logoUrl = metadata.branding.logoUrl || '';
-
-        // Apply global style for this component view
-        if (this.branding.primaryColor) {
-           document.documentElement.style.setProperty('--primary-brand', this.branding.primaryColor);
-        }
-    }
-
-    // 3. Dynamic Sections
-    if (metadata.dynamicSections && Array.isArray(metadata.dynamicSections)) {
-        this.dynamicSections = metadata.dynamicSections;
-        // Initialize fold state (all collapsed by default)
-        this.dynamicSections.forEach(d => {
-            this.expandedSections[d.title] = false;
-        });
-    }
-
-    // 4. Try to extract data (AI vs Regex Fallback)
-    if (metadata.structuredData) {
-      // --- AI HAPPY PATH ---
-      const data = metadata.structuredData;
+      const branding = metadata.branding;
       
-      // Services
-      if (data.services && Array.isArray(data.services)) {
-        this.services = data.services.map((s: any) => ({
-          name: s.name,
-          price: s.price || 'Consultar',
+      // Logo
+      if (branding.logoUrl) {
+        this.branding.logoUrl = branding.logoUrl;
+        console.log('✅ Logo found:', branding.logoUrl);
+      }
+      
+      // Primary Color - Apply to UI
+      if (branding.primaryColor) {
+        this.branding.primaryColor = branding.primaryColor;
+        // Apply CSS variable for dynamic theming
+        document.documentElement.style.setProperty('--primary-brand', branding.primaryColor);
+        console.log('✅ Brand color applied:', branding.primaryColor);
+      }
+      
+      // Business Info
+      if (branding.address || branding.phone || branding.email || branding.hours) {
+        this.contactInfo = {
+          address: branding.address || 'Dirección no detectada',
+          phone: branding.phone || 'Teléfono no detectado',
+          email: branding.email || '',
+          hours: branding.hours || 'Horario no detectado'
+        };
+        console.log('✅ Business info loaded:', this.contactInfo);
+      }
+      
+      // Social Media
+      if (branding.socialMedia && Object.keys(branding.socialMedia).length > 0) {
+        this.socialMedia = branding.socialMedia;
+        console.log('✅ Social media found:', this.socialMedia);
+      }
+      
+      // NAVBAR SERVICES (Priority: extracted from navbar)
+      if (branding.services && Array.isArray(branding.services) && branding.services.length > 0) {
+        console.log('✅ Navbar services found:', branding.services);
+        this.services = branding.services.map((serviceName: string) => ({
+          name: serviceName,
+          price: 'Consultar',
           duration: 'Consultar',
           selected: true
         }));
       }
+    }
+
+    // 4. STRUCTURED DATA (Services, Team)
+    if (metadata.structuredData) {
+      console.log('✅ structuredData exists, parsing...');
+      const data = metadata.structuredData;
+      console.log('Parsed data JSON:', JSON.stringify(data, null, 2));
+      
+      // Services - Merge with navbar services if we already have them
+      if (data.services && Array.isArray(data.services) && data.services.length > 0) {
+        console.log('✅ AI Services found:', data.services);
+        
+        // If we already have navbar services, merge them (avoiding duplicates)
+        if (this.services.length > 0) {
+          const existingNames = this.services.map(s => s.name.toLowerCase());
+          const aiServices = data.services
+            .filter((s: any) => !existingNames.includes(s.name.toLowerCase()))
+            .map((s: any) => ({
+              name: s.name,
+              price: s.price || 'Consultar',
+              duration: 'Consultar',
+              selected: true
+            }));
+          this.services = [...this.services, ...aiServices];
+          console.log('✅ Merged navbar + AI services:', this.services);
+        } else {
+          // No navbar services, use AI services only
+          this.services = data.services.map((s: any) => ({
+            name: s.name,
+            price: s.price || 'Consultar',
+            duration: 'Consultar',
+            selected: true
+          }));
+        }
+      } else if (this.services.length === 0) {
+        console.warn('❌ No services in structuredData and no navbar services');
+      }
 
       // Team
-      if (data.team && Array.isArray(data.team)) {
+      if (data.team && Array.isArray(data.team) && data.team.length > 0) {
         this.team = data.team.map((t: any) => ({
           name: t.name,
           role: t.role || 'Profesional'
         }));
+        console.log('✅ Team found:', this.team);
       }
-
-      // Business Info
-      if (data.businessInfo) {
-        this.contactInfo = {
-          address: data.businessInfo.address || 'Dirección no detectada',
-          phone: data.businessInfo.phone || 'Teléfono no detectado',
-          email: data.businessInfo.email || '',
-          hours: data.businessInfo.schedule || 'Horario no detectado'
-        };
-      } else {
-         this.contactInfo = {
-          address: 'Dirección no detectada',
-          hours: 'Horario no detectado',
-          phone: 'Teléfono no detectado'
-        };
-      }
-
     } else {
-      // --- REGEX FALLBACK (LEGACY) ---
-      // ... regex logic ...
+      console.warn('❌ No structuredData, trying regex fallback');
       this.mapRegexFallback(metadata);
     }
   }
@@ -173,8 +235,7 @@ export class KnowledgePreviewComponent implements OnInit {
         
         let inTeamSection = false;
         
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
+        for (const line of lines) {
             const upper = line.toUpperCase();
 
             // Detect team section header
@@ -207,15 +268,25 @@ export class KnowledgePreviewComponent implements OnInit {
   }
 
   // Toggle Helpers
-  toggleServices() { this.isServicesExpanded = !this.isServicesExpanded; }
-  toggleTeam() { this.isTeamExpanded = !this.isTeamExpanded; }
+  toggleServices() { 
+    this.isServicesExpanded = !this.isServicesExpanded; 
+  }
+  
+  toggleContactInfo() {
+    this.isContactInfoExpanded = !this.isContactInfoExpanded;
+  }
+  
+  toggleTeam() { 
+    this.isTeamExpanded = !this.isTeamExpanded; 
+  }
+  
   toggleDynamic(title: string) {
       this.expandedSections[title] = !this.expandedSections[title];
   }
 
   // Slice Helpers (for Fold/Unfold)
   get visibleServices() {
-      return this.isServicesExpanded ? this.services : this.services.slice(0, 4);
+      return this.isServicesExpanded ? this.services : this.services.slice(0, 5);
   }
   
   get visibleTeam() {
@@ -291,6 +362,29 @@ export class KnowledgePreviewComponent implements OnInit {
     }
     
     return services.slice(0, 10); // Return up to 10 services
+  }
+  
+  // Add Service Methods
+  startAddingService() {
+    this.addingNewService = true;
+  }
+  
+  addCustomService() {
+    if (this.newServiceName.trim()) {
+      this.services.push({
+        name: this.newServiceName.trim(),
+        price: 'Consultar',
+        duration: 'Consultar',
+        selected: true
+      });
+      this.newServiceName = '';
+      this.addingNewService = false;
+    }
+  }
+  
+  cancelAddingService() {
+    this.newServiceName = '';
+    this.addingNewService = false;
   }
 
   loadMockData() {

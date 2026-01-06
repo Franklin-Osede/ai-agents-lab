@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -7,15 +7,13 @@ import { Router, ActivatedRoute } from '@angular/router';
   styleUrls: ['./url-input.component.scss'],
 })
 export class UrlInputComponent implements OnInit {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
   niche = signal('');
   url = signal('');
   isLoading = signal(false);
   error = signal('');
-
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
 
   ngOnInit() {
     this.route.params.subscribe((params) => {

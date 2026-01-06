@@ -1,1 +1,190 @@
-<p>knowledge works!</p>
+<div class="min-h-screen relative flex flex-col items-center justify-center p-4 text-slate-800 overflow-hidden">
+  
+  <!-- Background Overlay (Fixed) -->
+  <div class="fixed inset-0 pointer-events-none z-0">
+    <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[20s] ease-in-out hover:scale-110" 
+         style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1000&auto=format&fit=crop');">
+    </div>
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
+    
+    <!-- Noise Texture -->
+    <svg class="absolute inset-0 w-full h-full opacity-[0.05] mix-blend-overlay pointer-events-none">
+      <filter id="noiseFilter">
+        <feTurbulence baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" type="fractalNoise"></feTurbulence>
+      </filter>
+      <rect filter="url(#noiseFilter)" height="100%" width="100%"></rect>
+    </svg>
+  </div>
+
+  <!-- Content Container (Relative z-10) -->
+  <div class="relative z-10 w-full flex flex-col items-center">
+
+    <!-- INPUT STATE -->
+    @if (progress().status === 'idle' || progress().status === 'error') {
+      <div class="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-6 md:p-8 animate-fade-in-up border border-white/20">
+        <h1 class="text-2xl md:text-3xl font-bold text-center mb-2 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600">Entrenar Agente</h1>
+        <p class="text-center text-slate-500 mb-8 text-sm md:text-base">Introduce la URL de tu negocio para extraer el conocimiento automáticamente.</p>
+        
+        <div class="relative">
+          <input 
+            [(ngModel)]="urlInput" 
+            (keydown.enter)="startTraining()"
+            type="text" 
+            placeholder="https://mi-negocio.com" 
+            class="w-full px-5 py-4 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all pl-12"
+          >
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">language</span>
+        </div>
+
+        <button 
+          (click)="startTraining()" 
+          [disabled]="!urlInput"
+          class="w-full mt-6 bg-slate-900 text-white font-medium py-4 rounded-xl hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-indigo-500/20 active:scale-[0.98]"
+        >
+          Comenzar Análisis
+        </button>
+        
+        @if (progress().status === 'error') {
+          <p class="mt-4 text-center text-red-500 text-sm bg-red-50 p-3 rounded-lg border border-red-100">
+            {{ progress().currentStep }}
+          </p>
+        }
+      </div>
+    }
+
+    <!-- PROGRESS STATE -->
+    @if (progress().status === 'connecting' || progress().status === 'processing') {
+      <div class="w-full max-w-lg bg-white/90 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/40">
+        
+        <!-- Status Icon Animation -->
+        <div class="relative w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 md:mb-8">
+          <div class="absolute inset-0 bg-indigo-500/20 rounded-full animate-ping"></div>
+          <div class="relative bg-white rounded-full w-full h-full flex items-center justify-center shadow-lg border border-indigo-100 z-10">
+            <span class="material-symbols-outlined text-4xl text-indigo-600 animate-pulse">
+              {{ progress().progress < 50 ? 'link' : (progress().progress < 80 ? 'manage_search' : 'psychology') }}
+            </span>
+          </div>
+        </div>
+
+        <h2 class="text-xl md:text-2xl font-bold text-center mb-2 text-slate-800">{{ progress().currentStep }}</h2>
+        <p class="text-center text-slate-500 mb-8 text-sm">Esto puede tomar unos segundos...</p>
+
+        <!-- Progress Bar -->
+        <div class="relative h-3 md:h-4 bg-slate-200 rounded-full overflow-hidden w-full shadow-inner">
+          <div 
+            class="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 animate-shimmer transition-all duration-700 ease-out"
+            [style.width.%]="progress().progress"
+          ></div>
+        </div>
+        
+        <div class="flex justify-between mt-2 text-xs font-medium text-slate-400">
+          <span>{{ progress().progress }}%</span>
+          <span>100%</span>
+        </div>
+
+        <!-- Steps visualization -->
+        <div class="mt-8 md:mt-10 grid grid-cols-3 gap-2 md:gap-4">
+          <div class="flex flex-col items-center gap-2 transition-opacity duration-300" [class.opacity-40]="progress().progress < 20">
+            <div class="w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-colors" [ngClass]="progress().progress >= 20 ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-400'">
+              <span class="material-symbols-outlined text-xs md:text-sm">check</span>
+            </div>
+            <span class="text-[10px] md:text-xs">Conexión</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 transition-opacity duration-300" [class.opacity-40]="progress().progress < 50">
+            <div class="w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-colors" [ngClass]="progress().progress >= 50 ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-400'">
+              <span class="material-symbols-outlined text-xs md:text-sm">check</span>
+            </div>
+            <span class="text-[10px] md:text-xs">Extracción</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 transition-opacity duration-300" [class.opacity-40]="progress().progress < 80">
+            <div class="w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-colors" [ngClass]="progress().progress >= 80 ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-400'">
+              <span class="material-symbols-outlined text-xs md:text-sm">check</span>
+            </div>
+            <span class="text-[10px] md:text-xs">Análisis AI</span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- COMPLETED STATE -->
+    @if (progress().status === 'completed') {
+      <div class="w-full max-w-[95%] md:max-w-4xl animate-fade-in-up">
+        <div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-white/50">
+          <div class="p-6 md:p-8 text-center bg-gradient-to-b from-indigo-50/80 to-white/50 border-b border-slate-100">
+            <div class="w-12 h-12 md:w-16 md:h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+              <span class="material-symbols-outlined text-2xl md:text-3xl">verified</span>
+            </div>
+            <h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-1">¡Entrenamiento Completado!</h2>
+            <p class="text-slate-500 text-sm md:text-base">Tu agente ha aprendido de <span class="font-medium text-indigo-600">{{ urlInput }}</span></p>
+          </div>
+          
+          <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-h-[60vh] overflow-y-auto">
+            <!-- Preview Column -->
+            <div class="space-y-4 md:space-y-6">
+              <h3 class="text-xs md:text-sm font-bold uppercase tracking-wider text-slate-400">Resumen del Negocio</h3>
+              
+              <div class="space-y-4">
+                @if (progress().metadata?.screenshot) {
+                   <div class="rounded-xl overflow-hidden shadow-md border border-slate-100 h-32 md:h-40 relative group">
+                      <img [src]="'data:image/jpeg;base64,' + progress().metadata.screenshot" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Web Screenshot">
+                      <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                         <p class="text-white font-medium text-sm">Captura Web</p>
+                      </div>
+                   </div>
+                }
+
+                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <h4 class="font-semibold text-slate-800 mb-1 text-sm md:text-base">{{ progress().metadata?.title || 'Sin Título' }}</h4>
+                    <p class="text-xs md:text-sm text-slate-600 leading-relaxed line-clamp-4">{{ progress().metadata?.summary || 'No hay resumen disponible.' }}</p>
+                 </div>
+              </div>
+            </div>
+
+            <!-- Branding & Stats Column -->
+            <div class="space-y-4 md:space-y-6">
+              <h3 class="text-xs md:text-sm font-bold uppercase tracking-wider text-slate-400">Identidad Detectada</h3>
+              
+              <div class="flex items-center gap-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                 <div class="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0">
+                    @if (progress().metadata?.branding?.logoUrl) {
+                      <img [src]="progress().metadata.branding.logoUrl" class="w-full h-full object-contain" alt="Logo">
+                    } @else {
+                      <span class="material-symbols-outlined text-slate-400">image</span>
+                    }
+                 </div>
+                 <div class="overflow-hidden">
+                    <p class="text-xs text-slate-400 mb-1">Color Principal</p>
+                    <div class="flex items-center gap-2">
+                       <div class="w-6 h-6 rounded-full shadow-sm border border-slate-100 shrink-0" [style.backgroundColor]="progress().metadata?.branding?.primaryColor || '#000'"></div>
+                       <span class="text-sm font-mono text-slate-600 truncate">{{ progress().metadata?.branding?.primaryColor || 'N/A' }}</span>
+                    </div>
+                 </div>
+              </div>
+
+              <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                 <h4 class="text-indigo-900 font-semibold mb-2 flex items-center gap-2 text-sm md:text-base">
+                    <span class="material-symbols-outlined text-indigo-500 text-lg">data_object</span>
+                    Datos Estructurados
+                 </h4>
+                 <div class="flex flex-wrap gap-2">
+                    @if (progress().metadata?.structuredData) {
+                      <span class="px-2 py-1 bg-white text-indigo-600 text-[10px] md:text-xs font-medium rounded-md border border-indigo-100 shadow-sm">Schema.org</span>
+                    }
+                    @if (progress().metadata?.classification) {
+                      <span class="px-2 py-1 bg-white text-indigo-600 text-[10px] md:text-xs font-medium rounded-md border border-indigo-100 shadow-sm">{{ progress().metadata.classification }}</span>
+                    }
+                 </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="p-6 bg-slate-50/50 border-t border-slate-100 flex justify-end">
+            <button class="w-full md:w-auto px-6 py-3 bg-slate-900 text-white font-medium rounded-lg hover:bg-indigo-600 transition-colors shadow-lg shadow-indigo-500/20 active:scale-[0.98]">
+               Continuar al Chatbot
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

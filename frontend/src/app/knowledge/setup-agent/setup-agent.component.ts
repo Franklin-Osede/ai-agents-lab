@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { KnowledgeService } from '../services/knowledge.service';
 
@@ -12,10 +12,10 @@ export class SetupAgentComponent {
   isLoading = signal(false);
   error = signal('');
 
-  constructor(
-    private knowledgeService: KnowledgeService,
-    private router: Router
-  ) {}
+  private knowledgeService = inject(KnowledgeService);
+  private router = inject(Router);
+
+
 
   async onSubmit() {
     const urlValue = this.url().trim();

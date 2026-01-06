@@ -19,18 +19,23 @@ export class KnowledgeService {
   private http = inject(HttpClient);
   
   private socket: Socket | null = null;
-  public trainingProgress = signal<TrainingProgress>({
+  
+  // Public writable signal so components can react to changes
+  private _trainingProgress = signal<TrainingProgress>({
     status: 'idle',
     progress: 0,
     currentStep: '',
     foundItems: [],
     metadata: null,
   });
+  
+  // Expose as readonly
+  public trainingProgress = this._trainingProgress.asReadonly();
 
 
   async startTraining(url: string, tenantId: string): Promise<void> {
     // Reset state
-    this.trainingProgress.set({
+    this._trainingProgress.set({
       status: 'connecting',
       progress: 0,
       currentStep: 'Conectando con tu web...',
@@ -55,7 +60,7 @@ export class KnowledgeService {
       const responseData = (result as any).data || result;
 
       // Update state with result (since polling/socket might be delayed or synchronous)
-      this.trainingProgress.update((state) => ({
+      this._trainingProgress.update((state) => ({
         ...state,
         status: 'completed',
         progress: 100,
@@ -63,7 +68,7 @@ export class KnowledgeService {
       }));
 
     } catch (error) {
-      this.trainingProgress.update((state) => ({
+      this._trainingProgress.update((state) => ({
         ...state,
         status: 'error',
         currentStep: 'Error al conectar con el servidor',
@@ -82,19 +87,21 @@ export class KnowledgeService {
       console.log('WebSocket connected');
     });
 
-    this.socket.on('knowledge.progress', (payload: any) => {
-      console.log('Progress:', payload);
-      this.trainingProgress.update((state) => ({
-        ...state,
-        status: 'processing',
-        currentStep: payload.message || 'Procesando...',
-        progress: payload.progress || state.progress,
+    this.socket.on('training_progress', (progress: any) => {
+      console.log('Progress:', progress);
+      this._trainingProgress.update((current) => ({
+        ...current,
+        status: progress.stage || 'processing', // Assuming 'stage' can map to status, default to 'processing'
+        progress: progress.progress,
+        currentStep: progress.message,
+        // Update metadata if provided (includes screenshot early!)
+        metadata: progress.metadata ? { ...current.metadata, ...progress.metadata } : current.metadata,
       }));
     });
 
     this.socket.on('knowledge.content_found', (payload: any) => {
       console.log('Content found:', payload);
-      this.trainingProgress.update((state) => ({
+      this._trainingProgress.update((state) => ({
         ...state,
         foundItems: [...state.foundItems, payload],
       }));

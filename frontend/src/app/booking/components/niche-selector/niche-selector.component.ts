@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 interface NicheSubcategory {
@@ -24,6 +24,7 @@ interface NicheCategory {
   styleUrls: ['./niche-selector.component.scss'],
 })
 export class NicheSelectorComponent {
+  private router = inject(Router);
   searchQuery = signal('');
   
   categories: NicheCategory[] = [
@@ -72,8 +73,6 @@ export class NicheSelectorComponent {
       expanded: false,
     },
   ];
-
-  constructor(private router: Router) {}
 
   toggleCategory(category: NicheCategory) {
     // Close others

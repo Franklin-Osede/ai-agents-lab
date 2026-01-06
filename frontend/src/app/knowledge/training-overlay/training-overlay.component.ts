@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { KnowledgeService } from '../services/knowledge.service';
 
@@ -14,59 +14,48 @@ export class TrainingOverlayComponent implements OnInit, OnDestroy {
   progress = signal(0);
   logs = signal<string[]>([]);
   checklist = signal([
-    { label: 'Conectando con tu web', completed: false },
-    { label: 'Leyendo contenido', completed: false },
+    { label: 'Conectando con el sitio web', completed: false },
+    { label: 'Analizando estructura', completed: false },
     { label: 'Identificando servicios', completed: false },
-    { label: 'Analizando precios', completed: false },
-    { label: 'Configurando agente', completed: false },
+    { label: 'Extrayendo información de contacto', completed: false },
+    { label: 'Generando conocimiento', completed: false },
   ]);
 
   ngOnInit() {
-    // Subscribe to training progress
-    const progressSignal = this.knowledgeService.trainingProgress;
-    
-    // Simulate progress for demo (will be replaced with real WebSocket data)
-    this.simulateTraining();
+    // Listen to real progress from KnowledgeService
+    effect(() => {
+      const trainingProgress = this.knowledgeService.trainingProgress();
+      
+      // Update progress
+      this.progress.set(trainingProgress.progress);
+      
+      // Update logs
+      if (trainingProgress.currentStep) {
+        this.logs.update(logs => [...logs, `> ${trainingProgress.currentStep}`]);
+      }
+      
+      // Update checklist based on progress
+      const progressValue = trainingProgress.progress;
+      this.checklist.update(list =>
+        list.map((item, index) => ({
+          ...item,
+          completed: progressValue >= (index + 1) * 20
+        }))
+      );
+      
+      // Navigate to preview when completed
+      if (trainingProgress.status === 'completed' && trainingProgress.progress === 100) {
+        setTimeout(() => {
+          // Navigate to knowledge preview with metadata in state
+          this.router.navigate(['/booking/knowledge-preview'], {
+            state: { metadata: trainingProgress.metadata }
+          });
+        }, 1500);
+      }
+    });
   }
 
   ngOnDestroy() {
     this.knowledgeService.disconnect();
-  }
-
-  private simulateTraining() {
-    const steps = [
-      { log: '> Conectando con servidor...', progress: 10, checklistIndex: 0 },
-      { log: '> Escaneando página principal...', progress: 25, checklistIndex: 1 },
-      { log: '> ENCONTRADO: Sección de servicios', progress: 40, checklistIndex: 2 },
-      { log: '> Detectado: Fisioterapia Deportiva - 50€', progress: 55, checklistIndex: 2 },
-      { log: '> Detectado: Masaje Terapéutico - 40€', progress: 65, checklistIndex: 3 },
-      { log: '> Analizando horarios...', progress: 75, checklistIndex: 3 },
-      { log: '> Generando base de conocimiento...', progress: 90, checklistIndex: 4 },
-      { log: '✓ Entrenamiento completado', progress: 100, checklistIndex: 4 },
-    ];
-
-    let currentStep = 0;
-    const interval = setInterval(() => {
-      if (currentStep >= steps.length) {
-        clearInterval(interval);
-        setTimeout(() => {
-          this.router.navigate(['/rider/chat']); // Navigate to chat
-        }, 1000);
-        return;
-      }
-
-      const step = steps[currentStep];
-      this.logs.update((logs) => [...logs, step.log]);
-      this.progress.set(step.progress);
-      
-      this.checklist.update((list) =>
-        list.map((item, index) => ({
-          ...item,
-          completed: index <= step.checklistIndex,
-        }))
-      );
-
-      currentStep++;
-    }, 800);
   }
 }

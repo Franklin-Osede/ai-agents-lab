@@ -35,6 +35,7 @@ async function bootstrap() {
   const defaultOrigins = [
     'http://localhost:4200',
     'http://localhost:4201',
+    'http://localhost:4210',
     'http://localhost:5173',
     // Production frontends (wildcards handled below)
     'https://ai-agents-lab-peach.vercel.app',

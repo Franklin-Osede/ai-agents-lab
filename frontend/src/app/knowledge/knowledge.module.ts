@@ -10,10 +10,15 @@ import { TrainingOverlayComponent } from './training-overlay/training-overlay.co
 
 @NgModule({
   declarations: [
-    KnowledgeComponent,
     SetupAgentComponent,
     TrainingOverlayComponent,
   ],
-  imports: [CommonModule, HttpClientModule, FormsModule, KnowledgeRoutingModule],
+  imports: [
+    CommonModule, 
+    HttpClientModule, 
+    FormsModule, 
+    KnowledgeRoutingModule,
+    KnowledgeComponent  // Import standalone component
+  ],
 })
 export class KnowledgeModule {}

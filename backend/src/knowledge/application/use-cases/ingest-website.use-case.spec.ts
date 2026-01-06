@@ -1,18 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IngestWebsiteUseCase } from './ingest-website.use-case';
 import { IScraperService } from '../../domain/repositories/scraping.service';
-import {
-  ContentClassifierService,
-  ContentType,
-} from '../../domain/services/content-classifier.service';
+import { BedrockContentAnalysisService } from '../../infrastructure/ai/bedrock-content-analysis.service';
+import { KnowledgeEventsGateway } from '../../presentation/knowledge-events.gateway';
 
 // Mock Interfaces
 const mockScraperService = {
   scrapeUrl: jest.fn(),
 };
 
-const mockClassifierService = {
-  classify: jest.fn(),
+const mockBedrockService = {
+  analyzeContent: jest.fn(),
+};
+
+const mockEventsGateway = {
+  emitProgress: jest.fn(),
 };
 
 describe('IngestWebsiteUseCase', () => {
@@ -27,8 +29,12 @@ describe('IngestWebsiteUseCase', () => {
           useValue: mockScraperService,
         },
         {
-          provide: ContentClassifierService,
-          useValue: mockClassifierService,
+          provide: BedrockContentAnalysisService,
+          useValue: mockBedrockService,
+        },
+        {
+          provide: KnowledgeEventsGateway,
+          useValue: mockEventsGateway,
         },
       ],
     }).compile();
@@ -49,12 +55,17 @@ describe('IngestWebsiteUseCase', () => {
       url,
       title: 'Example Clinic',
       content: 'Tratamientos de fisioterapia a 50 euros.',
+      screenshot: 'base64image',
+      styles: { primaryColor: '#000' },
+      logoUrl: 'logo.png',
     });
 
-    mockClassifierService.classify.mockResolvedValue({
-      type: ContentType.PRICING,
-      confidence: 0.9,
-      tags: ['pricing'],
+    mockBedrockService.analyzeContent.mockResolvedValue({
+      classification: 'service',
+      summary: 'A clinic',
+      branding: { primaryColor: '#000', logoUrl: 'logo.png' },
+      structuredData: {},
+      dynamicSections: [],
     });
 
     // Act
@@ -63,9 +74,10 @@ describe('IngestWebsiteUseCase', () => {
     // Assert
     expect(result).toBeDefined();
     expect(result.sourceId).toBeDefined();
-    expect(result.status).toBe('processing'); // Initial status
+    expect(result.status).toBe('processing');
 
     expect(mockScraperService.scrapeUrl).toHaveBeenCalledWith(url);
-    expect(mockClassifierService.classify).toHaveBeenCalled();
+    expect(mockBedrockService.analyzeContent).toHaveBeenCalled();
+    expect(mockEventsGateway.emitProgress).toHaveBeenCalledTimes(4); // 20, 50, 80, 100
   });
 });

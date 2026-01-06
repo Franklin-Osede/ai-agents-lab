@@ -301,58 +301,20 @@
 
     </div>
 
-    <!-- Inline Footer Actions -->
-    <div class="px-5 pb-6">
-      <div class="flex items-center justify-center gap-2 mb-4">
-        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">{{ services.length }} Servicios</span>
-        <span class="text-slate-300">•</span>
-        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Info de contacto</span>
-      </div>
-      <div class="flex gap-3">
-        <button (click)="rescan()" class="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-300 dark:border-slate-600 bg-transparent text-slate-600 dark:text-slate-300 font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95">
-          <span class="material-symbols-outlined text-[18px]">replay</span>
-          Escanear
-        </button>
-        <button (click)="continueToChat()" class="flex-[2] flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-indigo-600 text-white font-semibold text-sm shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 transition-all active:scale-95">
-          Continuar
-          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-        </button>
-      </div>
-    </div>
+
   </main>
 
-  <!-- Bottom Nav Bar -->
-  <nav class="flex-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-t border-slate-200 dark:border-slate-800 px-6 pb-6 pt-3 z-20">
-    <div class="flex items-center justify-between">
-      <!-- Home Item -->
-      <a class="flex flex-col items-center gap-1 group w-16 cursor-pointer">
-        <div class="relative p-1 rounded-xl transition-colors group-hover:bg-slate-100 dark:group-hover:bg-slate-800">
-          <span class="material-symbols-outlined text-slate-400 group-hover:text-indigo-600 text-[26px] transition-colors">home</span>
-        </div>
-        <span class="text-[10px] font-medium text-slate-400 group-hover:text-indigo-600 transition-colors">Home</span>
-      </a>
-      
-      <!-- Knowledge Item (Active) -->
-      <a class="flex flex-col items-center gap-1 group w-16 cursor-pointer">
-        <div class="relative p-1 rounded-xl bg-indigo-600/10">
-          <span class="material-symbols-outlined text-indigo-600 text-[26px]">menu_book</span>
-          <!-- Active Dot Indicator -->
-          <span class="absolute top-1 right-1 flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-600 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
-          </span>
-        </div>
-        <span class="text-[10px] font-semibold text-indigo-600">Knowledge</span>
-      </a>
-      
-      <!-- Chat Item -->
-      <a class="flex flex-col items-center gap-1 group w-16 cursor-pointer">
-        <div class="relative p-1 rounded-xl transition-colors group-hover:bg-slate-100 dark:group-hover:bg-slate-800">
-          <span class="material-symbols-outlined text-slate-400 group-hover:text-indigo-600 text-[26px] transition-colors">chat_bubble</span>
-        </div>
-        <span class="text-[10px] font-medium text-slate-400 group-hover:text-indigo-600 transition-colors">Chat</span>
-      </a>
+  <!-- Sticky Footer Actions -->
+  <div class="flex-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-t border-slate-200 dark:border-slate-800 px-5 py-6 z-20">
+    <div class="flex gap-3">
+      <button (click)="rescan()" class="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-300 dark:border-slate-600 bg-transparent text-slate-600 dark:text-slate-300 font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95">
+        <span class="material-symbols-outlined text-[18px]">replay</span>
+        Escanear
+      </button>
+      <button (click)="continueToChat()" class="flex-[2] flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-indigo-600 text-white font-semibold text-sm shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 transition-all active:scale-95">
+        Continuar
+        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+      </button>
     </div>
-  </nav>
-
-</div> Also enable whitespace-pre-line for hours to support line breaks from extraction.
+  </div>
+</div>

@@ -83,7 +83,17 @@ export class PuppeteerScraperAdapter implements IScraperService {
 
       // 2. DISCOVER SUBPAGES
       const links = await this.findRelevantLinks(mainPage, url);
-      this.logger.log(`Found relevant subpages: ${links.join(', ')}`);
+
+      // Add manual fallbacks for Team pages if not found
+      const commonTeamPaths = ['/equipo', '/profesionales', '/nosotros', '/team', '/quienes-somos'];
+      commonTeamPaths.forEach((path) => {
+        const full = new URL(path, url).href;
+        if (!links.includes(full)) {
+          links.push(full);
+        }
+      });
+
+      this.logger.log(`Found relevant subpages (incl. fallbacks): ${links.join(', ')}`);
 
       // 3. DEEP SCRAPE
       if (!browser) throw new Error('Browser instance lost');
@@ -96,6 +106,20 @@ export class PuppeteerScraperAdapter implements IScraperService {
             await this.configurePage(page);
             await this.robustGoto(page, link);
             const data = await this.extractAllData(page);
+
+            // EXPLICITLY call _extractTeam for team-related pages
+            if (
+              link.includes('/equipo') ||
+              link.includes('/team') ||
+              link.includes('/profesionales')
+            ) {
+              const teamMembers = await this._extractTeam(page);
+              if (teamMembers.length > 0) {
+                this.logger.log(`✅ _extractTeam found ${teamMembers.length} members on ${link}`);
+                data.team = teamMembers.map((m) => ({ ...m, image: '' })); // Override with better extraction
+              }
+            }
+
             await page.close();
             return { link, data };
           } catch (e) {
@@ -208,6 +232,9 @@ export class PuppeteerScraperAdapter implements IScraperService {
         'contact',
         'nosotros',
         'about',
+        'ourteam',
+        'profesionales',
+        'especialistas',
       ];
       const anchors = Array.from(document.querySelectorAll('a'));
       const relevant = new Set<string>();
@@ -227,8 +254,84 @@ export class PuppeteerScraperAdapter implements IScraperService {
           relevant.add(fullUrl);
         }
       });
-      return Array.from(relevant).slice(0, 5);
+      return Array.from(relevant).slice(0, 10);
     }, baseUrl);
+  }
+
+  private async _extractTeam(page: Page): Promise<{ name: string; role: string }[]> {
+    // 3. Extract Members (Robust TreeWalker Approach)
+    console.log('--- Extracting Team Members (Browser Context - TreeWalker) ---');
+    // Define interface for candidate in browser context
+    interface Candidate {
+      name: string;
+      role: string;
+    }
+
+    const members = await page.evaluate(() => {
+      const candidates: Candidate[] = [];
+
+      // Helper: Check if a node is likely a name
+      const isName = (text: string) => {
+        const clean = text.trim();
+        return (
+          clean.length > 3 &&
+          clean.length < 30 &&
+          /^[A-ZÁÉÍÓÚÑ]/.test(clean) && // Starts with capital
+          !/\d/.test(clean) && // No numbers
+          clean.split(' ').length >= 2 && // At least name + surname
+          clean.split(' ').length <= 4
+        );
+      };
+
+      // Strategy: Find known members or pattern matching
+      // We know "Alberto" is there from debug. Let's find him and his peers.
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+      let node: Node | null;
+
+      while ((node = walker.nextNode())) {
+        const text = node.textContent?.trim() || '';
+        // Contextual checks
+        if (isName(text)) {
+          let current: HTMLElement | null = node.parentElement;
+          let depth = 0;
+
+          // Traverse up to 3 levels to find a header
+          while (current && depth < 3) {
+            const tag = current.tagName.toLowerCase();
+            const isHeaderTag = ['h2', 'h3', 'h4', 'strong', 'b'].includes(tag);
+            const hasTitleClass =
+              current.className &&
+              typeof current.className === 'string' &&
+              (current.className.includes('header') ||
+                current.className.includes('title') ||
+                current.className.includes('name'));
+
+            // Specific check for Marchante Gago structure (from debug)
+            // <h2 class="et_pb_module_header">Alberto...</h2>
+            const isDiviHeader =
+              tag === 'h2' &&
+              current.className &&
+              current.className.includes('et_pb_module_header');
+
+            if (isDiviHeader || (isHeaderTag && hasTitleClass)) {
+              candidates.push({ name: text, role: 'Especialista' });
+              break; // Stop climbing if found
+            }
+
+            current = current.parentElement;
+            depth++;
+          }
+        }
+      }
+
+      return candidates;
+    });
+
+    console.log(`Extracted candidates count: ${members.length}`);
+    // Remove duplicates
+    const uniqueMap = new Map();
+    members.forEach((m: Candidate) => uniqueMap.set(m.name, m));
+    return Array.from(uniqueMap.values());
   }
 
   private async extractAllData(page: Page): Promise<ScrapedData> {
@@ -284,7 +387,7 @@ export class PuppeteerScraperAdapter implements IScraperService {
       // 4. TEAM
       const team: Array<{ name: string; role: string; image: string }> = [];
       const potentialCards = document.querySelectorAll(
-        '.team-member, .person, .doctor, .card, .elementor-image-box-content, .wp-block-column, .div, .elementor-column, .pp-team-member, .elementor-widget-icon-box',
+        '.team-member, .person, .doctor, .card, .elementor-image-box-content, .wp-block-column, .div, .elementor-column, .pp-team-member, .elementor-widget-icon-box, .et_pb_team_member, .et_pb_blurb',
       );
       potentialCards.forEach((card) => {
         const img = card.querySelector('img');
@@ -299,7 +402,12 @@ export class PuppeteerScraperAdapter implements IScraperService {
         if (cardLines.length >= 2) {
           const name = cardLines[0];
           const role = cardLines[1];
-          const isName = /^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(\s[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){1,3}$/.test(name);
+          // Improved Regex: Allows Dr./Dra., All Caps, and standard mixed case.
+          // Must have at least two words (Name Surname)
+          const isName =
+            /^(?:Dr\.|Dra\.|Mr\.|Mrs\.)?\s*[a-zA-ZÁÉÍÓÚÑáéíóúñ]+(?:\s+[a-zA-ZÁÉÍÓÚÑáéíóúñ]+)+$/.test(
+              name,
+            );
           const notForbidden = ![
             'Reserva',
             'Lee más',
@@ -309,6 +417,13 @@ export class PuppeteerScraperAdapter implements IScraperService {
             'Cookies',
             'Contacto',
             'Lunes',
+            'Horario',
+            'Dirección',
+            'Clinica',
+            'Fisioterapia',
+            'Reservar',
+            'Sesión',
+            'Sesion',
           ].some((w) => name.includes(w));
           if (isName && notForbidden && name.length < 50) {
             team.push({ name, role: role.substring(0, 50), image: img.src });

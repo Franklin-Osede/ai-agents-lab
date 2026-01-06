@@ -75,6 +75,8 @@ export class IngestWebsiteUseCase {
         screenshot: scrapedData.screenshot,
         branding: scrapedData.branding || {}, // Phase 1: Complete branding data
         team: scrapedData.team || [], // Phase 3: Team extraction
+        blogPosts: scrapedData.blogPosts || [],
+        faqs: scrapedData.faqs || [],
         structuredData: aiAnalysis.structuredData || null,
       };
 

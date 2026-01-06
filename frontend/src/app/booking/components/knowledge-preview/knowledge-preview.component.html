@@ -17,7 +17,7 @@
     <!-- Header Section -->
     <section class="px-5 pt-6 pb-2">
       <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight mb-2">
-        Conocimiento Extraído
+        {{ businessName() }}
       </h1>
       <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-4">
         Hemos analizado tu sitio web. Revisa la información detectada abajo para asegurarte de que el agente AI tenga los datos correctos.
@@ -90,8 +90,7 @@
             </button>
           </div>
           
-          @if (!isServicesExpanded || services.length <= 5) {
-            <ul class="space-y-3">
+          <ul class="space-y-3">
               @for (service of visibleServices; track service.name) {
                 <li class="flex items-center gap-3 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer group/item">
                   <div class="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
@@ -103,18 +102,7 @@
                 <li class="text-sm text-slate-400 italic p-2">No se detectaron servicios automáticamente.</li>
               }
             </ul>
-          } @else {
-            <ul class="space-y-3">
-              @for (service of services; track service.name) {
-                <li class="flex items-center gap-3 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer group/item">
-                  <div class="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-indigo-600 text-[14px] font-bold">check</span>
-                  </div>
-                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200">{{ service.name }}</span>
-                </li>
-              }
-            </ul>
-          }
+
           
           @if (services.length > 5) {
             <button (click)="toggleServices()" class="mt-3 w-full text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
@@ -194,7 +182,7 @@
               </div>
               <div class="flex-1">
                 <p class="text-xs text-slate-400 font-medium uppercase tracking-wide">Horario</p>
-                <p class="text-sm font-medium text-slate-700 dark:text-slate-200 mt-0.5">{{ contactInfo.hours || 'No detectado' }}</p>
+                <p class="text-sm font-medium text-slate-700 dark:text-slate-200 mt-0.5 whitespace-pre-line">{{ contactInfo.hours || 'No detectado' }}</p>
               </div>
             </div>
             </div>
@@ -212,17 +200,21 @@
                 <span class="material-symbols-outlined text-indigo-500 text-[20px]">groups</span>
                 Equipo / Profesionales
               </h3>
-              <button class="text-slate-400 hover:text-indigo-500 transition-colors">
-                <span class="material-symbols-outlined text-[20px]">edit</span>
+              <button (click)="toggleTeam()" class="text-slate-400 hover:text-indigo-500 transition-colors">
+                <span class="material-symbols-outlined text-[20px]">{{ isTeamExpanded ? 'expand_less' : 'expand_more' }}</span>
               </button>
             </div>
             
+            @if (isTeamExpanded || team.length <= 3) {
             <div class="space-y-3">
-              @for (member of team; track member.name) {
+              @for (member of visibleTeam; track member.name) {
                 <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer">
-                  <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500 font-bold overflow-hidden">
-                    <!-- Placeholder generic avatar if no image -->
-                    <span class="material-symbols-outlined text-xl">person</span>
+                  <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500 font-bold overflow-hidden shadow-sm">
+                    @if(member.image && member.image.startsWith('http')) {
+                        <img [src]="member.image" [alt]="member.name" class="w-full h-full object-cover">
+                    } @else {
+                        <span class="material-symbols-outlined text-xl">person</span>
+                    }
                   </div>
                   <div class="flex-1">
                     <h4 class="text-sm font-semibold text-slate-900 dark:text-white">{{ member.name }}</h4>
@@ -232,9 +224,81 @@
                 </div>
               }
             </div>
+            }
+             @if (team.length > 3) {
+                <button (click)="toggleTeam()" class="mt-3 w-full text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+                  {{ isTeamExpanded ? 'Ver menos' : 'Ver todos (' + team.length + ')' }}
+                </button>
+             }
           </div>
         </article>
       }
+
+      <!-- New Card: Latest News / Blog -->
+      @if (blogPosts.length > 0) {
+        <article class="group relative bg-white dark:bg-[#1e1e2e] rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden transition-all hover:shadow-md">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-green-500"></div>
+            <div class="p-5">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-green-500 text-[20px]">newspaper</span>
+                        Últimas Noticias / Blog
+                    </h3>
+                    <button (click)="toggleBlog()" class="text-slate-400 hover:text-green-500 transition-colors">
+                        <span class="material-symbols-outlined text-[20px]">{{ isBlogExpanded ? 'expand_less' : 'expand_more' }}</span>
+                    </button>
+                </div>
+
+                @if (isBlogExpanded) {
+                    <div class="space-y-3">
+                        @for (post of visibleBlogPosts; track post.url) {
+                            <a [href]="post.url" target="_blank" class="block p-3 rounded-lg bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-100 dark:border-slate-700/50">
+                                <h4 class="text-sm font-medium text-slate-800 dark:text-slate-200 line-clamp-1 mb-1">{{ post.title }}</h4>
+                                <div class="flex items-center gap-1 text-xs text-slate-500">
+                                    <span class="material-symbols-outlined text-[14px]">link</span>
+                                    <span class="truncate">{{ post.url }}</span>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+            </div>
+        </article>
+      }
+
+      <!-- New Card: FAQs -->
+      @if (faqs.length > 0) {
+        <article class="group relative bg-white dark:bg-[#1e1e2e] rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden transition-all hover:shadow-md">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-orange-500"></div>
+            <div class="p-5">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-orange-500 text-[20px]">quiz</span>
+                        Preguntas Frecuentes
+                    </h3>
+                    <button (click)="toggleFaq()" class="text-slate-400 hover:text-orange-500 transition-colors">
+                        <span class="material-symbols-outlined text-[20px]">{{ isFaqExpanded ? 'expand_less' : 'expand_more' }}</span>
+                    </button>
+                </div>
+
+                @if (isFaqExpanded) {
+                    <div class="space-y-4">
+                        @for (faq of visibleFaqs; track faq.question) {
+                            <div class="bg-slate-50 dark:bg-slate-800/40 rounded-lg p-3">
+                                <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 flex items-start gap-2">
+                                    <span class="text-orange-500 text-xs mt-0.5">Q:</span> {{ faq.question }}
+                                </p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 pl-4 border-l-2 border-orange-200 dark:border-orange-900/50">
+                                    {{ faq.answer }}
+                                </p>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </article>
+      }
+
     </div>
 
     <!-- Inline Footer Actions -->
@@ -291,4 +355,4 @@
     </div>
   </nav>
 
-</div>
+</div> Also enable whitespace-pre-line for hours to support line breaks from extraction.

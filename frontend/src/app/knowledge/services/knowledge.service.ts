@@ -9,7 +9,18 @@ export interface TrainingProgress {
   progress: number;
   currentStep: string;
   foundItems: { type: string; preview: string }[];
-  metadata?: any; 
+  metadata?: {
+    branding?: any;
+    structuredData?: any;
+    team?: any[];
+    blogPosts?: { title: string; url: string; date?: string; summary?: string }[];
+    faqs?: { question: string; answer: string }[];
+    title?: string;
+    summary?: string;
+    classification?: string;
+    screenshot?: string;
+    [key: string]: any;
+  }; 
 }
 
 @Injectable({
@@ -26,7 +37,7 @@ export class KnowledgeService {
     progress: 0,
     currentStep: '',
     foundItems: [],
-    metadata: null,
+    metadata: undefined,
   });
   
   // Expose as readonly

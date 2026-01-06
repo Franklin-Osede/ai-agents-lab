@@ -23,8 +23,11 @@ export interface ScrapedPage {
       linkedin?: string;
       youtube?: string;
     };
+    services?: string[];
   };
   team?: Array<{ name: string; role: string; image: string }>;
+  blogPosts?: Array<{ title: string; url: string; date?: string; summary?: string }>;
+  faqs?: Array<{ question: string; answer: string }>;
 }
 
 export abstract class IScraperService {

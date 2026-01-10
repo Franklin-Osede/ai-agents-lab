@@ -123,6 +123,11 @@ export class KnowledgeService {
     });
   }
 
+  async fetchOrganizationInfo(tenantId: string): Promise<any> {
+    const url = `${environment.apiBaseUrl}/knowledge/organization-info/${tenantId}`;
+    return this.http.get(url).toPromise();
+  }
+
   disconnect(): void {
     if (this.socket) {
       this.socket.disconnect();

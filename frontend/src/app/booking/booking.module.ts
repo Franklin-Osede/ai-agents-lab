@@ -8,6 +8,9 @@ import { UrlInputComponent } from './components/url-input/url-input.component';
 import { TrainingProgressComponent } from './components/training-progress/training-progress.component';
 import { MobileLayoutComponent } from '../abandoned-cart/components/mobile-layout/mobile-layout.component';
 import { KnowledgePreviewComponent } from './components/knowledge-preview/knowledge-preview.component';
+import { WorkflowSimulatorComponent } from './components/workflow-simulator/workflow-simulator.component';
+import { WorkflowBuilderComponent } from './components/workflow-builder/workflow-builder.component';
+import { WorkflowRunnerComponent } from './components/workflow-runner/workflow-runner.component';
 
 const routes: Routes = [
   {
@@ -36,6 +39,18 @@ const routes: Routes = [
         component: KnowledgePreviewComponent,
       },
       {
+        path: ':niche/builder',
+        component: WorkflowBuilderComponent,
+      },
+      {
+        path: ':niche/chat',
+        component: WorkflowSimulatorComponent,
+      },
+      {
+        path: ':niche/run',
+        component: WorkflowRunnerComponent,
+      },
+      {
         path: 'voice', // Legacy route wrapped too for consistency, or move out if needed
         component: VoiceBookingComponent,
       },
@@ -55,7 +70,10 @@ const routes: Routes = [
     CommonModule, 
     FormsModule, 
     RouterModule.forChild(routes),
-    MobileLayoutComponent // Import standalone component
+    MobileLayoutComponent, // Import standalone component
+    WorkflowSimulatorComponent, // Import standalone component
+    WorkflowBuilderComponent, // Import standalone component
+    WorkflowRunnerComponent, // Import standalone component
   ],
 })
 export class BookingModule {}

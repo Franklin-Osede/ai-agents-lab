@@ -201,12 +201,15 @@ export class PuppeteerScraperAdapter implements IScraperService {
 
   private async configurePage(page: Page) {
     await page.setViewport({ width: 1366, height: 768 });
+    // Updated to a newer User-Agent to look more like a real user
     await page.setUserAgent(
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
     );
     await page.setRequestInterception(true);
     page.on('request', (req: HTTPRequest) => {
-      if (['image', 'stylesheet', 'font'].includes(req.resourceType())) {
+      // Allow fonts and styles for better rendering if needed, but blocking images is usually fine for text scraping.
+      // Keeping it strict for speed, but ensuring we don't block critical scripts if they were dynamic.
+      if (['image', 'media'].includes(req.resourceType())) {
         void req.abort();
       } else {
         void req.continue();
@@ -215,7 +218,14 @@ export class PuppeteerScraperAdapter implements IScraperService {
   }
 
   private async robustGoto(page: Page, url: string) {
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    // Increased timeout to 60s to handle slow sites or heavy loads
+    try {
+      await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
+    } catch (e) {
+      this.logger.warn(`Initial navigation failed, retrying with simple load... ${e}`);
+      // Fallback: try waiting just for domcontentloaded if networkidle2 fails
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    }
   }
 
   private async findRelevantLinks(page: Page, baseUrl: string): Promise<string[]> {

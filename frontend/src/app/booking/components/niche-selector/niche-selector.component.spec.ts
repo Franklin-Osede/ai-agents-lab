@@ -30,13 +30,16 @@ describe('NicheSelectorComponent', () => {
 
   it('should navigate to physiotherapy setup when selecting health category', () => {
     const healthCategory = component.categories[0];
-    component.selectCategory(healthCategory);
+    const subcategory = healthCategory.subcategories![0];
+    component.selectSubcategory(healthCategory, subcategory);
 
     expect(mockRouter.navigate).toHaveBeenCalledWith([
       '/booking',
-      'physiotherapy',
+      'health',
       'setup',
-    ]);
+    ], {
+      queryParams: { subcategory: 'doctor' }
+    });
   });
 
   it('should navigate back when goBack is called', () => {

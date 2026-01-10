@@ -1,8 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { IScraperService } from '../../domain/repositories/scraping.service';
 import { BedrockContentAnalysisService } from '../../infrastructure/ai/bedrock-content-analysis.service';
-import { KnowledgeStatus } from '../../domain/entities/knowledge-source.entity';
+import { KnowledgeStatus, KnowledgeSource } from '../../domain/entities/knowledge-source.entity';
 import { KnowledgeEventsGateway } from '../../presentation/knowledge-events.gateway';
+import { IKnowledgeSourceRepository } from '../../domain/repositories/knowledge-source.repository';
 
 @Injectable()
 export class IngestWebsiteUseCase {
@@ -12,6 +13,7 @@ export class IngestWebsiteUseCase {
     private readonly scraper: IScraperService,
     private readonly bedrockAnalyzer: BedrockContentAnalysisService,
     private readonly eventsGateway: KnowledgeEventsGateway,
+    private readonly repository: IKnowledgeSourceRepository,
   ) {}
 
   async execute(
@@ -80,11 +82,17 @@ export class IngestWebsiteUseCase {
         structuredData: aiAnalysis.structuredData || null,
       };
 
-      const result = {
-        sourceId,
-        status: KnowledgeStatus.PROCESSING,
+      const knowledgeSource = new KnowledgeSource({
+        id: sourceId,
+        tenantId,
+        url,
+        status: KnowledgeStatus.COMPLETED,
+        scrapedAt: new Date(),
         metadata,
-      };
+      });
+
+      // 4. Save to Repository
+      await this.repository.save(knowledgeSource);
 
       this.eventsGateway.emitProgress(tenantId, {
         sourceId,
@@ -94,7 +102,11 @@ export class IngestWebsiteUseCase {
         metadata, // CRITICAL: Include metadata in final event
       });
 
-      return result;
+      return {
+        sourceId: knowledgeSource.id,
+        status: knowledgeSource.status,
+        metadata: knowledgeSource.metadata,
+      };
     } catch (error) {
       // Graceful error handling - return status ERROR instead of 500 crash
       this.logger.error('Ingest failed:', error);

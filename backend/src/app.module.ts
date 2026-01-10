@@ -13,6 +13,7 @@ import { MarketingModule } from './marketing/marketing.module';
 import { BillingModule } from './billing/billing.module';
 import { TenantIsolationMiddleware } from './core/security/tenant.middleware';
 import { KnowledgeModule } from './knowledge/knowledge.module';
+import { WorkflowsModule } from './workflows/workflows.module';
 
 // Main App Module
 
@@ -77,6 +78,7 @@ import { KnowledgeModule } from './knowledge/knowledge.module';
     DemoModule, // Demo endpoints
     MarketingModule, // Lead capture
     BillingModule, // Billing and Stripe
+    WorkflowsModule, // 🆕 Workflows Engine
   ],
 })
 export class AppModule implements NestModule {
@@ -84,7 +86,7 @@ export class AppModule implements NestModule {
     // Apply tenant isolation middleware to all routes except demo
     consumer
       .apply(TenantIsolationMiddleware)
-      .exclude('demo/(.*)', 'health/(.*)', 'knowledge/(.*)')
+      .exclude('demo/(.*)', 'health/(.*)', 'knowledge/(.*)', 'workflows/(.*)')
       .forRoutes('*');
   }
 }

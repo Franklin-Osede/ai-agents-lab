@@ -14,6 +14,18 @@ export class IngestWebDto {
   tenantId: string;
 }
 
+export class ClassifyIntentDto {
+  @ApiProperty({ example: 'Me duele la rodilla', description: 'User spoken text' })
+  @IsString()
+  text: string;
+
+  @ApiProperty({
+    example: [{ intentName: 'Sintoma', keywords: ['dolor', 'molestia'] }],
+    description: 'List of intents to match against',
+  })
+  intents: { intentName: string; keywords?: string[] }[];
+}
+
 @ApiTags('knowledge')
 @Controller('knowledge')
 export class KnowledgeController {
@@ -34,5 +46,41 @@ export class KnowledgeController {
   @ApiResponse({ status: 200, description: 'Organization info retrieved successfully' })
   async getOrganizationInfo(@Param('tenantId') tenantId: string) {
     return this.getInfoUseCase.execute(tenantId);
+  }
+
+  @Post('classify')
+  @ApiOperation({ summary: 'Classify user text into one of the provided intents' })
+  @ApiResponse({ status: 200, description: 'Best matching intent' })
+  async classify(@Body() dto: ClassifyIntentDto) {
+    // MOCK IMPLEMENTATION (Simple Keyword Matcher)
+    // TODO: Connect to LLM
+    const text = dto.text.toLowerCase();
+
+    // Default to first intent if no match
+    let bestMatch = dto.intents[0]?.intentName || 'Unknown';
+    let maxScore = 0;
+
+    for (const intent of dto.intents) {
+      if (!intent.keywords || intent.keywords.length === 0) continue;
+
+      // Count matches
+      let score = 0;
+      for (const keyword of intent.keywords) {
+        if (text.includes(keyword.toLowerCase())) {
+          score++;
+        }
+      }
+
+      // Exact match bonus
+      if (text.includes(intent.intentName.toLowerCase())) score += 10;
+
+      if (score > maxScore) {
+        maxScore = score;
+        bestMatch = intent.intentName;
+      }
+    }
+
+    console.log(`[Classify] Text: "${dto.text}" -> Matched: "${bestMatch}" (Score: ${maxScore})`);
+    return { intentName: bestMatch };
   }
 }

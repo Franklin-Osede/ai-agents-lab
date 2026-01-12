@@ -70,6 +70,58 @@
                          </div>
                     </div>
                  }
+                 <!-- 3. SMART LISTEN (Mic) -->
+                 @if (msg.sender === 'system' && msg.component === 'smartlisten') {
+                    <div class="w-full max-w-sm mx-auto my-2 animate-fadeIn flex items-center gap-3 p-2 bg-indigo-50 rounded-full border border-indigo-100 shadow-sm">
+                        <!-- Mic Button (Small) -->
+                        <button (click)="isListening() ? null : startListening()" 
+                                [class.animate-pulse]="isListening()"
+                                [class.bg-red-500]="isListening()"
+                                [class.shadow-red-200]="isListening()"
+                                [class.bg-indigo-600]="!isListening()"
+                                [class.shadow-indigo-200]="!isListening()"
+                                class="size-10 shrink-0 rounded-full text-white shadow-md flex items-center justify-center transition-all hover:scale-105 active:scale-95">
+                            <span class="material-symbols-outlined text-[20px]">{{ isListening() ? 'graphic_eq' : 'mic' }}</span>
+                        </button>
+                        
+                        <!-- Input Area -->
+                        <div class="flex-1 flex items-center gap-2">
+                            @if (isListening()) {
+                                <span class="text-xs font-bold text-indigo-600 animate-pulse">Escuchando...</span>
+                            } @else {
+                                <input type="text" 
+                                       [(ngModel)]="smartListenText" 
+                                       (keyup.enter)="submitSmartListenText()"
+                                       placeholder="Escribe o habla..." 
+                                       class="w-full bg-transparent border-none focus:ring-0 text-sm placeholder:text-slate-400 font-medium p-0">
+                            }
+                        </div>
+
+                         <button (click)="submitSmartListenText()" 
+                                 [disabled]="!smartListenText()"
+                                 class="size-8 rounded-full bg-white text-indigo-600 flex items-center justify-center shadow-sm disabled:opacity-50 hover:bg-slate-50 transition-all">
+                             <span class="material-symbols-outlined text-[18px]">send</span>
+                         </button>
+                    </div>
+                 }
+                 
+                 <!-- 4. BODY MAP (Inline) -->
+                 @if (msg.sender === 'system' && msg.component === 'bodymap') {
+                     <div class="w-full max-w-sm mx-auto my-4 animate-fadeIn flex flex-col items-center bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
+                        <div class="flex items-center justify-between w-full mb-3 px-2">
+                             <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">SELECCIONA ZONA</p>
+                             <button (click)="toggleBodyMapView($index)" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full hover:bg-indigo-100 transition-colors flex items-center gap-1">
+                                 <span class="material-symbols-outlined text-[14px]">3d_rotation</span>
+                                 {{ msg.data?.view === 'front' ? 'Ver Espalda' : 'Ver Frente' }}
+                             </button>
+                        </div>
+                        <app-body-map 
+                            [view]="msg.data?.view || 'front'" 
+                            [selectable]="true" 
+                            (partSelected)="handleBodyPartSelected($event)">
+                        </app-body-map>
+                     </div>
+                 }
             </div>
         }
 
@@ -168,27 +220,80 @@
             
             <!-- 4. SERVICES SELECTOR (Widget) -->
             @if (currentNode()?.type === 'services') {
-                 <div class="animate-fadeIn w-full">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-4">SERVICIOS DISPONIBLES</p>
-                    <div class="grid grid-cols-1 gap-3">
-                        @for (srv of services(); track srv.id) {
-                            <button (click)="nextStep()" class="flex items-center gap-4 p-4 bg-white border border-slate-100 rounded-2xl hover:border-indigo-200 hover:shadow-md transition-all group text-left">
-                                <div class="size-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-outlined">spa</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-indigo-700 transition-colors">{{ srv.name }}</h4>
-                                    <p class="text-xs text-slate-500">{{ srv.duration }} • {{ srv.price }}</p>
-                                </div>
-                                <span class="material-symbols-outlined text-slate-300 group-hover:text-indigo-500">add_circle</span>
-                            </button>
-                        }
-                    </div>
+                 <div class="animate-fadeIn w-full h-full">
+                    <app-service-selector
+                        (serviceSelected)="handleServiceSelected($event)"
+                        (back)="goBack()"> <!-- Opcional: manejar back si se quiere salir del selector -->
+                    </app-service-selector>
                 </div>
             }
             
+
+
+            <!-- 6. PAYMENT (Widget) -->
+            @if (currentNode()?.type === 'payment') {
+                 <div class="animate-fadeIn w-full">
+                    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                        <!-- Header -->
+                        <div class="bg-slate-50 p-4 border-b border-slate-100 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-indigo-600">lock</span>
+                                <span class="text-sm font-bold text-slate-700">Pago Seguro</span>
+                            </div>
+                            <span class="text-xs font-bold text-slate-400 bg-slate-200 px-2 py-0.5 rounded">TEST MODE</span>
+                        </div>
+                        
+                        <!-- Body -->
+                        <div class="p-5 space-y-4">
+                            <!-- Summary -->
+                            <div class="flex justify-between items-end border-b border-dashed border-slate-200 pb-4">
+                                <div>
+                                    <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Concepto</p>
+                                    <p class="text-sm font-medium text-slate-800">{{ currentNode()?.data?.concept || 'Servicio Profesional' }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Total</p>
+                                    <p class="text-xl font-bold text-indigo-600">{{ currentNode()?.data?.amount }} {{ currentNode()?.data?.currency }}</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Mock Card Input -->
+                             <div class="space-y-2">
+                                 <label class="text-[10px] text-slate-400 uppercase font-bold" for="mock-card-input">Tarjeta de Crédito</label>
+                                 <div class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl bg-slate-50">
+                                     <span class="material-symbols-outlined text-slate-400">credit_card</span>
+                                     <input id="mock-card-input" type="text" placeholder="4242 4242 4242 4242" disabled class="bg-transparent w-full text-sm font-mono text-slate-600 outline-none cursor-not-allowed">
+                                     <div class="flex gap-1">
+                                        <div class="size-2 rounded-full bg-slate-300"></div>
+                                        <div class="size-2 rounded-full bg-slate-300"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Button -->
+                            <button (click)="!isPaymentProcessing() && processPayment()" 
+                                    [disabled]="isPaymentProcessing()"
+                                    class="w-full py-3.5 bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-75 disabled:cursor-wait">
+                                @if (isPaymentProcessing()) {
+                                    <span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span> Procesando...
+                                } @else {
+                                    <span class="material-symbols-outlined text-[18px]">verified_user</span> Pagar {{ currentNode()?.data?.amount }} {{ currentNode()?.data?.currency }}
+                                }
+                            </button>
+                        </div>
+                        
+                        <!-- Footer -->
+                        <div class="bg-slate-50 p-3 text-center">
+                            <p class="text-[10px] text-slate-400 flex items-center justify-center gap-1">
+                                <span class="material-symbols-outlined text-[10px]">encrypted</span> Encriptación SSL de 256-bits
+                            </p>
+                        </div>
+                    </div>
+                 </div>
+            }
+            
             <!-- Default or Empty State -->
-             @if (!['userresponse', 'calendar', 'form', 'professional', 'services'].includes(currentNode()?.type || '')) {
+             @if (!['userresponse', 'calendar', 'form', 'professional', 'services', 'bodymap', 'payment'].includes(currentNode()?.type || '')) {
                 <div class="flex flex-col items-center justify-center text-center opacity-50">
                     <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">more_horiz</span>
                     <p class="text-xs text-slate-400">Esperando al agente...</p>

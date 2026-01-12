@@ -303,14 +303,251 @@
                                          </div>
                                       }
 
-                                      @if (node.type === 'services') {
-                                         <div class="p-3 bg-green-50 rounded-xl border border-green-100 flex items-center gap-3">
-                                             <div class="bg-green-100 p-2 rounded-lg text-green-600">
-                                                 <span class="material-symbols-outlined text-[20px]">medical_services</span>
+                                      @if (node.type === 'smartlisten') {
+                                           <div class="mt-3 flex flex-col gap-4">
+                                              <!-- PRESETS SECTION -->
+                                              <div class="mb-2">
+                                                  <p class="block text-[10px] uppercase font-bold text-slate-400 mb-2">Añadir Intención Rápida (Presets)</p>
+                                                  <div class="flex flex-wrap gap-2">
+                                                      @for (preset of availableIntents(); track preset.name) {
+                                                          <button (click)="addPresetToNode(node.id, preset)" 
+                                                                  class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-semibold text-slate-600 hover:border-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all shadow-sm">
+                                                              <span class="material-symbols-outlined text-[16px]">{{ preset.icon }}</span>
+                                                              {{ preset.name }}
+                                                          </button>
+                                                      }
+                                                  </div>
+                                              </div>
+
+                                              <p class="block text-[10px] uppercase font-bold text-slate-400">Intenciones Activas</p>
+                                              
+                                              <!-- Loop through Intents (similar to Chips) -->
+                                              @for (intent of node.data?.intents || []; track $index) {
+                                                  <div class="p-3 bg-red-50 rounded-xl border border-red-100">
+                                                     <!-- Intent Header/Input -->
+                                                      <div class="flex items-center gap-2 mb-3">
+                                                          <!-- Toggle Collapse Button -->
+                                                          <button (click)="toggleChipCollapse(node.id, $index)" class="size-6 rounded-md hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors">
+                                                              <span class="material-symbols-outlined text-[18px] transition-transform duration-200" [class.-rotate-90]="intent.isCollapsed">expand_more</span>
+                                                          </button>
+                                                          
+                                                          <div class="flex-1 flex items-center justify-between p-2 bg-white rounded-lg border border-red-200 focus-within:border-red-500 focus-within:ring-1 focus-within:ring-red-200 transition-all">
+                                                              <div class="w-full">
+                                                                  <input [attr.aria-label]="'Intención ' + ($index + 1)" 
+                                                                         [value]="intent.intentName" 
+                                                                         (input)="updateChip(node.id, $index, $any($event.target).value)" 
+                                                                         class="border-none bg-transparent p-0 text-xs font-bold text-slate-800 w-full focus:ring-0 placeholder:text-slate-300 mb-1" 
+                                                                         type="text" 
+                                                                         placeholder="Nombre de Intención"/>
+                                                                  <!-- Show Keywords Preview -->
+                                                                   @if(intent.keywords && intent.keywords.length > 0) {
+                                                                      <p class="text-[9px] text-slate-400 truncate">
+                                                                          {{ intent.keywords.join(', ') }}
+                                                                      </p>
+                                                                   }
+                                                              </div>
+                                                          </div>
+                                                          <button (click)="removeChipFromNode(node.id, $index)" class="size-7 rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 flex items-center justify-center">
+                                                              <span class="material-symbols-outlined text-[16px]">close</span>
+                                                          </button>
+                                                      </div>
+                                                      
+                                                      <!-- NESTED BRANCH FOR INTENT -->
+                                                      @if (!intent.isCollapsed) {
+                                                          <div class="pl-2 border-l-2 border-dashed border-red-200 ml-1 relative">
+                                                              <ng-container *ngTemplateOutlet="nodeListTemplate; context: { nodes: intent.nextSteps || [], parentId: node.id, optionIndex: $index }"></ng-container>
+                                                              
+                                                              <!-- Add button for this branch -->
+                                                              <div class="flex pl-[14px] h-12 items-center relative z-20">
+                                                                  <div class="absolute left-[38px] top-1/2 -translate-y-1/2 w-8 h-[1px] bg-red-500/20 opacity-50"></div>
+                                                                  <button (click)="openInsertMenu({ index: (intent.nextSteps ? intent.nextSteps.length : 0), parentNodeId: node.id, optionIndex: $index })" class="rounded-full bg-white hover:bg-red-50 border border-slate-200 hover:border-red-500 text-slate-400 hover:text-red-500 flex items-center gap-2 px-3 py-1.5 transition-all shadow-sm text-[10px] font-bold uppercase tracking-wide cursor-pointer z-30">
+                                                                     <span class="material-symbols-outlined text-[14px]">add</span>
+                                                                     Paso
+                                                                  </button>
+                                                              </div>
+                                                              
+                                                              <!-- Visual Merge Line -->
+                                                              <div class="absolute bottom-4 left-[-2px] w-4 h-4 rounded-bl-xl border-l-2 border-b-2 border-dashed border-red-200/50"></div>
+                                                          </div>
+                                                      } @else {
+                                                         <div class="pl-4 text-[10px] text-slate-400 italic">
+                                                             {{ (intent.nextSteps?.length || 0) }} pasos ocultos...
+                                                         </div>
+                                                      }
+                                                  </div>
+                                              }
+                                              
+                                              <!-- Placeholder Input for New Intent (Custom) -->
+                                              <div class="relative group cursor-text mt-2">
+                                                 <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-red-500 transition-colors">
+                                                     <span class="material-symbols-outlined text-[20px]">psychology_alt</span>
+                                                 </div>
+                                                 <input (keydown.enter)="addChipToNode(node.id, $any($event.target).value); $any($event.target).value = ''" 
+                                                        (blur)="onBlurAddChip(node.id, $event)"
+                                                        class="w-full pl-10 pr-3 py-2.5 bg-red-50/50 border border-dashed border-slate-300 rounded-xl text-xs font-semibold text-slate-600 placeholder:text-slate-400 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 focus:bg-white transition-all outline-none" 
+                                                        type="text" 
+                                                        placeholder="O escribe una personalizada..." />
+                                              </div>
+                                              
+                                              <p class="text-[10px] text-slate-400 mt-1 px-1">
+                                                * Usa los botones arriba para configurar la escucha rápidamente.
+                                              </p>
+                                              </div>
+                                      }
+
+                                      @if (node.type === 'bodymap') {
+                                         <div class="p-3 bg-indigo-50 rounded-xl border border-indigo-100 flex flex-col gap-3">
+                                             <div class="flex items-center gap-2">
+                                                 <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600">
+                                                     <span class="material-symbols-outlined text-[20px]">accessibility</span>
+                                                 </div>
+                                                 <div>
+                                                     <p class="text-xs font-bold text-indigo-800">Mapa Corporal</p>
+                                                     <p class="text-[10px] text-indigo-600">Selección interactiva</p>
+                                                 </div>
                                              </div>
-                                             <div>
-                                                 <p class="text-xs font-bold text-green-800">Selector de Servicios</p>
-                                                 <p class="text-[10px] text-green-600">Muestra lista de servicios</p>
+                                             
+                                             <div class="bg-white p-2 rounded-lg border border-indigo-100">
+                                                 <p class="block text-[10px] uppercase font-bold text-slate-400 mb-2">Vista Inicial</p>
+                                                 <div class="flex gap-2">
+                                                     <button (click)="updateNodeData(node.id, { bodyView: 'front' })" 
+                                                             [class.bg-indigo-600]="node.data?.bodyView !== 'back'" 
+                                                             [class.text-white]="node.data?.bodyView !== 'back'"
+                                                             [class.bg-slate-100]="node.data?.bodyView === 'back'"
+                                                             class="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-1">
+                                                         Frente
+                                                     </button>
+                                                     <button (click)="updateNodeData(node.id, { bodyView: 'back' })" 
+                                                             [class.bg-indigo-600]="node.data?.bodyView === 'back'" 
+                                                             [class.text-white]="node.data?.bodyView === 'back'"
+                                                             [class.bg-slate-100]="node.data?.bodyView !== 'back'"
+                                                             class="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-1">
+                                                         Espalda
+                                                     </button>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                      }
+
+                                      <!-- PAYMENT NODE -->
+                                      @if (node.type === 'payment') {
+                                         <div class="space-y-3">
+                                             <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                                                 <p class="block text-[10px] uppercase font-bold text-slate-400 mb-2">Configuración de Cobro</p>
+                                                 <div class="grid grid-cols-2 gap-3 mb-3">
+                                                      <div>
+                                                          <label [for]="'amt-' + node.id" class="text-[10px] text-slate-500 mb-1 block">Monto</label>
+                                                          <input [id]="'amt-' + node.id" type="number" [ngModel]="node.data?.amount" (ngModelChange)="updateNodeData(node.id, { amount: $event })" class="w-full px-2 py-1.5 text-xs border border-slate-200 rounded focus:border-indigo-500 outline-none">
+                                                      </div>
+                                                      <div>
+                                                          <label [for]="'curr-' + node.id" class="text-[10px] text-slate-500 mb-1 block">Moneda</label>
+                                                          <select [id]="'curr-' + node.id" [ngModel]="node.data?.currency" (ngModelChange)="updateNodeData(node.id, { currency: $event })" class="w-full px-2 py-1.5 text-xs border border-slate-200 rounded focus:border-indigo-500 outline-none bg-white">
+                                                              <option value="EUR">EUR (€)</option>
+                                                              <option value="USD">USD ($)</option>
+                                                          </select>
+                                                      </div>
+                                                 </div>
+                                                 <div>
+                                                      <label [for]="'conc-' + node.id" class="text-[10px] text-slate-500 mb-1 block">Concepto</label>
+                                                      <input [id]="'conc-' + node.id" type="text" [ngModel]="node.data?.concept" (ngModelChange)="updateNodeData(node.id, { concept: $event })" placeholder="Ej: Reserva Cita" class="w-full px-2 py-1.5 text-xs border border-slate-200 rounded focus:border-indigo-500 outline-none">
+                                                 </div>
+                                             </div>
+                                         </div>
+                                      }
+
+                                      <!-- CONDITIONAL NODE -->
+                                      @if (node.type === 'condition') {
+                                         <div class="space-y-3">
+                                             <!-- Config -->
+                                             <div class="p-3 bg-amber-50 rounded-xl border border-amber-100 space-y-2">
+                                                 <div class="flex items-center gap-2 mb-1">
+                                                     <span class="material-symbols-outlined text-amber-600 text-sm">tune</span>
+                                                     <span class="text-xs font-bold text-amber-800">Regla</span>
+                                                 </div>
+                                                 <div class="grid grid-cols-3 gap-2">
+                                                     <input type="text" [ngModel]="node.data?.variable" (ngModelChange)="updateNodeData(node.id, { variable: $event })" placeholder="{var}" class="w-full h-8 px-2 text-xs border border-amber-200 rounded focus:border-amber-500 outline-none">
+                                                     <select [ngModel]="node.data?.operator" (ngModelChange)="updateNodeData(node.id, { operator: $event })" class="w-full h-8 px-1 text-xs border border-amber-200 rounded focus:border-amber-500 outline-none bg-white">
+                                                         <option value="==">Igual (==)</option>
+                                                         <option value="!=">Distinto (!=)</option>
+                                                         <option value=">">Mayor (&gt;)</option>
+                                                         <option value="<">Menor (&lt;)</option>
+                                                         <option value="contains">Contiene</option>
+                                                     </select>
+                                                     <input type="text" [ngModel]="node.data?.value" (ngModelChange)="updateNodeData(node.id, { value: $event })" placeholder="Valor" class="w-full h-8 px-2 text-xs border border-amber-200 rounded focus:border-amber-500 outline-none">
+                                                 </div>
+                                             </div>
+
+                                             <!-- BRANCHES -->
+                                             <div class="grid grid-cols-2 gap-3">
+                                                 <!-- TRUE BRANCH -->
+                                                 <div class="relative">
+                                                     <div class="text-[10px] font-bold text-green-600 mb-1 flex items-center justify-between">
+                                                        <span>SI ES VERDAD</span>
+                                                        <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                                     </div>
+                                                     <div class="min-h-[60px] border-2 border-dashed border-green-200 rounded-xl bg-green-50/50 p-2 space-y-2">
+                                                         <!-- Nested Nodes -->
+                                                          @for (subNode of node.data?.trueBranch; track subNode.id; let i = $index) {
+                                                             <div cdkDrag [cdkDragData]="subNode" 
+                                                                  (click)="selectNode(subNode.id); $event.stopPropagation()"
+                                                                  (keydown.enter)="selectNode(subNode.id); $event.stopPropagation()"
+                                                                  tabindex="0"
+                                                                  class="bg-white rounded-lg border shadow-sm p-2 flex items-center gap-2 cursor-pointer hover:shadow-md transition-all relative group focus:ring-2 focus:ring-indigo-300 outline-none"
+                                                                  [class.border-indigo-500]="selectedNodeId() === subNode.id"
+                                                                  [class.ring-2]="selectedNodeId() === subNode.id"
+                                                                  [class.ring-indigo-100]="selectedNodeId() === subNode.id">
+                                                                  
+                                                                  <div class="size-6 rounded-md flex items-center justify-center shrink-0"
+                                                                       [style.backgroundColor]="getNodeColor(subNode.type) + '15'"
+                                                                       [style.color]="getNodeColor(subNode.type)">
+                                                                      <span class="material-symbols-outlined text-[14px]">{{ getNodeIcon(subNode.type) }}</span>
+                                                                  </div>
+                                                                  <span class="text-xs font-medium truncate">{{ subNode.label }}</span>
+                                                             </div>
+                                                          }
+                                                          
+                                                          <!-- Add Button -->
+                                                          <button (click)="openInsertMenu({ parentNodeId: node.id, branchType: 'true', index: node.data?.trueBranch?.length || 0 }); $event.stopPropagation()"
+                                                                  class="w-full py-1.5 rounded-lg border border-dashed border-green-300 text-green-500 hover:bg-green-100 transition-colors flex items-center justify-center">
+                                                              <span class="material-symbols-outlined text-[16px]">add</span>
+                                                          </button>
+                                                     </div>
+                                                 </div>
+
+                                                 <!-- FALSE BRANCH -->
+                                                 <div class="relative">
+                                                     <div class="text-[10px] font-bold text-red-500 mb-1 flex items-center justify-between">
+                                                        <span>SI ES FALSO</span>
+                                                        <span class="material-symbols-outlined text-[14px]">cancel</span>
+                                                     </div>
+                                                     <div class="min-h-[60px] border-2 border-dashed border-red-200 rounded-xl bg-red-50/50 p-2 space-y-2">
+                                                          <!-- Nested Nodes -->
+                                                          @for (subNode of node.data?.falseBranch; track subNode.id; let i = $index) {
+                                                             <div cdkDrag [cdkDragData]="subNode" 
+                                                                  (click)="selectNode(subNode.id); $event.stopPropagation()"
+                                                                  (keydown.enter)="selectNode(subNode.id); $event.stopPropagation()"
+                                                                  tabindex="0"
+                                                                  class="bg-white rounded-lg border shadow-sm p-2 flex items-center gap-2 cursor-pointer hover:shadow-md transition-all relative group focus:ring-2 focus:ring-indigo-300 outline-none"
+                                                                  [class.border-indigo-500]="selectedNodeId() === subNode.id"
+                                                                  [class.ring-2]="selectedNodeId() === subNode.id"
+                                                                  [class.ring-indigo-100]="selectedNodeId() === subNode.id">
+                                                                  
+                                                                  <div class="size-6 rounded-md flex items-center justify-center shrink-0"
+                                                                       [style.backgroundColor]="getNodeColor(subNode.type) + '15'"
+                                                                       [style.color]="getNodeColor(subNode.type)">
+                                                                      <span class="material-symbols-outlined text-[14px]">{{ getNodeIcon(subNode.type) }}</span>
+                                                                  </div>
+                                                                  <span class="text-xs font-medium truncate">{{ subNode.label }}</span>
+                                                             </div>
+                                                          }
+                                                          
+                                                          <!-- Add Button -->
+                                                          <button (click)="openInsertMenu({ parentNodeId: node.id, branchType: 'false', index: node.data?.falseBranch?.length || 0 }); $event.stopPropagation()"
+                                                                  class="w-full py-1.5 rounded-lg border border-dashed border-red-300 text-red-500 hover:bg-red-100 transition-colors flex items-center justify-center">
+                                                              <span class="material-symbols-outlined text-[16px]">add</span>
+                                                          </button>
+                                                     </div>
+                                                 </div>
                                              </div>
                                          </div>
                                       }

@@ -5,7 +5,7 @@ import {
   tick,
 } from "@angular/core/testing";
 import { AiMenuChatComponent } from "./ai-menu-chat.component";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { CartService, CartItem } from "../../../shared/services/cart.service";
 import { UserSessionService } from "../../services/user-session.service";
 import { StateMachineService } from "../../services/state-machine.service";
@@ -25,6 +25,7 @@ import { MenuCategoriesComponent } from "./components/menu-categories/menu-categ
 import { CartSummaryComponent } from "./components/cart-summary/cart-summary.component";
 
 import { PollyTTSService } from "../../../shared/services/polly-tts.service";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 
 // Mock Child Components
 @Component({ selector: "app-menu-grid", standalone: true, template: "" })
@@ -93,23 +94,22 @@ describe("AiMenuChatComponent Logic (Text-First Integration)", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        AiMenuChatComponent,
-        HttpClientTestingModule,
+    imports: [AiMenuChatComponent,
         RouterTestingModule,
         NoopAnimationsModule,
         MockMenuGridComponent,
         MockMenuCategoriesComponent,
-        MockCartSummaryComponent,
-      ],
-      providers: [
+        MockCartSummaryComponent],
+    providers: [
         { provide: CartService, useClass: MockCartService },
         UserSessionService,
         StateMachineService,
         { provide: MenuDataService, useClass: MockMenuDataService },
         { provide: PollyTTSService, useClass: MockPollyTTSService },
-      ],
-    })
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+})
       .overrideComponent(AiMenuChatComponent, {
         remove: {
           imports: [

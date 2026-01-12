@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { AbandonedCartService } from './abandoned-cart.service';
 import { Cart, CartStatus } from '../models/cart.model';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AbandonedCartService', () => {
   let service: AbandonedCartService;
@@ -9,9 +10,9 @@ describe('AbandonedCartService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [AbandonedCartService],
-    });
+    imports: [],
+    providers: [AbandonedCartService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
     service = TestBed.inject(AbandonedCartService);
     httpMock = TestBed.inject(HttpTestingController);
   });

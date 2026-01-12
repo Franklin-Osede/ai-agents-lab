@@ -7,12 +7,20 @@ import { debounceTime, filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { IntentRegistryService, IntentPreset } from '../../../core/services/intent-registry.service';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { A11yModule } from '@angular/cdk/a11y';
 
 // --- Types ---
 
 export interface WorkflowNode {
   id: string;
-  type: 'voicenote' | 'userresponse' | 'message' | 'form' | 'condition' | 'bodymap' | 'services' | 'calendar' | 'ragsearch' | 'confirm' | 'professional';
+  type: 'voicenote' | 'userresponse' | 'message' | 'form' | 'condition' | 'bodymap' | 'services' | 'calendar' | 'ragsearch' | 'confirm' | 'professional' | 'smartlisten' | 'payment';
   label: string;
   position: { x: number; y: number };
   data?: {
@@ -33,6 +41,21 @@ export interface WorkflowNode {
     bodyView?: 'front' | 'back';
     searchQuery?: string;
     confirmText?: string;
+    // Conditional Data
+    trueBranch?: WorkflowNode[];
+    falseBranch?: WorkflowNode[];
+    // Payment Data
+    amount?: number;
+    currency?: string;
+    concept?: string;
+    // Smart Listen Data
+    intents?: {  
+        intentName: string; 
+        keywords?: string[]; 
+        nextSteps?: WorkflowNode[]; 
+        isCollapsed?: boolean;
+    }[];
+    successMessage?: string; // Add this field
   };
 }
 
@@ -47,14 +70,28 @@ export interface WorkflowSettings {
 
 export interface InsertContext {
   parentNodeId?: string; // If null, root level
-  optionIndex?: number;  // If defined, inside this option of parent
+  optionIndex?: number;  // If defined, inside this option (or true/false branch) of parent
+  branchType?: 'true' | 'false'; // For conditional nodes
   index: number;         // Index within the list (root or nested)
 }
 
+
+
 @Component({
   selector: 'app-workflow-builder',
-  standalone: true,
-  imports: [CommonModule, FormsModule, DragDropModule],
+  standalone: true, // It is creating as standalone
+  imports: [
+    CommonModule, 
+    DragDropModule, 
+    FormsModule, 
+    MatChipsModule, 
+    MatIconModule,
+    MatFormFieldModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatTooltipModule,
+    A11yModule
+  ],
   templateUrl: './workflow-builder.component.html',
   styleUrls: ['./workflow-builder.component.scss']
 })
@@ -63,17 +100,23 @@ export class WorkflowBuilderComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private workflowService = inject(WorkflowService);
   private voiceService = inject(VoiceService);
+  private intentRegistry = inject(IntentRegistryService); // Inject Service
   
   // Available voices for the UI
   availableVoices: Voice[] = [];
 
   // --- State Signals ---
   niche = signal('');
+  // Computed for presets
+  availableIntents = computed(() => this.intentRegistry.getPresets(this.niche()));
+
   nodes = signal<WorkflowNode[]>([]);
   workflowId = signal<string | null>(null);
   lastSaved = signal<Date | null>(null);
   isSaving = signal(false);
   isPublishing = signal(false);
+  // ... (rest of the code)
+
 
   selectedNodeId = signal<string | null>(null);
   
@@ -106,6 +149,8 @@ export class WorkflowBuilderComponent implements OnInit {
     { type: 'professional', icon: 'person', label: 'Elegir\nProfesional', emoji: '👨‍⚕️', color: 'cyan' },
     { type: 'calendar', icon: 'calendar_month', label: 'Calendario', emoji: '📅', color: 'orange' },
     { type: 'ragsearch', icon: 'search', label: 'Búsqueda\nRAG', emoji: '🔍', color: 'pink' },
+    { type: 'smartlisten', icon: 'hearing', label: 'Escucha\nInteligente', emoji: '🧠', color: 'red' },
+    { type: 'payment', icon: 'credit_card', label: 'Pasarela\nPago', emoji: '💳', color: 'slate' },
     { type: 'confirm', icon: 'check_circle', label: 'Confirmar', emoji: '✅', color: 'emerald' }
   ];
 
@@ -204,6 +249,7 @@ export class WorkflowBuilderComponent implements OnInit {
       return currentNodes.map(node => {
           if (node.id === ctx.parentNodeId) {
               // Found the parent!
+              // Handle User Response (Chips)
               if (node.type === 'userresponse' && node.data?.chips && ctx.optionIndex !== undefined) {
                    const newChips = [...node.data.chips];
                    const specificOption = { ...newChips[ctx.optionIndex] };
@@ -216,6 +262,28 @@ export class WorkflowBuilderComponent implements OnInit {
                    newChips[ctx.optionIndex] = specificOption;
                    
                    return { ...node, data: { ...node.data, chips: newChips } };
+              }
+              // Handle Smart Listen (Intents)
+              if (node.type === 'smartlisten' && node.data?.intents && ctx.optionIndex !== undefined) {
+                   const newIntents = [...node.data.intents];
+                   const specificIntent = { ...newIntents[ctx.optionIndex] };
+                   const currentIntentSteps = specificIntent.nextSteps ? [...specificIntent.nextSteps] : [];
+                   
+                   currentIntentSteps.splice(ctx.index, 0, newNode);
+                   
+                   specificIntent.nextSteps = currentIntentSteps;
+                   newIntents[ctx.optionIndex] = specificIntent;
+                   
+                   return { ...node, data: { ...node.data, intents: newIntents } };
+              }
+              // Handle Conditional (True/False Branches)
+              if (node.type === 'condition' && ctx.branchType) {
+                   const branchKey = ctx.branchType === 'true' ? 'trueBranch' : 'falseBranch';
+                   const currentBranch = node.data?.[branchKey] ? [...node.data[branchKey]!] : [];
+                   
+                   currentBranch.splice(ctx.index, 0, newNode);
+                   
+                   return { ...node, data: { ...node.data, [branchKey]: currentBranch } };
               }
               return node;
           }
@@ -232,6 +300,28 @@ export class WorkflowBuilderComponent implements OnInit {
                   return chip;
               });
               return { ...node, data: { ...node.data, chips: newChips } };
+          }
+          
+          // Drill down (Intents)
+          if (node.data?.intents) {
+              const newIntents = node.data.intents.map(intent => {
+                   if (intent.nextSteps && intent.nextSteps.length > 0) {
+                       return {
+                           ...intent,
+                           nextSteps: this.insertNodeRecursive(intent.nextSteps, newNode, ctx)
+                       };
+                   }
+                   return intent;
+              });
+               return { ...node, data: { ...node.data, intents: newIntents } };
+          }
+          
+          // Drill down (Condition Branches)
+          if (node.type === 'condition') {
+               const trueBranch = node.data?.trueBranch ? this.insertNodeRecursive(node.data.trueBranch, newNode, ctx) : [];
+               const falseBranch = node.data?.falseBranch ? this.insertNodeRecursive(node.data.falseBranch, newNode, ctx) : [];
+               
+               return { ...node, data: { ...node.data, trueBranch, falseBranch } };
           }
           
           return node;
@@ -255,6 +345,8 @@ export class WorkflowBuilderComponent implements OnInit {
       
       // Recurse into children
       return filtered.map(node => {
+          
+          // Recurse Chips
           if (node.data?.chips) {
               const newChips = node.data.chips.map(chip => ({
                   ...chip,
@@ -262,6 +354,22 @@ export class WorkflowBuilderComponent implements OnInit {
               }));
               return { ...node, data: { ...node.data, chips: newChips } };
           }
+          // Recurse Intents
+          if (node.data?.intents) {
+              const newIntents = node.data.intents.map(intent => ({
+                  ...intent,
+                  nextSteps: intent.nextSteps ? this.deleteNodeRecursive(intent.nextSteps, idToDelete) : []
+              }));
+              return { ...node, data: { ...node.data, intents: newIntents } };
+          }
+
+          // Recurse Condition Branches
+          if (node.type === 'condition') {
+               const trueBranch = node.data?.trueBranch ? this.deleteNodeRecursive(node.data.trueBranch, idToDelete) : [];
+               const falseBranch = node.data?.falseBranch ? this.deleteNodeRecursive(node.data.falseBranch, idToDelete) : [];
+               return { ...node, data: { ...node.data, trueBranch, falseBranch } };
+          }
+          
           return node;
       });
   }
@@ -282,6 +390,8 @@ export class WorkflowBuilderComponent implements OnInit {
               return { ...node, data: { ...node.data, ...partialData } };
           }
           
+          
+          // Recurse Chips
           if (node.data?.chips) {
               const newChips = node.data.chips.map(chip => ({
                   ...chip,
@@ -289,6 +399,22 @@ export class WorkflowBuilderComponent implements OnInit {
               }));
               return { ...node, data: { ...node.data, chips: newChips } };
           }
+          // Recurse Intents
+          if (node.data?.intents) {
+              const newIntents = node.data.intents.map(intent => ({
+                  ...intent,
+                  nextSteps: intent.nextSteps ? this.updateNodeRecursive(intent.nextSteps, id, partialData) : []
+              }));
+              return { ...node, data: { ...node.data, intents: newIntents } };
+          }
+
+          // Recurse Condition Branches
+          if (node.type === 'condition') {
+               const trueBranch = node.data?.trueBranch ? this.updateNodeRecursive(node.data.trueBranch, id, partialData) : [];
+               const falseBranch = node.data?.falseBranch ? this.updateNodeRecursive(node.data.falseBranch, id, partialData) : [];
+               return { ...node, data: { ...node.data, trueBranch, falseBranch } };
+          }
+          
           return node;
       });
   }
@@ -307,6 +433,15 @@ export class WorkflowBuilderComponent implements OnInit {
   updateChipRecursive(nodes: WorkflowNode[], nodeId: string, chipIndex: number, text: string): WorkflowNode[] {
       return nodes.map(node => {
           if (node.id === nodeId) {
+              // Handle Intents
+              if (node.data?.intents) {
+                  const intents = [...node.data.intents];
+                  if (intents[chipIndex]) {
+                      intents[chipIndex] = { ...intents[chipIndex], intentName: text };
+                  }
+                  return { ...node, data: { ...node.data, intents } };
+              }
+              // Handle Chips
               const chips = [...(node.data?.chips || [])];
               if (chips[chipIndex]) {
                   chips[chipIndex] = { ...chips[chipIndex], text };
@@ -314,12 +449,21 @@ export class WorkflowBuilderComponent implements OnInit {
               return { ...node, data: { ...node.data, chips } };
           }
           
+          // Recurse children (Chips)
           if (node.data?.chips) {
               const newChips = node.data.chips.map(c => ({
                   ...c,
                   nextSteps: c.nextSteps ? this.updateChipRecursive(c.nextSteps, nodeId, chipIndex, text) : []
               }));
               return { ...node, data: { ...node.data, chips: newChips } };
+          }
+          // Recurse children (Intents)
+          if (node.data?.intents) {
+              const newIntents = node.data.intents.map(i => ({
+                  ...i,
+                  nextSteps: i.nextSteps ? this.updateChipRecursive(i.nextSteps, nodeId, chipIndex, text) : []
+              }));
+              return { ...node, data: { ...node.data, intents: newIntents } };
           }
           return node;
       });
@@ -332,16 +476,31 @@ export class WorkflowBuilderComponent implements OnInit {
   addChipRecursive(nodes: WorkflowNode[], nodeId: string, text = 'Nueva Opción'): WorkflowNode[] {
      return nodes.map(node => {
         if (node.id === nodeId) {
+            // Handle Intents
+            if (node.data?.intents) {
+                const intents = [...node.data.intents, { intentName: text, nextSteps: [] }];
+                return { ...node, data: { ...node.data, intents } };
+            }
+            // Handle Chips
             const chips = [...(node.data?.chips || []), { text: text, nextSteps: [] }];
             return { ...node, data: { ...node.data, chips } };
         }
         
+        // Recurse children (Chips)
         if (node.data?.chips) {
             const newChips = node.data.chips.map(c => ({
                 ...c,
                 nextSteps: c.nextSteps ? this.addChipRecursive(c.nextSteps, nodeId, text) : []
             }));
             return { ...node, data: { ...node.data, chips: newChips } };
+        }
+        // Recurse children (Intents)
+        if (node.data?.intents) {
+            const newIntents = node.data.intents.map(i => ({
+                ...i,
+                nextSteps: i.nextSteps ? this.addChipRecursive(i.nextSteps, nodeId, text) : []
+            }));
+            return { ...node, data: { ...node.data, intents: newIntents } };
         }
         return node;
     });
@@ -354,17 +513,33 @@ export class WorkflowBuilderComponent implements OnInit {
   removeChipRecursive(nodes: WorkflowNode[], nodeId: string, index: number): WorkflowNode[] {
       return nodes.map(node => {
           if (node.id === nodeId) {
+              // Handle Intents
+              if (node.data?.intents) {
+                  const intents = [...node.data.intents];
+                  intents.splice(index, 1);
+                  return { ...node, data: { ...node.data, intents } };
+              }
+              // Handle Chips
               const chips = [...(node.data?.chips || [])];
-              chips.splice(index, 1); // This implicitly deletes all nested nodes in that branch!
+              chips.splice(index, 1); 
               return { ...node, data: { ...node.data, chips } };
           }
           
+          // Recurse Chips
           if (node.data?.chips) {
               const newChips = node.data.chips.map(c => ({
                   ...c,
                   nextSteps: c.nextSteps ? this.removeChipRecursive(c.nextSteps, nodeId, index) : []
               }));
               return { ...node, data: { ...node.data, chips: newChips } };
+          }
+          // Recurse Intents
+          if (node.data?.intents) {
+              const newIntents = node.data.intents.map(i => ({
+                  ...i,
+                  nextSteps: i.nextSteps ? this.removeChipRecursive(i.nextSteps, nodeId, index) : []
+              }));
+              return { ...node, data: { ...node.data, intents: newIntents } };
           }
           return node;
       });
@@ -377,6 +552,15 @@ export class WorkflowBuilderComponent implements OnInit {
   toggleChipCollapseRecursive(nodes: WorkflowNode[], nodeId: string, index: number): WorkflowNode[] {
       return nodes.map(node => {
           if (node.id === nodeId) {
+              // Handle Intents
+              if (node.data?.intents) {
+                  const intents = [...node.data.intents];
+                  if (intents[index]) {
+                      intents[index] = { ...intents[index], isCollapsed: !intents[index].isCollapsed };
+                  }
+                  return { ...node, data: { ...node.data, intents } };
+              }
+              // Handle Chips
               const chips = [...(node.data?.chips || [])];
               if (chips[index]) {
                   chips[index] = { ...chips[index], isCollapsed: !chips[index].isCollapsed };
@@ -384,6 +568,7 @@ export class WorkflowBuilderComponent implements OnInit {
               return { ...node, data: { ...node.data, chips } };
           }
           
+          // Recurse Chips
           if (node.data?.chips) {
                const newChips = node.data.chips.map(c => ({
                   ...c,
@@ -391,16 +576,83 @@ export class WorkflowBuilderComponent implements OnInit {
               }));
               return { ...node, data: { ...node.data, chips: newChips } };
           }
+          // Recurse Intents
+          if (node.data?.intents) {
+               const newIntents = node.data.intents.map(i => ({
+                  ...i,
+                  nextSteps: i.nextSteps ? this.toggleChipCollapseRecursive(i.nextSteps, nodeId, index) : []
+              }));
+              return { ...node, data: { ...node.data, intents: newIntents } };
+          }
           return node;
       });
   }
   
+
+  // --- Intent Presets Helper ---
+  addPresetToNode(nodeId: string, preset: IntentPreset) {
+      this.nodes.update(curr => this.addPresetRecursive(curr, nodeId, preset));
+  }
+
+  addPresetRecursive(nodes: WorkflowNode[], nodeId: string, preset: IntentPreset): WorkflowNode[] {
+      return nodes.map(node => {
+          if (node.id === nodeId && node.data?.intents) {
+              // Check if already exists to avoid duplicates
+              const exists = node.data.intents.some(i => i.intentName === preset.name);
+              if (exists) return node;
+
+              const newIntent = {
+                  intentName: preset.name,
+                  keywords: preset.keywords,
+                  nextSteps: []
+              };
+              
+              const intents = [...node.data.intents, newIntent];
+              return { ...node, data: { ...node.data, intents } };
+          }
+          
+          // Recurse children
+           if (node.data?.chips) {
+              const newChips = node.data.chips.map(c => ({
+                  ...c,
+                  nextSteps: c.nextSteps ? this.addPresetRecursive(c.nextSteps, nodeId, preset) : []
+              }));
+              return { ...node, data: { ...node.data, chips: newChips } };
+          }
+          if (node.data?.intents) { // Fix: Recurse into intents too!
+               const newIntents = node.data.intents.map(i => ({
+                  ...i,
+                  nextSteps: i.nextSteps ? this.addPresetRecursive(i.nextSteps, nodeId, preset) : []
+              }));
+              return { ...node, data: { ...node.data, intents: newIntents } };
+          }
+          
+          return node;
+      });
+  }
+
   // --- Standard Methods (Load, Save, etc) ---
+
   
   loadWorkflow() {
     const niche = this.niche();
     if (!niche) return;
 
+    // 1. Check if we have state in Memory (returning from Runner)
+    const cachedNodes = this.workflowService.getPreviewNodes();
+    if (cachedNodes && cachedNodes.length > 0) {
+        console.log('Restoring cached workflow state:', cachedNodes);
+        this.nodes.set(cachedNodes);
+        // We still fetch to get the ID if missing, or just assume we rely on what we had.
+        // Ideally we also cached the ID.
+        if (!this.workflowId()) {
+             // Try to fetch just to get metadata/ID if needed, but don't overwrite nodes?
+             // Or just proceed. if we have nodes we are good for editing.
+        }
+        return; 
+    }
+
+    // 2. Fetch from Backend
     this.workflowService.getWorkflow(niche).subscribe({
       next: (data) => {
         if (data && data.workflow) {
@@ -469,6 +721,10 @@ export class WorkflowBuilderComponent implements OnInit {
     switch (type) {
       case 'voicenote': return { text: '', voiceGender: 'female', emoji: '👋' };
       case 'userresponse': return { chips: [] };
+      case 'smartlisten': return { intents: [] };
+      case 'bodymap': return { bodyView: 'front' };
+      case 'condition': return { variable: 'body_part', operator: '==', value: '', trueBranch: [], falseBranch: [] };
+      case 'payment': return { amount: 50, currency: 'EUR', concept: 'Reserva' };
       case 'form': return { fields: [{ label: 'Nombre', type: 'text', required: true }] };
       default: return {};
     }
@@ -637,6 +893,15 @@ export class WorkflowBuilderComponent implements OnInit {
                   }
               }
           }
+          // Check Intents
+          if (node.data?.intents) {
+              for (const intent of node.data.intents) {
+                  if (intent.nextSteps) {
+                      const found = this.findNodeByIdRecursive(intent.nextSteps, id);
+                      if (found) return found;
+                  }
+              }
+          }
       }
       return undefined;
   }
@@ -661,12 +926,20 @@ export class WorkflowBuilderComponent implements OnInit {
           if (node.type === 'voicenote' && !node.data?.text) errs.push('Texto requerido');
           if (node.type === 'userresponse' && (!node.data?.chips || node.data.chips.length === 0)) errs.push('Opciones requeridas');
           
+          if (node.type === 'smartlisten' && (!node.data?.intents || node.data.intents.length === 0)) errs.push('Intenciones requeridas');
+
           if (errs.length > 0) errors[node.id] = errs;
           
-          // Recurse
+          // Recurse Chips
           if (node.data?.chips) {
               node.data.chips.forEach(c => {
                   if (c.nextSteps) this.validateRecursive(c.nextSteps, errors);
+              });
+          }
+          // Recurse Intents
+          if (node.data?.intents) {
+              node.data.intents.forEach(i => {
+                  if (i.nextSteps) this.validateRecursive(i.nextSteps, errors);
               });
           }
       });

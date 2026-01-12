@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CampaignEditorComponent } from './campaign-editor.component';
 import { AbandonedCartService } from '../../services/abandoned-cart.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('CampaignEditorComponent', () => {
   let component: CampaignEditorComponent;
@@ -10,9 +11,9 @@ describe('CampaignEditorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule, CampaignEditorComponent],
-      providers: [AbandonedCartService]
-    })
+    imports: [RouterTestingModule, CampaignEditorComponent],
+    providers: [AbandonedCartService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+})
     .compileComponents();
     
     fixture = TestBed.createComponent(CampaignEditorComponent);

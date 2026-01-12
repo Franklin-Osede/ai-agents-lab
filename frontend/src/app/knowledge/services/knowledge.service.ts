@@ -128,6 +128,11 @@ export class KnowledgeService {
     return this.http.get(url).toPromise();
   }
 
+  async classify(text: string, intents: { intentName: string; keywords?: string[] }[]): Promise<{ intentName: string }> {
+      const url = `${environment.apiBaseUrl}/knowledge/classify`;
+      return this.http.post<{ intentName: string }>(url, { text, intents }).toPromise().then(res => res!);
+  }
+
   disconnect(): void {
     if (this.socket) {
       this.socket.disconnect();

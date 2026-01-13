@@ -17,6 +17,7 @@ export class KnowledgePreviewComponent implements OnInit {
   // Signals
   niche = signal('');
   url = signal('');
+  workflowId = signal<string | null>(null);
   businessName = signal('Negocio Detectado'); // New signal for scraped title
   screenshot = signal<string>('');
 
@@ -59,6 +60,7 @@ export class KnowledgePreviewComponent implements OnInit {
     });
     this.route.queryParams.subscribe(params => {
       this.url.set(params['url']);
+      if(params['workflowId']) this.workflowId.set(params['workflowId']);
     });
 
     // Try to get metadata from router state first (passed from TrainingOverlay)
@@ -378,7 +380,10 @@ export class KnowledgePreviewComponent implements OnInit {
   }
 
   continueToChat() {
-    this.router.navigate(['/booking', this.niche(), 'builder']); 
+    console.log('[Preview] Navigating to builder with ID:', this.workflowId());
+    this.router.navigate(['/booking', this.niche(), 'builder'], {
+        queryParams: { workflowId: this.workflowId() }
+    }); 
   }
 
   rescan() {

@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Workflow } from '../domain/workflow.entity';
 import { WorkflowVersion } from '../domain/workflow-version.entity';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 @Injectable()
 export class WorkflowsService {
@@ -33,9 +35,31 @@ export class WorkflowsService {
   async getLatestByNiche(
     niche: string,
   ): Promise<{ workflow: Workflow; version: WorkflowVersion | null }> {
-    const workflow = await this.workflowsRepository.findOne({ where: { niche } });
+    const workflow = await this.workflowsRepository.findOne({
+      where: { niche },
+      order: { createdAt: 'DESC' },
+    });
     if (!workflow) {
       throw new NotFoundException(`Workflow for niche ${niche} not found`);
+    }
+
+    // Get latest version (highest version number)
+    const version = await this.workflowVersionsRepository.findOne({
+      where: { workflowId: workflow.id },
+      order: { versionNumber: 'DESC' },
+    });
+
+    return { workflow, version };
+  }
+
+  async getById(
+    workflowId: string,
+  ): Promise<{ workflow: Workflow; version: WorkflowVersion | null }> {
+    const workflow = await this.workflowsRepository.findOne({
+      where: { id: workflowId },
+    });
+    if (!workflow) {
+      throw new NotFoundException(`Workflow ${workflowId} not found`);
     }
 
     // Get latest version (highest version number)
@@ -95,5 +119,52 @@ export class WorkflowsService {
     }
 
     throw new NotFoundException('Workflow not found');
+  }
+  async createFromTemplate(niche: string, templateId: string): Promise<Workflow> {
+    const templatePath = path.join(
+      process.cwd(),
+      'src/workflows/infrastructure/templates',
+      `${templateId}.json`,
+    );
+
+    let templateNodes = [];
+    try {
+      const fileContent = await fs.readFile(templatePath, 'utf-8');
+      templateNodes = JSON.parse(fileContent);
+    } catch (error) {
+      console.error(`Error reading template ${templateId}:`, error);
+      throw new NotFoundException(`Template ${templateId} not found`);
+    }
+
+    // Create a new workflow (reuses existing logic which creates an empty draft)
+    const workflow = await this.createWorkflow(niche, 'My Medical Agent');
+
+    // Update the draft with template nodes
+    const draftVersion = await this.workflowVersionsRepository.findOne({
+      where: { workflowId: workflow.id, status: 'draft' },
+    });
+
+    if (draftVersion) {
+      console.log(
+        `[DEBUG] Found draft version ${draftVersion.id}, updating with ${templateNodes.length} nodes from ${templateId}`,
+      );
+      if (templateNodes.length > 0) {
+        draftVersion.nodes = templateNodes;
+        await this.workflowVersionsRepository.save(draftVersion);
+        console.log(
+          `[DEBUG] Draft version updated successfully. Nodes count: ${draftVersion.nodes.length}`,
+        );
+
+        // Return explicit confirmation if needed, but the method returns Promise<Workflow>
+        // converting to any to attach data might be hacky but useful for debug
+        return { ...workflow, nodes: templateNodes } as any;
+      } else {
+        console.log(`[DEBUG] Template nodes array is empty! Check JSON file content.`);
+      }
+    } else {
+      console.log(`[DEBUG] Draft version NOT found for workflow ${workflow.id}`);
+    }
+
+    return workflow;
   }
 }

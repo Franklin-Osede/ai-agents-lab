@@ -15,12 +15,50 @@
  }
  </div>
  </div>
- <button (click)="publishWorkflow()" class="px-5 py-2 bg-brand-gradient hover:bg-brand-gradient-hover text-white text-sm font-semibold rounded-full shadow-md shadow-indigo-200 transition-all hover:shadow-lg btn-press flex items-center gap-1.5">
- <span>{{ isPublishing() ? 'Publicando...' : 'Publicar' }}</span>
- <span class="material-symbols-outlined text-[16px]">rocket_launch</span>
- </button>
+
+
+ <div class="flex items-center gap-2">
+     <button (click)="publishWorkflow()" class="px-5 py-2 bg-brand-gradient hover:bg-brand-gradient-hover text-white text-sm font-semibold rounded-full shadow-md shadow-indigo-200 transition-all hover:shadow-lg btn-press flex items-center gap-1.5">
+         <span>{{ isPublishing() ? 'Publicando...' : 'Publicar' }}</span>
+         <span class="material-symbols-outlined text-[16px]">rocket_launch</span>
+     </button>
+ </div>
  </div>
  </header>
+
+ <!-- Template Menu Overlay -->
+ @if (isTemplateMenuOpen()) {
+    <div class="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/20 backdrop-blur-sm" 
+         (click)="isTemplateMenuOpen.set(false)" (keydown.enter)="isTemplateMenuOpen.set(false)" tabindex="0" role="button">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm" 
+             (click)="$event.stopPropagation()" (keydown.enter)="$event.stopPropagation()" tabindex="0" role="button">
+            <div class="flex items-center justify-between mb-4 px-1">
+                <h3 class="text-lg font-bold text-slate-800">Elegir Plantilla</h3>
+                <button (click)="isTemplateMenuOpen.set(false)" class="size-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <p class="text-xs text-slate-500 mb-4 px-1">
+                ⚠️ Al cargar una plantilla se reemplazará el flujo actual por completo.
+            </p>
+
+            <div class="flex flex-col gap-2">
+                 @for (tmpl of availableTemplates(); track tmpl.id) {
+                     <button (click)="loadTemplate(tmpl.id)" class="flex items-center gap-3 p-3 rounded-xl border border-slate-100 hover:border-indigo-500/30 hover:bg-indigo-50 transition-all text-left group">
+                         <div class="size-10 shrink-0 rounded-lg bg-white group-hover:bg-white flex items-center justify-center text-indigo-500 shadow-sm border border-slate-100">
+                             <span class="material-symbols-outlined">{{ tmpl.icon }}</span>
+                         </div>
+                         <div>
+                             <p class="text-sm font-bold text-slate-700 group-hover:text-indigo-700">{{ tmpl.label }}</p>
+                             <p class="text-[10px] text-slate-400">Clic para cargar</p>
+                         </div>
+                     </button>
+                 }
+            </div>
+        </div>
+    </div>
+}
  
  <main class="flex-1 overflow-y-auto overflow-x-hidden relative w-full max-w-lg mx-auto pb-40 pt-6">
  <!-- Main Vertical Line (Root) -->
@@ -41,11 +79,16 @@
                  </div>
                  <p class="text-slate-900 font-semibold text-sm">Añade los pasos de tu flujo</p>
              </div>
-             <button class="size-8 rounded-full hover:bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary transition-colors">
-             <span class="material-symbols-outlined text-[20px]">settings</span>
-             </button>
          </div>
      </div>
+ </div>
+
+ <!-- Load Template Button (Below Start Node) -->
+ <div class="mb-6 pl-[54px] pr-4">
+     <button (click)="isTemplateMenuOpen.set(true)" class="w-full flex items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/50 hover:bg-indigo-50 hover:border-indigo-300 text-indigo-600 font-semibold text-sm transition-all group">
+         <span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
+         <span>Cargar una plantilla predefinida</span>
+     </button>
  </div>
  
  <!-- ROOT LIST RENDER -->
@@ -311,7 +354,7 @@
                                                   <div class="flex flex-wrap gap-2">
                                                       @for (preset of availableIntents(); track preset.name) {
                                                           <button (click)="addPresetToNode(node.id, preset)" 
-                                                                  class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-semibold text-slate-600 hover:border-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all shadow-sm">
+                                                                  class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-semibold text-slate-600 hover:border-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all shadow-sm whitespace-nowrap shrink-0">
                                                               <span class="material-symbols-outlined text-[16px]">{{ preset.icon }}</span>
                                                               {{ preset.name }}
                                                           </button>
@@ -336,7 +379,7 @@
                                                                   <input [attr.aria-label]="'Intención ' + ($index + 1)" 
                                                                          [value]="intent.intentName" 
                                                                          (input)="updateChip(node.id, $index, $any($event.target).value)" 
-                                                                         class="border-none bg-transparent p-0 text-xs font-bold text-slate-800 w-full focus:ring-0 placeholder:text-slate-300 mb-1" 
+                                                                         class="border-none bg-transparent p-0 text-xs font-bold text-slate-800 w-full focus:ring-0 placeholder:text-slate-300 mb-1 min-w-0" 
                                                                          type="text" 
                                                                          placeholder="Nombre de Intención"/>
                                                                   <!-- Show Keywords Preview -->

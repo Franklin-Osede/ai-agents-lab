@@ -15,6 +15,19 @@ export class WorkflowsController {
     return this.workflowsService.createWorkflow(body.niche, body.name);
   }
 
+  @Post('template/:templateId')
+  async createFromTemplate(
+    @Param('templateId') templateId: string,
+    @Body() body: { niche: string },
+  ) {
+    return this.workflowsService.createFromTemplate(body.niche, templateId);
+  }
+
+  @Get('detail/:id')
+  async getById(@Param('id') id: string) {
+    return this.workflowsService.getById(id);
+  }
+
   @Get(':niche')
   async getByNiche(@Param('niche') niche: string) {
     return this.workflowsService.getLatestByNiche(niche);

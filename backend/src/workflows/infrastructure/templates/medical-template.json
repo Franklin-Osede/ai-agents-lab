@@ -1,0 +1,98 @@
+[
+  {
+    "id": "start-node",
+    "type": "smartlisten",
+    "label": "Escucha Inteligente",
+    "position": { "x": 100, "y": 100 },
+    "data": {
+      "intents": [
+        {
+          "intentName": "Agendar Cita",
+          "keywords": ["cita", "reserva", "hueco", "hora"],
+          "nextSteps": [
+             {
+                "id": "body-map-node",
+                "type": "bodymap",
+                "label": "Mapa Corporal",
+                "position": { "x": 100, "y": 200 },
+                "data": { "bodyView": "back" }
+             },
+             {
+                "id": "services-node",
+                "type": "services",
+                "label": "Selección Servicios",
+                "position": { "x": 100, "y": 300 },
+                "data": {}
+             },
+             {
+                "id": "professional-node",
+                "type": "professional",
+                "label": "Elegir Profesional",
+                "position": { "x": 100, "y": 400 },
+                "data": {}
+             },
+             {
+                "id": "calendar-node",
+                "type": "calendar",
+                "label": "Calendario",
+                "position": { "x": 100, "y": 500 },
+                "data": {}
+             },
+             {
+                "id": "payment-node",
+                "type": "payment",
+                "label": "Fianza Reserva",
+                "position": { "x": 100, "y": 600 },
+                "data": {
+                  "amount": 20,
+                  "currency": "EUR",
+                  "concept": "Señal Reserva"
+                }
+             },
+             {
+                "id": "voice-end-node",
+                "type": "voicenote",
+                "label": "Confirmación",
+                "position": { "x": 100, "y": 700 },
+                "data": {
+                  "text": "Perfecto, tu cita ha quedada confirmada. Te esperamos en la clínica.",
+                  "voiceGender": "female",
+                  "voiceId": "Lucia"
+                }
+             }
+          ]
+        },
+        {
+          "intentName": "Urgencia",
+          "keywords": ["dolor", "urgente", "emergencia"],
+          "nextSteps": [
+            {
+               "id": "urgency-msg",
+               "type": "message",
+               "label": "Mensaje Urgencia",
+               "position": { "x": 300, "y": 200 },
+               "data": {
+                 "text": "Para urgencias, por favor llama directamente al 555-123-456."
+               }
+            }
+          ]
+        },
+        {
+           "intentName": "Precios",
+           "keywords": ["precio", "coste", "cuanto vale"],
+           "nextSteps": [
+             {
+               "id": "prices-msg",
+               "type": "message",
+               "label": "Lista Precios",
+               "position": { "x": 500, "y": 200 },
+               "data": {
+                 "text": "Nuestras sesiones de fisioterapia son a 60€. La primera visita incluye valoración."
+               }
+             }
+           ]
+        }
+      ]
+    }
+  }
+]

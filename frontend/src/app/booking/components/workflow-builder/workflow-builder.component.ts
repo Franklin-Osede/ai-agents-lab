@@ -1,12 +1,12 @@
-import { Component, OnInit, signal, inject, effect, HostListener, computed, TemplateRef, ViewChild } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Component, OnInit, signal, effect, inject, ViewChild, ElementRef, computed, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { WorkflowService } from '../../../core/services/workflow.service';
 import { VoiceService, Voice } from '../../../core/services/voice.service';
-import { Subject } from 'rxjs';
+import { Subject, combineLatest } from 'rxjs';
 import { debounceTime, filter } from 'rxjs/operators';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { IntentRegistryService, IntentPreset } from '../../../core/services/intent-registry.service';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
@@ -127,6 +127,23 @@ export class WorkflowBuilderComponent implements OnInit {
   // Default to root end if not specified.
   currentInsertContext = signal<InsertContext>({ index: 0 });
 
+  // Template Menu State
+  isTemplateMenuOpen = signal(false);
+  
+  // Computed available templates based on Niche
+  // Computed available templates based on Niche
+  availableTemplates = computed(() => {
+     const n = this.niche()?.toLowerCase() || '';
+     const allTemplates = [
+        // Added 'health' to medical template as it seems to be the default for the user
+        { id: 'medical-template', label: 'Médico General', icon: 'stethoscope', niches: ['medical', 'doctor', 'physio', 'psychology', 'demo', 'health'] },
+        { id: 'dental-template', label: 'Clínica Dental', icon: 'dentistry', niches: ['dental', 'dentist'] },
+     ];
+     
+     // STRICT FILTERING as requested ("solo me deberia mostrar la plantilla de la seccion")
+     return allTemplates.filter(t => t.niches.some(target => n.includes(target)));
+  });
+
   // Settings
   settings = signal<WorkflowSettings>({
     voiceGender: 'female',
@@ -177,9 +194,26 @@ export class WorkflowBuilderComponent implements OnInit {
   ngOnInit() {
     this.availableVoices = this.voiceService.getAvailableVoices();
 
-    this.route.params.subscribe(params => {
+    combineLatest([
+      this.route.params,
+      this.route.queryParams
+    ]).subscribe(([params, queryParams]) => {
       this.niche.set(params['niche']);
-      this.loadWorkflow();
+      
+      const workflowIdFromQuery = queryParams['workflowId'];
+      
+      if (workflowIdFromQuery) {
+          console.log('Loading specific workflow ID:', workflowIdFromQuery);
+          // Only load if it's a new ID or we haven't loaded yet
+          if (this.workflowId() !== workflowIdFromQuery) {
+             this.loadWorkflowById(workflowIdFromQuery);
+          }
+      } else {
+          // If no ID in query, fallback to standard load (cache or niche-latest)
+          // But be careful not to overwrite if we already have nodes and just lost the ID param?
+          // For now, standard load is safe as it checks cache first.
+          this.loadWorkflow();
+      }
     });
 
     this.saveSubject.pipe(
@@ -669,6 +703,81 @@ export class WorkflowBuilderComponent implements OnInit {
       },
       error: () => this.createWorkflow(niche)
     });
+  }
+
+  loadWorkflowById(id: string) {
+      this.workflowService.getWorkflowById(id).subscribe({
+          next: (data) => {
+              if (data && data.workflow) {
+                 this.workflowId.set(data.workflow.id);
+                  if (data.version) {
+                    this.nodes.set(data.version.nodes || []);
+                    if (data.version.settings) this.settings.set(data.version.settings);
+                  } else {
+                    this.nodes.set([]);
+                  }
+              }
+          },
+          error: (err) => console.error('Could not load specific workflow', err)
+      });
+  }
+
+  loadTemplate(templateId: string) {
+      if (this.nodes().length > 0) {
+          if (!confirm('¿Estás seguro? Esto reemplazará todo el flujo actual con la plantilla seleccionada.')) {
+              return;
+          }
+      }
+      
+      this.isTemplateMenuOpen.set(false);
+      // Show local loading state if feasible, but node clearing is enough visual cue
+      this.nodes.set([]); 
+      
+      console.log('Loading template:', templateId, 'For niche:', this.niche());
+
+      this.workflowService.createFromTemplate(this.niche(), templateId).subscribe({
+          next: (response: any) => {
+              console.log('Template loaded response:', response);
+              const wfData = response.data || response;
+              
+              if (wfData && (wfData.id || (wfData.workflow && wfData.workflow.id))) {
+                  const newId = wfData.id || wfData.workflow.id;
+                  this.workflowId.set(newId);
+                  
+                  // If the backend returns the nodes directly (as we just added), use them!
+                  if (wfData.nodes && Array.isArray(wfData.nodes) && wfData.nodes.length > 0) {
+                      console.log('Using nodes returned directly from template creation:', wfData.nodes.length);
+                      this.nodes.set(wfData.nodes);
+                      
+                      // Update URL quietly without reloading
+                      this.router.navigate([], { 
+                          relativeTo: this.route, 
+                          queryParams: { workflowId: newId },
+                          queryParamsHandling: 'merge'
+                      });
+                  } else {
+                      // Fallback to fetch if nodes not returned
+                      console.log('Nodes not in response, fetching...');
+                      setTimeout(() => {
+                         this.loadWorkflowById(newId);
+                      }, 500);
+                       // Update URL quietly
+                      this.router.navigate([], { 
+                          relativeTo: this.route, 
+                          queryParams: { workflowId: newId },
+                          queryParamsHandling: 'merge'
+                      });
+                  }
+              } else {
+                  console.error('Template response missing ID:', wfData);
+                  alert('Error al cargar la plantilla: Respuesta inválida.');
+              }
+          },
+          error: (err) => {
+              console.error('Failed to load template:', err);
+              alert('Error al cargar la plantilla. Inténtalo de nuevo.');
+          }
+      });
   }
 
   createWorkflow(niche: string) {

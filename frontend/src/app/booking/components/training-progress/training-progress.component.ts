@@ -22,6 +22,7 @@ export class TrainingProgressComponent implements OnInit, OnDestroy {
   url = signal('');
   realTrainingCompleted = signal(false);
   screenshot = signal<string | null>(null);
+  workflowId = signal<string | null>(null);
 
   // Steps for UI Checklist
   steps = signal([
@@ -76,6 +77,8 @@ export class TrainingProgressComponent implements OnInit, OnDestroy {
 
     this.route.queryParams.subscribe((params) => {
       const url = params['url'];
+      if(params['workflowId']) this.workflowId.set(params['workflowId']);
+
       if (url) {
         this.url.set(url);
         // Start REAL training
@@ -181,7 +184,10 @@ export class TrainingProgressComponent implements OnInit, OnDestroy {
     
     setTimeout(() => {
       this.router.navigate(['/booking', this.niche(), 'preview'], {
-        queryParams: { url: this.url() },
+        queryParams: { 
+            url: this.url(),
+            workflowId: this.workflowId()
+        },
         state: { metadata: trainingData.metadata } // Pass metadata
       });
     }, 1000);

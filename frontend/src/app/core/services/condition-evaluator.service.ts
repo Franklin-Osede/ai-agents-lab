@@ -4,9 +4,6 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class ConditionEvaluatorService {
-
-  constructor() { }
-
   evaluate(variableValue: any, operator: string, targetValue: any): boolean {
     // Normalization
     const val = this.normalize(variableValue);

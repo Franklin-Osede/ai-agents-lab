@@ -35,11 +35,19 @@ export class WorkflowService {
     return this.http.post<Workflow>(`${this.baseUrl}/workflows`, { niche, name });
   }
 
+  createFromTemplate(niche: string, templateId: string): Observable<Workflow> {
+    return this.http.post<Workflow>(`${this.baseUrl}/workflows/template/${templateId}`, { niche });
+  }
+
   /**
    * Get the latest workflow version structure for a niche
    */
   getWorkflow(niche: string): Observable<{ workflow: Workflow; version: WorkflowVersion | null }> {
     return this.http.get<{ workflow: Workflow; version: WorkflowVersion | null }>(`${this.baseUrl}/workflows/${niche}`);
+  }
+
+  getWorkflowById(id: string): Observable<{ workflow: Workflow; version: WorkflowVersion | null }> {
+    return this.http.get<{ workflow: Workflow; version: WorkflowVersion | null }>(`${this.baseUrl}/workflows/detail/${id}`);
   }
 
   /**

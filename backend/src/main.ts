@@ -35,6 +35,7 @@ async function bootstrap() {
   const defaultOrigins = [
     'http://localhost:4200',
     'http://localhost:4201',
+    'http://localhost:4210',
     'http://localhost:5173',
     // Production frontends (wildcards handled below)
     'https://ai-agents-lab-peach.vercel.app',
@@ -89,7 +90,7 @@ async function bootstrap() {
     .addTag('dm-response-agent', 'Direct message response agent')
     .addTag('follow-up-agent', 'Automated follow-up agent')
     .addBearerAuth()
-    .addServer(process.env.API_URL || 'http://localhost:3003', 'Development server')
+    .addServer(process.env.API_URL || 'http://localhost:3005', 'Development server')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -101,7 +102,7 @@ async function bootstrap() {
     },
   });
 
-  const port = process.env.PORT || 3003;
+  const port = process.env.PORT || 3005;
   await app.listen(port);
 
   logger.log(`🚀 Application is running on: http://localhost:${port}`);

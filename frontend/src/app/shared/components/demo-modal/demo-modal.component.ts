@@ -812,7 +812,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           ];
         }
       } else if (newStep === 3) {
-        nextMessage = "¿Cuánto tiempo tienes disponible? (Te mereces más, pero entendemos 😊)";
+        nextMessage = "¿Cuánto tiempo tienes disponible?";
         nextOptions = [
           "⚡ 30-45 minutos (Express)",
           "⏰ 60 minutos (Estándar)",

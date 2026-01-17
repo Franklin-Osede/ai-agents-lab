@@ -175,20 +175,19 @@ export class TrainingProgressComponent implements OnInit, OnDestroy {
     this.addLog('success', '¡Base de conocimiento generada!');
     this.updateStep(3, 'completed');
 
-
-
     const trainingData = this.knowledgeService.trainingProgress();
     if (trainingData.metadata?.screenshot) {
       this.screenshot.set(trainingData.metadata.screenshot);
     }
     
     setTimeout(() => {
+      // Navigate to preview to show scraping results
       this.router.navigate(['/booking', this.niche(), 'preview'], {
         queryParams: { 
             url: this.url(),
             workflowId: this.workflowId()
         },
-        state: { metadata: trainingData.metadata } // Pass metadata
+        state: { metadata: trainingData.metadata } // Pass scraped metadata
       });
     }, 1000);
   }

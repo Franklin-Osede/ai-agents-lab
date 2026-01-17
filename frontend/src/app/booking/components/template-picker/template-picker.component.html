@@ -1,0 +1,179 @@
+<div class="template-picker">
+  <!-- Error Message -->
+  @if (error()) {
+    <div class="error-banner">
+      <span class="error-icon">⚠️</span>
+      <span>{{ error() }}</span>
+    </div>
+  }
+
+  <!-- Step 2: Template Detail View (iOS Style) -->
+  @if (step() === 2) {
+    <div class="template-detail">
+      <!-- Header -->
+      <header class="detail-header">
+        <button class="back-btn" (click)="goBack()">
+          <span class="back-icon">‹</span>
+          <span>Atrás</span>
+        </button>
+        <span class="header-title">Plantilla</span>
+        <div class="header-spacer"></div>
+      </header>
+
+      <!-- Loading State -->
+      @if (isLoading()) {
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Cargando plantillas...</p>
+        </div>
+      }
+
+      <!-- Template Content -->
+      @if (!isLoading() && templates().length > 0) {
+        <main class="detail-content">
+          @for (template of templates(); track template.id) {
+            <div class="template-card-detail">
+              <!-- Badge -->
+              <div class="recommended-badge">
+                RECOMENDADO
+              </div>
+
+              <!-- Title & Description -->
+              <h1 class="template-title">{{ template.name }}</h1>
+              <p class="template-description">{{ template.description }}</p>
+
+              <!-- Divider -->
+              <div class="divider"></div>
+
+              <!-- Features Section -->
+              <div class="features-section">
+                <h2 class="section-title">FUNCIONALIDADES INCLUIDAS</h2>
+                <div class="features-grid">
+                  @for (intent of template.defaultIntents; track intent.name) {
+                    <div class="feature-pill">
+                      <span class="feature-icon">{{ intent.icon }}</span>
+                      <span class="feature-name">{{ intent.displayName }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- About Section -->
+              <div class="about-section">
+                <h2 class="section-title">SOBRE ESTA PLANTILLA</h2>
+                <p class="about-text">
+                  Este asistente entiende el lenguaje natural de tus pacientes para resolver dudas 
+                  y dirigirles al servicio ideal automáticamente, liberando a tu equipo de tareas repetitivas.
+                </p>
+              </div>
+
+              <!-- Action Button (Integrated) -->
+              <div class="sticky-action-bar">
+                <button 
+                  class="primary-cta"
+                  (click)="selectTemplate(template)"
+                  [disabled]="isLoading()"
+                >
+                  <span>Usar esta plantilla</span>
+                  <span class="arrow-icon">→</span>
+                </button>
+              </div>
+            </div>
+          }
+        </main>
+      }
+    </div>
+  }
+
+  <!-- Step 3: Customize (Keep existing design) -->
+  @if (step() === 3) {
+    <div class="customizer">
+      <button class="back-btn-simple" (click)="goBack()">
+        <span class="icon">←</span> Volver
+      </button>
+
+      <div class="header">
+        <h2>Personaliza tu agente</h2>
+        <p>Ajusta los detalles para que el agente se adapte a tu negocio</p>
+      </div>
+
+      <div class="customization-form">
+        <div class="form-section">
+          <label for="agentName">Nombre del agente</label>
+          <input
+            id="agentName"
+            type="text"
+            [(ngModel)]="agentName"
+            placeholder="Ej: Dr. García"
+            class="form-input"
+          />
+          <span class="hint">Este nombre aparecerá en el saludo inicial</span>
+        </div>
+
+        <div class="form-section">
+          <label for="greeting">Saludo inicial (opcional)</label>
+          <textarea
+            id="greeting"
+            [(ngModel)]="greeting"
+            placeholder="Ej: ¡Hola! Soy el Dr. García, ¿en qué puedo ayudarte?"
+            class="form-textarea"
+            rows="3"
+          ></textarea>
+          <span class="hint">Si lo dejas vacío, usaremos un saludo predeterminado</span>
+        </div>
+
+        <div class="form-section">
+          <div class="section-header">
+            <span>¿Qué puede hacer tu agente?</span>
+          </div>
+          <p class="section-description">
+            Selecciona las funcionalidades que quieres activar
+          </p>
+          <div class="intents-list">
+            @for (intent of selectedTemplate()?.defaultIntents; track intent.name) {
+              <div class="intent-item">
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    [checked]="enabledIntents()[intent.name]"
+                    (change)="toggleIntent(intent.name)"
+                  />
+                  <span class="checkbox-custom"></span>
+                  <div class="intent-info">
+                    <div class="intent-header">
+                      <span class="intent-icon">{{ intent.icon }}</span>
+                      <span class="intent-name">{{ intent.displayName }}</span>
+                    </div>
+                    @if (intent.description) {
+                      <span class="intent-description">
+                        {{ intent.description }}
+                      </span>
+                    }
+                  </div>
+                </label>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="actions">
+          <button
+            class="create-btn"
+            (click)="createWorkflow()"
+            [disabled]="isLoading()"
+          >
+            @if (!isLoading()) {
+              <span>✨ Crear Agente</span>
+            }
+            @if (isLoading()) {
+              <span>
+                <div class="spinner-small"></div>
+                Creando...
+              </span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

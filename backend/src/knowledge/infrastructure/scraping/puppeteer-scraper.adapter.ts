@@ -384,14 +384,35 @@ export class PuppeteerScraperAdapter implements IScraperService {
 
       // 3. SCHEDULE
       let hours = '';
-      const hoursRegex =
+      // Regex 1: Standard range (Lunes a Viernes 9-20h)
+      const hoursRegexRange =
         /(?:Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo|L|M|X|J|V|S|D|Lun|Mar|Mie|Jue|Vie|Sab|Dom|Weekdays|Monday|Friday|Sat|Sun)[\s\S]{0,20}(?:a|to|-|–)[\s\S]{0,20}\d{1,2}[:h]?\d{0,2}[\s\S]{0,10}(?:a|to|-|–)[\s\S]{0,10}\d{1,2}[:h]?\d{0,2}/i;
-      const footer = document.querySelector('footer, .contact-section, #contact');
+
+      // Regex 2: Simple time pattern found near "Horario"
+      const timePattern = /\d{1,2}[:h]\d{2}/;
+
+      const footer = document.querySelector('footer, .contact-section, #contact, .site-footer');
       const searchCtx = footer ? (footer as HTMLElement).innerText : document.body.innerText;
+
+      // Optimize: only look at the last part of the page if footer not found specifically
       const searchArea =
-        searchCtx.length > 2000 ? searchCtx.substring(searchCtx.length - 2000) : searchCtx;
+        !footer && searchCtx.length > 3000
+          ? searchCtx.substring(searchCtx.length - 3000)
+          : searchCtx;
+
       const lines = searchArea.split('\n');
-      const hoursLines = lines.filter((l) => hoursRegex.test(l) && l.length < 100);
+      const hoursLines = lines.filter((l) => {
+        const cleanL = l.trim();
+        if (cleanL.length > 100) return false;
+        // Match standard range
+        if (hoursRegexRange.test(cleanL)) return true;
+        // Match "Horario" keyword + time pattern
+        if (/horario|apertura|consulta/i.test(cleanL) && timePattern.test(cleanL)) return true;
+        // Match days + time pattern (e.g. "L-V: 10:00 - 14:00")
+        if (/[LMXJVSD]{1,3}(?:-[LMXJVSD]{1,3})?/i.test(cleanL) && timePattern.test(cleanL)) return true;
+        return false;
+      });
+
       if (hoursLines.length > 0) hours = hoursLines.join('\n');
 
       // 4. TEAM
@@ -412,8 +433,6 @@ export class PuppeteerScraperAdapter implements IScraperService {
         if (cardLines.length >= 2) {
           const name = cardLines[0];
           const role = cardLines[1];
-          // Improved Regex: Allows Dr./Dra., All Caps, and standard mixed case.
-          // Must have at least two words (Name Surname)
           const isName =
             /^(?:Dr\.|Dra\.|Mr\.|Mrs\.)?\s*[a-zA-ZÁÉÍÓÚÑáéíóúñ]+(?:\s+[a-zA-ZÁÉÍÓÚÑáéíóúñ]+)+$/.test(
               name,
@@ -466,21 +485,102 @@ export class PuppeteerScraperAdapter implements IScraperService {
       }
 
       // 6. SERVICES
-      const services: string[] = [];
-      document.querySelectorAll('nav a, ul li a, .elementor-nav-menu a').forEach((a) => {
-        const t = a.textContent?.trim() || '';
-        const serviceKeywords = [
-          'fisioterapia',
-          'osteopatia',
-          'masaje',
-          'rehabilitacion',
-          'pilates',
-          'yoga',
-          'entrenamiento',
-        ];
-        if (serviceKeywords.some((kw) => t.toLowerCase().includes(kw)) && t.length < 40)
-          services.push(t);
+      const servicesSet: Set<string> = new Set();
+
+      // Strategy A: Detect dedicated "Services" or "Treatments" sections
+      const serviceSectionSelectors = [
+        '#servicios',
+        '#tratamientos',
+        '#especialidades',
+        '.services',
+        '.treatments',
+        '.servicios',
+        '.nuestros-servicios',
+        '.our-services',
+        'section[class*="service"]',
+        'div[id*="service"]',
+      ];
+
+      serviceSectionSelectors.forEach((selector) => {
+        const container = document.querySelector(selector);
+        if (container) {
+          container
+            .querySelectorAll('h3, h4, h5, .elementor-icon-box-title, .et_pb_module_header')
+            .forEach((el) => {
+              const text = el.textContent?.trim();
+              if (
+                text &&
+                text.length > 4 &&
+                text.length < 60 &&
+                !text.includes('€') &&
+                !/\d/.test(text)
+              ) {
+                servicesSet.add(text);
+              }
+            });
+        }
       });
+
+      // Strategy B: Navigation and Keyword Match
+      // Added more generic selectors for menus (wp-block-navigation, menu-item, etc.)
+      const potentialLinks = document.querySelectorAll(
+        'nav a, ul li a, .elementor-nav-menu a, .service-title, .h3 a, .et_pb_module_header a, .menu-item a, .sub-menu a, .dropdown-menu a, .wp-block-navigation-link__content',
+      );
+
+      const serviceKeywords = [
+        'fisioterapia',
+        'osteopatia',
+        'masaje',
+        'rehabilitacion',
+        'pilates',
+        'yoga',
+        'entrenamiento',
+        'implante',
+        'ortodoncia',
+        'periodoncia',
+        'endodoncia',
+        'dental',
+        'dientes',
+        'odontologia',
+        'medicina',
+        'consulta',
+        'cardiologia',
+        'dermatologia',
+        'pediatria',
+        'estetica',
+        'cirugia',
+        'tratamiento',
+        'servicio',
+        'terapia',
+        'psicologia',
+        'nutricion',
+        'podologia',
+        'suelo pelvico',
+        'maternidad',
+      ];
+
+      potentialLinks.forEach((a) => {
+        const t = a.textContent?.trim() || '';
+        const href = a.getAttribute('href') || '';
+
+        // Match by Text OR URL keyword
+        const matchesKeyword = serviceKeywords.some((kw) => t.toLowerCase().includes(kw) || href.toLowerCase().includes(kw));
+
+        if (
+          t.length > 3 &&
+          t.length < 60 &&
+          matchesKeyword &&
+          !t.toLowerCase().includes('aviso') &&
+          !t.toLowerCase().includes('cookies') &&
+          !t.toLowerCase().includes('politica') &&
+          !t.toLowerCase().includes('contacto') &&
+          !t.toLowerCase().includes('nosotros')
+        ) {
+          servicesSet.add(t);
+        }
+      });
+
+      const services = Array.from(servicesSet);
 
       // 7. COLORS
       let primaryColor = '#000';

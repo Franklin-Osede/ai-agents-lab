@@ -380,9 +380,24 @@ export class KnowledgePreviewComponent implements OnInit {
   }
 
   continueToChat() {
-    console.log('[Preview] Navigating to builder with ID:', this.workflowId());
-    this.router.navigate(['/booking', this.niche(), 'builder'], {
-        queryParams: { workflowId: this.workflowId() }
+    console.log('[Preview] Navigating to templates with scraped data');
+    
+    // Prepare metadata to pass to templates
+    const metadata = {
+      businessName: this.businessName(),
+      services: this.services,
+      contactInfo: this.contactInfo,
+      team: this.team,
+      branding: this.branding,
+      screenshot: this.screenshot()
+    };
+    
+    this.router.navigate(['/booking', this.niche(), 'templates'], {
+      queryParams: { 
+        url: this.url(),
+        workflowId: this.workflowId() 
+      },
+      state: { metadata } // Pass scraped data to templates
     }); 
   }
 

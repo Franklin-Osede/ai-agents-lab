@@ -18,7 +18,7 @@ cd "$FRONTEND_DIR"
 # Verificar si node_modules existe
 if [ ! -d "node_modules" ]; then
     echo "📦 Instalando dependencias (esto puede tardar unos minutos)..."
-    npm install
+    pnpm install
     echo "✅ Dependencias instaladas"
 else
     echo "✅ Dependencias ya instaladas"
@@ -38,7 +38,7 @@ fi
 
 # Iniciar el servidor en background
 echo "🔥 Levantando servidor Angular..."
-npm run start &
+pnpm run start &
 
 # Guardar el PID
 echo $! > "$PID_FILE"

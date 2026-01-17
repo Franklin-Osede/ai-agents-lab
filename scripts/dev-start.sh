@@ -23,7 +23,7 @@ install_deps() {
     cd "$dir"
     if [ ! -d "node_modules" ]; then
         echo "📦 Instalando dependencias de $name..."
-        npm install > /dev/null 2>&1 &
+        pnpm install > /dev/null 2>&1 &
         echo $!
     else
         echo "✅ $name: dependencias ya instaladas"
@@ -54,16 +54,18 @@ fi
 echo ""
 echo "🔥 Levantando servidores..."
 
-# Iniciar backend
+# Iniciar el servidor en background
+echo "🔥 Levantando servidor NestJS..."
 cd "$BACKEND_DIR"
-npm run start:dev > "$PROJECT_ROOT/.backend.log" 2>&1 &
+pnpm run start:dev > "$PROJECT_ROOT/.backend.log" 2>&1 &
 BACKEND_PID=$!
 echo $BACKEND_PID > "$BACKEND_PID_FILE"
 echo "✅ Backend iniciado (PID: $BACKEND_PID) - http://localhost:3005"
 
-# Iniciar frontend
+# Iniciar el servidor en background
+echo "🔥 Levantando servidor Angular..."
 cd "$FRONTEND_DIR"
-npm run start > "$PROJECT_ROOT/.frontend.log" 2>&1 &
+pnpm run start > "$PROJECT_ROOT/.frontend.log" 2>&1 &
 FRONTEND_PID=$!
 echo $FRONTEND_PID > "$FRONTEND_PID_FILE"
 echo "✅ Frontend iniciado (PID: $FRONTEND_PID) - http://localhost:4210"

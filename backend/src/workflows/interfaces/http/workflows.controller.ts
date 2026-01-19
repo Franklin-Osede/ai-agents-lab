@@ -3,6 +3,8 @@ import { WorkflowsService } from '../../application/workflows.service';
 import { WorkflowExecutorService } from '../../application/workflow-executor.service';
 import { GetTemplatesByNicheUseCase } from '../../application/use-cases/get-templates-by-niche.use-case';
 import { CreateWorkflowFromTemplateUseCase } from '../../application/use-cases/create-workflow-from-template.use-case';
+import { GenerateWorkflowUseCase } from '../../application/use-cases/generate-workflow.use-case';
+import { GenerateWorkflowDto } from './dtos/generate-workflow.dto';
 import { NicheType } from '../../domain/value-objects/template-niche.vo';
 
 @Controller('workflows')
@@ -12,6 +14,7 @@ export class WorkflowsController {
     private readonly workflowExecutor: WorkflowExecutorService,
     private readonly getTemplatesByNiche: GetTemplatesByNicheUseCase,
     private readonly createFromTemplateUseCase: CreateWorkflowFromTemplateUseCase,
+    private readonly generateWorkflowUseCase: GenerateWorkflowUseCase,
   ) {}
 
   // Template endpoints
@@ -23,6 +26,11 @@ export class WorkflowsController {
     }
     // Return all templates if no niche specified
     return { data: [] };
+  }
+
+  @Post('generate')
+  async generateWorkflow(@Body() dto: GenerateWorkflowDto) {
+    return this.generateWorkflowUseCase.execute(dto);
   }
 
   @Post('from-template')

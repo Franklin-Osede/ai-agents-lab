@@ -1,0 +1,26 @@
+
+<div class="brain-container">
+  <div class="header">
+    <h3><span class="pulse" [class.active]="isConnected">●</span> AGENT CORTEX</h3>
+    <span class="status">{{ isConnected ? 'ONLINE' : 'CONNECTING...' }}</span>
+  </div>
+
+  <div class="logs-window">
+    @for (log of thoughts; track log.timestamp) {
+    <div class="log-item fade-in">
+      <div class="log-icon">{{ log.icon }}</div>
+      <div class="log-content">
+        <span class="log-time">{{ log.timestamp }}</span>
+        <strong class="log-step">{{ log.step | uppercase }}</strong>
+        <p class="log-detail">{{ log.details }}</p>
+      </div>
+    </div>
+    }
+    
+    @if (thoughts.length === 0) {
+    <div class="empty-state">
+      Waiting for agent activity...
+    </div>
+    }
+  </div>
+</div>

@@ -43,6 +43,7 @@ const routes: Routes = [
   // Legacy route redirects to new dashboard
   { path: 'professional', redirectTo: '/abandoned-cart', pathMatch: 'full' },
   { path: 'knowledge', loadChildren: () => import('./knowledge/knowledge.module').then(m => m.KnowledgeModule) },
+  { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule) },
   { path: '**', redirectTo: '' },
 ];
 

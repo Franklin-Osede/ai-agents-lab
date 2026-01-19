@@ -1,0 +1,100 @@
+.suggested-container {
+  @apply min-h-screen bg-gray-50 flex flex-col;
+}
+
+.header {
+  @apply bg-white border-b border-gray-100 p-4 flex items-center gap-4 sticky top-0 z-10;
+}
+
+.title-section {
+  @apply flex-1;
+
+  h1 {
+    @apply text-lg font-bold text-gray-900;
+  }
+  
+  p {
+    @apply text-sm text-gray-500;
+  }
+}
+
+.content {
+  @apply flex-1 p-6 max-w-4xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-8;
+}
+
+.preview-card {
+  @apply bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col;
+}
+
+.preview-header {
+  @apply p-6 bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-indigo-100;
+  
+  h2 {
+    @apply text-xl font-bold text-indigo-900 mb-2;
+  }
+  
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800;
+  }
+}
+
+.preview-body {
+  @apply p-6 space-y-4;
+}
+
+.node-list {
+  @apply space-y-3;
+}
+
+.node-item {
+  @apply flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100;
+}
+
+.node-icon {
+  @apply w-8 h-8 rounded-full bg-white flex items-center justify-center text-sm border border-gray-200;
+}
+
+.actions-card {
+  @apply flex flex-col justify-center space-y-6;
+}
+
+.action-btn {
+  @apply w-full p-6 rounded-xl border-2 text-left transition-all duration-200 flex items-center justify-between;
+  
+  &.primary {
+    @apply border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700 hover:border-indigo-700 shadow-lg shadow-indigo-200;
+    
+    .icon {
+      @apply bg-white/20 text-white;
+    }
+  }
+  
+  &.secondary {
+    @apply border-gray-200 bg-white text-gray-900 hover:border-indigo-300 hover:bg-indigo-50;
+    
+    .icon {
+      @apply bg-gray-100 text-gray-500 group-hover:bg-indigo-100 group-hover:text-indigo-600;
+    }
+  }
+
+  .btn-content {
+    h3 {
+      @apply font-bold text-lg mb-1;
+    }
+    p {
+      @apply text-sm opacity-90;
+    }
+  }
+
+  .icon {
+    @apply w-10 h-10 rounded-full flex items-center justify-center text-xl transition-colors;
+  }
+}
+
+.loading {
+  @apply flex flex-col items-center justify-center min-h-[60vh] text-center gap-4;
+  
+  .spinner {
+    @apply w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin;
+  }
+}

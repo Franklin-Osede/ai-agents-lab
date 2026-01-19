@@ -36,6 +36,6 @@ import { KnowledgeSource } from './domain/entities/knowledge-source.entity';
     },
   ],
   controllers: [KnowledgeController],
-  exports: [IngestWebsiteUseCase, GetOrganizationInfoUseCase],
+  exports: [IngestWebsiteUseCase, GetOrganizationInfoUseCase, IKnowledgeSourceRepository],
 })
 export class KnowledgeModule {}

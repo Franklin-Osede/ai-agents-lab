@@ -39,6 +39,13 @@ const routes: Routes = [
         component: KnowledgePreviewComponent,
       },
       {
+        path: ':niche/suggested',
+        loadComponent: () =>
+          import('./components/suggested-workflow/suggested-workflow.component').then(
+            (m) => m.SuggestedWorkflowComponent,
+          ),
+      },
+      {
         path: ':niche/templates',
         loadComponent: () =>
           import('./components/template-picker/template-picker.component').then(

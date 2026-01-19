@@ -46,9 +46,13 @@ export class TrainingOverlayComponent implements OnInit, OnDestroy {
       // Navigate to preview when completed
       if (trainingProgress.status === 'completed' && trainingProgress.progress === 100) {
         setTimeout(() => {
-          // Navigate to knowledge preview with metadata in state
-          this.router.navigate(['/booking/knowledge-preview'], {
-            state: { metadata: trainingProgress.metadata }
+          // Navigate to suggested workflow (The AI Magic Moment)
+          const meta = trainingProgress.metadata as any;
+          const niche = meta?.niche || 'dental'; // Fallback
+          const sourceId = meta?.sourceId;
+
+          this.router.navigate(['/booking', niche, 'suggested'], {
+            state: { sourceId, metadata: trainingProgress.metadata }
           });
         }, 1500);
       }

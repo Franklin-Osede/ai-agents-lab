@@ -409,7 +409,8 @@ export class PuppeteerScraperAdapter implements IScraperService {
         // Match "Horario" keyword + time pattern
         if (/horario|apertura|consulta/i.test(cleanL) && timePattern.test(cleanL)) return true;
         // Match days + time pattern (e.g. "L-V: 10:00 - 14:00")
-        if (/[LMXJVSD]{1,3}(?:-[LMXJVSD]{1,3})?/i.test(cleanL) && timePattern.test(cleanL)) return true;
+        if (/[LMXJVSD]{1,3}(?:-[LMXJVSD]{1,3})?/i.test(cleanL) && timePattern.test(cleanL))
+          return true;
         return false;
       });
 
@@ -564,7 +565,9 @@ export class PuppeteerScraperAdapter implements IScraperService {
         const href = a.getAttribute('href') || '';
 
         // Match by Text OR URL keyword
-        const matchesKeyword = serviceKeywords.some((kw) => t.toLowerCase().includes(kw) || href.toLowerCase().includes(kw));
+        const matchesKeyword = serviceKeywords.some(
+          (kw) => t.toLowerCase().includes(kw) || href.toLowerCase().includes(kw),
+        );
 
         if (
           t.length > 3 &&

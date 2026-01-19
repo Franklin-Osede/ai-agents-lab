@@ -1,0 +1,76 @@
+<div class="suggested-container">
+  @if (isLoading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <h2>Generando tu agente inteligente...</h2>
+      <p class="text-gray-500">Analizando {{ params()?.niche }} para crear el flujo perfecto</p>
+    </div>
+  } @else {
+    <header class="header">
+      <div class="title-section">
+        <h1>¡Tu Agente está listo!</h1>
+        <p>Hemos creado este flujo basándonos en tu sitio web.</p>
+      </div>
+    </header>
+
+    <main class="content">
+      <!-- Preview Section -->
+      <div class="preview-card">
+        <div class="preview-header">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="badge">{{ workflow()?.niche | titlecase }}</span>
+              <h2>{{ workflow()?.sourceId }} Assistant</h2> <!-- Using sourceId as placeholder name -->
+            </div>
+            <span class="text-4xl">✨</span>
+          </div>
+        </div>
+        
+        <div class="preview-body">
+          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Flujo de Conversación</h3>
+          <div class="node-list">
+            @for (node of workflow()?.nodes | slice:0:4; track node.id) {
+              <div class="node-item">
+                <div class="node-icon">
+                  @if (node.type === 'smartlisten') { 👂 }
+                  @else if (node.type === 'voicenote') { 🗣️ }
+                  @else if (node.type === 'tool') { 🛠️ }
+                  @else { ⚪ }
+                </div>
+                <div class="flex-1">
+                  @if (node.data?.text) {
+                    <p class="text-xs text-gray-500 truncate">{{ node.data?.text }}</p>
+                  }
+                </div>
+              </div>
+            }
+            @if ((workflow()?.nodes?.length || 0) > 4) {
+              <div class="text-center text-xs text-gray-400 mt-2">
+                + {{ (workflow()?.nodes?.length || 0) - 4 }} pasos más
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Section -->
+      <div class="actions-card">
+        <button class="action-btn primary group" (click)="useWorkflow()">
+          <div class="btn-content">
+            <h3>Usar este Agente</h3>
+            <p>Perfecto para empezar ya mismo.</p>
+          </div>
+          <div class="icon">🚀</div>
+        </button>
+
+        <button class="action-btn secondary group" (click)="customizeWorkflow()">
+          <div class="btn-content">
+            <h3>Personalizar</h3>
+            <p>Editar mensajes, voz o lógica.</p>
+          </div>
+          <div class="icon">✏️</div>
+        </button>
+      </div>
+    </main>
+  }
+</div>

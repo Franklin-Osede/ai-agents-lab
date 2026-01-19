@@ -14,6 +14,7 @@ export interface WorkflowNode {
   label: string;
   position: { x: number; y: number };
   data?: Record<string, any>;
+  next_node_id?: string;
 }
 
 export interface TemplateCustomization {

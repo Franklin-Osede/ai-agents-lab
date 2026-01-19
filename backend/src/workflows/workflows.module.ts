@@ -16,14 +16,21 @@ import { GetTemplatesByNicheUseCase } from './application/use-cases/get-template
 import { CreateWorkflowFromTemplateUseCase } from './application/use-cases/create-workflow-from-template.use-case';
 import { TemplateSeedService } from './infrastructure/seeders/template-seed.service';
 
+import { KnowledgeModule } from '../knowledge/knowledge.module';
+import { WorkflowGeneratorService } from './application/services/workflow-generator.service';
+import { GenerateWorkflowUseCase } from './application/use-cases/generate-workflow.use-case';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([Workflow, WorkflowVersion, WorkflowSession, WorkflowTemplate]),
+    KnowledgeModule,
   ],
   controllers: [WorkflowsController],
   providers: [
     WorkflowsService,
     WorkflowExecutorService,
+    WorkflowGeneratorService,
+    GenerateWorkflowUseCase,
     VoiceNoteHandler,
     UserResponseHandler,
     CalendarHandler,

@@ -22,7 +22,7 @@ export class WorkflowExecutorService {
     private serviceHandler: ServiceHandler,
   ) {}
 
-  async startSession(workflowId: string): Promise<any> {
+  async startSession(workflowId: string, knowledgeSourceId?: string): Promise<any> {
     // 1. Get Active Version (For MVP, just taking latest published, or latest draft if none)
     // In real app, we would look up Workflow.activeVersionId
     const version = await this.versionsRepository.findOne({
@@ -41,6 +41,7 @@ export class WorkflowExecutorService {
     const session = this.sessionRepository.create({
       workflowId,
       versionId: version.id,
+      knowledgeSourceId, // Save the link to the scraped data
       currentNodeId: startNode.id,
       variables: {},
       history: [],

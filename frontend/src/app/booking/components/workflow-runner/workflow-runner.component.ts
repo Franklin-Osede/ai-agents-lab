@@ -2,7 +2,7 @@ import { Component, OnInit, signal, inject, effect, ViewChild, ElementRef } from
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { WorkflowService } from '../../../core/services/workflow.service';
+import { WorkflowsService } from '../../services/workflows.service'; // Use the new Booking Service
 import { VoiceService } from '../../../core/services/voice.service';
 import { WorkflowNode } from '../workflow-builder/workflow-builder.component'; // Import type
 import { KnowledgeService } from '../../../knowledge/services/knowledge.service';
@@ -31,7 +31,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
 export class WorkflowRunnerComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private workflowService = inject(WorkflowService);
+  private workflowsService = inject(WorkflowsService); // Injected new service
   private voiceService = inject(VoiceService);
   private knowledgeService = inject(KnowledgeService);
   private conditionEvaluator = inject(ConditionEvaluatorService);
@@ -76,6 +76,9 @@ export class WorkflowRunnerComponent implements OnInit {
   // Scroll
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
+  // Session State
+  sessionId = signal<string | null>(null);
+
   constructor() {
     // Effect to handle Side Effects when node changes
     effect(() => {
@@ -96,7 +99,17 @@ export class WorkflowRunnerComponent implements OnInit {
          const processedText = this.replaceVariables(node.data.text);
          this.addTranscript('agent', processedText);
          this.stopAudio();
-         setTimeout(() => this.nextStep(), 1500);
+         // Wait a bit then move on if it's purely informational? 
+         // For server-driven, usually the server tells us if we need to wait or not via 'nextStepAvailable'
+         // But for now, let's keep the timeout unless specific instructions
+         // setTimeout(() => this.nextStep(), 1500); 
+         // Actually, let's wait for audio or just timeout
+         setTimeout(() => {
+             // In server driven, we probably automatically ack? 
+             // Or we just wait for user? 
+             // Let's assume informational message -> auto next
+             this.submitStep({}); 
+         }, 1500);
 
       // --- INLINE INTERACTIVE NODES (Chat Stream) ---
       
@@ -139,55 +152,21 @@ export class WorkflowRunnerComponent implements OnInit {
           this.stopAudio();
           this.isSearching.set(true);
           
-          // Get query or use default
+          // Use search query from data
           const query = this.replaceVariables(node.data?.searchQuery || 'Tratamientos para {body_part}');
           
-          setTimeout(() => {
-              this.isSearching.set(false);
-              
-              // MOCK RAG RESPONSE
-              const bodyPart = this.variables()['body_part'] || 'la zona afectada';
-              const diagnosis = `He analizado nuestra base de conocimientos sobre **${bodyPart}**. Podría tratarse de una sobrecarga o tendinitis. Tenemos especialistas en traumatología deportiva que pueden ayudarte.`;
-              
-              this.addTranscript('agent', diagnosis);
-              this.playAudio(diagnosis, 'Lucia'); // Read it out loud
-              this.nextStep();
-          }, 2500); // Simulate network delay
-          
+          // In Server-Driven, this 'ragsearch' node probably wouldn't even reach the client
+          // The SERVER would execute it and just return the result (text message).
+          // But if we do receive it, we treat it as an informational step or auto-submit?
+          // Let's assume we just auto-submit to let server do the work?
+          // Or maybe this is a "Client Side RAG"? 
+          // For Phase 4, let's assume server handles logic, so if we see this, we just ack.
+           this.submitStep({ action: 'ack' });
 
       } else if (node.type === 'condition') {
-          this.stopAudio();
-          const { variable, operator, value } = node.data || {};
-          // Evaluate Logic
-          const result = this.conditionEvaluator.evaluate(
-              this.variables()[variable || ''], 
-              operator || '==', 
-              value
-          );
-          
-          console.log(`Condition Result: ${result} (True Branch: ${node.data?.trueBranch?.length}, False Branch: ${node.data?.falseBranch?.length})`);
-          
-          // Determine path
-          const branch = result ? node.data?.trueBranch : node.data?.falseBranch;
-          
-          if (branch && branch.length > 0) {
-              // Inject branch nodes dynamically right after this one? 
-              // NO, simpler: The branch BECOMES the next steps. 
-              // We need to inject them into the 'nodes' array or just navigate to the first one?
-              // Given our linear runner, we likely need to splicing them in or setting them as active.
-              // SIMPLIFICATION: We just set the first node of the branch as active.
-              // BUT linear flow expects a list. 
-              // TRICK: We replace the rest of the flow with the branch content? 
-              // OR better: We handle it recursively like NextJS.
-              
-              // For this MVP, let's just REPLACE the remaining nodes with the branch nodes + (rest of flow?)
-              // Actually, in the Builder structure, the branch IS the flow.
-              this.nodes = branch; // Switch context to this branch?
-              this.currentNode.set(branch[0]);
-          } else {
-             // If no branch, just continue? or End?
-             this.finishFlow();
-          }
+          // Client shouldn't see condition nodes in server-driven flow usually
+          // But if we do, we just ack
+          this.submitStep({ action: 'ack' });
           
       } else if (node.type === 'payment') {
           this.stopAudio();
@@ -197,7 +176,7 @@ export class WorkflowRunnerComponent implements OnInit {
       } else {
         console.warn('Unknown node type or empty text:', node.type);
         this.stopAudio();
-        this.nextStep();
+        // this.nextStep();
       }
     }, { allowSignalWrites: true });
 
@@ -272,155 +251,89 @@ export class WorkflowRunnerComponent implements OnInit {
       // 2. Add User Text
       this.addTranscript('user', text);
       
-      // 3. Classify
-      const currentNode = this.currentNode();
-      if (!currentNode || !currentNode.data?.intents) {
-          this.nextStep();
-          return;
-      }
-
-      this.isLoading.set(true);
-      this.knowledgeService.classify(text, currentNode.data.intents).then(result => {
-          this.isLoading.set(false);
-          console.log('Classification Result:', result);
-          
-          // Find matching intent branch
-          const matchedIntent = currentNode.data!.intents!.find(i => i.intentName === result.intentName);
-          
-          if (matchedIntent && matchedIntent.nextSteps && matchedIntent.nextSteps.length > 0) {
-              this.currentNode.set(matchedIntent.nextSteps[0]);
-          } else {
-              // Fallback: Continue main flow or show "Didn't understand"
-              // For now, continue main flow logic (next sibling)
-              console.log('No specific branch or Fallback');
-              this.nextStep();
-          }
-      }).catch(err => {
-          console.error('Classification failed', err);
-          this.isLoading.set(false);
-          this.nextStep();
-      });
+      // 3. Submit to Backend
+      this.submitStep({ input: text });
   }
 
   // Updated Finder Logic - supports returning to parent flow
   findNextNode(list: WorkflowNode[], currentId: string, parentNext?: WorkflowNode): { found: boolean, next?: WorkflowNode } {
-      for (let i = 0; i < list.length; i++) {
-          if (list[i].id === currentId) {
-              // If there is a next sibling, go there.
-              if (list[i + 1]) {
-                  return { found: true, next: list[i + 1] };
-              }
-              // If no next sibling, but we have a parent continuation, go there.
-              if (parentNext) {
-                  return { found: true, next: parentNext };
-              }
-              // Otherwise, end of flow.
-              return { found: true, next: undefined };
-          }
-          
-          // Check children (Chips)
-          if (list[i].data?.chips) {
-              for (const chip of list[i].data!.chips!) {
-                  if (chip.nextSteps) {
-                      // Pass current node's next sibling (or parentNext) as the continuation for this branch
-                      const continuation = list[i + 1] || parentNext;
-                      const result = this.findNextNode(chip.nextSteps, currentId, continuation);
-                      if (result.found) return result;
-                  }
-              }
-          }
-          
-          // Check children (Intents)
-          if (list[i].data?.intents) {
-              for (const intent of list[i].data!.intents!) {
-                  if (intent.nextSteps) {
-                       // Pass current node's next sibling (or parentNext) as the continuation for this branch
-                      const continuation = list[i + 1] || parentNext;
-                      const result = this.findNextNode(intent.nextSteps, currentId, continuation);
-                      if (result.found) return result;
-                  }
-              }
-          }
-
-          // Check children (Condition)
-           if (list[i].type === 'condition') {
-              const continuation = list[i + 1] || parentNext;
-              
-              if (list[i].data?.trueBranch) {
-                   const result = this.findNextNode(list[i].data!.trueBranch!, currentId, continuation);
-                   if (result.found) return result;
-              }
-              if (list[i].data?.falseBranch) {
-                   const result = this.findNextNode(list[i].data!.falseBranch!, currentId, continuation);
-                   if (result.found) return result;
-              }
-          }
-      }
-      return { found: false };
+      // Client side finding logic is removed/deprecated for server-driven
+      return { found: false }; 
   }
 
   ngOnInit() {
-    // 0. Fetch Knowledge Data
-    // TODO: Get real tenantId from auth or route
-    this.knowledgeService.fetchOrganizationInfo('demo-tenant').then(info => {
-        if (info) {
-            console.log('Knowledge Info Loaded:', info);
-            // Map Services
-            if (info.services) {
-                this.services.set(info.services.map((s: any, i: number) => ({
-                    id: i.toString(),
-                    name: s.name,
-                    price: s.price || 'Consultar',
-                    duration: 'Consultar' 
-                })));
-            }
-            
-            // Map Team
-            if (info.team) {
-                 this.professionals.set(info.team.map((t: any, i: number) => ({
-                    id: i.toString(),
-                    name: t.name || t, // Handle string or object match
-                    role: t.role || 'Especialista',
-                    image: t.image || `https://ui-avatars.com/api/?name=${t.name || t}&background=random`
-                })));
-            }
+    // 1. Get Workflow/Source Info from State
+    const navigationState = history.state;
+    const workflow = navigationState.workflow;
+
+    if (workflow && workflow.id) {
+      console.log('Starting Session for Workflow:', workflow.id);
+      this.isLoading.set(true);
+      
+      this.workflowsService.startSession(workflow.id, workflow.sourceId).subscribe({
+        next: (response) => {
+           console.log('Session Started:', response);
+           this.processBackendResponse(response);
+        },
+        error: (err) => {
+          console.error('Failed to start session', err);
+          this.isLoading.set(false);
+          this.addTranscript('system', 'Error al iniciar sesión con el servidor.');
         }
-    }).catch(err => console.error('Failed to load org info', err));
-
-    // 1. Load Nodes from Service (Memory)
-    this.nodes = this.workflowService.getPreviewNodes();
-
-    if (!this.nodes || this.nodes.length === 0) {
-      // Redirect back if no nodes (e.g. reload on this page)
-      // For dev, maybe we mock?
-    //   this.goBack();
-      console.warn('No nodes found in preview state');
-    }
-
-    // 2. Prefetch Audio (Latency opt)
-    this.prefetchAudio();
-
-    // 3. Start Flow
-    this.startFlow();
-  }
-
-  prefetchAudio() {
-    this.nodes.forEach(node => {
-        if (node.type === 'voicenote' && node.data?.text) {
-            const voiceId = node.data.voiceId || 'Lucia';
-            this.voiceService.preload(node.data.text, voiceId);
-        }
-    });
-  }
-
-  startFlow() {
-    // Find Root node or first node
-    // Simple logic: First node in array? Or one without parent?
-    // Builder adds to array order usually.
-    if (this.nodes.length > 0) {
-        this.currentNode.set(this.nodes[0]); 
+      });
+    } else {
+      console.warn('No workflow ID found in state. Mock mode?');
+      // maybe redirect back?
     }
   }
+
+  // New Method to Process Backend Response
+  processBackendResponse(response: any) {
+     if (!response || !response.process) return;
+
+     const { sessionId, current, nextStepAvailable } = response.process;
+     
+     if (sessionId) {
+       this.sessionId.set(sessionId);
+     }
+
+     if (!current) {
+        return;
+     }
+     
+     const node: WorkflowNode = {
+         id: current.id || 'server-node',
+         type: current.type,
+         label: 'Server Node', // Dummy
+         position: { x: 0, y: 0 }, // Dummy
+         data: { ...current }
+     };
+     
+     this.currentNode.set(node);
+  }
+
+  // New Method to Submit Step
+  submitStep(input: any) {
+      const sessionId = this.sessionId();
+      if (!sessionId) {
+          console.error('No session ID');
+          return;
+      }
+
+      this.isLoading.set(true); // Show spinner?
+      
+      this.workflowsService.submitStep(sessionId, input).subscribe({
+          next: (response) => {
+              this.processBackendResponse(response);
+          },
+          error: (err) => {
+              console.error('Step submission failed', err);
+              this.isLoading.set(false);
+          }
+      });
+  }
+
+
 
   playAudio(text: string, voiceId: string) {
     this.stopAudio(); // Reset state first
@@ -495,57 +408,33 @@ export class WorkflowRunnerComponent implements OnInit {
   // --- Navigation Logic ---
 
   nextStep() {
-    const current = this.currentNode();
-    if (!current) return;
-
-    // Logic to find next node
-    // 1. Where is current node?
-    // This is hard with just `nodes` flat array if nested structures exist inside `data`.
-    // Actually our `nodes` logic in builder is:
-    // Root = [Node, Node, UserResponse]
-    // UserResponse.data.chips[0].nextSteps = [Node, Node]
-    
-    // So we need a recursive finder to know "Where am I and what is next?"
-    const { next } = this.findNextNode(this.nodes, current.id);
-    
-    if (next) {
-        this.currentNode.set(next);
-    } else {
-        console.log('End of flow');
-        this.finishFlow();
-    }
+    // Server-driven: Just submit an empty step (ack) or wait
+    this.submitStep({});
   }
 
   handleOptionClick(chip: any, index: number) {
-      // 1. Remove the "System Chips" message from transcript so it's not clickable anymore
+      // 1. Remove the "System Chips" message from transcript
       this.transcript.update(log => log.filter(msg => msg.component !== 'chips'));
 
-      // 2. Add user selection as a normal message
+      // 2. Add user selection
       this.addTranscript('user', chip.text);
       
-      // Next steps are in chip.nextSteps
-      if (chip.nextSteps && chip.nextSteps.length > 0) {
-          this.currentNode.set(chip.nextSteps[0]);
-      } else {
-          // If no specific branch steps, continue with the main flow (parent's next sibling)
-          // Since currentNode is still the 'UserResponse' node, nextStep() will find its successor.
-          this.nextStep();
-      }
+      // 3. Submit to server
+      this.submitStep({ input: chip.text, value: chip.value });
   }
   
 
 
   // Actions
   selectTime(time: string) {
-      alert(`Hora seleccionada: ${time}. Aquí terminaría el flujo o iría a confirmación.`);
-      this.nextStep();
+      // alert(`Hora seleccionada: ${time}.`);
+      this.submitStep({ action: 'book_slot', slot: time });
   }
 
   restart() {
       this.stopAudio();
-      this.nodes = this.workflowService.getPreviewNodes();
       this.transcript.set([]);
-      this.startFlow();
+      this.ngOnInit(); // Re-init
   }
 
   goBack() {
@@ -565,7 +454,7 @@ export class WorkflowRunnerComponent implements OnInit {
       this.setVariable('service_price', service.price);
       
       // Advance
-      this.nextStep();
+      this.submitStep({ input: service.name, variable: 'selected_service', value: service });
   }
 
   // Body Map Logic
@@ -600,8 +489,8 @@ export class WorkflowRunnerComponent implements OnInit {
     // Save Variable {body_part}
     this.setVariable('body_part', part);
     
-    // 3. Advance Step (JUST ONCE)
-    this.nextStep();
+      // 3. Advance (Submit to server)
+    this.submitStep({ input: part, variable: 'body_part', value: part });
   }
 
   toggleBodyMapView(index: number) {
@@ -626,7 +515,7 @@ export class WorkflowRunnerComponent implements OnInit {
       setTimeout(() => {
           this.isPaymentProcessing.set(false);
           this.addTranscript('system', 'Pago realizado con éxito ✅');
-          this.nextStep();
+          this.submitStep({ action: 'payment_success' });
       }, 2000);
   }
   

@@ -1,0 +1,236 @@
+<div class="flex h-screen w-full overflow-hidden bg-background-light dark:bg-background-dark text-[#121117] dark:text-white font-display">
+    <!-- Left Sidebar (SideNavBar) -->
+    <aside class="w-64 border-r border-[#dcdce5] dark:border-white/10 bg-white dark:bg-[#1a192b] flex flex-col shrink-0">
+        <div class="p-6 flex items-center gap-3">
+            <div class="bg-primary rounded-lg p-2 text-white">
+                <span class="material-symbols-outlined">science</span>
+            </div>
+            <div class="flex flex-col">
+                <h1 class="text-[#121117] dark:text-white text-base font-bold leading-tight">AgentsMinds</h1>
+                <p class="text-[#656487] dark:text-gray-400 text-xs font-normal">AI Laboratory</p>
+            </div>
+        </div>
+        <nav class="flex-1 px-4 space-y-2 mt-4">
+            <div class="flex items-center gap-3 px-3 py-2 text-[#656487] dark:text-gray-400 hover:bg-[#f1f0f4] dark:hover:bg-white/5 rounded-xl cursor-pointer">
+                <span class="material-symbols-outlined">dashboard</span>
+                <p class="text-sm font-medium">Dashboard</p>
+            </div>
+            <div class="flex items-center gap-3 px-3 py-2 rounded-xl bg-primary/10 text-primary">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">smart_toy</span>
+                <p class="text-sm font-bold">Agents</p>
+            </div>
+            <div class="flex items-center gap-3 px-3 py-2 text-[#656487] dark:text-gray-400 hover:bg-[#f1f0f4] dark:hover:bg-white/5 rounded-xl cursor-pointer">
+                <span class="material-symbols-outlined">group</span>
+                <p class="text-sm font-medium">Clients</p>
+            </div>
+            <div class="flex items-center gap-3 px-3 py-2 text-[#656487] dark:text-gray-400 hover:bg-[#f1f0f4] dark:hover:bg-white/5 rounded-xl cursor-pointer">
+                <span class="material-symbols-outlined">bar_chart</span>
+                <p class="text-sm font-medium">Analytics</p>
+            </div>
+            <div class="flex items-center gap-3 px-3 py-2 text-[#656487] dark:text-gray-400 hover:bg-[#f1f0f4] dark:hover:bg-white/5 rounded-xl cursor-pointer">
+                <span class="material-symbols-outlined">settings</span>
+                <p class="text-sm font-medium">Settings</p>
+            </div>
+        </nav>
+        <div class="p-4 border-t border-[#dcdce5] dark:border-white/10">
+            <div class="flex items-center gap-3">
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="User profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA8qWUSgr8-xNBIM2r0EzLPdBEDxTzmpiUQJQqkRrCS98m0XLGl0drAxQEkO0SrVrqoBdQJEASAiMqLJWeG6zAZu0WJ7h8EPvSAJcdu4oOX57oxd585HpvVs1AVRVBB_Ioel3eZRiVEzKrBHorceT2x4UBKoT-RLuVXLwx_HUH2IO8SMYrRUzQqabisis5YNHRf7FU-gj-3tZdHXDjrLSFbbSytPRkiXGfEfanKRMiwtre1FL-NZK8aZVRaV-jSiDeGtZ-qCUEJHDE");'></div>
+                <div class="flex flex-col">
+                    <p class="text-sm font-bold">Alex Rivera</p>
+                    <p class="text-xs text-[#656487]">Pro Account</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-full bg-background-light dark:bg-background-dark">
+        <!-- Top Navigation (TopNavBar modified) -->
+        <header class="flex items-center justify-between bg-white dark:bg-[#1a192b] border-b border-[#f1f0f4] dark:border-white/10 px-8 py-3">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary">forum</span>
+                <h2 class="text-[#121117] dark:text-white text-lg font-bold tracking-tight">Agent Interactive Chat</h2>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="relative flex items-center bg-[#f1f0f4] dark:bg-white/5 rounded-xl px-3 py-2 h-10 w-64">
+                    <span class="material-symbols-outlined text-[#656487] text-xl">search</span>
+                    <input class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-[#656487]" placeholder="Search in chat archive..."/>
+                </div>
+                <button class="bg-primary text-white rounded-xl px-4 py-2 text-sm font-bold flex items-center gap-2 shadow-sm hover:shadow-md transition-all">
+                    <span class="material-symbols-outlined text-sm">add</span>
+                    New Session
+                </button>
+            </div>
+        </header>
+
+        <!-- Split Screen Layout -->
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Left Panel: Chat Interface -->
+            <section class="flex-1 flex flex-col bg-white dark:bg-[#1a192b]/50 m-4 rounded-xl border border-[#dcdce5] dark:border-white/10 shadow-sm relative">
+                <!-- Chat Profile Header -->
+                <div class="flex items-center justify-between p-4 border-b border-[#f1f0f4] dark:border-white/5">
+                    <div class="flex items-center gap-4">
+                        <div class="relative">
+                            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 border-2 border-primary" data-alt="Lucia AI Agent Portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAIBCnDJADpRjvds1e5EbWXk5TsEzEGyxsGO3frbVaCHH_TQhESMcg2N0IivC78vznTGlrCS0XwBUYBBjx9TqUyjKNMBJvUG3cwOP5rY8XD9NPvJgJgm_C4Y7wL3DINKL8WqVVhLF2TCEgx5OT6T33hAV9xnErTxHd3dd3QL_7NkPF9t64my3eqphp3hAoDFPv011Uf7uXcuKFbk0wInHSft7CzeooGvpx9LGsp3H6KSSUwF--UpW8b_POIhXbWhjF-fD_fiGry9YY");'></div>
+                            <div class="absolute bottom-0 right-0 size-3 bg-green-500 border-2 border-white rounded-full"></div>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <p class="text-[#121117] dark:text-white text-lg font-bold">Lucía</p>
+                                <span class="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Active</span>
+                            </div>
+                            <p class="text-[#656487] dark:text-gray-400 text-xs">Digital Wellness Expert • Physiotherapy Specialization</p>
+                        </div>
+                    </div>
+                    <button class="flex items-center gap-2 bg-[#f1f0f4] dark:bg-white/5 px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-50 hover:text-red-600 transition-colors">
+                        <span class="material-symbols-outlined text-sm">logout</span>
+                        End Session
+                    </button>
+                </div>
+                
+                <!-- Message Stream -->
+                <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+                    
+                    <!-- AI Bubble -->
+                    <div class="flex gap-4 max-w-[85%]">
+                        <div class="size-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-primary text-sm">smart_toy</span>
+                        </div>
+                        <div class="bg-[#f1f0f4] dark:bg-white/5 p-4 rounded-2xl rounded-tl-none">
+                            <p class="text-sm leading-relaxed text-[#121117] dark:text-gray-200">
+                                Hola! I'm Lucía, your physiotherapy assistant. I've loaded your medical history. How are you feeling today? You can point out any discomfort on the <b>Interactive Body Map</b> to your right.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- User Bubble -->
+                    <div class="flex gap-4 max-w-[85%] ml-auto flex-row-reverse">
+                        <div class="size-8 rounded-full bg-gray-200 dark:bg-white/10 flex items-center justify-center shrink-0 overflow-hidden">
+                            <div class="bg-center bg-no-repeat aspect-square bg-cover size-full" data-alt="User Avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCb25URGG-bjsAwG9gWdVlEMlw2E1Qh5QErl0wSiUWEPO5Gj8LOQyRrKZGHAkWFfs1hd-uVFMrtrEBpzxQFb8NN2hd_tFtDaZcH-sE6yBb7Htrch5jlGX2rhAVqG6_qtwarI_yKynBZfFM8JwX1LD0kprqBjLmEptMjdLnyMQ5845IP8woScIAEfOW-wca3QJ6Is0FCSTFnYT8NbMOfAcUACNaueCVgrFM37y00WhqOvXRRv8xrE6P6h3iaBV5TJXWW_4CDrChwwVA");'></div>
+                        </div>
+                        <div class="bg-gradient-to-br from-primary to-[#7c3aed] p-4 rounded-2xl rounded-tr-none text-white shadow-md shadow-primary/20">
+                            <p class="text-sm leading-relaxed">
+                                Hi Lucía, I've been feeling a sharp pain in my lower back after my workout yesterday.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- AI Bubble -->
+                    <div class="flex gap-4 max-w-[85%]">
+                        <div class="size-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-primary text-sm">smart_toy</span>
+                        </div>
+                        <div class="bg-[#f1f0f4] dark:bg-white/5 p-4 rounded-2xl rounded-tl-none">
+                            <p class="text-sm leading-relaxed text-[#121117] dark:text-gray-200">
+                                I understand. Lower back pain can be related to posture or muscle strain. Could you please click on the specific area in the <b>Lumbar region</b> on the map? This will help me analyze the potential cause.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Area -->
+                <div class="p-4 bg-white dark:bg-transparent border-t border-[#f1f0f4] dark:border-white/5">
+                    <div class="flex items-end gap-3 bg-[#f6f6f8] dark:bg-white/5 p-2 rounded-2xl">
+                        <button class="p-2 text-[#656487] hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined">attach_file</span>
+                        </button>
+                        <textarea class="flex-1 bg-transparent border-none focus:ring-0 text-sm resize-none py-2 placeholder:text-[#656487] min-h-[40px] max-h-[120px]" placeholder="Type your message..." rows="1"></textarea>
+                        <button class="p-2 text-[#656487] hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined">mic</span>
+                        </button>
+                        <button class="bg-primary text-white p-2 rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 transition-transform hover:scale-105 active:scale-95">
+                            <span class="material-symbols-outlined">send</span>
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-center text-[#656487] mt-2">AI-generated response. Please consult a physical doctor for emergencies.</p>
+                </div>
+            </section>
+
+            <!-- Right Panel: Utility Widgets -->
+            <section class="w-[450px] flex-col bg-white dark:bg-[#1a192b]/50 m-4 ml-0 rounded-xl border border-[#dcdce5] dark:border-white/10 shadow-sm overflow-hidden hidden xl:flex">
+                <!-- Navigation Tabs -->
+                <div class="border-b border-[#dcdce5] dark:border-white/5 px-4 flex bg-white dark:bg-[#1a192b]">
+                    <a class="flex-1 flex items-center justify-center py-4 border-b-2 border-primary text-primary text-sm font-bold cursor-pointer">
+                        <span class="material-symbols-outlined mr-2 text-lg">accessibility_new</span>
+                        Cuerpo
+                    </a>
+                    <a class="flex-1 flex items-center justify-center py-4 border-b-2 border-transparent text-[#656487] dark:text-gray-400 text-sm font-bold hover:text-primary transition-colors cursor-pointer">
+                        <span class="material-symbols-outlined mr-2 text-lg">medical_services</span>
+                        Servicios
+                    </a>
+                    <a class="flex-1 flex items-center justify-center py-4 border-b-2 border-transparent text-[#656487] dark:text-gray-400 text-sm font-bold hover:text-primary transition-colors cursor-pointer">
+                        <span class="material-symbols-outlined mr-2 text-lg">calendar_month</span>
+                        Calendario
+                    </a>
+                </div>
+
+                <!-- Content Area -->
+                <div class="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-6">
+                    <!-- Body Map Widget -->
+                    <div class="bg-[#f6f6f8] dark:bg-white/5 rounded-2xl p-6 relative flex flex-col items-center">
+                        <div class="w-full flex justify-between items-start mb-4">
+                             <h3 class="text-sm font-bold flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-base">info</span>
+                                Interactive Body Map
+                            </h3>
+                             <div class="bg-white dark:bg-[#1a192b] p-2 rounded-lg border border-[#dcdce5] dark:border-white/10 shadow-sm text-[10px] space-y-1">
+                                <div class="flex items-center gap-1"><div class="size-2 rounded-full bg-primary"></div> Selected</div>
+                                <div class="flex items-center gap-1"><div class="size-2 rounded-full bg-[#e2e8f0]"></div> Idle</div>
+                            </div>
+                        </div>
+                       
+                        <!-- SVG Body Silhouette Placeholder -->
+                        <div class="w-full max-w-[200px] aspect-[1/2] relative group">
+                            <svg class="w-full h-full drop-shadow-xl" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+                                <path class="transition-colors duration-300" d="M50,10 C45,10 42,13 42,18 C42,23 45,26 50,26 C55,26 58,23 58,18 C58,13 55,10 50,10 Z M42,28 L35,35 L30,60 L35,100 L40,100 L40,140 L35,190 L50,190 L65,190 L60,140 L60,100 L65,100 L70,60 L65,35 L58,28 L42,28 Z" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1"></path>
+                                <!-- Hotspots -->
+                                <circle class="hover:fill-primary hover:opacity-50 cursor-pointer transition-all" cx="50" cy="35" fill="transparent" r="5"></circle> <!-- Neck -->
+                                <circle class="hover:fill-primary hover:opacity-50 cursor-pointer transition-all" cx="50" cy="80" fill="transparent" r="8"></circle> <!-- Lower Back (Area) -->
+                                <circle class="animate-pulse opacity-50 pointer-events-none" cx="50" cy="80" fill="#5048e5" r="6"></circle> <!-- Active Indicator -->
+                                <circle class="hover:fill-primary hover:opacity-50 cursor-pointer transition-all" cx="38" cy="45" fill="transparent" r="4"></circle> <!-- Right Shoulder -->
+                                <circle class="hover:fill-primary hover:opacity-50 cursor-pointer transition-all" cx="62" cy="45" fill="transparent" r="4"></circle> <!-- Left Shoulder -->
+                                <circle class="hover:fill-primary hover:opacity-50 cursor-pointer transition-all" cx="40" cy="150" fill="transparent" r="5"></circle> <!-- Right Knee -->
+                                <circle class="hover:fill-primary hover:opacity-50 cursor-pointer transition-all" cx="60" cy="150" fill="transparent" r="5"></circle> <!-- Left Knee -->
+                            </svg>
+                        </div>
+
+                        <div class="mt-6 w-full grid grid-cols-2 gap-2">
+                            <button class="bg-white dark:bg-white/10 border border-[#dcdce5] dark:border-white/10 text-xs py-2 px-3 rounded-lg hover:border-primary hover:text-primary transition-all font-medium text-[#656487]">Front View</button>
+                            <button class="bg-primary text-white text-xs py-2 px-3 rounded-lg border border-primary font-medium shadow-sm">Back View</button>
+                        </div>
+                    </div>
+
+                    <!-- Selected Zone Quick Actions -->
+                    <div class="space-y-3">
+                        <p class="text-xs font-bold text-[#656487] dark:text-gray-400 uppercase tracking-wider">Analysis Summary: Lower Back</p>
+                        <div class="bg-white dark:bg-white/5 border border-[#dcdce5] dark:border-white/10 p-4 rounded-xl flex items-start gap-3 shadow-sm">
+                            <span class="material-symbols-outlined text-amber-500">warning</span>
+                            <div>
+                                <p class="text-sm font-bold">Possible Muscular Fatigue</p>
+                                <p class="text-xs text-[#656487] dark:text-gray-400 mt-1 leading-relaxed">Commonly caused by lifting heavy weights without proper form. Lucía can guide you through stretches.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommended Services -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <p class="text-xs font-bold text-[#656487] dark:text-gray-400 uppercase tracking-wider">Recommended Services</p>
+                            <a class="text-primary text-[10px] font-bold hover:underline cursor-pointer">View All</a>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-primary/5 rounded-xl border border-primary/20 hover:bg-primary/10 transition-colors cursor-pointer group">
+                            <div class="size-10 bg-primary text-white rounded-lg flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined">fitness_center</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-bold text-[#121117] dark:text-white">Core Strengthening</p>
+                                <p class="text-[10px] text-[#656487]">15 min • Guided AI Exercise</p>
+                            </div>
+                            <button class="bg-primary text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-sm">Start</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>

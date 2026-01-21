@@ -17,4 +17,12 @@ export class WorkflowsService {
   createWorkflow(workflow: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, workflow);
   }
+
+  startSession(workflowId: string, knowledgeSourceId?: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${workflowId}/execute`, { knowledgeSourceId });
+  }
+
+  submitStep(sessionId: string, input: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/sessions/${sessionId}/next`, { input });
+  }
 }

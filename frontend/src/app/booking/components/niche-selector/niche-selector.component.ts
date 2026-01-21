@@ -1,4 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 
 interface NicheSubcategory {
@@ -22,6 +22,7 @@ interface NicheCategory {
   selector: 'app-niche-selector',
   templateUrl: './niche-selector.component.html',
   styleUrls: ['./niche-selector.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NicheSelectorComponent {
   private router = inject(Router);
@@ -87,6 +88,10 @@ export class NicheSelectorComponent {
     this.router.navigate(['/booking', category.id, 'setup'], {
       queryParams: { subcategory: subcategory.id }
     });
+  }
+
+  selectNiche(nicheId: string) {
+    this.router.navigate(['/booking', nicheId, 'setup']);
   }
 
   goBack() {

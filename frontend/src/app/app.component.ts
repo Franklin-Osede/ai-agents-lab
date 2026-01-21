@@ -30,7 +30,6 @@ export class AppComponent implements OnInit {
     const url = this.router.url;
     this.isAbandonedCartRoute =
       url.includes("/abandoned-cart") ||
-      url.includes("/booking") ||
       url.includes("/rider");
 
     // Add/remove class to body for styling

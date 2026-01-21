@@ -102,8 +102,8 @@ export class WorkflowsController {
   }
 
   @Post(':id/execute')
-  async execute(@Param('id') id: string) {
-    return this.workflowExecutor.startSession(id);
+  async execute(@Param('id') id: string, @Body() body: { knowledgeSourceId?: string }) {
+    return this.workflowExecutor.startSession(id, body?.knowledgeSourceId);
   }
 
   @Post('sessions/:sessionId/next')

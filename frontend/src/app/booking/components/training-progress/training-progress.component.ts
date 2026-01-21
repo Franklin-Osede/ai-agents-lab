@@ -130,22 +130,22 @@ export class TrainingProgressComponent implements OnInit, OnDestroy {
 
       // Update logs and steps based on visual milestones
       if (currentStep === 10) {
-        this.addLog('info', 'Analizando estructura DOM...');
+        this.addLog('info', 'Analizando estructura visual del sitio web...');
         this.updateStep(0, 'process');
       }
       if (currentStep === 25) {
         this.detectCms();
-        this.addLog('success', `CMS detectado: ${this.cms()}`);
+        this.addLog('success', `Plataforma detectada: ${this.cms()}`);
         this.updateStep(0, 'completed');
         this.updateStep(1, 'process');
       }
       if (currentStep === 40) {
-        this.addLog('info', 'Crawling: navegando por secciones principales...');
+        this.addLog('info', 'Leyendo menú de navegación y páginas principales...');
         this.updateStep(1, 'completed');
         this.updateStep(2, 'process');
       }
       if (currentStep === 60) {
-        this.addLog('info', 'Extrayendo tarifas y servicios...');
+        this.addLog('info', 'Aprendiendo lista de servicios y precios...');
       }
       if (currentStep === 75) {
         this.addLog('info', 'Identificando equipo y datos de contacto...');

@@ -1,401 +1,392 @@
 # Prompts para Generación de UI (v0.dev / Bolt / Claude Artifacts)
 
-## Brand Colors (Tu Branding Real - Azul/Morado)
+## 🌍 Contexto del Mundo: "AgentsMinds"
+
+> **Instrucción Global:** Copia este contexto antes de cada prompt para que la IA entienda el "Vibe".
+
+**El Concepto:**
+"AgentsMinds" no es solo un SaaS, es un **Laboratorio Futurista de Inteligencia Artificial**. Aquí, los negocios tradicionales (clínicas, despachos, tiendas) vienen a "clonar" su cerebro empresarial.
+La plataforma ofrece un "Magic Onboarding": Pones una URL y, en segundos, nace un **Empleado Digital** completamente formado.
+
+**El Vibe (Look & Feel):**
+
+- **Estilo:** "Futuristic Lab meets Clean SaaS".
+- **Modo:** **LIGHT MODE** (Predominante). Blanco, gris perla (#f3f4f6), y cristal.
+- **Acento:** Índigo Eléctrico (#4f46e5) y Violeta Profundo (#7c3aed).
+- **Sensación:** Limpieza, Tecnología Punta, Confianza, Claridad.
+- **Keywords:** Glassmorphism sutil, Sombras suaves (Soft shadows), Bordes redondeados (24px), Tipografía Inter/Geist.
+
+---
+
+## 🎨 Paleta de Colores (Light Mode)
 
 ```css
-Primary: #4f46e5 (Azul índigo)
-Secondary: #7c3aed (Morado)
+Primary: #4f46e5 (Indigo Eléctrico)
+Secondary: #7c3aed (Violeta Mágico)
 Gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
-Accent Light: #667eea (Azul claro)
-Accent Dark: #764ba2 (Morado oscuro)
-Background Dark: #1f2937
-Background Light: #f9fafb
-Text Dark: #1f2937
-Text Light: #ffffff
-Border: #e5e7eb
+Surface: #ffffff (Blanco Puro)
+Background: #f3f4f6 (Gris Perla / Off-White)
+Text Primary: #111827 (Casi Negro)
+Text Secondary: #6b7280 (Gris Medio)
+Border: #e5e7eb (Gris Claro)
+Success: #10b981 (Esmeralda)
 ```
 
 ---
 
-## Pantalla 1: URL Input Screen (Reemplazo de "Seleccionar Doctor")
+## Pantalla 1: Niche Selector (El Hall de Entrada)
 
-### Prompt para v0.dev/Bolt
+**Nombre:** `NicheSelectionComponent`
+**Objetivo:** Que el usuario sienta que hay una IA especializada _exactamente_ para él.
 
-```
-Create a modern, clean URL input screen for a SaaS AI platform with the following specs:
+### Prompt para v0.dev/Bolt:
 
-DESIGN SYSTEM:
-- Primary color: #4f46e5 (indigo blue)
-- Secondary: #7c3aed (purple)
-- Gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
-- Background: White (#f9fafb) with subtle gradient
-- Font: Inter or similar modern sans-serif
+```text
+Create a "Niche Selection" screen for "AgentsMinds", a premium AI laboratory.
+
+STYLE GUIDE:
+- Theme: LIGHT MODE. Crisp white cards on a soft gray background (#f3f4f6).
+- Vibe: Premium, Trustworthy, Specialized.
+- Colors: Indigo (#4f46e5) for actions/highlights.
 
 LAYOUT:
-- Centered card on white/light gray background
-- Card has subtle shadow and rounded corners (24px)
-- Mobile-first, responsive design
+1. Hero Section (Centered):
+   - Headline: "Elige la Mente de tu Agente" (Big, Bold, Dark Text)
+   - Subheadline: "Selecciona tu industria para cargar el conocimiento base especializado." (Gray text)
 
-CONTENT:
-- Header: "Conecta tu Negocio"
-- Subheader: "Introduce la URL de tu web para que la IA aprenda automáticamente"
-- Large input field with icon (🌐) for URL
-  - Placeholder: "https://tu-clinica.com"
-  - Validation: Must be valid URL
-- Primary button: "Escanear Sitio Web" (indigo blue #4f46e5, white text)
-  - Loading state with spinner
-  - Disabled state when input empty
-- Secondary link button: "Usar datos de ejemplo" (text only, blue color)
+2. The Grid (2x2 or 3x2):
+   - Render a grid of beautiful, large cards.
+   - CARD STYLE: White background, soft shadow (box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1)), rounded-xl.
+   - INTERACTION: On Hover -> Card lifts up slightly, shadow grows, and a thin Indigo border appears.
 
-FEATURES:
-- Input has focus state with blue border glow (#4f46e5)
-- Button has hover effect (slightly darker blue)
-- Error message appears below input if URL invalid (red text)
-- Success checkmark animation when URL is valid
+   - CONTENT PER CARD:
+     - Icon: Large, colorful icon in a soft circle background (e.g., Tooth for Dental in light blue bg).
+     - Title: "Clínica Dental", "Fisioterapia", "Restaurante", "Despacho Legal".
+     - Badge: "Modelo v2.0" (Small pill badge, subtle).
+     - Action Arrow: "→" appears on hover.
 
-STYLE:
-- Clean, professional, trustworthy
-- Not too playful, suitable for B2B SaaS
-- Subtle animations (no excessive motion)
-- Accessibility: proper labels, ARIA attributes
+3. Footer:
+   - "Don't see your industry? Request a custom agent."
 
-Export as React/Angular component with TypeScript
+FEELING:
+The user should feel like they are picking a specialized "employee archetype", not just a template.
 ```
 
 ---
 
-## Pantalla 2: Knowledge Preview Screen (Nueva - Mostrar lo Escaneado)
+## Pantalla 2: URL Input (La "Magic Box")
 
-### Prompt para v0.dev/Bolt
+**Nombre:** `UrlInputComponent`
+**Objetivo:** Cero fricción. Solo una caja mágica que lo hace todo.
 
-```
-Create a "Knowledge Preview" dashboard screen for an AI SaaS platform:
+### Prompt para v0.dev/Bolt:
 
-DESIGN SYSTEM:
-- Primary: #4f46e5 (indigo), Secondary: #7c3aed (purple)
-- Gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
-- Card-based layout with white cards on light gray background (#f9fafb)
-- Modern, clean, data-focused design
+```text
+Create a "Magic URL Input" screen for the AI setup process.
+
+STYLE GUIDE:
+- Theme: LIGHT MODE. Clean, airy, spacious.
+- Focus: The input field is the HERO. It should look powerful.
 
 LAYOUT:
-- Header section:
-  - Title: "Conocimiento Extraído"
-  - Subtitle: "Revisa la información que la IA aprendió de tu sitio web"
-  - Source URL badge (small, gray, with link icon)
+1. Centered Content (Vertical Stack):
+   - Title: "Conecta tu Negocio"
+   - Subtitle: "Nuestro escáner neuronal leerá tu web para entrenar a tu agente en segundos."
 
-- Main content: 3-column grid (responsive to 1 column on mobile)
+2. The Input Field (Central & Huge):
+   - Style: Large height (64px), white background, strong shadow.
+   - Border: Neutral gray usually, but GLOWS Indigo when focused.
+   - Placeholder: "https://tu-clinica.com"
+   - Icon: A globe or "brain" icon inside the input on the left.
+   - Button: "Empezar Entrenamiento" (Gradient Indigo->Purple). NOT a separate button, but integrated or attached to the input bar.
 
-  COLUMN 1 - Servicios Detectados:
-  - Card with indigo accent border-top (#4f46e5)
-  - Icon: 💼
-  - List of services with checkmarks
-  - Each service shows: Name + Price (if found)
-  - "Agregar servicio" button at bottom (outline style)
+3. Social Proof / Trust (Below input):
+   - "🔒 Escaneo seguro y privado"
+   - "⚡️ Proceso de 30-60 segundos"
 
-  COLUMN 2 - Información de Contacto:
-  - Card with purple accent border-top (#7c3aed)
-  - Icon: 📞
-  - Phone number (if found)
-  - Email (if found)
-  - Address (if found)
-  - Business hours (if found)
-  - Empty state: "No se encontró información de contacto"
-
-  COLUMN 3 - Equipo/Profesionales:
-  - Card with gradient accent border-top
-  - Icon: 👥
-  - List of team members (if found)
-  - Each with: Name, Role, Photo placeholder
-  - Empty state: "No se detectaron profesionales"
-
-- Footer section:
-  - Stats bar: "X servicios • Y páginas escaneadas • Z minutos"
-  - Two buttons:
-    - "Volver a escanear" (outline, gray)
-    - "Continuar al Chat" (solid, indigo #4f46e5) - Primary CTA
-
-FEATURES:
-- Each card has subtle hover effect
-- Empty states are friendly, not alarming
-- Loading skeleton states for async data
-- Edit icons next to each item (pencil icon, appears on hover)
-- Smooth fade-in animation when data loads
-
-STYLE:
-- Professional, data-dashboard aesthetic
-- Similar to Linear.app or Notion
-- Clean typography hierarchy
-- Generous white space
-- Subtle shadows on cards
-
-Export as React/Angular component with mock data structure
+ANIMATION:
+- When the user types, the button becomes fully opaque/active.
+- When clicked, transition to a "Scanning" state implies a complex backend process starting.
 ```
 
 ---
 
-## Pantalla 3: Enhanced Chat Interface (Chat + Body Map + Knowledge Context)
+## Pantalla 3: Training Process (El "Laboratorio")
 
-### Prompt para v0.dev/Bolt
+**Nombre:** `TrainingOverlayComponent`
+**Objetivo:** Entretener al usuario mientras espera y MOSTRAR que la IA está trabajando (valor percibido).
 
-```
-Create a split-screen chat interface for a physiotherapy AI agent:
+### Prompt para v0.dev/Bolt:
 
-DESIGN SYSTEM:
-- Primary: #4f46e5 (indigo), Secondary: #7c3aed (purple)
-- Gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
-- Chat bubbles: User (indigo gradient), AI (light gray)
-- Modern messaging app aesthetic
+```text
+Create a "Training in Progress" overlay/modal.
+
+STYLE GUIDE:
+- Theme: DARK MODE (Exception!). This specific screen represents the "Inside of the machine".
+- Why Dark? To contrast with the rest of the Light app and feel like "Matrix" code is running.
+- Background: Deep Indigo/Black (#0f172a).
 
 LAYOUT:
-Desktop (2-column):
-- LEFT (60%): Chat conversation
-- RIGHT (40%): Interactive Body Map + Knowledge Panel
+1. Central "Brain" Visualization:
+   - An animated central element (pulsing circle or brain icon).
+   - Progress Bar: Gradient fill, smooth animation.
+   - Percentage: Big bold text "45%".
 
-Mobile (stacked):
-- Chat on top
-- Body Map as expandable drawer from bottom
+2. "The Console" (Terminal Output):
+   - A code-like looking box below the progress bar.
+   - Font: Monospace (Courier/Fira).
+   - Text Colors: Green for success, Yellow for processing.
+   - LOGS (Animated typing effect):
+     > [CONNECTING] www.clinica-ejemplo.com... OK
+     > [NEURAL_NET] Extracting services...
+     > [FOUND] "Fisioterapia Deportiva"
+     > [FOUND] "Osteopatía"
+     > [PRICING] Detecting table... Success.
+     > [TEACHING] Fine-tuning conversational model...
 
-LEFT PANEL - Chat:
-- Header:
-  - Avatar (AI agent icon)
-  - Name: "Asistente de [Clinic Name]"
-  - Status: "En línea" (blue dot)
-  - Info icon (shows knowledge source on click)
+3. Dynamic "Insight" Cards (Fading in/out):
+   - While waiting, show floating cards: "He aprendido que tus horarios son de 9 a 20h".
 
-- Messages area:
-  - User messages: Right-aligned, indigo gradient background, white text
-  - AI messages: Left-aligned, light gray background (#f9fafb), dark text
-  - Timestamp below each message (small, gray)
-  - Typing indicator (3 animated dots in indigo)
-
-- Input area:
-  - Text input with placeholder: "Describe tu dolor o consulta..."
-  - Microphone icon (voice input)
-  - Send button (indigo #4f46e5, paper plane icon)
-  - Character counter (subtle, gray)
-
-RIGHT PANEL - Body Map + Context:
-- Tabs at top:
-  - "Mapa Corporal" (active - indigo underline)
-  - "Servicios"
-  - "Información"
-
-- TAB 1 - Body Map:
-  - Interactive SVG body diagram (front/back toggle)
-  - Clickable zones (highlight on hover with indigo)
-  - Selected zone shows indigo outline
-  - Label below: "Selecciona la zona de dolor"
-
-- TAB 2 - Servicios:
-  - List of available services from knowledge base
-  - Each with: Icon, Name, Price, Duration
-  - Click to mention in chat
-
-- TAB 3 - Información:
-  - Quick facts from knowledge base
-  - Hours, Location, Contact
-  - "Ver más" expands
-
-FEATURES:
-- Auto-scroll to latest message
-- Message grouping by time
-- "Scroll to bottom" button when scrolled up
-- Body Map selection auto-fills chat input
-- Smooth transitions between tabs
-- Responsive: Right panel becomes bottom sheet on mobile
-
-INTERACTIONS:
-- Click body part → Chat input fills with "Tengo dolor en [zona]"
-- Click service → Chat input fills with "¿Cuánto cuesta [servicio]?"
-- Voice button → Opens voice recording modal
-
-STYLE:
-- Modern messaging app (WhatsApp/Telegram inspired)
-- Clean, minimal, focused on conversation
-- Indigo/purple accents for primary actions
-- Subtle animations (message slide-in, typing indicator)
-
-Export as React/Angular component with sample conversation
+FEELING:
+"Wow, this thing is actually reading my website and learning right now."
 ```
 
 ---
 
-## Pantalla 4: Training Overlay (Actualizada con Branding Azul/Morado)
+## Pantalla 4: Knowledge Preview (La "Auditoría")
 
-### Prompt para v0.dev/Bolt
+**Nombre:** `KnowledgePreviewComponent`
+**Objetivo:** Transparencia. Que el usuario verifique lo aprendido antes de probar.
 
-```
-Create a "Training in Progress" overlay screen for AI knowledge ingestion:
+### Prompt para v0.dev/Bolt:
 
-DESIGN SYSTEM:
-- Primary: #4f46e5 (indigo), Secondary: #7c3aed (purple)
-- Gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
-- Dark theme background: #1f2937
-- Accent indigo/purple for progress indicators
+```text
+Create a "Knowledge Audit" dashboard view.
+
+STYLE GUIDE:
+- Theme: LIGHT MODE. Information density should be high but readable.
+- Metaphor: A clipboard or audit report.
 
 LAYOUT:
-- Full-screen overlay (modal)
-- Centered card (max-width: 900px)
-- Semi-transparent dark background
+1. Header Stats:
+   - "34 Servicios Detectados" | "4 Doctores Encontrados" | "Ubicación Confirmada"
 
-CARD CONTENT:
-- Header:
-  - Title: "Entrenando tu Agente de IA"
-  - Subtitle: "Analizando tu sitio web..."
-  - Progress bar (indigo to purple gradient fill)
-  - Percentage: "45%" (large, white text)
+2. Two-Column Layout (Desktop):
+   - LEFT (Servicios):
+     - List of cards for each service found.
+     - Each card: Name (Editable), Price (Editable), Duration (Editable).
+     - Action: "Add Missing Service".
 
-- Main area (2-column grid):
+   - RIGHT (Business Info):
+     - "Opening Hours" widget.
+     - "Contact Info" widget.
+     - "Team Members" list (Avatars + Names).
 
-  LEFT - Terminal Log:
-  - Dark code editor aesthetic (#0d1117 background)
-  - Terminal header with 3 dots (red, yellow, green)
-  - Monospace font (Courier New or Fira Code)
-  - Indigo text (#667eea)
-  - Animated logs scrolling:
-    - "> Conectando con servidor..."
-    - "> Escaneando página principal..."
-    - "> ENCONTRADO: Sección de servicios"
-    - "> Detectado: Fisioterapia Deportiva - 50€"
-  - Blinking cursor at end
+3. Validation Actions (Bottom Sticky Bar):
+   - "Repetir Escaneo" (Secondary)
+   - "Confirmar y Entrenar" (Primary, Gradient Big Button).
 
-  RIGHT - Checklist:
-  - Title: "Progreso"
-  - List of steps with checkboxes:
-    - ✓ Conectando con tu web (completed - indigo)
-    - ✓ Leyendo contenido (completed - indigo)
-    - ⏳ Identificando servicios (in progress - purple)
-    - ⬜ Analizando precios (pending - gray)
-    - ⬜ Configurando agente (pending - gray)
-  - Smooth check animation when step completes
-
-- Footer:
-  - Info text: "Esto puede tomar 30-60 segundos"
-  - Cancel button (text only, gray) - optional
-
-FEATURES:
-- Progress bar fills smoothly with gradient (CSS transition)
-- Logs appear with fade-in animation
-- Checkmarks animate with scale + fade
-- Percentage updates every second
-- Auto-close when 100% reached
-
-STYLE:
-- Hacker/terminal aesthetic but polished
-- Indigo/purple matrix-style but professional
-- Similar to GitHub Copilot loading screen
-- Dark, focused, shows technical work happening
-
-ANIMATIONS:
-- Log lines fade in from top
-- Progress bar smooth fill (ease-in-out)
-- Checkmarks pop in with bounce
-- Cursor blinks every 500ms
-
-Export as React/Angular component with animation hooks
+FEELING:
+Control. The user sees the AI is smart, but THEY are the boss who approves the data.
 ```
 
 ---
 
-## Pantalla 5: Niche Selector (Reemplazo de Landing Actual)
+## Pantalla 5: Enhanced Chat (El "Producto Final")
 
-### Prompt para v0.dev/Bolt
+**Nombre:** `AgentChatComponent`
+**Objetivo:** La demo WOW. Donde ocurre la magia con el mapa corporal o la interacción rica.
 
-```
-Create a niche selection screen for a multi-vertical AI SaaS platform:
+### Prompt para v0.dev/Bolt:
 
-DESIGN SYSTEM:
-- Primary: #4f46e5 (indigo), Secondary: #7c3aed (purple)
-- Gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
-- Clean, modern, card-based layout
-- White background (#f9fafb) with subtle texture
+```text
+Create the main "Agent Chat Interface" with a split-screen layout.
 
-LAYOUT:
-- Hero section:
-  - Title: "Elige tu Especialidad"
-  - Subtitle: "Selecciona el tipo de negocio para personalizar tu agente de IA"
+STYLE GUIDE:
+- Theme: LIGHT MODE.
+- Chat Bubbles:
+  - AI: White bubble with subtle shadow.
+  - User: Indigo Gradient bubble, white text.
 
-- Grid of niche cards (2x2 on desktop, 1 column on mobile):
+LAYOUT (Split Screen):
+1. LEFT PANEL (The Chat):
+   - Header: Agent Avatar ("Lucía - Asistente Virtual") + Online Status.
+   - Message Area: Clean conversation history.
+   - Input Area: Modern, pill-shaped input, voice mic icon, send button.
 
-  CARD STRUCTURE (each):
-  - Large icon at top (emoji or SVG)
-  - Title (bold, large)
-  - Short description (2 lines max)
-  - "Seleccionar" button (outline, indigo)
-  - Hover effect: Slight lift + shadow increase + indigo border glow
+2. RIGHT PANEL (The "Superpower" Widget):
+   - Niche: Physiotherapy.
+   - Widget: "Interactive Body Map".
+   - Graphic: A clean SVG silhouette of a human body (Front/Back).
+   - INTERACTION:
+     - User clicks "Shoulder" on the map.
+     - Chat Input auto-fills: "Me duele el hombro derecho..."
+     - Agent context recognizes the zone.
 
-  NICHES:
-  1. Fisioterapia
-     - Icon: 🏥 or medical cross
-     - Description: "Gestión de citas y consultas de rehabilitación"
+Alternative Widgets (Tabs):
+- "Servicios": List of treatments with "Book" buttons.
+- "Calendario": A mini calendar for slot selection.
 
-  2. Clínica Dental
-     - Icon: 🦷 or tooth
-     - Description: "Reservas y consultas odontológicas"
-
-  3. Belleza y Estética
-     - Icon: ✨ or spa icon
-     - Description: "Tratamientos estéticos y cuidado personal"
-
-  4. Restaurante
-     - Icon: 🍽️ or chef hat
-     - Description: "Pedidos y reservas de mesa"
-
-- Footer:
-  - "¿No encuentras tu sector? Contáctanos" (link in indigo)
-
-FEATURES:
-- Cards have subtle border on hover (indigo)
-- Selected card shows indigo border
-- Click animation (scale down slightly)
-- Responsive grid (4 cols → 2 cols → 1 col)
-
-STYLE:
-- Clean, professional, B2B SaaS
-- Similar to Stripe or Linear.app
-- Generous padding and white space
-- Subtle shadows on cards
-- Indigo/purple accents for interactive elements
-
-INTERACTIONS:
-- Hover: Card lifts 4px, shadow increases, indigo border appears
-- Click: Navigate to URL input for that niche
-- Keyboard navigation support (tab through cards)
-
-Export as React/Angular component with routing logic
+FEELING:
+Fluid, integrated, much more than just a text chatbot.
 ```
 
 ---
 
-## Notas de Implementación
+## Pantalla 6: Agent Dashboard (El "Centro de Mando" - Full ROI View)
 
-### Para v0.dev:
+**Nombre:** `AgentDashboardComponent`
+**Objetivo:** Mostrar con precisión quirúrgica el valor económico y operativo que el agente aporta. No es solo "bonito", es una herramienta financiera.
 
-1. Copia cada prompt individualmente
-2. Genera la UI
-3. Descarga el código React/Angular
-4. Adapta los estilos a tu proyecto
+### Prompt para v0.dev/Bolt:
 
-### Para Bolt.new:
+```text
+Create a high-density, professional "Agent ROI Dashboard" with the following "Hyper-Detailed" specifications.
 
-1. Pega el prompt completo
-2. Especifica "Angular 17+ with Signals"
-3. Pide que use tu estructura de carpetas existente
+THEME & LAYOUT:
+- **Style:** "Stripe Dashboard" meets "Mission Control". High information density, but breathable white space.
+- **Grid:** 12-column grid system.
+- **Surfaces:** Pure white cards (#ffffff) with 1px border (#e5e7eb) and subtle drop-shadows (shadow-sm).
 
-### Para Claude Artifacts:
+SECTION 1: HEADER & CONTROLS (Top Bar)
+- **Left:** Title "Panel de Control" + Breadcrumb "Home / Agentes / Lucía V2".
+- **Right:**
+  - Date Range Picker: [ 📅 Últimos 30 días v ] (Dropdown with presets: Today, Week, Month).
+  - Export Button: [ ⬇ CSV ] (Outline style).
+  - Status Toggle: [ 🟢 Activo / 🔴 Pausado ] (Switch component with clear label).
 
-1. Usa los prompts como están
-2. Pide "Generate as Angular component"
-3. Copia el código generado a tu proyecto
+SECTION 2: ROI & KEY METRICS (The "Money" Row)
+- **KPI Card 1: Ingresos Generados**
+  - Value: "4.250 €" (Large, Inter Font, Bold).
+  - Trend: "↗ +12% vs mes anterior" (Green pill background).
+  - Subtext: "Directamente de citas cerradas".
+  - Icon: 💶 (Subtle background graphic).
+- **KPI Card 2: Horas Ahorradas**
+  - Value: "42 horas" (Human time saved).
+  - Trend: "≈ 1.5 Empleados TC" (Contextual metric).
+  - Tooltip: "Calculado a 5 mins por llamada evitada".
+- **KPI Card 3: Eficiencia de Cierre**
+  - Value: "18.5%" (Conversion Rate).
+  - Detail: "De 200 conv. -> 37 citas".
+  - Progress Ring: Visual circle showing the % filled.
+- **KPI Card 4: Satisfacción (CSAT)**
+  - Value: "4.8/5.0".
+  - Stars: ⭐⭐⭐⭐⭐ (Visual representation).
+
+SECTION 3: CONVERSATION ANALYTICS (The Charts)
+- **Main Chart (Area Chart - Full Width):**
+  - Title: "Volumen de Tráfico & Picos de Demanda".
+  - Y-Axis: Cantidad de mensajes.
+  - X-Axis: Franjas horarias (00:00 - 23:59).
+  - Data Series 1 (Blue fill): Total Conversaciones.
+  - Data Series 2 (Purple line): Citas Agendadas.
+  - **Interaction:** Hovering over a peak shows a tooltip: "14:00 - 12 Usuarios activos".
+- **Side Chart (Donut Chart - 1/3 Width):**
+  - Title: "Temas Más Consultados".
+  - Segments:
+    - "Precios" (40% - Indigo).
+    - "Horarios" (25% - Purple).
+    - "Dudas Médicas" (20% - Cyan).
+    - "Otros" (15% - Gray).
+  - Legend: Below chart, clickable to toggle categories.
+
+SECTION 4: LIVE ACTIVITY FEED (The "Pulse")
+- **Header:** "Interacciones Recientes (Tiempo Real)".
+- **Filters:** [Todos] [Citas] [Preguntas] [Errores].
+- **List Items (Detailed Rows):**
+  - **Row 1 (Success):**
+    - Avatar: User initials (JD) in Green circle.
+    - Title: "Juan D. reservó 'Fisioterapia 1h'".
+    - Time: "Hace 2 min".
+    - Badge: [ ✅ CONFIRMADO ] (Green bg, dark green text).
+    - Action: Button [ Ver Chat ] (Ghost style).
+  - **Row 2 (Query):**
+    - Avatar: User initials (AM) in Blue circle.
+    - Title: "Ana M. preguntó por 'Parking cercano'".
+    - Answer: "El agente recomendó: Parking Plaza mayor".
+    - Badge: [ 🤖 RESPONDIDO ] (Blue bg).
+  - **Row 3 (Escalation):**
+    - Avatar: User initials (X) in Red circle.
+    - Title: "Usuario pidió hablar con humano".
+    - Trigger: "No entendió 'Seguro Sanitas'".
+    - Badge: [ ⚠️ REQUIERE ATENCIÓN ] (Amber bg).
+    - Action: Button [ Entrenar Agente ] (Primary click).
+
+SECTION 5: ACTIONABLE INSIGHTS (The "Improvement" Loop)
+- A banner or card distinct from the rest (Soft Gradient bg).
+- Icon: 💡 (Lightbulb).
+- Text: "Sugerencia de Mejora: 15 usuarios han preguntado por 'Bonos de 10 sesiones' y el agente no tiene esa información."
+- Button: [ + Agregar 'Bonos' al Conocimiento ] (Quick Action).
+
+FEELING:
+The user should feel like a CEO looking at a high-performing department, not just a tech admin. It's about business results.
+```
 
 ---
 
-## Orden de Implementación Recomendado
+## Pantalla 7: Agent Simulator / Playground (El "Campo de Pruebas Definitivo")
 
-1. **Niche Selector** (Pantalla 5) - Punto de entrada
-2. **URL Input** (Pantalla 1) - Captura de datos
-3. **Training Overlay** (Pantalla 4) - Feedback visual
-4. **Knowledge Preview** (Pantalla 2) - Transparencia
-5. **Enhanced Chat** (Pantalla 3) - Experiencia final
+**Nombre:** `AgentPlaygroundComponent`
+**Objetivo:** Un entorno seguro y ULTRA-TÉCNICO para que el administrador "rompa" al agente y lo perfeccione antes de lanzarlo.
 
-Cada pantalla es independiente y puede generarse/testearse por separado.
+### Prompt para v0.dev/Bolt:
+
+```text
+Create a comprehensive "Advanced Agent Simulator & Debugger" screen.
+
+THEME:
+- **Style:** Integrated Development Environment (IDE) feel, but cleaner.
+- **Layout:** Three-Pane Layout (Config | Chat | Internals).
+
+PANE 1: CONFIGURATION (Left Sidebar - 25% Width)
+- **Header:** "Parámetros del Modelo".
+- **Accordion 1: Identidad & Tono**
+  - System Prompt Editor: A expanding textarea with syntax highlighting.
+  - Preset Dropdown: [ Recepcionista Formal | Colega Empático | Vendedor Agresivo ].
+  - Sliders:
+    - Temperature (Creatividad): 0.2 [-----O-----] 1.0.
+    - Verbosity (Longitud): Breve [---O-------] Extenso.
+- **Accordion 2: Conocimiento Activo**
+  - List of active knowledge sources with toggles:
+    - [x] Web (scraped).
+    - [x] PDF Docs.
+    - [ ] Google Calendar (Mock).
+- **Accordion 3: Variables de Prueba**
+  - Form inputs to mock user context:
+    - User Name: [ "Carlos" ].
+    - Current Time: [ "19:30" ] (Tests "Closed" logic).
+    - User History: [ "Client since 2022" ].
+
+PANE 2: INTERACTIVE SIMULATION (Center - 40% Width)
+- **Visuals:** Looks exactly like the end-user Mobile Chat, but wrapped in a "Device Frame" (optional) or distinct border.
+- **Watermark:** "TEST MODE" diagonal pattern background (subtle).
+- **Header Controls:**
+  - [ 🔄 Restart Session ] (Reset variables).
+  - [ 📱 Mobile View ] / [ 💻 Desktop View ] toggle.
+- **Chat Experience:**
+  - Standard chat bubbles.
+  - **Critical Difference:** Next to EVERY AI message, a small [ 🐞 Debug ] icon appears. Clicking it focuses Pane 3.
+
+PANE 3: X-RAY DEBUGGER (Right Sidebar - 35% Width)
+- **Header:** "Traza de Ejecución".
+- **Tab System:** [ RAG Search ] [ Reasoning ] [ Tool Calls ].
+- **Content - RAG Tab:**
+  - "Query Vectorizada": 'dolor de muelas precio'.
+  - "Chunks Recuperados" (List):
+    1. 📄 *services.html*: "...implante dental desde 800€..." (Score: 0.89).
+    2. 📄 *faq.html*: "...urgencias dentales se atienden..." (Score: 0.75).
+- **Content - Reasoning Tab:**
+  - "Chain of Thought":
+    > "User asks for price. Context mentions 800€. Checking intent... Intent is 'Informational'. Formulating response with empathy."
+- **Content - Tool Calls Tab:**
+  - Log of external actions:
+    > [POST] /api/check-availability { date: '2024-05-20' } -> Response: { slots: [] }.
+    > Decision: "No slots found, offering alternative."
+
+FOOTER STATUS BAR:
+- Latency: "Gen: 450ms | RAG: 120ms | Total: 570ms".
+- Token Usage: "Prompt: 1.2k | Compl: 150 | Cost: $0.004".
+
+FEELING:
+Empowering. It gives the user "X-Ray vision" into the AI's brain. They understand EXACTLY why the agent said what it said.
+```

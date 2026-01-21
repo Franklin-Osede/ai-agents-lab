@@ -19,6 +19,9 @@ export class WorkflowSession {
   @Column('uuid')
   versionId: string; // The specific snapshot being used
 
+  @Column('uuid', { nullable: true })
+  knowledgeSourceId: string; // Link to the specific scraped knowledge used for this session
+
   @Column()
   currentNodeId: string; // Pointer to the current node in the graph
 

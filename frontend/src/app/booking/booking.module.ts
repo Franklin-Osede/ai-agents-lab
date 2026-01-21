@@ -15,60 +15,54 @@ import { WorkflowRunnerComponent } from './components/workflow-runner/workflow-r
 const routes: Routes = [
   {
     path: '',
-    component: MobileLayoutComponent,
-    children: [
-      {
-        path: '',
-        redirectTo: 'select-niche',
-        pathMatch: 'full',
-      },
-      {
-        path: 'select-niche',
-        component: NicheSelectorComponent,
-      },
-      {
-        path: ':niche/setup',
-        component: UrlInputComponent,
-      },
-      {
-        path: ':niche/training',
-        component: TrainingProgressComponent,
-      },
-      {
-        path: ':niche/preview',
-        component: KnowledgePreviewComponent,
-      },
-      {
-        path: ':niche/suggested',
-        loadComponent: () =>
-          import('./components/suggested-workflow/suggested-workflow.component').then(
-            (m) => m.SuggestedWorkflowComponent,
-          ),
-      },
-      {
-        path: ':niche/templates',
-        loadComponent: () =>
-          import('./components/template-picker/template-picker.component').then(
-            (m) => m.TemplatePickerComponent,
-          ),
-      },
-      {
-        path: ':niche/builder',
-        component: WorkflowBuilderComponent,
-      },
-      {
-        path: ':niche/chat',
-        component: WorkflowSimulatorComponent,
-      },
-      {
-        path: ':niche/run',
-        component: WorkflowRunnerComponent,
-      },
-      {
-        path: 'voice', // Legacy route wrapped too for consistency, or move out if needed
-        component: VoiceBookingComponent,
-      },
-    ]
+    redirectTo: 'select-niche',
+    pathMatch: 'full',
+  },
+  {
+    path: 'select-niche',
+    component: NicheSelectorComponent,
+  },
+  {
+    path: ':niche/setup',
+    component: UrlInputComponent,
+  },
+  {
+    path: ':niche/training',
+    component: TrainingProgressComponent,
+  },
+  {
+    path: ':niche/preview',
+    component: KnowledgePreviewComponent,
+  },
+  {
+    path: ':niche/suggested',
+    loadComponent: () =>
+      import('./components/suggested-workflow/suggested-workflow.component').then(
+        (m) => m.SuggestedWorkflowComponent,
+      ),
+  },
+  {
+    path: ':niche/templates',
+    loadComponent: () =>
+      import('./components/template-picker/template-picker.component').then(
+        (m) => m.TemplatePickerComponent,
+      ),
+  },
+  {
+    path: ':niche/builder',
+    component: WorkflowBuilderComponent,
+  },
+  {
+    path: ':niche/chat',
+    component: WorkflowSimulatorComponent,
+  },
+  {
+    path: ':niche/run',
+    component: WorkflowRunnerComponent,
+  },
+  {
+    path: 'voice',
+    component: VoiceBookingComponent,
   }
 ];
 

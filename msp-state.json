@@ -1,0 +1,15 @@
+{
+  "features": {
+    "auth": {
+      "backend": "COMPLETE",
+      "frontend": "IN_PROGRESS",
+      "createdAt": "2026-01-21T11:52:20.761Z"
+    },
+    "knowledge-enhancement": {
+      "backend": "IN_PROGRESS",
+      "frontend": "PENDING",
+      "createdAt": "2026-01-21T13:19:30.222Z"
+    }
+  },
+  "currentFocus": "knowledge-enhancement"
+}

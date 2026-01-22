@@ -75,14 +75,21 @@
                 <p class="text-[#078841] text-sm font-bold flex items-center"><span class="material-symbols-outlined text-sm">arrow_upward</span> +2%</p>
             </div>
         </div>
-        <div class="flex flex-col gap-2 rounded-xl p-6 bg-white border border-[#dcdce5] shadow-sm">
+        <div class="flex flex-col gap-2 rounded-xl p-6 bg-white border border-[#dcdce5] shadow-sm relative group cursor-help">
             <div class="flex justify-between items-center">
-                <p class="text-[#656487] text-sm font-semibold uppercase tracking-wider">Tiempo de Escaneo</p>
+                <p class="text-[#656487] text-sm font-semibold uppercase tracking-wider">Velocidad de Análisis</p>
                 <span class="material-symbols-outlined text-primary">timer</span>
             </div>
             <div class="flex items-baseline gap-2">
-                <p class="text-[#121117] text-3xl font-black">12s</p>
-                <p class="text-[#656487] text-sm font-bold">ESTABLE</p>
+                <p class="text-[#121117] text-3xl font-black">Optimizado</p>
+                <p class="text-[#078841] text-sm font-bold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">rocket_launch</span>
+                    IA Vision Active
+                </p>
+            </div>
+            <!-- Tooltip -->
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none text-center z-10">
+                Análisis visual completo mediante Inteligencia Artificial (GPT-4 Vision)
             </div>
         </div>
     </div>
@@ -113,8 +120,8 @@
                                     <span class="material-symbols-outlined text-primary">add_circle</span>
                                 </div>
                                 <div class="col-span-5">
-                                    <label class="text-[10px] font-bold text-[#656487] uppercase">Nuevo Servicio</label>
-                                    <input [(ngModel)]="newServiceName" class="w-full border border-indigo-200 rounded px-2 py-1 focus:ring-2 focus:ring-primary/20 text-[#121117] text-sm" type="text" placeholder="Ej: Consultoría Inicial" (keyup.enter)="addCustomService()"/>
+                                    <label for="newServiceName" class="text-[10px] font-bold text-[#656487] uppercase">Nuevo Servicio</label>
+                                    <input id="newServiceName" [(ngModel)]="newServiceName" class="w-full border border-indigo-200 rounded px-2 py-1 focus:ring-2 focus:ring-primary/20 text-[#121117] text-sm" type="text" placeholder="Ej: Consultoría Inicial" (keyup.enter)="addCustomService()"/>
                                 </div>
                                 <div class="col-span-6 flex gap-2 justify-end">
                                     <button (click)="addCustomService()" class="bg-primary text-white px-3 py-1 rounded-lg text-xs font-bold hover:opacity-90">Guardar</button>
@@ -132,18 +139,18 @@
                                     <span class="material-symbols-outlined text-[#078841]">check_circle</span>
                                 </div>
                                 <div class="col-span-11 md:col-span-5">
-                                    <label class="text-[10px] font-bold text-[#656487] uppercase md:hidden">Servicio</label>
-                                    <input class="w-full border-none p-0 focus:ring-0 font-bold text-[#121117] text-sm bg-transparent truncate" type="text" [value]="service.name" readonly/>
+                                    <label [for]="'service-' + $index" class="text-[10px] font-bold text-[#656487] uppercase md:hidden">Servicio</label>
+                                    <input [id]="'service-' + $index" class="w-full border-none p-0 focus:ring-0 font-bold text-[#121117] text-sm bg-transparent truncate" type="text" [value]="service.name" readonly/>
                                 </div>
                                 <div class="col-span-6 md:col-span-3 border-l border-[#f1f0f4] pl-2 md:pl-4">
-                                    <label class="text-[10px] font-bold text-[#656487] uppercase">Precio</label>
+                                    <label [for]="'price-' + $index" class="text-[10px] font-bold text-[#656487] uppercase">Precio</label>
                                     <div class="flex items-center text-sm font-bold text-primary">
-                                        <input class="w-full border-none p-0 focus:ring-0 font-bold text-primary text-sm bg-transparent truncate" type="text" [value]="service.price"/>
+                                        <input [id]="'price-' + $index" class="w-full border-none p-0 focus:ring-0 font-bold text-primary text-sm bg-transparent truncate" type="text" [value]="service.price"/>
                                     </div>
                                 </div>
                                 <div class="col-span-6 md:col-span-3 border-l border-[#f1f0f4] pl-2 md:pl-4 flex justify-between items-center">
                                     <div>
-                                        <label class="text-[10px] font-bold text-[#656487] uppercase">Duración</label>
+                                        <span class="text-[10px] font-bold text-[#656487] uppercase">Duración</span>
                                         <div class="font-bold text-[#121117] text-sm">{{ service.duration || 'Variable' }}</div>
                                     </div>
                                     <button class="opacity-0 group-hover:opacity-100 transition-opacity">
@@ -244,7 +251,7 @@
                     <div class="flex items-center gap-3 p-2 rounded-lg bg-background-light">
                         <div class="h-10 w-10 rounded-full bg-cover bg-center bg-slate-200 border border-white shadow-sm flex items-center justify-center overflow-hidden">
                              @if(member.image && member.image.startsWith('http')) {
-                                <img [src]="member.image" class="w-full h-full object-cover">
+                                <img [src]="member.image" [alt]="member.name" class="w-full h-full object-cover">
                              } @else {
                                 <span class="material-symbols-outlined text-slate-400">person</span>
                              }

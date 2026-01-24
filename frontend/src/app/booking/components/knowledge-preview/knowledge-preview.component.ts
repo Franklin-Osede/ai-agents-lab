@@ -102,9 +102,9 @@ export class KnowledgePreviewComponent implements OnInit {
       const branding = metadata.branding;
       
       // Logo
-      if (branding.logoUrl) {
-        this.branding.logoUrl = branding.logoUrl;
-        console.log('✅ Logo found:', branding.logoUrl);
+      if (branding.logoUrl || branding.logo) {
+        this.branding.logoUrl = branding.logoUrl || branding.logo;
+        console.log('✅ Logo found:', this.branding.logoUrl);
       }
       
       // Primary Color - Apply to UI

@@ -21,7 +21,7 @@ export class IngestWebsiteUseCase {
     tenantId: string,
   ): Promise<{ sourceId: string; status: string; metadata: unknown }> {
     try {
-      // 1. Scrape the URL
+      // 1. Scrape the URL (Now includes GPT-4o analysis internally)
       this.eventsGateway.emitProgress(tenantId, {
         sourceId: 'temp',
         progress: 20,
@@ -37,49 +37,53 @@ export class IngestWebsiteUseCase {
         stage: 'scraping_subpages',
         message: 'Analizando estructura...',
         metadata: {
-          screenshot: scrapedData.screenshot, // Send screenshot early!
+          screenshot: scrapedData.screenshot,
         },
       });
-      // 2. Analyze with AI (AWS Bedrock) - WITH FALLBACK
+
+      // 2. Prepare Metadata (Rely on Scraper's internal AI)
       this.eventsGateway.emitProgress(tenantId, {
         sourceId: 'temp',
         progress: 80,
         stage: 'analyzing',
-        message: 'Analizando con IA...',
+        message: 'Procesando datos extraídos...',
       });
 
-      let aiAnalysis;
+      // Construct "structuredData" from the rich scrapedData
+      // This bridges the gap between the Scraper's format and the Frontend's expected format
+      const structuredDataV2 = {
+        businessInfo: {
+          phone: scrapedData.branding.phone,
+          email: scrapedData.branding.email,
+          address: scrapedData.branding.address,
+          hours: scrapedData.branding.hours,
+        },
+        services: scrapedData.branding.services.map(s => ({ name: s, price: 'Consultar' })), // Default price
+        team: scrapedData.team,
+        // Add more fields if frontend expects them
+      };
+
+      // OPTIONAL: Try Bedrock only if enabled/working, but DONT fail the process
+      let additionalAnalysis = {};
       try {
-        aiAnalysis = await this.bedrockAnalyzer.analyzeContent(scrapedData.content);
-
-        // Check if AI returned empty data
-        const hasServices = aiAnalysis.structuredData?.services?.length > 0;
-        const hasBusinessInfo =
-          aiAnalysis.structuredData?.businessInfo &&
-          Object.keys(aiAnalysis.structuredData.businessInfo).length > 0;
-
-        if (!hasServices && !hasBusinessInfo) {
-          this.logger.warn('AI returned empty structuredData, using fallback extraction');
-          aiAnalysis = this.extractBasicData(scrapedData);
-        }
-      } catch (aiError) {
-        this.logger.warn('AI Analysis failed, using fallback extraction', aiError);
-        // FALLBACK: Extract basic data without AI
-        aiAnalysis = this.extractBasicData(scrapedData);
+         // We skip Bedrock for now to prevent crashes as per logs
+         // aiAnalysis = await this.bedrockAnalyzer.analyzeContent(scrapedData.content);
+      } catch (e) {
+        this.logger.warn('Bedrock analysis skipped/failed (using GPT-4o data instead)');
       }
 
       // 3. Create result with metadata
       const sourceId = `src-${Date.now()}`;
       const metadata = {
         title: scrapedData.title,
-        summary: aiAnalysis.summary || scrapedData.content.substring(0, 500),
-        classification: aiAnalysis.classification || 'General',
+        summary: scrapedData.content.substring(0, 500), // refined later
+        classification: 'General', // could infer from services
         screenshot: scrapedData.screenshot,
-        branding: scrapedData.branding || {}, // Phase 1: Complete branding data
-        team: scrapedData.team || [], // Phase 3: Team extraction
+        branding: scrapedData.branding || {}, 
+        team: scrapedData.team || [],
         blogPosts: scrapedData.blogPosts || [],
         faqs: scrapedData.faqs || [],
-        structuredData: aiAnalysis.structuredData || null,
+        structuredData: structuredDataV2, // Use OUR generated structured data
       };
 
       const knowledgeSource = new KnowledgeSource({
@@ -99,7 +103,7 @@ export class IngestWebsiteUseCase {
         progress: 100,
         stage: 'completed',
         message: 'Entrenamiento finalizado',
-        metadata, // CRITICAL: Include metadata in final event
+        metadata,
       });
 
       return {
@@ -108,7 +112,6 @@ export class IngestWebsiteUseCase {
         metadata: knowledgeSource.metadata,
       };
     } catch (error) {
-      // Graceful error handling - return status ERROR instead of 500 crash
       this.logger.error('Ingest failed:', error);
       return {
         sourceId: 'error',

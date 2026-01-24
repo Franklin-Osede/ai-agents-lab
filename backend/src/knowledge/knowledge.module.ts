@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'; // Import TypeOrmModule
 import { IngestWebsiteUseCase } from './application/use-cases/ingest-website.use-case';
 import { IScraperService } from './domain/repositories/scraping.service';
 import { ContentClassifierService } from './domain/services/content-classifier.service';
-import { PuppeteerScraperAdapter } from './infrastructure/scraping/puppeteer-scraper.adapter';
+import { SimpleScraperService } from './infrastructure/scraping/simple-scraper.service';
 import { KnowledgeController } from './presentation/knowledge.controller';
 
 import { ConfigModule } from '@nestjs/config';
@@ -28,7 +28,7 @@ import { KnowledgeSource } from './domain/entities/knowledge-source.entity';
     KnowledgeEventsGateway,
     {
       provide: IScraperService,
-      useClass: PuppeteerScraperAdapter,
+      useClass: SimpleScraperService,
     },
     {
       provide: IKnowledgeSourceRepository,

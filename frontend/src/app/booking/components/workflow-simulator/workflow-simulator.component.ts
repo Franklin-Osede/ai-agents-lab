@@ -50,7 +50,23 @@ export class WorkflowSimulatorComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.niche.set(params['niche']);
-      this.initializeSession();
+    });
+    
+    this.route.queryParams.subscribe(queryParams => {
+        const workflowId = queryParams['workflowId'];
+        if (workflowId) {
+            console.log(' Using specific Workflow ID:', workflowId);
+            // If we have a specific ID, use it directly
+            this.isLoading.set(true);
+            this.workflowService.getWorkflow(this.niche()).subscribe(data => {
+                 // ideally we should get by ID, but getWorkflow(niche) returns active one.
+                 // let's assume getWorkflow returns the correct active one or we just start execution with the ID we have.
+                 this.workflow.set(data.workflow); // Set metadata if available
+                 this.startExecution(workflowId);
+            });
+        } else {
+             this.initializeSession();
+        }
     });
   }
 

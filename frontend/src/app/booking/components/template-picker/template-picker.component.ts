@@ -182,8 +182,8 @@ export class TemplatePickerComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.isLoading.set(false);
-          // Navigate to builder with new workflow
-          this.router.navigate(['/booking', this.selectedNiche(), 'builder'], {
+          // Navigate to Chat (Simulator) to test it first
+          this.router.navigate(['/booking', this.selectedNiche(), 'chat'], {
             queryParams: { workflowId: response.workflow.id },
           });
         },

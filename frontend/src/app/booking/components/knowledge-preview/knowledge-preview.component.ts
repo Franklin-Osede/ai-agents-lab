@@ -380,9 +380,9 @@ export class KnowledgePreviewComponent implements OnInit {
   }
 
   continueToChat() {
-    console.log('[Preview] Navigating to templates with scraped data');
+    console.log('[Preview] Navigating to chat simulator with scraped data');
     
-    // Prepare metadata to pass to templates
+    // Prepare metadata to pass (optional, backend should have it, but good for immediate state)
     const metadata = {
       businessName: this.businessName(),
       services: this.services,
@@ -392,6 +392,7 @@ export class KnowledgePreviewComponent implements OnInit {
       screenshot: this.screenshot()
     };
     
+    // Navigate to Templates Selection
     this.router.navigate(['/booking', this.niche(), 'templates'], {
       queryParams: { 
         url: this.url(),

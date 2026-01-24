@@ -484,8 +484,8 @@ export class PuppeteerScraperAdapter implements IScraperService {
       const mapIframe = document.querySelector('iframe[src*="google.com/maps"]');
       if (mapIframe) mapsUrl = mapIframe.getAttribute('src') || '';
       if (!mapsUrl) {
-         const mapLink = document.querySelector('a[href*="google.com/maps"]');
-         if (mapLink) mapsUrl = mapLink.getAttribute('href') || '';
+        const mapLink = document.querySelector('a[href*="google.com/maps"]');
+        if (mapLink) mapsUrl = mapLink.getAttribute('href') || '';
       }
 
       return {
@@ -504,7 +504,7 @@ export class PuppeteerScraperAdapter implements IScraperService {
         faqs: [],
         imageCandidates: images, // Pass to AI
         jsonLd: jsonLdData,
-        mapsUrl
+        mapsUrl,
       };
     });
 

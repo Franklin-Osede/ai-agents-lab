@@ -116,7 +116,9 @@ export class LangGraphBuilder implements IGraphBuilder {
             // Cycle 2 Logic: Check context for intent
             // In real app, this would use ConditionEvaluator or check state.intents
             const detectedIntent = state.context?.simulatedIntent;
-            const match = node.data!.intents.find((i: any) => i.intentName === detectedIntent);
+            // Safe access inside callback where type narrowing might be lost
+            const intents = node.data?.intents || [];
+            const match = intents.find((i: any) => i.intentName === detectedIntent);
             return match ? match.nextId : END;
           },
           // Optional: mapping for visualization/validation

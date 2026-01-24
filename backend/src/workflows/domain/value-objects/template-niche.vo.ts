@@ -1,4 +1,4 @@
-export type NicheType = 'health' | 'restaurant' | 'services' | 'ecommerce';
+export type NicheType = 'health' | 'restaurant' | 'services' | 'ecommerce' | 'dental';
 
 export interface TemplateIntentData {
   name: string;
@@ -14,7 +14,7 @@ export class TemplateNiche {
   ) {}
 
   static create(type: NicheType, subtype?: string): TemplateNiche {
-    const validTypes: NicheType[] = ['health', 'restaurant', 'services', 'ecommerce'];
+    const validTypes: NicheType[] = ['health', 'restaurant', 'services', 'ecommerce', 'dental'];
     if (!validTypes.includes(type)) {
       throw new Error(`Invalid niche type: ${type}`);
     }
@@ -119,6 +119,32 @@ export class TemplateNiche {
           displayName: 'Devoluciones',
           examples: ['devolver', 'cambio', 'reembolso'],
           icon: '↩️',
+        },
+      ],
+      dental: [
+        {
+          name: 'dental_checkup',
+          displayName: 'Revisión Dental',
+          examples: ['revision', 'chequeo', 'mirar muela'],
+          icon: '🦷',
+        },
+        {
+          name: 'cleaning',
+          displayName: 'Limpieza Dental',
+          examples: ['limpieza', 'higiene', 'quitar sarro'],
+          icon: '✨',
+        },
+        {
+          name: 'orthodontics',
+          displayName: 'Ortodoncia',
+          examples: ['brackets', 'invisalign', 'alineadores'],
+          icon: '😁',
+        },
+        {
+          name: 'emergency',
+          displayName: 'Urgencia',
+          examples: ['dolor', 'sangre', 'roto'],
+          icon: '🚨',
         },
       ],
     };

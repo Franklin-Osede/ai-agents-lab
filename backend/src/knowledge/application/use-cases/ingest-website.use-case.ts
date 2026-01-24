@@ -53,21 +53,20 @@ export class IngestWebsiteUseCase {
       // This bridges the gap between the Scraper's format and the Frontend's expected format
       const structuredDataV2 = {
         businessInfo: {
-          phone: scrapedData.branding.phone,
-          email: scrapedData.branding.email,
-          address: scrapedData.branding.address,
-          hours: scrapedData.branding.hours,
+          phone: scrapedData.branding?.phone ?? '',
+          email: scrapedData.branding?.email ?? '',
+          address: scrapedData.branding?.address ?? '',
+          hours: scrapedData.branding?.hours ?? '',
         },
-        services: scrapedData.branding.services.map(s => ({ name: s, price: 'Consultar' })), // Default price
+        services: (scrapedData.branding?.services || []).map((s) => ({ name: s, price: 'Consultar' })), // Default price
         team: scrapedData.team,
         // Add more fields if frontend expects them
       };
 
       // OPTIONAL: Try Bedrock only if enabled/working, but DONT fail the process
-      let additionalAnalysis = {};
       try {
          // We skip Bedrock for now to prevent crashes as per logs
-         // aiAnalysis = await this.bedrockAnalyzer.analyzeContent(scrapedData.content);
+         // await this.bedrockAnalyzer.analyzeContent(scrapedData.content);
       } catch (e) {
         this.logger.warn('Bedrock analysis skipped/failed (using GPT-4o data instead)');
       }

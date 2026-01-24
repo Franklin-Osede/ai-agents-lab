@@ -24,10 +24,19 @@ export interface ScrapedPage {
       youtube?: string;
     };
     services?: string[];
+    navbarSections?: Array<{ name: string; items?: string[] }>;
+    insurance?: string[];
+  };
+  contact?: {
+    phone?: string;
+    email?: string;
+    address?: string;
+    hours?: string;
   };
   team?: Array<{ name: string; role: string; image: string }>;
   blogPosts?: Array<{ title: string; url: string; date?: string; summary?: string }>;
   faqs?: Array<{ question: string; answer: string }>;
+  testimonials?: string[];
 }
 
 export abstract class IScraperService {

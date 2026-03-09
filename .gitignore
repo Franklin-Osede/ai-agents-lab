@@ -55,3 +55,8 @@ backend/node_modules/
 .frontend.pid
 .backend.log
 .frontend.log
+
+# Debug & Test Scripts
+debug-*.js
+test-*.js
+

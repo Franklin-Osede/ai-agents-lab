@@ -1,0 +1,50 @@
+<div class="font-sans text-clinical-dark min-h-screen bg-white">
+  <!-- Nav Area Padding -->
+  <div class="h-24 bg-gray-50 border-b border-gray-100"></div>
+
+  <!-- Loading State -->
+  @if (loading) {
+  <div class="flex justify-center py-32">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-clinical-blue"></div>
+  </div>
+  }
+
+  <!-- Article View -->
+  @if (!loading && post) {
+  <article class="max-w-4xl mx-auto px-6 lg:px-8 py-16">
+    <!-- Breadcrumb -->
+    <a routerLink="/blog" class="inline-flex items-center gap-2 text-sm text-clinical-blue font-semibold hover:underline mb-8">
+      &larr; Volver al Blog
+    </a>
+
+    <!-- Title & Meta -->
+    <h1 class="text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-8">
+      {{ post.title }}
+    </h1>
+
+    <div class="flex items-center gap-4 mb-12 py-6 border-y border-gray-100">
+      <div class="w-12 h-12 rounded-full bg-clinical-dark flex items-center justify-center text-white font-bold text-lg">
+        {{ post.authorName ? post.authorName.charAt(0) : 'A' }}
+      </div>
+      <div>
+        <div class="font-bold text-lg">{{ post.authorName || 'Agent.AI' }}</div>
+        <div class="text-sm text-gray-500">{{ post.createdAt | date:'longDate' }} • 5 min read</div>
+      </div>
+    </div>
+
+    <!-- Content (Assuming HTML output from the external agent) -->
+    <div class="prose prose-lg max-w-none text-gray-700 prose-headings:font-bold prose-headings:text-clinical-dark prose-a:text-clinical-blue hover:prose-a:text-blue-700 [&>div[data-type='lead-magnet']]:bg-blue-50 [&>div[data-type='demo-scheduler']]:bg-emerald-50" 
+         [innerHTML]="post.content | safeHtml">
+    </div>
+  </article>
+  }
+
+  <!-- Error State -->
+  @if (!loading && !post) {
+  <div class="flex flex-col items-center justify-center py-32 space-y-4">
+     <h1 class="text-4xl font-black text-gray-300">404</h1>
+     <p class="text-lg text-gray-600">No hemos podido encontrar este artículo.</p>
+     <a routerLink="/blog" class="bg-clinical-blue text-white px-6 py-2 rounded-full font-bold">Volver al Blog</a>
+  </div>
+  }
+</div>

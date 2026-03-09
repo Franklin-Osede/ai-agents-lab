@@ -1,0 +1,231 @@
+<div class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-display relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between border-b border-slate-200 bg-white px-8 py-3">
+<div class="flex items-center gap-8">
+<a routerLink="/blog/admin" class="flex items-center gap-3 text-clinical-blue hover:opacity-80 transition-opacity">
+<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-clinical-blue text-white">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight text-slate-900">AgentMinds</h2>
+</a>
+<nav class="flex items-center gap-6">
+<a class="text-sm font-semibold text-slate-900 border-b-2 border-clinical-blue pb-1" href="#editor">Editor</a>
+<a routerLink="/blog/admin" class="text-sm font-medium text-slate-500 hover:text-clinical-blue transition-colors">Volver a Borradores</a>
+<a class="text-sm font-medium text-slate-500 hover:text-clinical-blue transition-colors" href="#analytics">Analítica</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button (click)="saveDraft()" class="flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-1.5 hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined text-slate-400 text-lg" [ngClass]="{'animate-spin outline-clinical-blue': isSaving}">{{ isSaving ? 'sync' : 'cloud_done' }}</span>
+<span class="text-xs font-medium text-slate-500">{{ isSaving ? 'Guardando...' : 'Guardar Borrador' }}</span>
+</button>
+<button (click)="publishPost()" [disabled]="isSaving" class="flex items-center gap-2 rounded-2xl bg-clinical-blue px-6 py-2 text-sm font-bold text-white hover:opacity-90 transition-opacity disabled:opacity-50">
+<span class="material-symbols-outlined text-lg">send</span>
+<span>Publicar</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-slate-200 border-2 border-white shadow-sm overflow-hidden flex items-center justify-center font-bold text-gray-500">A</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex flex-1 overflow-hidden">
+<!-- Left Column: Rich Text Editor (70%) -->
+<div class="w-[70%] border-r border-slate-200 bg-white overflow-y-auto px-20 py-12 scroll-smooth">
+<div class="max-w-3xl mx-auto">
+<textarea (input)="onTitleChange($event)" class="w-full bg-transparent border-none focus:ring-0 text-5xl font-extrabold text-slate-900 leading-tight tracking-tight placeholder-slate-200 resize-none mb-8 outline-none" placeholder="Título del artículo..." rows="2"></textarea>
+@if (editor) {
+<div class="flex items-center gap-1 bg-white border border-slate-200 shadow-sm p-1 rounded-lg mb-6 w-max sticky top-4 z-10 transition-all">
+  <button (mousedown)="$event.preventDefault()" (click)="toggleFormat('paragraph')" [class.bg-slate-100]="editor.isActive('paragraph')" [class.text-clinical-blue]="editor.isActive('paragraph')" class="px-3 py-1.5 rounded text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors" type="button">Texto</button>
+  <div class="w-px h-4 bg-slate-200 mx-1"></div>
+  <button (mousedown)="$event.preventDefault()" (click)="toggleFormat('heading', 2)" [class.bg-slate-100]="editor.isActive('heading', { level: 2 })" [class.text-clinical-blue]="editor.isActive('heading', { level: 2 })" class="px-3 py-1.5 rounded text-sm font-bold text-slate-700 hover:bg-slate-100 transition-colors" title="Título H2" type="button">H2</button>
+  <button (mousedown)="$event.preventDefault()" (click)="toggleFormat('heading', 3)" [class.bg-slate-100]="editor.isActive('heading', { level: 3 })" [class.text-clinical-blue]="editor.isActive('heading', { level: 3 })" class="px-3 py-1.5 rounded text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors" title="Subtítulo H3" type="button">H3</button>
+  <div class="w-px h-4 bg-slate-200 mx-1"></div>
+  <button (mousedown)="$event.preventDefault()" (click)="toggleFormat('bold')" [class.bg-slate-100]="editor.isActive('bold')" [class.text-clinical-blue]="editor.isActive('bold')" class="w-8 h-8 flex items-center justify-center rounded font-bold text-slate-700 hover:bg-slate-100 transition-colors" title="Negrita" type="button">B</button>
+  <button (mousedown)="$event.preventDefault()" (click)="toggleFormat('italic')" [class.bg-slate-100]="editor.isActive('italic')" [class.text-clinical-blue]="editor.isActive('italic')" class="w-8 h-8 flex items-center justify-center rounded italic font-serif text-slate-700 hover:bg-slate-100 transition-colors" title="Cursiva" type="button">I</button>
+</div>
+}
+<div #editorContainer class="mt-4 w-full cursor-text outline-none"></div>
+
+<!-- Floating Menu for Empty Lines -->
+<div class="hidden">
+  <div #floatingMenu class="flex items-center gap-1 bg-slate-900 border border-slate-700 shadow-2xl p-1.5 rounded-xl text-white w-max">
+    <button (mousedown)="$event.preventDefault()" (click)="toggleFormat('heading', 2)" class="px-3 py-1.5 rounded text-sm font-bold hover:bg-slate-700 transition-colors" type="button">H2</button>
+    <div class="w-px h-4 bg-slate-700 mx-1"></div>
+    <button (mousedown)="$event.preventDefault()" (click)="injectLeadMagnet()" class="flex items-center gap-1 px-3 py-1.5 rounded text-sm font-bold text-sky-400 hover:bg-slate-700 transition-colors" type="button"><span class="material-symbols-outlined text-sm">add_circle</span> Magnet</button>
+    <button (mousedown)="$event.preventDefault()" (click)="injectDemoScheduler()" class="flex items-center gap-1 px-3 py-1.5 rounded text-sm font-bold text-emerald-400 hover:bg-slate-700 transition-colors" type="button"><span class="material-symbols-outlined text-sm">schedule</span> Demo</button>
+  </div>
+</div>
+</div>
+</div>
+<!-- Right Column: Copilot Sidebar (30%) -->
+<aside class="w-[30%] bg-slate-50 overflow-y-auto border-l border-slate-200">
+<div class="p-6 space-y-6">
+<!-- Section Title -->
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+<span class="material-symbols-outlined text-clinical-blue">analytics</span>
+                            Análisis Copilot
+                        </h3>
+<span class="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+</div>
+<!-- Health Score -->
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+<div class="flex items-center justify-between mb-4">
+<p class="text-sm font-bold text-slate-500 uppercase tracking-wider">Health Score</p>
+<span class="material-symbols-outlined text-slate-400">info</span>
+</div>
+@if (healthScore === 0) {
+<div class="flex flex-col items-center justify-center py-6 opacity-40">
+<div class="size-24 rounded-full border-4 border-slate-100 flex items-center justify-center relative">
+<span class="text-2xl font-bold text-slate-300">--</span>
+<svg class="absolute inset-0 size-full -rotate-90">
+<circle class="text-slate-100" cx="48" cy="48" fill="transparent" r="44" stroke="currentColor" stroke-width="4"></circle>
+</svg>
+</div>
+<p class="mt-4 text-xs text-slate-400 text-center">Empieza a escribir para calcular el impacto del contenido</p>
+</div>
+}
+@if (healthScore > 0) {
+<div class="flex items-center gap-6">
+<div class="size-20 rounded-full flex items-center justify-center" [style.background]="circularProgressStyle">
+<span class="text-xl font-black text-clinical-blue">{{healthScoreDisplay}}</span>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold px-2 py-0.5 rounded-full" [ngClass]="healthScore > 80 ? 'text-green-600 bg-green-50' : 'text-amber-600 bg-amber-50'">{{healthScore > 80 ? 'Óptimo' : 'Mejorable'}}</span>
+<span class="text-sm text-slate-600 font-medium">Palabras: {{wordCount}}</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold px-2 py-0.5 rounded-full" [ngClass]="healthScore > 50 ? 'text-green-600 bg-green-50' : 'text-amber-600 bg-amber-50'">{{healthScore > 50 ? 'Alta' : 'Baja'}}</span>
+<span class="text-sm text-slate-600 font-medium">Legibilidad</span>
+</div>
+</div>
+</div>
+}
+</div>
+<!-- Keyword Radar -->
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+<p class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Keyword Radar</p>
+<div class="relative">
+<span class="absolute left-3 top-2.5 text-xs font-bold text-clinical-blue uppercase">Target:</span>
+<input [(ngModel)]="targetKeyword" (ngModelChange)="onKeywordChange()" class="w-full pl-16 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-clinical-blue/20 placeholder-slate-400" placeholder="Ej. Automatizar Citas Clínicas" type="text"/>
+</div>
+@if (!targetKeyword) {
+<div class="mt-4 flex flex-wrap gap-2">
+<span class="text-[10px] text-slate-400 italic">Sugerencias: IA para dentistas, Optimización recepción, Software clínico</span>
+</div>
+}
+@if (targetKeyword) {
+<div class="space-y-2 mt-4">
+<p class="text-xs text-slate-400 font-semibold mb-2">LSI Terms</p>
+<div class="flex flex-wrap gap-2">
+@for (lsi of lsiTerms; track lsi.term) {
+<span class="flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-xl border" [ngClass]="lsi.present ? 'bg-green-50 text-green-700 border-green-100' : 'bg-slate-100 text-slate-400 border-slate-200'">
+<span class="material-symbols-outlined text-xs">{{ lsi.present ? 'task_alt' : 'radio_button_unchecked' }}</span> {{ lsi.term }}
+</span>
+}
+</div>
+</div>
+}
+</div>
+<!-- Technical SEO -->
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+<p class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Technical SEO</p>
+<div class="space-y-3 mb-6">
+<div class="flex items-center justify-between text-sm">
+<span class="flex items-center gap-2 font-medium text-slate-600">
+<span class="material-symbols-outlined text-lg" [ngClass]="hasH1H2 ? 'text-green-500' : 'text-slate-300'">check_circle</span> Estructura H1/H2
+                                </span>
+<span [ngClass]="hasH1H2 ? 'text-slate-400' : 'text-red-400 font-bold'">{{ hasH1H2 ? 'OK' : 'Falta' }}</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<span class="flex items-center gap-2 font-medium text-slate-600">
+<span class="material-symbols-outlined text-lg" [ngClass]="keywordDensity > 0 ? 'text-green-500' : 'text-slate-300'">check_circle</span> Densidad Keyword
+                                </span>
+<span class="text-slate-400">{{ keywordDensity.toFixed(1) }}%</span>
+</div>
+</div>
+<button class="w-full flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-bold text-white hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-lg">code</span>
+                            Generar JSON-LD
+                        </button>
+</div>
+<!-- SEO Suggestions Copilot -->
+@if (seoSuggestions.length > 0) {
+<div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-8">
+<h3 class="text-sm font-bold text-amber-900 mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-600 text-lg">lightbulb</span> Sugerencias SEO
+</h3>
+<ul class="flex flex-col gap-2">
+@for (suggestion of seoSuggestions; track $index) {
+<li class="flex items-start gap-2 text-sm text-amber-800">
+<span class="material-symbols-outlined text-amber-500 text-base shrink-0 mt-0.5">priority</span>
+<span class="leading-relaxed">{{ suggestion }}</span>
+</li>
+}
+</ul>
+</div>
+} @else if (wordCount > 10) {
+<div class="bg-green-50 border border-green-200 rounded-xl p-5 mb-8">
+<h3 class="text-sm font-bold text-green-900 mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-green-600 text-lg">task_alt</span> ¡Perfecto!
+</h3>
+<p class="text-sm text-green-800">Tu artículo está muy bien optimizado. Copilot no tiene sugerencias adicionales.</p>
+</div>
+}
+
+<!-- Conversion Injector -->
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+<p class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Conversion Injector</p>
+<div class="space-y-3">
+<div (click)="injectLeadMagnet()" (keydown.enter)="injectLeadMagnet()" tabindex="0" class="cursor-pointer border-2 border-dashed border-slate-200 p-4 rounded-2xl bg-slate-50 hover:border-clinical-blue/50 hover:bg-clinical-blue/5 transition-colors flex items-center gap-3">
+<span class="material-symbols-outlined text-clinical-blue">add_circle</span>
+<div class="flex-1">
+<p class="text-xs font-bold text-slate-700">Lead Magnet Banner</p>
+<p class="text-[10px] text-slate-400 uppercase">Whitepaper IA</p>
+</div>
+<span class="material-symbols-outlined text-clinical-blue">add_box</span>
+</div>
+<div (click)="injectDemoScheduler()" (keydown.enter)="injectDemoScheduler()" tabindex="0" class="cursor-pointer border-2 border-dashed border-slate-200 p-4 rounded-2xl bg-slate-50 hover:border-clinical-blue/50 hover:bg-clinical-blue/5 transition-colors flex items-center gap-3">
+<span class="material-symbols-outlined text-clinical-blue">add_circle</span>
+<div class="flex-1">
+<p class="text-xs font-bold text-slate-700">Demo Scheduler</p>
+<p class="text-[10px] text-slate-400 uppercase">Calendly Sync</p>
+</div>
+<span class="material-symbols-outlined text-clinical-blue">add_box</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<!-- Editor Toolbar Footer -->
+<footer class="h-12 border-t border-slate-200 bg-white flex items-center justify-center gap-4 px-6 z-20">
+<div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+<button (mousedown)="$event.preventDefault()" (click)="toggleAlign('left')" [class.bg-white]="isAligned('left')" class="p-1.5 hover:bg-white rounded-lg text-slate-600 transition-colors"><span class="material-symbols-outlined">format_align_left</span></button>
+<button (mousedown)="$event.preventDefault()" (click)="toggleAlign('center')" [class.bg-white]="isAligned('center')" class="p-1.5 hover:bg-white rounded-lg text-slate-600 transition-colors"><span class="material-symbols-outlined">format_align_center</span></button>
+<button (mousedown)="$event.preventDefault()" (click)="toggleAlign('right')" [class.bg-white]="isAligned('right')" class="p-1.5 hover:bg-white rounded-lg text-slate-600 transition-colors"><span class="material-symbols-outlined">format_align_right</span></button>
+</div>
+<div class="w-px h-6 bg-slate-200"></div>
+<div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+<button (mousedown)="$event.preventDefault()" (click)="setLink()" [class.bg-white]="isLinkActive()" class="p-1.5 hover:bg-white rounded-lg text-slate-600 transition-colors"><span class="material-symbols-outlined">link</span></button>
+<input type="file" #imageInput hidden accept="image/*" (change)="onImageSelected($event)">
+<button (mousedown)="$event.preventDefault()" (click)="imageInput.click()" class="p-1.5 hover:bg-white rounded-lg text-slate-600 transition-colors"><span class="material-symbols-outlined">image</span></button>
+</div>
+</footer>
+</div>
+
+<!-- Custom Prompt Modal -->
+@if (showPromptModal) {
+<div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm transition-opacity">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200 m-4">
+    <div class="p-6">
+      <h3 class="text-base font-bold text-slate-900 mb-4">{{ promptTitle }}</h3>
+      <input type="text" [(ngModel)]="promptValue" (keydown.enter)="submitPrompt()" (keydown.escape)="cancelPrompt()" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-clinical-blue focus:bg-white transition-all text-sm mb-6 placeholder-slate-400 font-medium">
+      <div class="flex items-center justify-end gap-3">
+        <button (click)="cancelPrompt()" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-100 transition-colors">Cancelar</button>
+        <button (click)="submitPrompt()" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-clinical-blue hover:bg-clinical-blue/90 transition-colors shadow-sm focus:ring-4 focus:ring-clinical-blue/20">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+}

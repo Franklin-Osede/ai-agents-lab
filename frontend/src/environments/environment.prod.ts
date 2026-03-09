@@ -11,5 +11,9 @@ export const environment = {
     messagingSenderId: "YOUR_SENDER_ID",
     appId: "YOUR_APP_ID",
   },
+  supabase: {
+    url: 'https://jcpchhrhtuvsqsuigmvz.supabase.co',
+    key: 'PLACEHOLDER'
+  },
   enabledAgents: ["booking", "cart", "voice", "rider"],
 };

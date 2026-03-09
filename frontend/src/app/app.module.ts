@@ -3,6 +3,9 @@ import { BrowserModule } from "@angular/platform-browser";
 import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { FormsModule } from "@angular/forms";
 
+// Authentication
+import { AuthModule } from './auth/auth.module';
+
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { LandingPageComponent } from "./components/landing-page/landing-page.component";
@@ -39,17 +42,16 @@ import { AGENT_INITIALIZER_PROVIDER } from "./shared/initializers/agent-initiali
         RegisterComponent,
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
-        AppRoutingModule,
         FormsModule,
+        AuthModule,
         WelcomeChatComponent,
-        RiderAgentModule,
-        SuperAppHomeComponent,
         DemoModalComponent,
         ChatInterfaceComponent,
         ServiceSelectorComponent,
         CalendarComponent,
         VoicePlayerComponent,
-        GoogleMapsAutocompleteComponent], providers: [
+        GoogleMapsAutocompleteComponent,
+        AppRoutingModule], providers: [
         AGENT_INITIALIZER_PROVIDER,
         provideHttpClient(withInterceptorsFromDi()),
     ] })

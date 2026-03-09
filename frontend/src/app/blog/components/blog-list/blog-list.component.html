@@ -1,0 +1,138 @@
+<div class="font-sans text-clinical-dark min-h-screen bg-white">
+  <!-- Nav Area Padding -->
+  <div class="h-20 bg-white border-b border-gray-100"></div>
+
+  <!-- Main Content Container -->
+  <div class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+    
+    <!-- Loading State -->
+    @if (loading) {
+    <div class="flex justify-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-clinical-blue"></div>
+    </div>
+    }
+
+    @if (!loading) {
+      <!-- Featured Article -->
+      @if (posts.length > 0) {
+      <div class="grid lg:grid-cols-2 gap-12 items-center mb-16">
+        <div class="relative w-full aspect-square md:aspect-[4/3] lg:aspect-square rounded-3xl overflow-hidden bg-gradient-to-tr from-clinical-dark to-blue-900 shadow-2xl">
+           <div class="absolute inset-0 bg-black/20 mix-blend-overlay"></div>
+           <svg class="absolute inset-0 w-full h-full text-white/5 opacity-50" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none">
+             <path d="M0,50 Q25,25 50,50 T100,50 V100 H0 Z" />
+             <path d="M0,70 Q25,45 50,70 T100,70 V100 H0 Z" />
+           </svg>
+        </div>
+        <div class="space-y-6">
+          <div class="bg-blue-50 text-clinical-blue text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full inline-block">
+            FEATURED • IA MÉDICA
+          </div>
+          <h1 class="text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight text-clinical-dark">
+            <a [routerLink]="['/blog', posts[0].slug]" class="hover:text-clinical-blue transition-colors">
+              {{ posts[0].title }}
+            </a>
+          </h1>
+          <p class="text-lg text-clinical-gray leading-relaxed max-w-xl">
+            {{ posts[0].seoDescription || 'Descubre cómo la IA está redefiniendo la gestión de pacientes y la optimización de recursos en las clínicas más avanzadas del sector.' }}
+          </p>
+          <div class="flex items-center gap-4 pt-4">
+             <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold overflow-hidden border-2 border-white shadow-sm">
+                {{ posts[0].authorName ? posts[0].authorName.charAt(0) : 'A' }}
+             </div>
+             <div>
+               <div class="font-bold text-sm text-clinical-dark">{{ posts[0].authorName || 'Dr. Elena Rodríguez' }}</div>
+               <div class="text-xs text-gray-500">Chief Medical Officer</div>
+             </div>
+          </div>
+          <div class="pt-6">
+            <a [routerLink]="['/blog', posts[0].slug]" class="inline-flex items-center gap-2 text-sm font-bold text-clinical-blue hover:text-blue-800 transition-colors">
+              Read Featured Article <span class="material-icons text-sm">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- Categories / Filter Bar -->
+      <div class="flex flex-col md:flex-row items-center justify-between border-b border-gray-100 pb-4 mb-12 gap-4">
+        <div class="flex flex-wrap items-center gap-2">
+           <button class="bg-blue-600 text-white px-5 py-2 rounded-full text-xs font-bold shadow-md shadow-blue-600/20">All Insights</button>
+           <button class="bg-white text-gray-600 border border-gray-200 hover:border-gray-300 px-5 py-2 rounded-full text-xs font-bold transition-all">Case Studies</button>
+           <button class="bg-white text-gray-600 border border-gray-200 hover:border-gray-300 px-5 py-2 rounded-full text-xs font-bold transition-all">AI Trends</button>
+           <button class="bg-white text-gray-600 border border-gray-200 hover:border-gray-300 px-5 py-2 rounded-full text-xs font-bold transition-all">Patient Management</button>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-gray-500 font-medium">
+          <span class="material-icons text-[14px]">sort</span> Sorted by Newest
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      @if (posts.length === 0) {
+      <div class="bg-gray-50 p-12 text-center rounded-3xl border border-gray-100">
+        <h3 class="text-xl font-bold text-gray-800">Aún no hay publicaciones</h3>
+        <p class="text-gray-500 mt-2">Pronto añadiremos contenido especializado.</p>
+      </div>
+      }
+
+      <!-- Grid for remaining posts -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
+        @for (post of posts.slice(1); track post.id) {
+        <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 flex flex-col group p-1">
+          <div class="h-48 md:h-56 rounded-2xl bg-gradient-to-br from-gray-800 to-black relative overflow-hidden">
+             <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[9px] font-black uppercase text-clinical-dark shadow-sm z-10">
+               ANALYSIS
+             </div>
+             <svg class="absolute inset-0 w-full h-full text-white/5" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="2" fill="none" class="opacity-30" />
+                <path d="M0,100 L100,0" stroke="currentColor" stroke-width="1" class="opacity-20" />
+             </svg>
+          </div>
+          
+          <div class="p-6 flex-grow flex flex-col justify-between">
+            <div>
+              <div class="text-[10px] text-gray-400 font-bold mb-3 uppercase tracking-wider">
+                {{ post.createdAt | date:'MMM dd, yyyy' }}
+              </div>
+              <h2 class="text-lg font-bold text-clinical-dark mb-3 line-clamp-2 group-hover:text-clinical-blue transition-colors leading-tight">
+                <a [routerLink]="['/blog', post.slug]">{{ post.title }}</a>
+              </h2>
+              <p class="text-sm text-clinical-gray line-clamp-3 mb-6 leading-relaxed">
+                {{ post.seoDescription || 'Análisis en profundidad de las tendencias actuales y el impacto de la tecnología en la recepción clínica.' }}
+              </p>
+            </div>
+            
+            <div class="flex items-center justify-between mt-auto">
+               <span class="text-xs text-gray-400 font-medium">5 min read</span>
+               <a [routerLink]="['/blog', post.slug]" class="text-xs font-bold text-clinical-blue hover:text-blue-800 inline-flex items-center gap-1 transition-colors">
+                 Leer más <span class="material-icons text-[12px]">arrow_forward</span>
+               </a>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+
+    }
+
+    <!-- Newsletter CTA Banner -->
+    <div class="bg-blue-600 rounded-[40px] p-10 lg:p-16 text-center text-white relative overflow-hidden shadow-2xl shadow-blue-600/20 max-w-5xl mx-auto mb-20">
+       <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+       <div class="relative z-10 max-w-2xl mx-auto space-y-8">
+          <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">Stay ahead of Medical AI</h2>
+          <div class="bg-white/10 border border-white/20 p-4 rounded-2xl backdrop-blur-md">
+            <p class="text-sm md:text-base text-blue-50 leading-relaxed font-medium">
+              Join 15,000+ healthcare professionals receiving our weekly analysis on digital transformation and AI implementation in medicine.
+            </p>
+          </div>
+          <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <input type="email" placeholder="Tu correo electrónico" class="flex-grow bg-white text-clinical-dark px-5 py-3.5 rounded-full text-sm outline-none focus:ring-4 focus:ring-white/30 transition-all placeholder:text-gray-400">
+            <button type="button" class="bg-clinical-dark hover:bg-black text-white px-8 py-3.5 rounded-full text-sm font-bold transition-all whitespace-nowrap shadow-xl">
+              Suscribirse
+            </button>
+          </form>
+          <p class="text-[10px] text-white/60">Respetamos tu privacidad. Cancela tu suscripción en cualquier momento.</p>
+       </div>
+    </div>
+
+  </div>
+</div>

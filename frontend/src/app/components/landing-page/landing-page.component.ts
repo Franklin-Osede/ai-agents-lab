@@ -24,69 +24,42 @@ export class LandingPageComponent implements OnInit {
   private allAgents = [
     {
       id: "booking",
-      name: "Booking Agent",
+      name: "Planificación inteligente",
       description:
-        "Gestión de citas autónoma 24/7. Elimina la fricción en tus reservas.",
+        "Tus pacientes pueden reservar, cambiar o cancelar citas solo hablando. Adiós a los buzones de voz.",
       icon: "calendar_month",
-      features: ["Reservas 24/7", "Sincronización Calendar", "Recordatorios"],
+      features: ["Reservas Automáticas", "Siempre Puntual", "Fuera de Horario"],
       endpoint: "/agents/booking",
       color: "blue",
     },
     {
-      id: "rider", // NEW RIDER AGENT
-      name: "Rider Agent",
-      description: "Control Tower para logística. Rastreo en tiempo real.",
-      icon: "two_wheeler",
-      features: [
-        "Mapa en Vivo",
-        "Alertas de Tráfico",
-        "Predicción de Retrasos",
-      ],
-      endpoint: "/agents/rider",
-      color: "orange", // New color
+      id: "noshows",
+      name: "Evita los No-Shows",
+      description: "Automatiza recordatorios, cobra depósitos y reprograma citas para mantener la agenda llena.",
+      icon: "event_busy",
+      features: ["Recordatorios", "Reprogramación Fácil", "Lista de Espera"],
+      endpoint: "/agents/noshows",
+      color: "blue",
     },
     {
-      id: "cart", // ID matched with environment.ts
-      name: "Abandoned Cart",
+      id: "triaje",
+      name: "Anamnesis Previa",
       description:
-        "Recupera ventas perdidas enviando notas de voz personalizadas.",
-      icon: "shopping_cart_checkout",
-      features: [
-        "Notas de Voz WhatsApp",
-        "Disparador Automático",
-        "Reportes de ROI",
-      ],
-      endpoint: "/agents/cart",
-      color: "rose",
+        "Tu asistente recoge síntomas y antecedentes antes de la cita, ofreciéndote información estructurada.",
+      icon: "medical_information",
+      features: ["Filtro de Curiosos", "Historial Médico", "Automatización FAQ"],
+      endpoint: "/agents/triaje",
+      color: "blue",
     },
     {
-      id: "webinar", // ID matched with environment.ts
-      name: "Webinar Recovery",
+      id: "voice",
+      name: "Seguimiento sin esfuerzo",
       description:
-        "Reactiva leads que no asistieron con resúmenes personalizados.",
-      icon: "video_camera_front",
-      features: ["Video Personalizado", "Resumen AI", "Call-to-Action"],
-      endpoint: "/agents/webinar",
-      color: "purple",
-    },
-    {
-      id: "invoice", // ID matched with environment.ts
-      name: "Invoice Chaser",
-      description: "Gestiona el cobro de facturas vencidas de forma amable.",
-      icon: "receipt_long",
-      features: ["Escalamiento Inteligente", "Multicanal", "Amigable"],
-      endpoint: "/agents/invoice",
-      color: "amber",
-    },
-    {
-      id: "voice", // ID matched with environment.ts
-      name: "Voice Brand",
-      description:
-        "Tu identidad de marca en voz. Mensajes y saludos humanizados.",
-      icon: "graphic_eq",
-      features: ["Voz Natural", "Personalización", "Multilenguaje"],
+        "Contacta al paciente tras la visita para resolver dudas o revisar pautas. Todo queda registrado.",
+      icon: "monitor_heart",
+      features: ["Pautas Claras", "Fidelización", "Control Post-Visita"],
       endpoint: "/agents/voice",
-      color: "emerald",
+      color: "blue",
     },
   ];
 
@@ -110,15 +83,10 @@ export class LandingPageComponent implements OnInit {
     console.log("LANDING: Enabled Agents:", enabled);
 
     if (enabled && Array.isArray(enabled)) {
-      this.filteredAgents = this.allAgents.filter(
-        (agent) => enabled.includes(agent.id) && agent.id !== "voice"
-      );
+      this.filteredAgents = this.allAgents; // Just show all our clinical agents
     } else {
-      // Fallback: Force hide invoice/webinar if env is missing
-      const fallback = ["booking", "cart", "rider"];
-      this.filteredAgents = this.allAgents.filter((agent) =>
-        fallback.includes(agent.id)
-      );
+      // Fallback
+      this.filteredAgents = this.allAgents;
     }
     console.log("LANDING: Displaying:", this.filteredAgents);
   }
@@ -143,8 +111,14 @@ export class LandingPageComponent implements OnInit {
     this.selectedAgent = null;
   }
 
-  toggleDarkMode(): void {
-    document.documentElement.classList.toggle("dark");
+  scrollToSection(sectionId: string, event: Event): void {
+    event.preventDefault();
+    const element = document.getElementById(sectionId);
+    if (element) {
+      // Offset for fixed header
+      const y = element.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
   }
 
   scrollToAgents(): void {

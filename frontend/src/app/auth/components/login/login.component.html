@@ -1,0 +1,60 @@
+<div class="min-h-screen bg-[#f1f3fa] flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans">
+  
+  <!-- Back Button (Absolute Top Left) -->
+  <a href="/" class="absolute top-8 left-8 flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors font-medium cursor-pointer bg-white/50 px-4 py-2 rounded-full shadow-sm hover:shadow">
+    <span class="material-symbols-outlined text-xl">arrow_back</span>
+    <span>Volver atrás</span>
+  </a>
+
+  <!-- Content Card -->
+  <div class="bg-white rounded-[2rem] p-10 w-full max-w-[440px] shadow-[0_4px_30px_rgba(0,0,0,0.03)] relative z-10 flex flex-col items-center border border-gray-100">
+    
+    <!-- Logo -->
+    <div class="flex flex-col items-center gap-2 mb-8">
+      <div class="w-12 h-12 bg-[#1B36D3] rounded-full flex items-center justify-center shadow-lg shadow-blue-500/20">
+        <span class="material-symbols-outlined text-white text-2xl font-bold">neurology</span>
+      </div>
+      <span class="text-xl font-extrabold tracking-tight text-gray-900">AgentMinds</span>
+    </div>
+    
+    <h1 class="text-[26px] font-extrabold text-gray-900 mb-8 text-center tracking-tight">Acceso Admin</h1>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="w-full flex flex-col gap-5">
+      <!-- Email -->
+      <div class="flex flex-col gap-2">
+        <label for="emailInput" class="text-[13px] font-bold text-gray-700 ml-1">Correo electrónico</label>
+        <div class="relative">
+          <input id="emailInput" type="email" formControlName="email" placeholder="tu@correo.com" 
+            class="w-full bg-[#f8fafc] border border-gray-200 rounded-2xl px-5 py-3.5 text-sm focus:bg-white focus:ring-2 focus:ring-[#1B36D3]/20 focus:border-[#1B36D3] transition-all outline-none text-gray-800 placeholder:text-gray-400 font-medium tracking-wide">
+        </div>
+      </div>
+
+      @if (errorMsg) {
+        <div class="p-4 bg-red-50 text-red-600 text-sm rounded-2xl font-medium flex items-start gap-3 border border-red-100 mt-2">
+          <span class="material-symbols-outlined text-lg shrink-0 mt-0.5">error</span>
+          <span>{{ errorMsg }}</span>
+        </div>
+      }
+
+      @if (successMsg) {
+        <div class="p-4 bg-green-50 text-green-700 text-sm rounded-2xl font-medium flex items-start gap-3 border border-green-100 mt-2">
+          <span class="material-symbols-outlined text-lg shrink-0 mt-0.5">check_circle</span>
+          <span>{{ successMsg }}</span>
+        </div>
+      }
+
+      <!-- Submit Button -->
+      <button [disabled]="loading || loginForm.invalid" type="submit" 
+        class="w-full bg-[#1B36D3] hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-[0_8px_16px_rgba(27,54,211,0.2)] transition-all active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center gap-2 mt-4">
+        @if (loading) {
+          <span class="material-symbols-outlined animate-spin text-[20px]">refresh</span>
+        }
+        Iniciar Sesión
+        @if (!loading) {
+          <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+        }
+      </button>
+    </form>
+    
+  </div>
+</div>

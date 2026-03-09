@@ -19,8 +19,8 @@ export class BlogController {
 
   @Get()
   @ApiOperation({ summary: 'Fetch all published posts for the public site' })
-  findAllPublished() {
-    return this.blogService.findAll(BlogPostStatus.PUBLISHED);
+  findAll(@Query('status') status?: BlogPostStatus) {
+    return this.blogService.findAll(status || BlogPostStatus.PUBLISHED);
   }
 
   @Get('drafts')

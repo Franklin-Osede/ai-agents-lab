@@ -13,6 +13,11 @@ export class CreateBlogPostDto {
   @IsNotEmpty()
   content: string;
 
+  @ApiPropertyOptional({ example: 'data:image/webp;base64,...' })
+  @IsString()
+  @IsOptional()
+  coverImage?: string;
+
   @ApiPropertyOptional({ example: 'Agent.AI' })
   @IsString()
   @IsOptional()

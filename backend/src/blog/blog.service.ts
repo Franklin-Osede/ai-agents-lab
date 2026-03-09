@@ -5,6 +5,7 @@ import { BlogPost, BlogPostStatus } from './entities/blog-post.entity';
 import { CreateBlogPostDto } from './dto/create-blog-post.dto';
 import { UpdateBlogPostDto } from './dto/update-blog-post.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class BlogService {
@@ -43,8 +44,9 @@ export class BlogService {
   }
 
   async findOne(idOrSlug: string): Promise<BlogPost> {
+    const isId = isUUID(idOrSlug);
     const post = await this.blogRepository.findOne({
-      where: [{ id: idOrSlug }, { slug: idOrSlug }],
+      where: isId ? { id: idOrSlug } : { slug: idOrSlug },
     });
 
     if (!post) {

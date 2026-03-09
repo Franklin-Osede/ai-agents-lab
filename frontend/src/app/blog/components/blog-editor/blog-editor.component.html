@@ -31,6 +31,34 @@
 <!-- Left Column: Rich Text Editor (70%) -->
 <div class="w-[70%] border-r border-slate-200 bg-white overflow-y-auto px-20 py-12 scroll-smooth">
 <div class="max-w-3xl mx-auto">
+<!-- Cover Image Upload -->
+<div class="mb-8 relative group">
+  @if (!coverImage) {
+    <label class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-slate-300 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer group-hover:border-clinical-blue/50">
+      <div class="flex flex-col items-center justify-center pt-5 pb-6">
+        <span class="material-symbols-outlined text-4xl text-slate-400 mb-2 group-hover:text-clinical-blue transition-colors">image</span>
+        <p class="mb-2 text-sm text-slate-500 font-bold"><span class="text-clinical-blue">Sube una imagen de portada</span> o arrástrala aquí</p>
+        <p class="text-xs text-slate-400">Recomendado 1200x630px (WebP / JPG / PNG)</p>
+      </div>
+      <input type="file" class="hidden" accept="image/*" (change)="onCoverImageSelected($event)" />
+    </label>
+  }
+  @if (coverImage) {
+    <div class="relative w-full h-64 md:h-80 rounded-3xl overflow-hidden shadow-lg border border-slate-200">
+      <img [src]="coverImage" alt="Cover Image" class="w-full h-full object-cover">
+      <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+        <label class="bg-white text-slate-900 px-4 py-2 rounded-xl text-sm font-bold shadow-md cursor-pointer hover:bg-slate-50 transition-colors">
+          Cambiar
+          <input type="file" class="hidden" accept="image/*" (change)="onCoverImageSelected($event)" />
+        </label>
+        <button (click)="removeCoverImage()" class="bg-red-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md hover:bg-red-600 transition-colors">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  }
+</div>
+
 <textarea (input)="onTitleChange($event)" class="w-full bg-transparent border-none focus:ring-0 text-5xl font-extrabold text-slate-900 leading-tight tracking-tight placeholder-slate-200 resize-none mb-8 outline-none" placeholder="Título del artículo..." rows="2"></textarea>
 @if (editor) {
 <div class="flex items-center gap-1 bg-white border border-slate-200 shadow-sm p-1 rounded-lg mb-6 w-max sticky top-4 z-10 transition-all">
@@ -67,6 +95,21 @@
                         </h3>
 <span class="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
 </div>
+
+<!-- Author Selection -->
+<div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 mb-6 mt-6">
+  <div class="flex items-center gap-2 mb-4">
+    <span class="material-symbols-outlined text-clinical-blue text-lg">person</span>
+    <h3 class="font-bold text-slate-800">Autor del Artículo</h3>
+  </div>
+  <select [(ngModel)]="selectedAuthorId" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-clinical-blue focus:border-clinical-blue block p-3 font-semibold outline-none cursor-pointer">
+    <option value="" disabled selected>Elige un escritor...</option>
+    @for (author of authors; track author.id) {
+       <option [value]="author.id">{{ author.name }} - {{ author.role }}</option>
+    }
+  </select>
+</div>
+
 <!-- Health Score -->
 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
 <div class="flex items-center justify-between mb-4">
@@ -91,8 +134,8 @@
 </div>
 <div class="space-y-1">
 <div class="flex items-center gap-2">
-<span class="text-xs font-bold px-2 py-0.5 rounded-full" [ngClass]="healthScore > 80 ? 'text-green-600 bg-green-50' : 'text-amber-600 bg-amber-50'">{{healthScore > 80 ? 'Óptimo' : 'Mejorable'}}</span>
-<span class="text-sm text-slate-600 font-medium">Palabras: {{wordCount}}</span>
+<span class="text-xs font-bold px-2 py-0.5 rounded-full" [ngClass]="wordCount >= 300 ? 'text-green-600 bg-green-50' : 'text-amber-600 bg-amber-50'">{{wordCount >= 300 ? 'Óptimo' : 'Insuficiente'}}</span>
+<span class="text-sm text-slate-600 font-medium">Palabras: {{wordCount}} / 300 min</span>
 </div>
 <div class="flex items-center gap-2">
 <span class="text-xs font-bold px-2 py-0.5 rounded-full" [ngClass]="healthScore > 50 ? 'text-green-600 bg-green-50' : 'text-amber-600 bg-amber-50'">{{healthScore > 50 ? 'Alta' : 'Baja'}}</span>

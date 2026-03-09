@@ -26,6 +26,9 @@ export class BlogPost {
   @Column('text')
   content: string;
 
+  @Column({ type: 'text', nullable: true })
+  coverImage: string;
+
   @Column({ nullable: true })
   authorName: string;
 

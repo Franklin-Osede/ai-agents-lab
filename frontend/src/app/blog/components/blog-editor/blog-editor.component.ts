@@ -4,7 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../../../shared/services/supabase.service';
 import { BlogService } from '../../services/blog.service';
-import { BlogPostStatus } from '../../models/blog.model';
+import { BlogPostStatus, BLOG_AUTHORS } from '../../models/blog.model';
 
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
@@ -58,7 +58,10 @@ export class BlogEditorComponent implements AfterViewInit, OnDestroy {
 
   title = '';
   content = '';
+  coverImage = '';
   targetKeyword = '';
+  authors = BLOG_AUTHORS;
+  selectedAuthorId = '';
 
   // Custom Prompt Modal State
   showPromptModal = false;
@@ -332,7 +335,7 @@ export class BlogEditorComponent implements AfterViewInit, OnDestroy {
   async handleImageUpload(file: File) {
     try {
       const webpBase64 = await this.compressAndConvertToWebp(file);
-      const altText = await this.openPrompt('Describe esta imagen para SEO (Etiqueta ALT):', 'Imagen del artículo') || '';
+      const altText = await this.openPrompt('Describe esta imagen para SEO (Etiqueta ALT):', '') || '';
       
       this.editor.chain().focus().setImage({ src: webpBase64, alt: altText }).run();
     } catch (error) {
@@ -373,6 +376,24 @@ export class BlogEditorComponent implements AfterViewInit, OnDestroy {
     if (file && file.type.startsWith('image/')) {
       this.handleImageUpload(file);
     }
+  }
+
+  async onCoverImageSelected(event: any) {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      try {
+        const webpBase64 = await this.compressAndConvertToWebp(file);
+        this.coverImage = webpBase64;
+        this.cdr.detectChanges();
+      } catch (error) {
+        console.error('Error compressing cover image', error);
+      }
+    }
+  }
+
+  removeCoverImage() {
+    this.coverImage = '';
+    this.cdr.detectChanges();
   }
 
   saveDraft() {
@@ -422,14 +443,25 @@ export class BlogEditorComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
+    if (!this.coverImage || !this.selectedAuthorId) {
+      alert('⚠️ Para publicar o guardar, debes seleccionar un "Autor" (en la barra lateral) y subir una "Imagen de portada".');
+      return;
+    }
+
+    if (this.wordCount < 300) {
+      alert(`⚠️ El artículo es demasiado corto. Tienes ${this.wordCount} palabras, pero el mínimo recomendado para un buen SEO es de 300 palabras.`);
+      return;
+    }
+
     this.isSaving = true;
     this.cdr.detectChanges();
 
     const payload = {
       title: this.title,
       content: this.editor.getHTML(),
+      coverImage: this.coverImage || undefined,
       status: status,
-      authorName: 'Admin',
+      authorName: this.selectedAuthorId,
       seoTitle: this.title,
       seoDescription: 'Generado desde el panel de Clínicas.'
     };

@@ -1,19 +1,20 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { BlogService } from '../../services/blog.service';
-import { BlogPost } from '../../models/blog.model';
+import { BlogPost, getAuthorDetails } from '../../models/blog.model';
 
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-blog-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, DatePipe],
+  imports: [CommonModule, RouterModule],
   templateUrl: './blog-list.component.html'
 })
 export class BlogListComponent implements OnInit {
   posts: BlogPost[] = [];
   loading = true;
+  getAuthor = getAuthorDetails;
 
   private blogService = inject(BlogService);
 

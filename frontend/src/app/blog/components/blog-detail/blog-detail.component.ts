@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, Renderer2 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BlogService } from '../../services/blog.service';
-import { BlogPost } from '../../models/blog.model';
+import { BlogPost, getAuthorDetails } from '../../models/blog.model';
 
 import { CommonModule, DatePipe, DOCUMENT } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -16,6 +16,7 @@ import { SafeHtmlPipe } from '../../../shared/pipes/safe-html.pipe';
 export class BlogDetailComponent implements OnInit {
   post: BlogPost | null = null;
   loading = true;
+  getAuthor = getAuthorDetails;
 
   private route = inject(ActivatedRoute);
   private blogService = inject(BlogService);
@@ -65,7 +66,7 @@ export class BlogDetailComponent implements OnInit {
       "dateModified": this.post.updatedAt,
       "author": {
         "@type": "Person",
-        "name": this.post.authorName || "Equipo Médico"
+        "name": this.getAuthor(this.post.authorName).name
       },
       "description": this.post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) // Strip HTML for meta desc
     };

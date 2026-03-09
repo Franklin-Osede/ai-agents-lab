@@ -457,7 +457,7 @@ export class PuppeteerScraperAdapter implements IScraperService {
       let logo = '';
       const logoImg = document.querySelector('header img, .logo img, img[alt*="logo" i]');
       if (logoImg) logo = logoImg.getAttribute('src') || '';
-      
+
       // Meta tags for Logo
       if (!logo) {
         const ogImage = document.querySelector('meta[property="og:image"]');

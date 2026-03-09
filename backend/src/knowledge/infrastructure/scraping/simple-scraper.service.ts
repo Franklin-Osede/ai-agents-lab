@@ -232,7 +232,7 @@ export class SimpleScraperService implements IScraperService {
     // INCREASE LIMIT: We constructed a safe context up to ~50-60k chars.
     // GPT-4 Turbo 128k context can handle this easily.
     // Do NOT re-truncate drastically or we lose the contact info at the end.
-    const htmlChunk = html.substring(0, 80000); 
+    const htmlChunk = html.substring(0, 80000);
     this.logger.debug(`Sending ${htmlChunk.length} chars to GPT-4`);
 
     const prompt = `Analiza este HTML de una página web de negocio y extrae información estructurada.

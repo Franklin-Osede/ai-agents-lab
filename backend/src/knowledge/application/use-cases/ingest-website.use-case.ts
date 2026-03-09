@@ -58,15 +58,18 @@ export class IngestWebsiteUseCase {
           address: scrapedData.branding?.address ?? '',
           hours: scrapedData.branding?.hours ?? '',
         },
-        services: (scrapedData.branding?.services || []).map((s) => ({ name: s, price: 'Consultar' })), // Default price
+        services: (scrapedData.branding?.services || []).map((s) => ({
+          name: s,
+          price: 'Consultar',
+        })), // Default price
         team: scrapedData.team,
         // Add more fields if frontend expects them
       };
 
       // OPTIONAL: Try Bedrock only if enabled/working, but DONT fail the process
       try {
-         // We skip Bedrock for now to prevent crashes as per logs
-         // await this.bedrockAnalyzer.analyzeContent(scrapedData.content);
+        // We skip Bedrock for now to prevent crashes as per logs
+        // await this.bedrockAnalyzer.analyzeContent(scrapedData.content);
       } catch (e) {
         this.logger.warn('Bedrock analysis skipped/failed (using GPT-4o data instead)');
       }
@@ -78,7 +81,7 @@ export class IngestWebsiteUseCase {
         summary: scrapedData.content.substring(0, 500), // refined later
         classification: 'General', // could infer from services
         screenshot: scrapedData.screenshot,
-        branding: scrapedData.branding || {}, 
+        branding: scrapedData.branding || {},
         team: scrapedData.team || [],
         blogPosts: scrapedData.blogPosts || [],
         faqs: scrapedData.faqs || [],

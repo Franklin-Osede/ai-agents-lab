@@ -14,12 +14,16 @@ export class BlogService {
   ) {}
 
   private generateSlug(title: string): string {
-    return title
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/[\s_-]+/g, '-')
-      .replace(/^-+|-+$/g, '') + '-' + uuidv4().split('-')[0];
+    return (
+      title
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '') +
+      '-' +
+      uuidv4().split('-')[0]
+    );
   }
 
   async create(createBlogPostDto: CreateBlogPostDto): Promise<BlogPost> {

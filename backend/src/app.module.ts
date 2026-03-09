@@ -14,6 +14,7 @@ import { BillingModule } from './billing/billing.module';
 import { TenantIsolationMiddleware } from './core/security/tenant.middleware';
 import { KnowledgeModule } from './knowledge/knowledge.module';
 import { WorkflowsModule } from './workflows/workflows.module';
+import { BlogModule } from './blog/blog.module';
 
 // Main App Module
 
@@ -79,6 +80,7 @@ import { WorkflowsModule } from './workflows/workflows.module';
     MarketingModule, // Lead capture
     BillingModule, // Billing and Stripe
     WorkflowsModule, // 🆕 Workflows Engine
+    BlogModule, // 🆕 Blog System
   ],
 })
 export class AppModule implements NestModule {

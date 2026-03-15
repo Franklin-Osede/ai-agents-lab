@@ -4,7 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../../../shared/services/supabase.service';
 import { BlogService } from '../../services/blog.service';
-import { BlogPostStatus, BLOG_AUTHORS } from '../../models/blog.model';
+import { BlogPostStatus, BLOG_AUTHORS, CreateBlogPostDto } from '../../models/blog.model';
 
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
@@ -59,6 +59,7 @@ export class BlogEditorComponent implements AfterViewInit, OnDestroy {
   title = '';
   content = '';
   coverImage = '';
+  coverImageAlt = '';
   targetKeyword = '';
   authors = BLOG_AUTHORS;
   selectedAuthorId = '';
@@ -456,10 +457,11 @@ export class BlogEditorComponent implements AfterViewInit, OnDestroy {
     this.isSaving = true;
     this.cdr.detectChanges();
 
-    const payload = {
+    const payload: CreateBlogPostDto = {
       title: this.title,
       content: this.editor.getHTML(),
       coverImage: this.coverImage || undefined,
+      coverImageAlt: this.coverImageAlt || this.title,
       status: status,
       authorName: this.selectedAuthorId,
       seoTitle: this.title,

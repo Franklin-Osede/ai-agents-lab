@@ -34,7 +34,7 @@
 
     <div class="w-full aspect-[21/9] rounded-3xl overflow-hidden mb-12 shadow-sm border border-gray-100">
       @if (post.coverImage) {
-         <img [src]="post.coverImage" [alt]="post.title" class="w-full h-full object-cover">
+         <img [src]="post.coverImage" [alt]="post.coverImageAlt || post.title" class="w-full h-full object-cover">
       } @else {
          <img src="https://picsum.photos/seed/{{post.slug}}/1200/600" [alt]="post.title" class="w-full h-full object-cover opacity-90">
       }

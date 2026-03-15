@@ -57,6 +57,14 @@
       </div>
     </div>
   }
+  
+  @if (coverImage) {
+  <div class="mt-6 mb-2">
+     <label for="coverImageAlt" class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Texto Alternativo de Portada (SEO Alt Text)</label>
+     <input id="coverImageAlt" [(ngModel)]="coverImageAlt" type="text" placeholder="Ej: Cirujano operando con brazo robótico en Madrid" class="w-full py-3 px-4 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-clinical-blue focus:border-clinical-blue transition-all bg-slate-50">
+     <p class="text-[11px] text-slate-400 mt-1.5 ml-1 font-medium">Describe la imagen para los motores de búsqueda. Si lo omites, usaremos el título del artículo.</p>
+  </div>
+  }
 </div>
 
 <textarea (input)="onTitleChange($event)" class="w-full bg-transparent border-none focus:ring-0 text-5xl font-extrabold text-slate-900 leading-tight tracking-tight placeholder-slate-200 resize-none mb-8 outline-none" placeholder="Título del artículo..." rows="2"></textarea>

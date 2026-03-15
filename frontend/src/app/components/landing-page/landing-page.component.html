@@ -433,6 +433,7 @@
     <!-- END: Feature Blocks -->
 
     <!-- BEGIN: Video Demo Section -->
+    <!-- TEMPORARILY HIDDEN AS VIDEO IS NOT READY
     <section class="py-24 bg-clinical-dark text-white" data-purpose="video-demo">
       <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center space-y-12">
         <div class="space-y-4 max-w-2xl mx-auto">
@@ -440,7 +441,7 @@
           <p class="text-clinical-light/60">Observa una interacción real de nuestra IA gestionando una reserva compleja y realizando el pre-diagnóstico.</p>
         </div>
         <div class="relative max-w-4xl mx-auto aspect-video rounded-4xl overflow-hidden border border-white/10 shadow-2xl group bg-[#060D2D]">
-          <!-- Video Placeholder Styling -->
+          <!- - Video Placeholder Styling - ->
           <div class="absolute inset-0 bg-gradient-to-tr from-clinical-blue/20 to-transparent flex items-center justify-center">
             <button class="w-20 h-20 bg-white rounded-full flex items-center justify-center text-clinical-blue shadow-xl group-hover:scale-110 transition-transform cursor-pointer">
               <svg class="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.333-5.89a1.5 1.5 0 000-2.538L6.3 2.841z"></path></svg>
@@ -455,6 +456,7 @@
         </div>
       </div>
     </section>
+    -->
     <!-- END: Video Demo Section -->
 
     <!-- BEGIN: Trust/Security Section -->
@@ -521,9 +523,9 @@
         <span class="font-bold text-lg tracking-tight">AgentMinds</span>
       </div>
       <div class="flex items-center gap-8 text-sm font-medium text-clinical-gray">
-        <span class="text-gray-400">Privacidad</span>
-        <span class="text-gray-400">Términos</span>
-        <button class="hover:text-clinical-blue cursor-pointer bg-transparent border-none p-0 font-medium" (click)="openContact()">Contacto</button>
+        <a routerLink="/privacy" class="hover:text-clinical-blue cursor-pointer text-gray-400">Privacidad</a>
+        <a routerLink="/terms" class="hover:text-clinical-blue cursor-pointer text-gray-400">Términos</a>
+        <button class="hover:text-clinical-blue cursor-pointer bg-transparent border-none p-0 font-medium text-clinical-gray" (click)="openContact()">Contacto</button>
         <a class="hover:text-clinical-blue cursor-pointer font-bold text-clinical-dark" routerLink="/login">Acceso</a>
       </div>
       <div class="text-xs text-clinical-gray font-semibold">

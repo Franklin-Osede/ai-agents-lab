@@ -43,6 +43,8 @@ const routes: Routes = [
   },
   // Legacy route redirects to new dashboard
   { path: 'professional', redirectTo: '/abandoned-cart', pathMatch: 'full' },
+  { path: 'privacy', loadComponent: () => import('./components/legal/privacy/privacy.component').then(m => m.PrivacyComponent) },
+  { path: 'terms', loadComponent: () => import('./components/legal/terms/terms.component').then(m => m.TermsComponent) },
   { path: 'knowledge', loadChildren: () => import('./knowledge/knowledge.module').then(m => m.KnowledgeModule) },
   { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule) },
   { path: 'blog', loadChildren: () => import('./blog/blog.module').then(m => m.BlogModule) },

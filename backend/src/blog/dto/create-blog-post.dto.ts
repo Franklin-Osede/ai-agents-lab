@@ -18,6 +18,11 @@ export class CreateBlogPostDto {
   @IsOptional()
   coverImage?: string;
 
+  @ApiPropertyOptional({ example: 'Cirujano operando con brazo robótico en Madrid' })
+  @IsString()
+  @IsOptional()
+  coverImageAlt?: string;
+
   @ApiPropertyOptional({ example: 'Agent.AI' })
   @IsString()
   @IsOptional()

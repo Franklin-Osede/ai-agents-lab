@@ -45,7 +45,7 @@
           <!-- Cover Image Container -->
           <div class="w-full aspect-[4/3] rounded-t-2xl bg-gray-100 relative overflow-hidden mb-4">
             @if (post.coverImage) {
-              <img [src]="post.coverImage" [alt]="post.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
+              <img [src]="post.coverImage" [alt]="post.coverImageAlt || post.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
             } @else {
               <!-- Fallback Random Image -->
               <img src="https://picsum.photos/seed/{{post.slug}}/800/600" [alt]="post.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out opacity-90">

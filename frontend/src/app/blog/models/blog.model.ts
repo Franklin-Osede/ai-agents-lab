@@ -10,6 +10,7 @@ export interface BlogPost {
   slug: string;
   content: string;
   coverImage?: string;
+  coverImageAlt?: string;
   authorName?: string;
   status: BlogPostStatus;
   seoTitle?: string;
@@ -22,6 +23,7 @@ export interface CreateBlogPostDto {
   title: string;
   content: string;
   coverImage?: string;
+  coverImageAlt?: string;
   authorName?: string;
   status?: BlogPostStatus;
   seoTitle?: string;

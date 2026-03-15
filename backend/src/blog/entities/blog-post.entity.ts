@@ -30,6 +30,9 @@ export class BlogPost {
   coverImage: string;
 
   @Column({ nullable: true })
+  coverImageAlt: string;
+
+  @Column({ nullable: true })
   authorName: string;
 
   @Column({

@@ -1,0 +1,234 @@
+<div class="bg-background-light dark:bg-background-dark font-display text-[#121117] min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#dcdce5] bg-white px-6 md:px-10 py-3 sticky top-0 z-50">
+    <div class="flex items-center gap-4 md:gap-8">
+        <div class="flex items-center gap-4 text-primary cursor-pointer" routerLink="/">
+            <img src="assets/agentminds-logo.png" alt="AgentMinds" class="size-8 rounded-lg" />
+            <h2 class="text-[#121117] text-xl font-black leading-tight tracking-tight hidden md:block">AgentsMinds</h2>
+        </div>
+        
+        <!-- Search Bar (Optional) -->
+        <label class="hidden md:flex flex-col min-w-40 !h-10 max-w-64">
+            <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
+                <div class="text-[#656487] flex border-none bg-[#f1f0f4] items-center justify-center pl-4 rounded-l-xl">
+                    <span class="material-symbols-outlined text-xl">search</span>
+                </div>
+                <input class="form-input flex w-full min-w-0 flex-1 border-none bg-[#f1f0f4] focus:ring-0 h-full placeholder:text-[#656487] px-4 rounded-r-xl text-sm" placeholder="Buscar conocimiento..." value=""/>
+            </div>
+        </label>
+    </div>
+
+    <!-- Right Nav -->
+    <div class="flex flex-1 justify-end gap-8">
+        <nav class="hidden md:flex items-center gap-9">
+<a class="text-[#121117] text-sm font-semibold hover:text-primary transition-colors cursor-pointer" tabindex="0" (keyup.enter)="null">Dashboard</a>
+            <a class="text-[#121117] text-sm font-semibold hover:text-primary transition-colors cursor-pointer" tabindex="0" (keyup.enter)="null">Mis Clones</a>
+            <a class="text-primary text-sm font-bold border-b-2 border-primary pb-1 cursor-pointer" tabindex="0" (keyup.enter)="null">Auditoría</a>
+        </nav>
+        <div class="flex gap-2">
+            <button class="flex items-center justify-center rounded-xl h-10 w-10 bg-[#f1f0f4] hover:bg-gray-200 transition-colors">
+                <span class="material-symbols-outlined text-[#121117]">notifications</span>
+            </button>
+            <div class="size-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold border border-gray-200">
+                <span class="material-symbols-outlined">person</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="flex-1 max-w-[1280px] mx-auto w-full px-4 md:px-6 py-8 pb-32">
+    <!-- Page Title & Stats -->
+    <div class="flex flex-wrap justify-between items-end gap-6 mb-8">
+        <div class="flex flex-col gap-1">
+            <h1 class="text-[#121117] text-3xl md:text-4xl font-black tracking-tight">Reporte de Auditoría de Conocimiento</h1>
+            <p class="text-[#656487] text-base">Verifica los activos detectados antes de finalizar el entrenamiento de tu clon IA.</p>
+        </div>
+        <div class="flex gap-3">
+            <button (click)="rescan()" class="flex items-center gap-2 rounded-xl h-11 px-6 bg-white border border-[#dcdce5] text-[#121117] text-sm font-bold hover:bg-gray-50 transition-colors">
+                <span class="material-symbols-outlined text-lg">restart_alt</span> Repetir Escaneo
+            </button>
+            <button (click)="continueToChat()" class="flex items-center gap-2 rounded-xl h-11 px-6 bg-primary text-white text-sm font-bold hover:opacity-90 transition-opacity">
+                <span class="material-symbols-outlined text-lg">rocket_launch</span> Confirmar y Entrenar
+            </button>
+        </div>
+    </div>
+
+
+
+    <!-- Content Grid with Clipboard Metaphor -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Column: Services (High density) -->
+        <div class="lg:col-span-7">
+            <div class="clipboard-header">
+                <div class="clipboard-clip"></div>
+            </div>
+            <div class="bg-white border border-[#dcdce5] rounded-xl shadow-md overflow-hidden">
+                <div class="p-6 border-b border-[#f1f0f4] flex justify-between items-center bg-gray-50/50">
+                    <h2 class="text-xl font-bold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">list_alt</span>
+                        Servicios de Negocio
+                    </h2>
+                    <span class="text-xs font-bold px-2 py-1 bg-primary/10 text-primary rounded-lg uppercase">Audit Active</span>
+                </div>
+                
+                <div class="divide-y divide-[#f1f0f4] max-h-[600px] overflow-y-auto">
+                    <!-- Adding Service Form -->
+                     @if (addingNewService) {
+                        <div class="p-4 bg-indigo-50/30 animate-fade-in-up">
+                            <div class="grid grid-cols-12 gap-4 items-center">
+                                <div class="col-span-1 flex justify-center">
+                                    <span class="material-symbols-outlined text-primary">add_circle</span>
+                                </div>
+                                <div class="col-span-5">
+                                    <label for="newServiceName" class="text-[10px] font-bold text-[#656487] uppercase">Nuevo Servicio</label>
+                                    <input id="newServiceName" [(ngModel)]="newServiceName" class="w-full border border-indigo-200 rounded px-2 py-1 focus:ring-2 focus:ring-primary/20 text-[#121117] text-sm" type="text" placeholder="Ej: Consultoría Inicial" (keyup.enter)="addCustomService()"/>
+                                </div>
+                                <div class="col-span-6 flex gap-2 justify-end">
+                                    <button (click)="addCustomService()" class="bg-primary text-white px-3 py-1 rounded-lg text-xs font-bold hover:opacity-90">Guardar</button>
+                                    <button (click)="cancelAddingService()" class="bg-slate-200 text-slate-600 px-3 py-1 rounded-lg text-xs font-bold hover:bg-slate-300">Cancelar</button>
+                                </div>
+                            </div>
+                        </div>
+                     }
+
+                    <!-- Service Items -->
+                    @for (service of (isServicesExpanded ? services : services.slice(0, 5)); track service.name) {
+                        <div class="p-4 hover:bg-gray-50 transition-colors group">
+                            <div class="grid grid-cols-12 gap-2 md:gap-4 items-center">
+                                <div class="col-span-1 flex justify-center">
+                                    <span class="material-symbols-outlined text-[#078841]">check_circle</span>
+                                </div>
+                                <div class="col-span-11 md:col-span-5">
+                                    <label [for]="'service-' + $index" class="text-[10px] font-bold text-[#656487] uppercase md:hidden">Servicio</label>
+                                    <input [id]="'service-' + $index" class="w-full border-none p-0 focus:ring-0 font-bold text-[#121117] text-sm bg-transparent truncate" type="text" [value]="service.name" readonly/>
+                                </div>
+                                <div class="col-span-6 md:col-span-3 border-l border-[#f1f0f4] pl-2 md:pl-4">
+                                    <label [for]="'price-' + $index" class="text-[10px] font-bold text-[#656487] uppercase">Precio</label>
+                                    <div class="flex items-center text-sm font-bold text-primary">
+                                        <input [id]="'price-' + $index" class="w-full border-none p-0 focus:ring-0 font-bold text-primary text-sm bg-transparent truncate" type="text" [value]="service.price"/>
+                                    </div>
+                                </div>
+                                <div class="col-span-6 md:col-span-3 border-l border-[#f1f0f4] pl-2 md:pl-4 flex justify-between items-center">
+                                    <div>
+                                        <span class="text-[10px] font-bold text-[#656487] uppercase">Duración</span>
+                                        <div class="font-bold text-[#121117] text-sm">{{ service.duration || 'Variable' }}</div>
+                                    </div>
+                                    <button class="opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span class="material-symbols-outlined text-gray-400 text-lg">edit</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    } @empty {
+                         <div class="p-8 text-center text-slate-400">
+                            <span class="material-symbols-outlined text-4xl mb-2">list</span>
+                            <p>No se encontraron servicios. Añade uno manualmente.</p>
+                         </div>
+                    }
+                    
+                    @if (services.length > 5) {
+                        <div class="p-3 bg-gray-50 border-t border-[#f1f0f4] text-center">
+                            <button (click)="toggleServices()" class="text-sm font-bold text-primary hover:text-primary/80 transition-colors flex items-center justify-center gap-2 mx-auto">
+                                {{ isServicesExpanded ? 'Ver Menos' : 'Ver Todos (' + services.length + ')' }}
+                                <span class="material-symbols-outlined text-lg">{{ isServicesExpanded ? 'expand_less' : 'expand_more' }}</span>
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Operational Data -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
+            
+            <!-- Contact Info Section -->
+            <div class="bg-white border border-[#dcdce5] rounded-xl shadow-md overflow-hidden">
+                <div class="p-5 border-b border-[#f1f0f4] bg-gray-50/50 flex justify-between items-center">
+                    <h3 class="font-bold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-xl">business_center</span>
+                        Información Operativa
+                    </h3>
+                    @if (!branding.logoUrl) {
+                        <span class="text-[10px] text-amber-500 font-bold bg-amber-50 px-2 py-1 rounded border border-amber-200">Logo no detectado</span>
+                    }
+                </div>
+                <div class="p-6 flex flex-col gap-4">
+                    <div class="flex items-start gap-4">
+                        <div class="bg-primary/10 p-2 rounded-lg text-primary">
+                            <span class="material-symbols-outlined text-lg">location_on</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-bold text-[#656487] uppercase">Dirección Principal</p>
+                            <input [(ngModel)]="contactInfo.address" class="w-full border-none p-0 focus:ring-0 text-sm font-semibold text-[#121117] placeholder:text-slate-300" placeholder="Añadir dirección..." />
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="bg-primary/10 p-2 rounded-lg text-primary">
+                            <span class="material-symbols-outlined text-lg">call</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-bold text-[#656487] uppercase">Teléfono de Contacto</p>
+                            <input [(ngModel)]="contactInfo.phone" class="w-full border-none p-0 focus:ring-0 text-sm font-semibold text-[#121117] placeholder:text-slate-300" placeholder="Añadir teléfono..." />
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Hours Section -->
+            <div class="bg-white border border-[#dcdce5] rounded-xl shadow-md p-6">
+                <h3 class="font-bold mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-xl">schedule</span>
+                    Horario de Apertura
+                </h3>
+                <div class="flex flex-col gap-2">
+                    <textarea [(ngModel)]="contactInfo.hours" class="w-full border-slate-200 rounded-lg text-sm font-medium text-[#121117] focus:ring-primary/20 min-h-[80px]" placeholder="Ej: Lunes a Viernes 9:00 - 18:00"></textarea>
+                </div>
+            </div>
+
+            <!-- Team Section -->
+            <div class="bg-white border border-[#dcdce5] rounded-xl shadow-md p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-xl">groups</span>
+                        Equipo
+                    </h3>
+                    @if (team.length > 0) {
+                        <button class="text-xs font-bold text-primary hover:underline">Ver todos ({{ team.length }})</button>
+                    }
+                </div>
+                
+                <div class="flex flex-col gap-3">
+                    @for (member of team.slice(0, 3); track member.name) {
+                    <div class="flex items-center gap-3 p-2 rounded-lg bg-background-light">
+                        <div class="h-10 w-10 rounded-full bg-cover bg-center bg-slate-200 border border-white shadow-sm flex items-center justify-center overflow-hidden">
+                             @if(member.image && member.image.startsWith('http')) {
+                                <img [src]="member.image" [alt]="member.name" class="w-full h-full object-cover">
+                             } @else {
+                                <span class="material-symbols-outlined text-slate-400">person</span>
+                             }
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold">{{ member.name }}</p>
+                            <p class="text-[10px] text-[#656487]">{{ member.role }}</p>
+                        </div>
+                        <span class="material-symbols-outlined text-primary ml-auto text-lg">psychology</span>
+                    </div>
+                    } @empty {
+                        <div class="text-center py-4 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50">
+                            <span class="material-symbols-outlined text-slate-300 text-3xl mb-1">person_off</span>
+                            <p class="text-xs text-slate-400 font-medium mb-3">No se detectaron miembros del equipo públicos.</p>
+                            <button class="text-xs bg-white border border-slate-200 px-3 py-1.5 rounded-lg font-bold text-slate-600 hover:text-primary hover:border-primary/30 transition-colors shadow-sm">
+                                + Añadir Miembro Manualmente
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+</div>

@@ -14,6 +14,7 @@ import { WelcomeChatComponent } from './abandoned-cart/components/welcome-chat/w
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
+  { path: 'about', loadComponent: () => import('./components/about/about.component').then(m => m.AboutComponent) },
   // Abandoned Cart Routes with Mobile Layout Wrapper
   {
     path: 'abandoned-cart',
@@ -42,11 +43,20 @@ const routes: Routes = [
   },
   // Legacy route redirects to new dashboard
   { path: 'professional', redirectTo: '/abandoned-cart', pathMatch: 'full' },
+  { path: 'privacy', loadComponent: () => import('./components/legal/privacy/privacy.component').then(m => m.PrivacyComponent) },
+  { path: 'terms', loadComponent: () => import('./components/legal/terms/terms.component').then(m => m.TermsComponent) },
+  { path: 'knowledge', loadChildren: () => import('./knowledge/knowledge.module').then(m => m.KnowledgeModule) },
+  { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule) },
+  { path: 'blog', loadChildren: () => import('./blog/blog.module').then(m => m.BlogModule) },
   { path: '**', redirectTo: '' },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { 
+    anchorScrolling: 'enabled', 
+    scrollPositionRestoration: 'enabled',
+    scrollOffset: [0, 80] // accounts for the fixed 80px high navbar
+  })],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

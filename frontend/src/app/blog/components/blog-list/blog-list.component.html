@@ -1,0 +1,84 @@
+<div class="font-sans text-clinical-dark min-h-screen bg-white">
+  <!-- Nav Area Padding -->
+  <div class="h-20 bg-white border-b border-gray-100"></div>
+
+  <!-- Main Content Container -->
+  <div class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+    
+    <div class="mb-12">
+      <a routerLink="/" class="inline-flex items-center gap-2 mb-8 text-sm font-bold text-gray-400 hover:text-clinical-blue transition-colors cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        Volver al inicio
+      </a>
+      <h1 class="text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight text-clinical-dark mb-4">
+        Nuestro Blog
+      </h1>
+      <p class="text-lg text-clinical-gray max-w-3xl">
+        Descubre cómo la Inteligencia Artificial está revolucionando la captación y gestión de pacientes en clínicas de alto valor, operando 24/7 en sectores como estética avanzada y medicina regenerativa.
+      </p>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading) {
+    <div class="flex justify-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-clinical-blue"></div>
+    </div>
+    }
+
+    @if (!loading) {
+      <!-- Sort Bar -->
+      <div class="flex justify-end border-b border-gray-100 pb-4 mb-12">
+        <div class="flex items-center gap-2 text-xs text-gray-500 font-medium">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h9m5-4v14m0 0l-4-4m4 4l4-4"></path></svg> Ordenado por más reciente
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      @if (posts.length === 0) {
+      <div class="bg-gray-50 p-12 text-center rounded-3xl border border-gray-100">
+        <h3 class="text-xl font-bold text-gray-800">Aún no hay publicaciones</h3>
+        <p class="text-gray-500 mt-2">Pronto añadiremos contenido especializado.</p>
+      </div>
+      }
+
+      <!-- Grid for all posts (3 columns) -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
+        @for (post of posts; track post.id) {
+        <a [routerLink]="['/blog', post.slug]" class="bg-gray-50/50 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 flex flex-col group cursor-pointer h-full pb-4">
+          <!-- Cover Image Container -->
+          <div class="w-full aspect-[4/3] rounded-t-2xl bg-gray-100 relative overflow-hidden mb-4">
+            @if (post.coverImage) {
+              <img [src]="post.coverImage" [alt]="post.coverImageAlt || post.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
+            } @else {
+              <!-- Fallback Random Image -->
+              <img src="https://picsum.photos/seed/{{post.slug}}/800/600" [alt]="post.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out opacity-90">
+            }
+          </div>
+          
+          <!-- Content Container -->
+          <div class="px-6 flex-grow flex flex-col justify-between">
+            <div>
+              <h2 class="text-[22px] font-bold text-clinical-dark mb-4 line-clamp-3 group-hover:text-clinical-blue transition-colors leading-snug">
+                {{ post.title }}
+              </h2>
+            </div>
+            
+            <!-- Author Block (Mocked Person) -->
+            <div class="flex items-center gap-4 pt-6 border-t border-gray-200/60 mt-auto">
+               <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
+                 <!-- Realistic fake author avatar -->
+                 <img [src]="getAuthor(post.authorName).avatar" alt="Author" class="w-full h-full object-cover">
+               </div>
+               <div>
+                 <div class="font-bold text-sm text-clinical-dark">{{ getAuthor(post.authorName).name }}</div>
+                 <div class="text-[11px] text-gray-500 font-medium">{{ getAuthor(post.authorName).role }}</div>
+               </div>
+            </div>
+          </div>
+        </a>
+        }
+      </div>
+
+    }
+  </div>
+</div>

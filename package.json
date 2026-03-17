@@ -5,6 +5,9 @@
   "private": true,
   "scripts": {
     "start": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,green\" \"npm run start:backend\" \"npm run start:frontend\"",
+    "dev": "concurrently -n \"MSP,BACKEND,FRONTEND\" -c \"magenta,blue,green\" \"npm run msp:start\" \"npm run start:backend\" \"npm run start:frontend\"",
+    "msp:start": "node tools/msp/server.js",
+    "msp": "node tools/msp/cli.js",
     "start:backend": "cd backend && npm run start:dev",
     "start:frontend": "cd frontend && npm start",
     "start:docker": "docker-compose -f docker-compose.dev.yml up",
@@ -18,11 +21,8 @@
   "devDependencies": {
     "concurrently": "^8.2.2",
     "husky": "^9.1.7"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
   }
 }
-
-
-
-
-
-

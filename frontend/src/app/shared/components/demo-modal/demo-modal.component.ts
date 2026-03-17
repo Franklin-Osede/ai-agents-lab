@@ -465,13 +465,9 @@ export class DemoModalComponent implements OnInit, OnDestroy {
         this.conversationFlow.totalSteps = 6;
       } else if (serviceId === "fisioterapia" || serviceId.includes("fisio")) {
         // 3. FISIOTERAPIA - 6 pasos (5 preguntas + calendario)
-        welcomeMessage = `Hola, soy ${article} asistente de ${professionalName}. Cuénteme, ¿en qué zona del cuerpo siente la molestia o lesión?`;
-        options = [
-          "🦴 Dolor de espalda / cuello",
-          "🏃 Lesión deportiva",
-          "♿ Rehabilitación",
-          "💆 Masaje descontracturante",
-        ];
+        welcomeMessage = `Hola, soy ${article} asistente de ${professionalName}. Por favor, indícame en el mapa virtual dónde sientes la molestia.`;
+        options = []; // Clear text options to focus on body map
+        this.showBodyMap = true;
         this.conversationFlow.totalSteps = 6;
       } else if (serviceId === "peluqueria" || serviceId.includes("peluqueria")) {
         // PELUQUERÍA - 5 pasos (Voz: Lucia)
@@ -1471,6 +1467,71 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   selectedRole: "professional" | "client" | null = null;
   showAuthScreen: "login" | "register" | null = null;
   showCalendarModal = false;
+  showBodyMap = false; // Controls visibility of the interactive body map in chat
+  
+  handleBodyPartSelection(partLabel: string) {
+    console.log("Selected body part:", partLabel);
+    // Hide the map after selection
+    this.showBodyMap = false;
+    
+    // 1. Simulate user sending the body part as a message
+    const userMsgText = `Tengo dolor en: ${partLabel}`;
+    
+    // Push user message directly to UI
+    this.messages.push({
+      id: Date.now().toString(),
+      content: userMsgText,
+      sender: "user",
+      timestamp: new Date(),
+    });
+
+    this.isLoading = true; // Show typing indicator
+
+    // 2. Simulate AI Analysis (RAG) & Response
+    setTimeout(() => {
+      this.isLoading = false;
+      
+      let advice = "";
+      const lowerPart = partLabel.toLowerCase();
+
+      // Advanced RAG Simulation (Physio Expert Level)
+      if (lowerPart.includes("cervical") || lowerPart.includes("cuello")) {
+        advice = "**Posible causa:** Tensión postural o rectificación.\n🔹 **Acción inmediata:** Calor seco (manta eléctrica) 15 min.\n🚫 **Evitar:** Giros bruscos y mirar pantallas hacia abajo.";
+      } else if (lowerPart.includes("hombro") || lowerPart.includes("deltoides")) {
+        advice = "**Posible causa:** Tendinitis del manguito o sobrecarga.\n🔹 **Acción inmediata:** Hielo local si duele de noche.\n🚫 **Evitar:** Elevar el brazo por encima de la cabeza.";
+      } else if (lowerPart.includes("lumbar") || lowerPart.includes("riñones") || lowerPart.includes("cintura") || lowerPart.includes("espalda")) {
+        advice = "**Posible causa:** Contractura paravertebral mecánica.\n🔹 **Acción inmediata:** Reposo activo (caminar suave) y calor.\n🧘 **Ejercicio:** 'Gato-Camello' muy suave en cuadrupedia.";
+      } else if (lowerPart.includes("rodilla")) {
+        advice = "**Posible causa:** Sobrecarga rotuliana o meniscal.\n🔹 **Acción inmediata:** Frío local tras caminar/actividad.\n🚫 **Evitar:** Escaleras y sentadillas profundas.";
+      } else if (lowerPart.includes("pierna") || lowerPart.includes("muslo") || lowerPart.includes("gemelo")) {
+        advice = "**Posible causa:** Sobrecarga muscular o micro-rotura.\n🔹 **Acción inmediata:** Compresión suave y elevación.\n🚫 **Evitar:** Estiramientos forzados si hay pinchazo.";
+      } else {
+        advice = "**Análisis preliminar:** Dolor inespecífico a valorar.\n🔹 **Recomendación:** No forzar el movimiento doloroso hasta la exploración.";
+      }
+
+      const agentResponse = `Entendido, registro dolor en **${partLabel}**. He actualizado tu ficha.\n\n${advice}\n\n¿Quieres que busquemos un hueco esta semana para tratarlo?`;
+
+      // Add Agent Response
+      this.messages.push({
+        id: (Date.now() + 1).toString(),
+        content: agentResponse,
+        sender: "agent",
+        timestamp: new Date(),
+      });
+      
+      // Generate Contextual Suggestions designed to trigger availability check
+      setTimeout(() => {
+         this.exampleMessages = ["📅 Ver huecos libres", "Sí, buscar cita", "Mejor la próxima semana"];
+      }, 500);
+
+      // Play audio if enabled
+      if (this.enableVoice) {
+         this.playMessageAudio(agentResponse);
+      }
+
+    }, 1500); // Slightly faster response (1.5s)
+  }
+
   selectedFilter: "best-rated" | "nearest" | "price-low" | "availability" =
     "best-rated";
 
@@ -3027,10 +3088,9 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     });
 
 
-
-  // Voice Selection based on Category
-  const selectedServiceId = (service.id || '').toLowerCase();
-  let voiceId = 'Lucia'; // Default (Medical - Female, Spain)
+    // Voice Selection based on Category
+    const selectedServiceId = (service.id || '').toLowerCase();
+    let voiceId = 'Lucia'; // Default (Medical - Female, Spain)
 
   // Health & Professional Services - Male voices
   if (selectedServiceId === 'clinica' || selectedServiceId.includes('medic') || selectedServiceId.includes('doctor')) {
@@ -3139,7 +3199,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
     this.onClose();
   }
 
-  useExample(example: string): void {
+  async useExample(example: string): Promise<void> {
     // Check if we're in an active conversation flow
     console.log("🔵 useExample called with:", example);
     console.log("🔵 conversationFlow state:", this.conversationFlow);
@@ -3150,11 +3210,49 @@ export class DemoModalComponent implements OnInit, OnDestroy {
       if (
         lower.includes("disponibil") ||
         lower.includes("ver calendario") ||
-        lower.includes("calendario")
+        lower.includes("calendario") ||
+        lower.includes("hueco") ||
+        lower.includes("cita")
       ) {
         this.openCalendar();
         return;
       }
+    }
+
+    // Force Availability Check for "Ver huecos libres" or similar
+    // This allows jumping to calendar from RAG advice even if not strictly awaitingCalendar
+    if (
+        example.toLowerCase().includes("hueco") || 
+        example.toLowerCase().includes("ver disponibilidad") ||
+        example.toLowerCase().includes("buscar cita")
+    ) {
+         // Simulate user message
+         this.messages.push({
+            id: Date.now().toString(),
+            content: example,
+            sender: "user",
+            timestamp: new Date(),
+          });
+          
+         // Show checking status
+         this.messages.push({
+            id: `sys-${Date.now()}`,
+            content: "📅 Consultando agenda del especialista...",
+            sender: "agent",
+            timestamp: new Date(),
+            isSystem: true
+         } as any);
+
+         // Helper to trigger calendar
+         const today = new Date().toISOString().split('T')[0];
+         await this.checkAvailabilityRealTime(today);
+         
+         setTimeout(() => {
+            if (this.availableSlots.length > 0) {
+                this.currentStep = 2; // GOTO Calendar
+            }
+         }, 1500);
+         return; 
     }
 
     if (

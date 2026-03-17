@@ -1,311 +1,537 @@
-<div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-  <!-- Gradient Overlays -->
-  <div
-    class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/10 blur-[100px]"
-  ></div>
-  <div
-    class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-400/10 blur-[100px]"
-  ></div>
-</div>
-
-<header class="w-full max-w-7xl mx-auto px-6 pt-6 pb-12 animate-fade-in-up">
-  <!-- Top Navigation -->
-  <div class="flex justify-between items-center mb-20">
-    <div
-      class="text-xl font-semibold tracking-tight flex items-center gap-3 text-slate-900 dark:text-white"
-    >
-      <img
-        src="assets/agentminds-logo.png"
-        alt="AgentMinds Logo"
-        class="w-8 h-8 rounded-lg"
-      />
-      AgentMinds
-    </div>
-    <!-- Buttons hidden as requested - will be re-enabled when needed -->
-    <!-- <div class="flex items-center gap-3">
-    <button (click)="navigateToProfessional()" class="text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors px-4 py-2">
-      Soy Profesional
-    </button>
-    <button class="px-5 py-2.5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-sm font-medium hover:opacity-90 transition-opacity">
-      Soy Cliente
-    </button>
-  </div> -->
-  </div>
-
-  <!-- Hero Section -->
-  <div class="grid lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
-    <!-- Text Content -->
-    <div class="md:max-w-4xl text-center lg:text-left">
-      <div
-        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-900/30 border border-purple-100 dark:border-purple-800 text-purple-600 dark:text-purple-300 text-xs font-semibold mb-6 tracking-wide uppercase"
-      >
-        <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-        Soluciones IA Personalizadas
-      </div>
-      <h1
-        class="text-4xl md:text-5xl lg:text-5xl font-bold tracking-tight mb-6 text-gradient-main"
-        style="line-height: 1.2"
-      >
-        Automatiza tu <br class="md:hidden" />
-        Negocio con <br />
-        <span
-          class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600"
-          >Agentes  IA</span
-        > 24/7
-      </h1>
-      <p
-        class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed font-light mb-8"
-      >
-        Automatización inteligente de ventas, atención al cliente y gestión de leads. Diseñados para tu industria.
-      </p>
-      <div
-        class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
-      >
-        <button
-          (click)="openContact()"
-          class="px-8 py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90 transition-all shadow-xl hover:translate-y-[-2px]"
-        >
-          Agendar Demo
-        </button>
-        <button
-          (click)="scrollToAgents()"
-          class="px-8 py-4 rounded-xl bg-transparent border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
-        >
-          Ver Agentes
-        </button>
-      </div>
-    </div>
-
-    <!-- Hero Image -->
-    <div class="relative group">
-      <div
-        class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-[2rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"
-      ></div>
-      <div
-        class="relative rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl bg-slate-900 aspect-video"
-      >
-        <!-- Using version 2 (simple/clean) as requested -->
-        <img
-          src="assets/hero-image-v2.png"
-          alt="AgentMinds Dashboard"
-          class="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity duration-700 scale-105 hover:scale-100 transform transition-transform duration-700"
-        />
-
-        <!-- Floating Badge 1 -->
-        <div
-          class="absolute top-6 right-6 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl flex items-center gap-3 animate-fade-in-up"
-          style="animation-delay: 0.5s"
-        >
-          <div
-            class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400"
-          >
-            <span class="material-symbols-outlined text-sm">check</span>
+<!-- Wrapper to apply background and font styles without affecting global body -->
+<div class="font-sans text-clinical-dark overflow-x-hidden bg-white min-h-screen">
+  <main class="pt-20">
+    <!-- BEGIN: Hero Section -->
+    <section class="relative overflow-hidden pt-16 pb-24 lg:pt-32 lg:pb-40 gradient-bg" data-purpose="hero-section">
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
+        <div class="space-y-8">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-clinical-blue/10 text-clinical-blue text-xs font-bold uppercase tracking-widest">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-clinical-blue opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-clinical-blue"></span>
+            </span>
+            IA para Clínicas Premium y Medicina Regenerativa
           </div>
-          <div>
-            <div class="text-xs text-slate-300">Estado</div>
-            <div class="text-sm font-bold text-white">Sistema Activo</div>
-          </div>
-        </div>
-
-        <!-- Floating Badge 2 -->
-        <div
-          class="absolute bottom-6 left-6 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl flex items-center gap-3 animate-fade-in-up"
-          style="animation-delay: 0.8s"
-        >
-          <div
-            class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400"
-          >
-            <span class="material-symbols-outlined text-sm">auto_awesome</span>
-          </div>
-          <div>
-            <div class="text-xs text-slate-300">Eficiencia</div>
-            <div class="text-sm font-bold text-white">+85% Automatizado</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</header>
-
-<main
-  id="agents-section"
-  class="w-full max-w-7xl mx-auto px-4 pb-24 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
->
-  <!-- DYNAMIC AGENT CARDS -->
-  @for (agent of filteredAgents; track agent) {
-  <div
-    class="group relative rounded-[2rem] p-1 border hover:-translate-y-1 transition-all duration-500 animate-fade-in-up"
-    [ngClass]="{
-      'gradient-blue border-blue-100 dark:border-blue-900/50 hover:shadow-glow-blue':
-        agent.color === 'blue',
-      'gradient-rose border-rose-100 dark:border-rose-900/50 hover:shadow-glow-rose':
-        agent.color === 'rose',
-      'gradient-purple border-purple-100 dark:border-purple-900/50 hover:shadow-glow-purple':
-        agent.color === 'purple',
-      'gradient-amber border-amber-100 dark:border-amber-900/50 hover:shadow-glow-amber':
-        agent.color === 'amber',
-      'gradient-emerald border-emerald-100 dark:border-emerald-900/50 hover:shadow-glow-emerald':
-        agent.color === 'emerald',
-      'gradient-orange border-orange-100 dark:border-orange-900/50 hover:shadow-glow-orange':
-        agent.color === 'orange'
-    }"
-  >
-    <div
-      class="absolute inset-0 bg-white/40 dark:bg-dark-800/40 rounded-[2rem] backdrop-blur-sm -z-10"
-    ></div>
-    <div
-      class="h-full rounded-[1.8rem] bg-white/60 dark:bg-dark-900/80 p-6 md:p-8 flex flex-col relative overflow-hidden"
-    >
-      <!-- Bg Icon -->
-      <div
-        class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity duration-500"
-      >
-        <span
-          class="material-symbols-outlined text-9xl rotate-12 transform translate-x-4 -translate-y-4"
-          [ngClass]="{
-            'text-blue-600 dark:text-blue-400': agent.color === 'blue',
-            'text-rose-600 dark:text-rose-400': agent.color === 'rose',
-            'text-purple-600 dark:text-purple-400': agent.color === 'purple',
-            'text-amber-600 dark:text-amber-400': agent.color === 'amber',
-            'text-emerald-600 dark:text-emerald-400': agent.color === 'emerald',
-            'text-orange-600 dark:text-orange-400': agent.color === 'orange'
-          }"
-        >
-          {{ agent.icon }}
-        </span>
-      </div>
-      <div class="relative z-10 flex flex-col h-full justify-between">
-        <div>
-          <!-- Icon Box -->
-          <div
-            class="w-14 h-14 rounded-2xl text-white flex items-center justify-center shadow-lg mb-6 group-hover:scale-110 transition-transform duration-300"
-            [ngClass]="{
-              'bg-blue-500 shadow-blue-500/30': agent.color === 'blue',
-              'bg-rose-500 shadow-rose-500/30': agent.color === 'rose',
-              'bg-purple-500 shadow-purple-500/30': agent.color === 'purple',
-              'bg-amber-500 shadow-amber-500/30': agent.color === 'amber',
-              'bg-emerald-500 shadow-emerald-500/30': agent.color === 'emerald',
-              'bg-orange-500 shadow-orange-500/30': agent.color === 'orange'
-            }"
-          >
-            <span class="material-symbols-outlined text-3xl">{{
-              agent.icon
-            }}</span>
-          </div>
-          <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">
-            {{ agent.name }}
-          </h2>
-          <p
-            class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-8"
-          >
-            {{ agent.description }}
+          <h1 class="text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight text-clinical-dark">
+            Convierte más consultas de alto valor con un <span class="text-clinical-blue">Agente IA</span> 24/7.
+          </h1>
+          <p class="text-lg text-clinical-gray max-w-lg leading-relaxed">
+            Captamos pacientes genuinos, los cualificamos en automático y garantizamos su asistencia a la clínica.
           </p>
-          <!-- Features List (Only for Booking/Rider usually, but generic here) -->
-          @if (agent.features) {
-          <div class="space-y-3">
-            @for (feat of agent.features; track feat) {
-            <div
-              class="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300"
-            >
-              <span
-                class="material-symbols-outlined text-[20px]"
-                [ngClass]="{
-                  'text-blue-500': agent.color === 'blue',
-                  'text-rose-500': agent.color === 'rose',
-                  'text-purple-500': agent.color === 'purple',
-                  'text-amber-500': agent.color === 'amber',
-                  'text-emerald-500': agent.color === 'emerald',
-                  'text-orange-500': agent.color === 'orange'
-                }"
-                >check_circle</span
-              >
-              <span>{{ feat }}</span>
+          <div class="flex flex-col sm:flex-row gap-4 items-center sm:items-stretch">
+            <button (click)="openContact()" class="bg-clinical-blue text-white px-8 py-4 rounded-full font-bold shadow-lg shadow-clinical-blue/20 hover:scale-[1.02] transition-transform cursor-pointer flex-shrink-0">
+              Agendar Auditoría Gratuita
+            </button>
+            <div class="flex items-center gap-3 px-6 py-3 rounded-full border border-gray-200 bg-white/50 backdrop-blur-sm self-center sm:self-auto shrink-0">
+              <div class="flex -space-x-2">
+                <div class="w-8 h-8 rounded-full bg-gray-200 border-2 border-white overflow-hidden"><img src="https://i.pravatar.cc/100?img=68" alt="Doc" class="w-full h-full object-cover"></div>
+                <div class="w-8 h-8 rounded-full bg-gray-200 border-2 border-white overflow-hidden"><img src="https://i.pravatar.cc/100?img=33" alt="Doc" class="w-full h-full object-cover"></div>
+              </div>
+              <div class="text-xs text-clinical-gray leading-tight">
+                <p class="font-bold">+50 clínicas</p>
+                <p>confían</p>
+              </div>
             </div>
-            }
           </div>
-          }
         </div>
-        <button
-          (click)="openDemo(agent.id)"
-          class="w-full group/btn relative overflow-hidden rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold py-4 px-6 transition-all duration-300 hover:shadow-lg mt-8"
-        >
-          <span class="relative z-10 flex items-center justify-center gap-2">
-            Probar Demo
-            <span
-              class="material-symbols-outlined text-lg transition-transform group-hover/btn:translate-x-1"
-              >arrow_forward</span
-            >
-          </span>
-        </button>
+        <div class="relative" data-purpose="hero-visual">
+          <!-- High-Fidelity UI Mockup Update -->
+          <div class="relative w-full aspect-square bg-gray-50/50 rounded-[40px] flex flex-col justify-center items-center">
+            <div class="w-[95%] sm:w-[85%] bg-white rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col border border-gray-100 z-10 transition-transform hover:scale-[1.01] duration-500">
+              
+              <!-- Dashboard Header -->
+              <div class="flex items-start justify-between mb-8">
+                <div>
+                  <p class="text-[10px] font-bold text-gray-400 tracking-wider mb-1 uppercase">Dashboard</p>
+                  <h3 class="text-xl font-extrabold text-[#0F172A] tracking-tight">Rendimiento Hoy</h3>
+                </div>
+                <div class="w-11 h-11 rounded-full bg-[#22C55E] flex items-center justify-center text-white shadow-[0_8px_20px_rgba(34,197,94,0.3)] hover:scale-105 transition-transform cursor-pointer flex-shrink-0">
+                  <svg class="w-[22px] h-[22px]" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 11H7v-1.5h10v1.5zm0-3H7V8.5h10V10zm-4-3H7V5.5h6V7z"/></svg>
+                </div>
+              </div>
+
+              <!-- Metric Cards -->
+              <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                  <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Citas Hoy</p>
+                  <div class="flex items-baseline gap-2">
+                    <span class="text-4xl font-extrabold text-clinical-dark">24</span>
+                    <span class="text-xs font-bold text-green-500">+12%</span>
+                  </div>
+                </div>
+                <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                  <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Asistencia</p>
+                  <div class="flex items-baseline gap-2">
+                    <span class="text-4xl font-extrabold text-clinical-dark">98%</span>
+                    <span class="text-xs font-bold text-green-500">+3%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Activity List -->
+              <div class="flex-grow flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                  <h4 class="text-sm font-bold text-clinical-dark">Actividad Reciente</h4>
+                  <a href="#" class="text-xs font-bold text-clinical-blue hover:text-blue-800 transition-colors">Ver todos</a>
+                </div>
+                <div class="space-y-3">
+                  <!-- Item 1 -->
+                  <div class="flex items-center justify-between p-4 rounded-3xl border border-gray-100 bg-white shadow-sm">
+                     <div class="flex items-center gap-4">
+                       <div class="relative">
+                         <div class="w-12 h-12 rounded-full bg-[#EEF2FF] flex items-center justify-center text-[#1D4ED8]">
+                           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                         </div>
+                         <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center">
+                           <svg viewBox="0 0 24 24" class="w-4 h-4 text-green-500 fill-current"><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.549 4.108 1.503 5.811L.001 24l6.33-1.66A11.967 11.967 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm5.669 17.29a3.267 3.267 0 01-2.227 1.48c-.689.155-1.928.096-3.791-.67-2.24-.925-4.14-3.376-4.665-4.08-.522-.705-1.12-2.148-1.12-3.618 0-1.47.76-2.183 1.03-2.484.27-.3.585-.375.78-.375.195 0 .39.006.568.016.183.01.428-.066.666.505.239.57.818 2.012.893 2.163.076.15.114.325.023.504-.092.18-.137.285-.275.45-.137.165-.29.36-.413.48-.135.132-.279.277-.123.546.156.269.695 1.15 1.488 1.868.995.902 1.861 1.185 2.131 1.32.27.135.428.113.585-.067.158-.18.683-.787.87-1.057.188-.27.375-.225.626-.135.25.09 1.58.746 1.85 881.27.135.15.225.295.27.45.045.15*.15*.27.42..912Z"></path></svg>
+                         </div>
+                       </div>
+                       <div>
+                         <p class="text-base font-bold text-clinical-dark">Juan Pérez</p>
+                         <p class="text-[13px] text-green-500 font-medium tracking-tight">Cita Confirmada • 15:30h</p>
+                       </div>
+                     </div>
+                     <span class="text-xs text-gray-400 font-medium">Hace 2 min</span>
+                  </div>
+                  <!-- Item 2 -->
+                  <div class="flex items-center justify-between p-4 rounded-3xl border border-transparent bg-gray-50/50">
+                     <div class="flex items-center gap-4">
+                       <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center text-gray-400">
+                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                       </div>
+                       <div>
+                         <p class="text-base font-bold text-[#4B5563]">María Garcia</p>
+                         <p class="text-[13px] text-gray-400 tracking-tight">Calificando leads...</p>
+                       </div>
+                     </div>
+                     <span class="text-xs text-gray-400 font-medium pt-1">Hace 10 min</span>
+                  </div>
+                </div>
+              </div>
+
+              <button (click)="openContact()" class="mt-8 w-full bg-[#F3F6FF] text-[#1D4ED8] py-4 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-blue-100 transition-colors text-[15px] cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 10.5L21 3m-7.5 7.5L8.25 10.125a.375.375 0 00-.518.172l-1.35 3.037a.375.375 0 00.171.518l3.18 1.414m4.767-4.766L13.875 15.75c-.15.337-.58.423-.85.152l-3.23-3.23c-.27-.27-.184-.7.153-.85l5.242-2.316m-4.767 4.766l-3.327 5.823a.375.375 0 01-.518.172l-3.18-1.414a.375.375 0 01-.172-.518l1.35-3.037z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.875 15.75c0 .69-.56 1.25-1.25 1.25H6.25a1.25 1.25 0 01-1.25-1.25v-3.375c0-.69.56-1.25 1.25-1.25h3.375c.69 0 1.25.56 1.25 1.25v3.375z"></path></svg>
+                Agendar Demostración
+              </button>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- END: Hero Section -->
+
+    <!-- BEGIN: Feature Blocks -->
+    <section class="py-24 space-y-32" data-purpose="features" id="producto">
+      <!-- Block 1: Planificación Inteligente -->
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 grid md:grid-cols-2 gap-16 items-center">
+        <div class="order-2 md:order-1">
+          <div class="bg-clinical-light rounded-4xl p-8 border border-gray-100 shadow-soft">
+            <!-- Calendar UI Mockup -->
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+              <div class="bg-clinical-blue p-4 text-white text-sm font-bold flex justify-between items-center">
+                <span>Octubre 2023</span>
+                <div class="flex gap-2">
+                  <div class="w-4 h-4 bg-white/20 rounded"></div>
+                  <div class="w-4 h-4 bg-white/20 rounded"></div>
+                </div>
+              </div>
+              <div class="p-6 grid grid-cols-7 gap-2 text-center text-[10px] font-medium text-gray-400">
+                <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
+                <div class="h-8 flex items-center justify-center text-gray-800">12</div>
+                <div class="h-8 flex items-center justify-center text-gray-800">13</div>
+                <div class="h-8 flex items-center justify-center bg-clinical-blue text-white rounded-full">14</div>
+                <div class="h-8 flex items-center justify-center text-gray-800">15</div>
+                <div class="h-8 flex items-center justify-center text-gray-800">16</div>
+                <div class="h-8 flex items-center justify-center text-gray-800">17</div>
+                <div class="h-8 flex items-center justify-center text-gray-800">18</div>
+              </div>
+              <div class="px-6 pb-6 space-y-3">
+                <div class="flex items-center justify-between text-xs p-3 bg-clinical-blue/5 border-l-4 border-clinical-blue rounded-r-lg">
+                  <span class="font-bold">Consulta Gral. - 10:30 AM</span>
+                  <span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded">Agendado por IA</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="order-1 md:order-2 space-y-6">
+          <h2 class="text-3xl lg:text-4xl font-bold tracking-tight text-[#0F172A] flex flex-col md:flex-row md:items-center gap-4">
+            <div class="w-14 h-14 rounded-full bg-[#EEF2FF] flex items-center justify-center text-[#1D4ED8] flex-shrink-0">
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </div>
+            <span>Captación y Agendamiento 24/7</span>
+          </h2>
+          <p class="text-lg text-clinical-gray leading-relaxed">
+            Un paciente interesado en tratamientos premium no espera a horario de oficina. Nuestra IA le atiende al instante, resolviendo miedos y agendando la cita directamente en tu calendario.
+          </p>
+          <ul class="space-y-4">
+            <li class="flex items-center gap-4 text-lg font-bold text-clinical-dark"><span class="w-2 h-2 rounded-full bg-clinical-blue"></span> Atención experta y cierre de leads 24/7</li>
+            <li class="flex items-center gap-4 text-lg font-bold text-clinical-dark"><span class="w-2 h-2 rounded-full bg-clinical-blue"></span> Menos cuellos de botella en recepción</li>
+            <li class="flex items-center gap-4 text-lg font-bold text-clinical-dark"><span class="w-2 h-2 rounded-full bg-clinical-blue"></span> Integración total con calendarios de tu sala</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Block 2: Evita el No-Show -->
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 grid md:grid-cols-2 gap-16 items-center">
+        <div class="space-y-6">
+          <h2 class="text-3xl lg:text-4xl font-bold tracking-tight text-[#0F172A] flex flex-col md:flex-row md:items-center gap-4">
+            <div class="w-14 h-14 rounded-full bg-[#EEF2FF] flex items-center justify-center text-[#1D4ED8] flex-shrink-0">
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </div>
+            <span>Compromiso Total y Cero "No-Shows"</span>
+          </h2>
+          <p class="text-lg text-clinical-gray leading-relaxed">
+            Cada silla vacía es una oportunidad perdida de alto ticket. La IA se encarga del seguimiento estratégico, envía recordatorios por WhatsApp y facilita la reprogramación instantánea para que nadie escape del embudo de ventas.
+          </p>
+          <div class="p-4 bg-clinical-light rounded-2xl border border-clinical-blue/10 flex items-center gap-4">
+            <div class="text-3xl font-extrabold text-clinical-blue">45%</div>
+            <div class="text-sm font-medium leading-tight">Aumento promedio en asistencia a consultas de primera valoración.</div>
+          </div>
+        </div>
+        <div>
+          <div class="bg-clinical-light rounded-4xl p-8 border border-gray-100 shadow-soft">
+            <!-- Patient List UI Mockup -->
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+              <table class="w-full text-left">
+                <thead>
+                  <tr class="bg-gray-50 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                    <th class="px-6 py-4">Paciente</th>
+                    <th class="px-6 py-4">Estado</th>
+                    <th class="px-6 py-4">Acción</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                  <tr class="text-sm group">
+                    <td class="px-6 py-4 font-medium">Carlos Méndez</td>
+                    <td class="px-6 py-4"><span class="bg-green-100 text-green-700 px-2.5 py-1 rounded-full text-[10px] font-bold border border-green-200">Confirmada</span></td>
+                    <td class="px-6 py-4">
+                      <button class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-blue-50 group-hover:text-[#1B36D3] transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">visibility</span>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="text-sm group">
+                    <td class="px-6 py-4 font-medium">Lucía Torres</td>
+                    <td class="px-6 py-4"><span class="bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full text-[10px] font-bold border border-amber-200">Reprogramada</span></td>
+                    <td class="px-6 py-4">
+                      <button class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-amber-50 group-hover:text-amber-600 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">edit_calendar</span>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="text-sm group">
+                    <td class="px-6 py-4 font-medium">Andrés Soto</td>
+                    <td class="px-6 py-4"><span class="bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full text-[10px] font-bold border border-blue-200">Llamada IA</span></td>
+                    <td class="px-6 py-4">
+                      <button class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-blue-50 group-hover:text-[#1B36D3] transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">support_agent</span>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Block 3: Anamnesis Previa -->
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 grid md:grid-cols-2 gap-16 items-center" id="beneficios">
+        <div class="order-2 md:order-1">
+          <div class="bg-clinical-light rounded-4xl p-8 border border-gray-100 shadow-soft">
+            <!-- Medical Card Mockup -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm space-y-6">
+              <div class="flex items-center justify-between">
+                <h4 class="font-bold text-clinical-dark">Detalles del Paciente</h4>
+                <span class="text-[10px] text-clinical-gray">ID: #8829-X</span>
+              </div>
+              <div class="space-y-4">
+                <div class="p-3 bg-gray-50 rounded-lg">
+                  <p class="text-[10px] text-gray-400 uppercase font-bold mb-1">Cualificación IA (Triage)</p>
+                  <p class="text-xs text-clinical-dark leading-relaxed">
+                    Paciente presenta gonartrosis severa crónicas en rodilla. Ha probado infiltraciones y su médico indica riesgo quirúrgico. Ideal para tratamiento de células madre mesenquimales o PRP.
+                  </p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="p-3 border border-gray-100 rounded-lg">
+                    <p class="text-[10px] text-gray-400 font-bold uppercase">Evaluación</p>
+                    <p class="text-xs font-bold text-amber-500">Candidato Apto</p>
+                  </div>
+                  <div class="p-3 border border-gray-100 rounded-lg">
+                    <p class="text-[10px] text-gray-400 font-bold uppercase">Interés</p>
+                    <p class="text-xs font-bold">Alternativa Biológica</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="order-1 md:order-2 space-y-6">
+          <h2 class="text-3xl lg:text-4xl font-bold tracking-tight text-[#0F172A] flex flex-col md:flex-row md:items-center gap-4">
+            <div class="w-14 h-14 rounded-full bg-[#EEF2FF] flex items-center justify-center text-[#1D4ED8] flex-shrink-0">
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </div>
+            <span>Cualificación en Piloto Automático</span>
+          </h2>
+          <p class="text-lg text-clinical-gray leading-relaxed">
+            No pierdas tiempo con prospectos no aptos, nuestra IA cualifica por ti. Conversa naturalmente con cada lead, verificando dolencias actuales y tratamientos fallidos previos para asegurarse de que cumplan con el perfil médico ideal antes de entrar a tú consulta.
+          </p>
+          <ul class="space-y-4">
+            <li class="flex items-center gap-3 text-[17px] font-medium text-[#0F172A]">
+              <svg class="w-6 h-6 text-[#1D4ED8]" fill="currentColor" viewBox="0 0 20 20"><path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path></svg>
+              Filtro automatizado pre-consulta
+            </li>
+            <li class="flex items-center gap-3 text-[17px] font-medium text-[#0F172A]">
+              <svg class="w-6 h-6 text-[#1D4ED8]" fill="currentColor" viewBox="0 0 20 20"><path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path></svg>
+              Solo agenda perfiles pre-calificados
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Block 4: SEO Avanzado -->
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 grid md:grid-cols-2 gap-16 items-center" id="seo">
+        <div class="space-y-6">
+          <h2 class="text-3xl lg:text-4xl font-bold tracking-tight text-[#0F172A] flex flex-col md:flex-row md:items-center gap-4">
+            <div class="w-14 h-14 rounded-full bg-[#EEF2FF] flex items-center justify-center text-[#1D4ED8] flex-shrink-0">
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <span>Dominio Total en Buscadores (SEO Avanzado)</span>
+          </h2>
+          <p class="text-lg text-clinical-gray leading-relaxed">
+            No basta con tener una IA; necesitas que tus pacientes premium te encuentren primero. Optimizamos y medimos tu presencia digital con las herramientas más potentes del mercado.
+          </p>
+          <ul class="space-y-6 mt-4">
+            <li class="flex items-start gap-3">
+              <span class="w-2 h-2 bg-[#1b36d3] rounded-full mt-2.5 flex-shrink-0"></span>
+              <div>
+                <p class="text-slate-900 font-bold">Optimización Técnica: <span class="text-slate-600 font-medium">Rastreo exhaustivo para eliminar barreras digitales.</span></p>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-2 h-2 bg-[#1b36d3] rounded-full mt-2.5 flex-shrink-0"></span>
+              <div>
+                <p class="text-slate-900 font-bold">Posicionamiento Estratégico: <span class="text-slate-600 font-medium">Indexación perfecta de tus tratamientos rentables.</span></p>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-2 h-2 bg-[#1b36d3] rounded-full mt-2.5 flex-shrink-0"></span>
+              <div>
+                <p class="text-slate-900 font-bold">Analítica de Rendimiento: <span class="text-slate-600 font-medium">Medición milimétrica del embudo de pacientes.</span></p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!-- Right Content: Floating Composition -->
+        <div class="relative mt-8 md:mt-0 @container">
+          <!-- Base Dashboard Image (Blurred/Partial) -->
+          <div class="w-full aspect-[4/3] rounded-3xl bg-white border border-slate-200 shadow-sm overflow-hidden opacity-40 grayscale-[0.5]">
+            <div class="p-8 space-y-6">
+              <div class="h-8 w-1/3 bg-slate-100 rounded-lg"></div>
+              <div class="grid grid-cols-3 gap-4">
+                <div class="h-24 bg-slate-50 rounded-xl"></div>
+                <div class="h-24 bg-slate-50 rounded-xl"></div>
+                <div class="h-24 bg-slate-50 rounded-xl"></div>
+              </div>
+              <div class="h-64 bg-slate-50 rounded-2xl w-full"></div>
+            </div>
+          </div>
+          <!-- Floating Dashboard Quick View Pop-up -->
+          <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="w-full max-w-[580px] bg-white rounded-[2.5rem] shadow-[0_20px_50px_-12px_rgba(27,54,211,0.15)] border border-slate-100 overflow-hidden animate-in fade-in zoom-in duration-700 flex flex-col">
+              <!-- Dashboard Header -->
+              <div class="px-8 py-6 border-b border-slate-50 flex items-center justify-between">
+                <div>
+                  <p class="text-[#1b36d3] text-[10px] font-bold uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-xs">monitoring</span> Performance Overview
+                  </p>
+                  <h3 class="text-slate-900 text-xl font-extrabold tracking-tight">Organic Traffic</h3>
+                </div>
+                <div class="flex gap-2">
+                  <div class="px-3 py-1.5 bg-slate-50 rounded-lg text-[10px] font-bold text-slate-500 border border-slate-100">Últimos 30 días</div>
+                  <div class="w-8 h-8 bg-[#1b36d3]/5 text-[#1b36d3] rounded-lg flex items-center justify-center cursor-pointer">
+                    <span class="material-symbols-outlined text-lg">more_vert</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Metric Cards Grid -->
+              <div class="p-6 grid grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between aspect-[5/4]">
+                  <div class="flex justify-between items-start">
+                    <span class="material-symbols-outlined text-[#1b36d3] text-xl">visibility</span>
+                    <span class="text-green-500 text-[11px] font-bold">+12.5%</span>
+                  </div>
+                  <div>
+                    <p class="text-slate-400 text-[10px] uppercase font-semibold tracking-wider mb-0.5">Impressions</p>
+                    <p class="text-slate-900 text-2xl font-black tracking-tight">42.5K</p>
+                  </div>
+                </div>
+                <div class="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between aspect-[5/4]">
+                  <div class="flex justify-between items-start">
+                    <span class="material-symbols-outlined text-indigo-500 text-xl">ads_click</span>
+                    <span class="text-green-500 text-[11px] font-bold">+2.1%</span>
+                  </div>
+                  <div>
+                    <p class="text-slate-400 text-[10px] uppercase font-semibold tracking-wider mb-0.5">Avg CTR</p>
+                    <p class="text-slate-900 text-2xl font-black tracking-tight">6.82%</p>
+                  </div>
+                </div>
+                <div class="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between aspect-[5/4]">
+                  <div class="flex justify-between items-start">
+                    <span class="material-symbols-outlined text-emerald-500 text-xl">leaderboard</span>
+                    <span class="text-green-500 text-[11px] font-bold">+1.1</span>
+                  </div>
+                  <div>
+                    <p class="text-slate-400 text-[10px] uppercase font-semibold tracking-wider mb-0.5">Position</p>
+                    <p class="text-slate-900 text-2xl font-black tracking-tight">1.2</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Smooth Chart Area -->
+              <div class="px-6 pb-8 relative">
+                <div class="flex items-center gap-4 mb-4">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-[#1b36d3]"></span>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Clicks</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-slate-300"></span>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Impressions</span>
+                  </div>
+                </div>
+                <div class="w-full h-40 relative">
+                  <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 200" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0,180 C200,180 300,140 600,110 S850,50 1000,20 V200 H0 Z" fill="rgba(27, 54, 211, 0.05)"></path>
+                    <path d="M0,180 C200,180 300,140 600,110 S850,50 1000,20" fill="none" stroke="#CBD5E1" stroke-dasharray="4" stroke-width="2"></path>
+                    <path d="M0,190 C200,190 300,150 600,120 S850,60 1000,30" fill="none" stroke="#1B36D3" stroke-linecap="round" stroke-width="4"></path>
+                    <circle cx="950" cy="45" fill="#1B36D3" r="5" stroke="white" stroke-width="2"></circle>
+                  </svg>
+                  <!-- Chart Tooltip Mockup -->
+                  <div class="absolute right-10 top-2 bg-slate-900 text-white p-3 rounded-xl shadow-xl border border-slate-700 pointer-events-none scale-90">
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1">Tráfico Actual</p>
+                    <div class="flex items-center justify-between gap-4">
+                      <span class="text-[10px] font-bold">1,842 Clicks</span>
+                      <span class="text-[8px] font-bold text-green-400">+14.2%</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex justify-between mt-4">
+                  <span class="text-[9px] font-bold text-slate-300 uppercase">Trimestre Pasado</span>
+                  <span class="text-[9px] font-bold text-slate-300 uppercase">Mes Pasado</span>
+                  <span class="text-[9px] font-bold text-slate-300 uppercase">Ayer</span>
+                  <span class="text-[9px] font-bold text-slate-900 uppercase">Hoy</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- END: Feature Blocks -->
+
+    <!-- BEGIN: Video Demo Section -->
+    <!-- TEMPORARILY HIDDEN AS VIDEO IS NOT READY
+    <section class="py-24 bg-clinical-dark text-white" data-purpose="video-demo">
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center space-y-12">
+        <div class="space-y-4 max-w-2xl mx-auto">
+          <h2 class="text-4xl font-bold">Mira cómo funciona en tiempo real</h2>
+          <p class="text-clinical-light/60">Observa una interacción real de nuestra IA gestionando una reserva compleja y realizando el pre-diagnóstico.</p>
+        </div>
+        <div class="relative max-w-4xl mx-auto aspect-video rounded-4xl overflow-hidden border border-white/10 shadow-2xl group bg-[#060D2D]">
+          <!- - Video Placeholder Styling - ->
+          <div class="absolute inset-0 bg-gradient-to-tr from-clinical-blue/20 to-transparent flex items-center justify-center">
+            <button class="w-20 h-20 bg-white rounded-full flex items-center justify-center text-clinical-blue shadow-xl group-hover:scale-110 transition-transform cursor-pointer">
+              <svg class="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.333-5.89a1.5 1.5 0 000-2.538L6.3 2.841z"></path></svg>
+            </button>
+          </div>
+          <div class="absolute bottom-6 left-6 right-6 flex items-center gap-4 bg-black/40 backdrop-blur-md p-4 rounded-2xl border border-white/5">
+            <div class="h-1 bg-white/20 flex-grow rounded-full overflow-hidden">
+              <div class="h-full bg-clinical-blue w-1/3"></div>
+            </div>
+            <span class="text-xs font-mono">01:42 / 04:30</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    -->
+    <!-- END: Video Demo Section -->
+
+    <!-- BEGIN: Trust/Security Section -->
+    <section class="py-24 border-b border-gray-100" data-purpose="security" id="seguridad">
+      <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div class="text-center space-y-4">
+            <div class="mx-auto w-16 h-16 bg-clinical-light rounded-full flex items-center justify-center text-clinical-blue">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </div>
+            <h3 class="text-lg font-bold text-clinical-dark">GDPR Compliant</h3>
+            <p class="text-sm text-clinical-gray">Seguridad de datos bajo los estándares europeos más rigurosos.</p>
+          </div>
+          <div class="text-center space-y-4">
+            <div class="mx-auto w-16 h-16 bg-clinical-light rounded-full flex items-center justify-center text-clinical-blue">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+            </div>
+            <h3 class="text-lg font-bold text-clinical-dark">Multi-Canal Nativo</h3>
+            <p class="text-sm text-clinical-gray">La IA interactúa sin fricciones vía WhatsApp, Telegram, Voz telefónica y Slack.</p>
+          </div>
+          <div class="text-center space-y-4">
+            <div class="mx-auto w-16 h-16 bg-clinical-light rounded-full flex items-center justify-center text-clinical-blue">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            </div>
+            <h3 class="text-lg font-bold text-clinical-dark">Sincronización Total CRM</h3>
+            <p class="text-sm text-clinical-gray">Agendamiento y notas sincronizadas directamente en tu calendario y CRM.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- END: Trust/Security Section -->
+
+    <!-- BEGIN: Bottom CTA -->
+    <section class="py-24 relative overflow-hidden" data-purpose="bottom-cta">
+      <div class="max-w-5xl mx-auto px-6 text-center">
+        <div class="bg-clinical-blue rounded-4xl p-12 lg:p-20 text-white relative overflow-hidden shadow-2xl">
+          <!-- Decoration -->
+          <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+          <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-64 h-64 bg-black/10 rounded-full blur-3xl"></div>
+          <div class="relative z-10 space-y-8">
+            <h2 class="text-4xl lg:text-5xl font-bold leading-tight">Pon las tareas administrativas en piloto automático.</h2>
+            <p class="text-lg text-white/80 max-w-2xl mx-auto">
+              Libera a tu personal de las llamadas y los mensajes repetitivos. Deja que la IA se encargue de la logística mientras tu equipo cuida de los pacientes.
+            </p>
+            <div class="pt-4">
+              <button (click)="openContact()" class="bg-white text-clinical-blue px-10 py-5 rounded-full font-extrabold text-lg hover:bg-clinical-light transition-all hover:scale-105 cursor-pointer">
+                Solicitar Demo Personalizada
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- END: Bottom CTA -->
+  </main>
+
+  <!-- BEGIN: Footer -->
+  <footer class="bg-white border-t border-gray-100 py-12" data-purpose="footer">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+      <div class="flex items-center gap-2 opacity-50">
+        <div class="w-6 h-6 bg-clinical-dark rounded flex items-center justify-center">
+          <div class="w-2 h-2 bg-white rounded-full"></div>
+        </div>
+        <span class="font-bold text-lg tracking-tight">AgentMinds</span>
+      </div>
+      <div class="flex items-center gap-8 text-sm font-medium text-clinical-gray">
+        <a routerLink="/privacy" class="hover:text-clinical-blue cursor-pointer text-gray-400">Privacidad</a>
+        <a routerLink="/terms" class="hover:text-clinical-blue cursor-pointer text-gray-400">Términos</a>
+        <button class="hover:text-clinical-blue cursor-pointer bg-transparent border-none p-0 font-medium text-clinical-gray" (click)="openContact()">Contacto</button>
+        <a class="hover:text-clinical-blue cursor-pointer font-bold text-clinical-dark" routerLink="/login">Acceso</a>
+      </div>
+      <div class="text-xs text-clinical-gray font-semibold">
+        © 2026 AgentMinds.io
       </div>
     </div>
-  </div>
-  }
-</main>
-
-<!-- Final CTA Section -->
-<section class="w-full py-24 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800">
-  <div class="max-w-4xl mx-auto px-6 text-center">
-    <h2 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-6">
-      ¿Listo para escalar tu negocio?
-    </h2>
-    <p class="text-lg text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto">
-      Agenda una auditoría gratuita de 15 minutos o escríbenos por WhatsApp para resolver tus dudas.
-    </p>
-    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-      <button
-        (click)="openContact()"
-        class="px-8 py-4 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition-all shadow-lg hover:translate-y-[-2px] min-w-[200px]"
-      >
-        Agendar Auditoría
-      </button>
-      <a
-        href="https://wa.me/34612437017?text=Hola,%20tengo%20una%20duda%20sobre%20AgentMinds"
-        target="_blank"
-        class="px-8 py-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-all min-w-[200px] flex items-center justify-center gap-2"
-      >
-        <span class="material-symbols-outlined text-green-500">chat</span>
-        Hablar por WhatsApp
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- Floating Action Buttons -->
-<div class="fixed bottom-8 left-8 z-50">
-  <button
-    class="w-12 h-12 flex items-center justify-center bg-white/90 dark:bg-dark-800/90 text-slate-800 dark:text-white rounded-full shadow-lg backdrop-blur-md hover:scale-110 transition-transform focus:outline-none border border-slate-200 dark:border-slate-700"
-    (click)="toggleDarkMode()"
-    title="Cambiar Tema"
-  >
-    <span class="material-symbols-outlined block dark:hidden">dark_mode</span>
-    <span class="material-symbols-outlined hidden dark:block">light_mode</span>
-  </button>
+  </footer>
+  <!-- END: Footer -->
 </div>
-
-<div class="fixed bottom-8 right-8 z-50">
-  <a
-    href="https://wa.me/34612437017?text=Hola,%20me%20interesa%20saber%20m%C3%A1s%20sobre%20AgentMinds"
-    target="_blank"
-    class="w-14 h-14 flex items-center justify-center bg-[#25D366] text-white rounded-full shadow-xl hover:scale-110 transition-transform focus:outline-none hover:shadow-green-500/30"
-    title="Hablar por WhatsApp"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="30"
-      height="30"
-      fill="currentColor"
-      viewBox="0 0 16 16"
-    >
-      <path
-        d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"
-      />
-    </svg>
-  </a>
-</div>
-
-<!-- Modal Container -->
-@if (selectedAgent) {
-<app-demo-modal [agent]="selectedAgent" (modalClose)="closeDemo()">
-</app-demo-modal>
-}

@@ -5,7 +5,7 @@ import { FormsModule } from "@angular/forms";
 import { VoiceService } from "../../../shared/services/voice.service";
 import { CartService, CartItem } from "../../../shared/services/cart.service";
 import { UserSessionService } from "../../services/user-session.service";
-import { StateMachineService, StateContext } from "../../services/state-machine.service";
+import { StateMachineService } from "../../services/state-machine.service";
 import { RiderAgentService } from "../../services/rider-agent.service";
 import { AgentOrchestratorService } from "../../../shared/services/agent-orchestrator.service";
 
@@ -99,79 +99,46 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     // 3. Initialize State Machine
     // this.stateMachine.reset(); // REMOVED: Do not reset state on init, persist it for navigation (back/forth)
 
-    // 4. Check for incoming intent from Home Screen (only on fresh navigation, not on back navigation)
+    // 4. Check for incoming intent from Home Screen
     // IMPORTANT: Only process if it's a valid cuisine type from Home screen navigation
     // Ignore residual history.state data from other navigations (like checkout)
     const navState = history.state as any;
-    let isComingFromHomeWithCuisine = false;
-    
+    const validCuisineTypes = ["japanese", "italian", "fast_food", "spanish", "burger", "pizza", "sushi"];
     if (navState && navState.data && navState.data.type) {
       const query = navState.data.type.toLowerCase();
-      
-      // Use mapTextToIntent to check if this is a cuisine-related query
-      // This handles ALL cuisine keywords: pasta, sushi, burger, tapas, etc.
-      const detectedIntent = this.mapTextToIntent(query);
-      const isCuisineIntent = detectedIntent.startsWith("choose_cuisine_");
-      
-      if (isCuisineIntent) {
-        // We have a valid cuisine query from Home screen! Skip welcome and process it.
-        isComingFromHomeWithCuisine = true;
-        
+      // Only process if it's a valid cuisine type (not residual data from checkout/other navigations)
+      if (validCuisineTypes.some(type => query.includes(type))) {
+        // We have a valid query! Skip welcome and process it.
         // Small delay to allow View to init
         setTimeout(() => {
           this.inputText.set(navState.data.type);
           this.sendMessage();
         }, 100);
-        // DON'T return here - we need to skip Fresh Start block below
+        return;
       }
-      // If it's not a cuisine type, ignore it and continue with normal flow
+      // If it's not a valid cuisine type, clear the history.state to avoid confusion
+      // and continue with normal flow (restore or welcome)
     }
 
     // 5. Normal Flow (Welcome OR Restore)
-    // IMPORTANT: Only restore if we're actually navigating back from another route
-    // Don't restore on initial page load or when user is actively using the chat
     const storedMessages = this.stateMachine.memory.messages;
-    const currentState = this.stateMachine.currentState();
-    
-    // Only restore if:
-    // 1. We have stored messages
-    // 2. Current state is NOT the default (meaning user was in a flow)
-    // 3. We're NOT coming from home screen with a query
-    const shouldRestore = storedMessages && 
-                         storedMessages.length > 0 && 
-                         (currentState.context !== "general" || currentState.category !== "default") &&
-                         !navState?.data?.type; // Not coming from home screen with a query
-    
-    if (shouldRestore) {
+    if (storedMessages && storedMessages.length > 0) {
+      // Restore state
+      this.messages.set(storedMessages);
+
+      // Also restore suggestions based on current state node
       const currentNode = this.stateMachine.getCurrentStateNode();
-      
-      // If we have stored messages and a valid current state, restore everything
       if (currentNode) {
-        this.messages.set(storedMessages);
         this.suggestions.set(currentNode.suggestions);
         this.showOptions.set(true);
-        // Don't speak again when restoring - user is just navigating back
-        return; // Exit early, state is restored
       }
-      // If current state is invalid, fall through to fresh start
-    }
-    
-    // 6. Fresh Start (no stored messages or not navigating back)
-    // SKIP THIS if coming from home with cuisine selection
-    if (!isComingFromHomeWithCuisine) {
+    } else {
       // Fresh Start
       const initialState = this.stateMachine.getCurrentStateNode();
 
       if (initialState) {
         // Compose Welcome Message
-        // Only add "Hola {userName}" if we're in the general.default state (initial cuisine selection)
-        // Don't add it if user is coming from onboarding with a cuisine already selected
-        let welcomeText = initialState.response;
-        
-        // Only prepend "Hola {userName}" for the very first general.default state
-        if (initialState.id === "general.default") {
-          welcomeText = `Hola ${userName}. ${initialState.response}`;
-        }
+        const welcomeText = `Hola ${userName}. ${initialState.response}`;
 
         const initialMsg = {
           role: "ai" as const,
@@ -195,11 +162,8 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       }
     }
 
-    // Set voice to female (Maria or Lupe) for consistency
-    // Don't randomize - keep it consistent for better UX
-    const femaleVoices = ["Maria", "Lupe"];
-    const selectedVoice = femaleVoices[0]; // Always use Maria for consistency
-    this.pollyService.setVoice(selectedVoice);
+    // Ensure variety: Randomize voice (likely picking a different one than Booking if luck holds, or at least refreshing)
+    this.pollyService.randomizeVoice();
   }
 
   ngOnDestroy() {
@@ -230,6 +194,7 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
   sendMessage() {
     const text = this.inputText().trim();
     if (!text) return;
+    const lowerText = text.toLowerCase();
 
     // Add User Message
     this.messages.update((msgs) => {
@@ -282,13 +247,12 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       text.toLowerCase().includes("ver pedido")
     ) {
       this.router.navigate(["/rider/checkout"]);
-      return;
     }
 
     // Handle "Seguir pidiendo" - maintain current context and show menu options
     if (
-      text.toLowerCase().includes("seguir pidiendo") ||
-      text.toLowerCase().includes("➕ seguir") ||
+      lowerText.includes("seguir pidiendo") ||
+      lowerText.includes("➕ seguir") ||
       text === "➕ Seguir pidiendo"
     ) {
       const currentState = this.stateMachine.currentState();
@@ -372,8 +336,8 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     // Because we dynamically add "Postres" to suggestions in addToCart,
     // the current state node might not explicitly have it defined in 'on_select'.
     if (
-      text.toLowerCase().includes("postre") ||
-      text.toLowerCase().includes("dessert")
+      lowerText.includes("postre") ||
+      lowerText.includes("dessert")
     ) {
       const currentContext = this.stateMachine.currentState().context;
       // Force transition to dessert for the current cuisine
@@ -412,10 +376,10 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     // --- INTERCEPT: Checkout / Finalize ---
     // If user says "Ya lo tengo todo" or "Finalizar", we skip the 'confirmation' step and go straight to "Delivery or Table?"
     if (
-      text.toLowerCase().includes("ya lo tengo todo") ||
-      text.toLowerCase().includes("tengo todo") ||
-      (text.toLowerCase().includes("finalizar") && !text.toLowerCase().includes("pedido")) ||
-      text.toLowerCase().includes("pagar")
+      lowerText.includes("ya lo tengo todo") ||
+      lowerText.includes("tengo todo") ||
+      (lowerText.includes("finalizar") && !lowerText.includes("pedido")) ||
+      lowerText.includes("pagar")
     ) {
       // Check if cart has items
       const cartItems = this.cartService.cartItems();
@@ -483,7 +447,7 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     } 
     // Special handling for "Seguir pidiendo" if it's in suggestions but not matched above
     else if (
-      (text === "➕ Seguir pidiendo" || text.toLowerCase().includes("seguir pidiendo")) &&
+      (text === "➕ Seguir pidiendo" || lowerText.includes("seguir pidiendo")) &&
       currentNode?.suggestions?.some((s: string) => s.includes("Seguir pidiendo"))
     ) {
       // If "Seguir pidiendo" is in suggestions, try to handle it via state machine
@@ -569,8 +533,8 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     // Fix for Postres if normal transition failed OR if we want to force it
     if (
       !result &&
-      (text.toLowerCase().includes("postre") ||
-        text.toLowerCase().includes("dessert"))
+      (lowerText.includes("postre") ||
+        lowerText.includes("dessert"))
     ) {
       const currentContext = this.stateMachine.currentState().context;
       // Manual Transition
@@ -720,8 +684,6 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
           this.stateMachine.memory.messages = newMsgs;
           return newMsgs;
         });
-        
-        // Always speak the response
         this.speak(responseText);
         // SMART UI: Filter out suggestions that are already shown as cards
         let finalSuggestions = res.suggestions;
@@ -934,63 +896,24 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
         }
       }, 1000);
     } else {
-      // Fallback - we couldn't process the message
-      // Check if the input was mapped to an intent but still failed
-      const mappedIntent = this.mapTextToIntent(text);
-      const isCuisineIntent = mappedIntent.startsWith("choose_cuisine_");
-      
-      // If it's a cuisine intent but we got no result, something went wrong - try manual transition
-      if (isCuisineIntent && !result) {
-        const targetContext = mappedIntent.replace("choose_cuisine_", "") as StateContext;
-        if (targetContext === "spanish" || targetContext === "japanese" || 
-            targetContext === "italian" || targetContext === "fast_food") {
-          // Manual transition as fallback - this should have been handled by state machine
-          this.stateMachine.currentState.set({
-            context: targetContext,
-            category: "default",
-          });
-          const newNode = this.stateMachine.getCurrentStateNode();
-          if (newNode) {
-            // Create result and process it normally through the flow below
-            result = {
-              id: newNode.id,
-              response: newNode.response,
-              suggestions: newNode.suggestions,
-              category: "default",
-              cards: this.getCardsForCuisine(targetContext, "default"),
-            };
-            // Continue to process result in the normal flow below
-          }
-        }
-      }
-      
-      // If we still don't have a result, show error
-      if (!result) {
-        setTimeout(() => {
-          const fallbackText =
-            "Disculpe, no le he escuchado bien. ¿Podría repetírmelo o seleccionar una opción de la pantalla?";
-          this.messages.update((msgs) => [
-            ...msgs,
-            {
-              role: "ai",
-              text: fallbackText,
-              time: new Date().toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              }),
-            },
-          ]);
-          this.speak(fallbackText);
-          // Show current suggestions if available
-          const currentNode = this.stateMachine.getCurrentStateNode();
-          if (currentNode && currentNode.suggestions) {
-            this.suggestions.set(currentNode.suggestions);
-          }
-          this.showOptions.set(true);
-        }, 1000);
-        return; // Exit early if no result
-      }
-      // If we have a result now (from manual fallback), continue to process it in the normal flow below
+      // Fallback
+      setTimeout(() => {
+        const fallbackText =
+          "Disculpe, no le he escuchado bien. ¿Podría repetírmelo o seleccionar una opción de la pantalla?";
+        this.messages.update((msgs) => [
+          ...msgs,
+          {
+            role: "ai",
+            text: fallbackText,
+            time: new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          },
+        ]);
+        this.speak(fallbackText);
+        this.showOptions.set(true);
+      }, 1000);
     }
   }
 
@@ -998,67 +921,40 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
   mapTextToIntent(text: string): string {
     const t = text.toLowerCase();
 
-    // Japanese - Include sushi, ramen, and related words
+    // Japanese
     if (
       t.includes("japon") ||
       t.includes("sushi") ||
       t.includes("ramen") ||
       t.includes("miso") ||
-      t.includes("tempura") ||
-      t.includes("edamame") ||
-      t.includes("gyoza") ||
-      t.includes("sake") ||
-      t.includes("teriyaki") ||
-      t.includes("udon") ||
-      t.includes("sashimi") ||
-      t.includes("nigiri") ||
-      t.includes("maki")
+      t.includes("tempura")
     )
       return "choose_cuisine_japanese";
 
-    // Italian - Include pasta, pizza, risotto, and related words
+    // Italian
     if (
       t.includes("italian") ||
       t.includes("pizza") ||
       t.includes("pasta") ||
       t.includes("espagueti") ||
-      t.includes("spaghetti") ||
       t.includes("macarron") ||
-      t.includes("lasaña") ||
-      t.includes("lasagna") ||
-      t.includes("risotto") ||
-      t.includes("carbonara") ||
-      t.includes("bolognesa") ||
-      t.includes("bolognese") ||
-      t.includes("parmigiana") ||
-      t.includes("ravioli") ||
-      t.includes("gnocchi") ||
-      t.includes("tiramisu") ||
-      t.includes("margherita")
+      t.includes("lasaña")
     )
       return "choose_cuisine_italian";
 
-    // Fast Food - Include burgers, fries, and handle typos
+    // Fast Food
     if (
+      t.includes("fast") ||
       t.includes("fast") ||
       t.includes("hamburg") || // Matches 'hamburguesa', 'hamburg', etc.
       t.includes("burger") ||
-      t.includes("vurger") || // Common typo
-      t.includes("burguer") || // Spanish spelling
       t.includes("perrito") ||
-      t.includes("hot dog") ||
-      t.includes("hotdog") ||
       t.includes("nugget") ||
-      t.includes("patatas") ||
-      t.includes("fries") ||
-      t.includes("papas") ||
-      t.includes("mcdonalds") ||
-      t.includes("kfc") ||
-      t.includes("whopper")
+      t.includes("patatas")
     )
       return "choose_cuisine_fast_food";
 
-    // Spanish - Include tapas, paella, jamón, and related words
+    // Spanish
     if (
       t.includes("españ") ||
       t.includes("tapa") ||
@@ -1066,17 +962,9 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
       t.includes("tortilla") ||
       t.includes("croqueta") ||
       t.includes("jamon") ||
-      t.includes("jamón") ||
       t.includes("bravas") ||
       t.includes("racion") ||
-      t.includes("iberico") ||
-      t.includes("ibérico") ||
-      t.includes("chorizo") ||
-      t.includes("gazpacho") ||
-      t.includes("sangria") ||
-      t.includes("patatas bravas") ||
-      t.includes("pulpo") ||
-      t.includes("gambas")
+      t.includes("iberico")
     )
       return "choose_cuisine_spanish";
 
@@ -1184,13 +1072,6 @@ export class AiMenuChatComponent implements OnInit, OnDestroy {
     this.inputText.set(option);
     this.sendMessage();
   }
-
-  // Handle cuisine chip clicks
-  selectCuisine(cuisine: string) {
-    this.inputText.set(cuisine);
-    this.sendMessage();
-  }
-
 
   // Audio State (Polly-based)
   currentlySpeakingMessageText = signal<string | null>(null);

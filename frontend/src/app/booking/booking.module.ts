@@ -1,17 +1,87 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { VoiceBookingComponent } from './components/voice-booking/voice-booking.component';
+import { NicheSelectorComponent } from './components/niche-selector/niche-selector.component';
+import { UrlInputComponent } from './components/url-input/url-input.component';
+import { TrainingProgressComponent } from './components/training-progress/training-progress.component';
+import { MobileLayoutComponent } from '../abandoned-cart/components/mobile-layout/mobile-layout.component';
+import { KnowledgePreviewComponent } from './components/knowledge-preview/knowledge-preview.component';
+import { WorkflowSimulatorComponent } from './components/workflow-simulator/workflow-simulator.component';
+import { WorkflowBuilderComponent } from './components/workflow-builder/workflow-builder.component';
+import { WorkflowRunnerComponent } from './components/workflow-runner/workflow-runner.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: VoiceBookingComponent,
+    redirectTo: 'select-niche',
+    pathMatch: 'full',
   },
+  {
+    path: 'select-niche',
+    component: NicheSelectorComponent,
+  },
+  {
+    path: ':niche/setup',
+    component: UrlInputComponent,
+  },
+  {
+    path: ':niche/training',
+    component: TrainingProgressComponent,
+  },
+  {
+    path: ':niche/preview',
+    component: KnowledgePreviewComponent,
+  },
+  {
+    path: ':niche/suggested',
+    loadComponent: () =>
+      import('./components/suggested-workflow/suggested-workflow.component').then(
+        (m) => m.SuggestedWorkflowComponent,
+      ),
+  },
+  {
+    path: ':niche/templates',
+    loadComponent: () =>
+      import('./components/template-picker/template-picker.component').then(
+        (m) => m.TemplatePickerComponent,
+      ),
+  },
+  {
+    path: ':niche/builder',
+    component: WorkflowBuilderComponent,
+  },
+  {
+    path: ':niche/chat',
+    component: WorkflowSimulatorComponent,
+  },
+  {
+    path: ':niche/run',
+    component: WorkflowRunnerComponent,
+  },
+  {
+    path: 'voice',
+    component: VoiceBookingComponent,
+  }
 ];
 
 @NgModule({
-  declarations: [VoiceBookingComponent],
-  imports: [CommonModule, RouterModule.forChild(routes)],
+  declarations: [
+    VoiceBookingComponent,
+    NicheSelectorComponent,
+    UrlInputComponent,
+    TrainingProgressComponent,
+    KnowledgePreviewComponent,
+  ],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    RouterModule.forChild(routes),
+    MobileLayoutComponent, // Import standalone component
+    WorkflowSimulatorComponent, // Import standalone component
+    WorkflowBuilderComponent, // Import standalone component
+    WorkflowRunnerComponent, // Import standalone component
+  ],
 })
 export class BookingModule {}

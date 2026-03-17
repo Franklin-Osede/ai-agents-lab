@@ -1,0 +1,55 @@
+<div class="setup-container">
+  <div class="setup-card">
+    <div class="hero-section">
+      <h1 class="title">
+        Convierte tu web en un<br />
+        <span class="gradient-text">Agente de IA</span><br />
+        en 60 segundos
+      </h1>
+      <p class="subtitle">
+        Introduce la URL de tu negocio y observa cómo la IA aprende automáticamente
+      </p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="input-section">
+      <div class="input-wrapper">
+        <input
+          type="url"
+          [value]="url()"
+          (input)="url.set($any($event.target).value)"
+          placeholder="https://tu-negocio.com"
+          class="url-input"
+          [disabled]="isLoading()"
+        />
+        <button
+          type="submit"
+          class="submit-btn"
+          [disabled]="isLoading() || !url()"
+        >
+          @if (isLoading()) {
+            <span class="spinner"></span>
+            Conectando...
+          } @else {
+            <span class="icon">✨</span>
+            Crear Agente
+          }
+        </button>
+      </div>
+
+      @if (error()) {
+        <div class="error-message">{{ error() }}</div>
+      }
+    </form>
+
+    <div class="demo-section">
+      <button
+        type="button"
+        (click)="useDemoData()"
+        class="demo-btn"
+        [disabled]="isLoading()"
+      >
+        Probar con datos ficticios
+      </button>
+    </div>
+  </div>
+</div>

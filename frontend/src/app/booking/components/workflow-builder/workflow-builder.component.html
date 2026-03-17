@@ -1,0 +1,649 @@
+<header class="flex-none bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200/50 shadow-sm">
+ <div class="flex items-center justify-between px-4 h-16">
+ <button (click)="goBack()" class="flex items-center justify-center size-10 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors btn-press">
+ <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+ </button>
+ <div class="flex flex-col items-center">
+ <h1 class="text-sm font-bold text-slate-900 tracking-tight">Crea tu Flujo de Agentes</h1>
+ <div class="flex items-center gap-1.5">
+ @if (isSaving()) {
+    <span class="size-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+    <p class="text-[11px] text-blue-500 font-medium">Guardando...</p>
+ } @else if (lastSaved()) {
+    <span class="size-1.5 rounded-full bg-green-500"></span>
+    <p class="text-[11px] text-slate-500 font-medium">Guardado {{ lastSaved() | date:'HH:mm' }}</p>
+ }
+ </div>
+ </div>
+
+
+ <div class="flex items-center gap-2">
+     <button (click)="publishWorkflow()" class="px-5 py-2 bg-brand-gradient hover:bg-brand-gradient-hover text-white text-sm font-semibold rounded-full shadow-md shadow-indigo-200 transition-all hover:shadow-lg btn-press flex items-center gap-1.5">
+         <span>{{ isPublishing() ? 'Publicando...' : 'Publicar' }}</span>
+         <span class="material-symbols-outlined text-[16px]">rocket_launch</span>
+     </button>
+ </div>
+ </div>
+ </header>
+
+ <!-- Template Menu Overlay -->
+ @if (isTemplateMenuOpen()) {
+    <div class="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/20 backdrop-blur-sm" 
+         (click)="isTemplateMenuOpen.set(false)" (keydown.enter)="isTemplateMenuOpen.set(false)" tabindex="0" role="button">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm" 
+             (click)="$event.stopPropagation()" (keydown.enter)="$event.stopPropagation()" tabindex="0" role="button">
+            <div class="flex items-center justify-between mb-4 px-1">
+                <h3 class="text-lg font-bold text-slate-800">Elegir Plantilla</h3>
+                <button (click)="isTemplateMenuOpen.set(false)" class="size-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <p class="text-xs text-slate-500 mb-4 px-1">
+                ⚠️ Al cargar una plantilla se reemplazará el flujo actual por completo.
+            </p>
+
+            <div class="flex flex-col gap-2">
+                 @for (tmpl of availableTemplates(); track tmpl.id) {
+                     <button (click)="loadTemplate(tmpl.id)" class="flex items-center gap-3 p-3 rounded-xl border border-slate-100 hover:border-indigo-500/30 hover:bg-indigo-50 transition-all text-left group">
+                         <div class="size-10 shrink-0 rounded-lg bg-white group-hover:bg-white flex items-center justify-center text-indigo-500 shadow-sm border border-slate-100">
+                             <span class="material-symbols-outlined">{{ tmpl.icon }}</span>
+                         </div>
+                         <div>
+                             <p class="text-sm font-bold text-slate-700 group-hover:text-indigo-700">{{ tmpl.label }}</p>
+                             <p class="text-[10px] text-slate-400">Clic para cargar</p>
+                         </div>
+                     </button>
+                 }
+            </div>
+        </div>
+    </div>
+}
+ 
+ <main class="flex-1 overflow-y-auto overflow-x-hidden relative w-full max-w-lg mx-auto pb-40 pt-6">
+ <!-- Main Vertical Line (Root) -->
+ <div class="absolute left-[38px] top-0 bottom-0 w-0.5 bg-slate-200 z-0"></div>
+ 
+ <div class="flex flex-col gap-0 px-4 relative z-10 w-full">
+     
+ <!-- Trigger Node (Static Start) -->
+ <div class="relative group mb-3">
+     <div class="flex items-center gap-4">
+         <div class="shrink-0 z-10 size-12 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-lg ring-4 ring-background-light">
+         <span class="material-symbols-outlined text-[22px]">bolt</span>
+         </div>
+         <div class="flex-1 bg-white rounded-xl p-4 shadow-card border border-slate-200 flex justify-between items-center group-hover:border-primary/30 transition-colors">
+             <div>
+                 <div class="flex items-center gap-2 mb-1">
+                 <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-600 uppercase tracking-wider">Inicio</span>
+                 </div>
+                 <p class="text-slate-900 font-semibold text-sm">Añade los pasos de tu flujo</p>
+             </div>
+         </div>
+     </div>
+ </div>
+
+ <!-- Load Template Button (Below Start Node) -->
+ <div class="mb-6 pl-[54px] pr-4">
+     <button (click)="isTemplateMenuOpen.set(true)" class="w-full flex items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/50 hover:bg-indigo-50 hover:border-indigo-300 text-indigo-600 font-semibold text-sm transition-all group">
+         <span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
+         <span>Cargar una plantilla predefinida</span>
+     </button>
+ </div>
+ 
+ <!-- ROOT LIST RENDER -->
+ <ng-container *ngTemplateOutlet="nodeListTemplate; context: { nodes: nodes(), parentId: null, optionIndex: null }"></ng-container>
+ 
+ <!-- Add To Root End Button -->
+ <div class="flex pl-[14px] h-12 items-center group/insert relative">
+    <div class="absolute left-[38px] top-1/2 -translate-y-1/2 w-8 h-[1px] bg-indigo-500/20 opacity-0 group-hover/insert:opacity-100 transition-opacity"></div>
+    <button (click)="openInsertMenu({ index: nodes().length })" class="size-7 rounded-full bg-white hover:bg-primary hover:text-white text-slate-400 flex items-center justify-center transition-all shadow-sm z-20 border border-slate-200 hover:border-primary btn-press hover:scale-110" title="Añadir paso final">
+    <span class="material-symbols-outlined text-[18px]">add</span>
+    </button>
+ </div>
+ 
+ <!-- End Node -->
+ <div class="relative group mb-12">
+     <div class="flex items-center gap-4">
+     <div class="shrink-0 z-10 size-4 rounded-full bg-slate-300 border-4 border-background-light ml-[14px]"></div>
+     <div class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wide border border-slate-200 shadow-sm">
+         Fin del flujo
+     </div>
+     </div>
+ </div>
+ 
+ </div>
+ </main>
+ 
+ <!-- =============================================== -->
+ <!-- RECURSIVE TEMPLATE DEFINITION                   -->
+ <!-- =============================================== -->
+ <ng-template #nodeListTemplate let-nodes="nodes" let-parentId="parentId" let-optionIndex="optionIndex">
+     <div cdkDropList [cdkDropListData]="nodes" (cdkDropListDropped)="drop($event)" class="flex flex-col w-full">
+         @for (node of nodes; track node.id; let i = $index) {
+             <div cdkDrag [cdkDragData]="node" class="group/drag relative w-full">
+                 
+                 <!-- Drag Custom Preview -->
+                 <div *cdkDragPreview class="bg-white rounded-xl shadow-2xl p-4 border border-indigo-500 w-full max-w-md opacity-90">
+                     <div class="flex items-center gap-3">
+                         <span class="material-symbols-outlined text-indigo-600">drag_indicator</span>
+                         <span class="font-bold text-slate-800">{{ node.label }}</span>
+                     </div>
+                 </div>
+                 
+                 <!-- Drag Placeholder -->
+                 <div *cdkDragPlaceholder class="my-4 h-24 bg-slate-100 border-2 border-dashed border-slate-300 rounded-xl w-full"></div>
+             
+                 <!-- Insert Button (Between Nodes) -->
+                 <div class="flex pl-[14px] h-12 items-center group/insert relative">
+                     <div class="absolute left-[38px] top-1/2 -translate-y-1/2 w-8 h-[1px] bg-indigo-500/20 opacity-0 group-hover/insert:opacity-100 transition-opacity"></div>
+                     <button (click)="openInsertMenu({ index: i, parentNodeId: parentId, optionIndex: optionIndex })" class="size-7 rounded-full bg-white hover:bg-primary hover:text-white text-slate-400 flex items-center justify-center transition-all shadow-sm z-20 border border-slate-200 hover:border-primary btn-press hover:scale-110">
+                     <span class="material-symbols-outlined text-[18px]">add</span>
+                     </button>
+                 </div>
+             
+                 <!-- Node Card -->
+                 <div class="relative group mb-3">
+                     <div class="flex items-start gap-4">
+                         
+                         <!-- Timeline Dot & Drag Handle Wrapper -->
+                         <div class="shrink-0 z-10 mt-8 flex flex-col items-center gap-1">
+                             <div class="size-5 rounded-full bg-white shadow-md border-2 border-indigo-500 ring-4 ring-background-light cursor-grab active:cursor-grabbing hover:scale-110 transition-transform flex items-center justify-center"
+                                  cdkDragHandle
+                                  [class.border-indigo-500]="selectedNodeId() !== node.id"
+                                  [class.bg-brand-gradient]="selectedNodeId() === node.id"
+                                  [class.border-white]="selectedNodeId() === node.id"
+                                  title="Arrastrar para reordenar">
+                                  <!-- Optional tiny dot center for visual grip cue -->
+                                  <div class="size-1.5 rounded-full bg-indigo-500/50"></div>
+                             </div>
+                         </div>
+                         
+                         <!-- Card Content -->
+                         <div class="flex-1 min-w-0 bg-white rounded-xl shadow-card hover:shadow-card-hover transition-all border border-slate-200 overflow-visible relative group-hover:-translate-y-0.5"
+                              [class.ring-2]="selectedNodeId() === node.id"
+                              [class.ring-primary]="selectedNodeId() === node.id"
+                              role="button"
+                              tabindex="0"
+                              (click)="selectNode(node.id)"
+                              (keydown.enter)="selectNode(node.id)"
+                              (keydown.space)="selectNode(node.id)">
+                              
+                              <!-- Header with Drag Icon ALWAYS VISIBLE now -->
+                              <div class="absolute right-4 top-4 text-slate-400 hover:text-indigo-600 cursor-grab active:cursor-grabbing p-1.5 hover:bg-indigo-50 rounded-md transition-colors" cdkDragHandle title="Arrastrar para reordenar">
+                                  <span class="material-symbols-outlined text-[20px]">drag_indicator</span>
+                              </div>
+                              
+                              <div class="absolute -right-12 top-8 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto">
+                                  <button (click)="deleteNode(node.id); $event.stopPropagation()" class="size-8 rounded-full bg-white shadow-md text-slate-500 hover:text-red-500 flex items-center justify-center hover:bg-red-50 transition-colors" title="Delete">
+                                  <span class="material-symbols-outlined text-[18px]">delete</span>
+                                  </button>
+                              </div>
+              
+                              <div class="flex flex-col">
+                                 <!-- Top Content Area -->
+                                  <div class="flex-1 p-4 min-w-0">
+                                      <div class="flex items-center gap-3 mb-3">
+                                          <div class="size-8 shrink-0 rounded-lg flex items-center justify-center border"
+                                               [class]="'bg-' + getNodeColor(node.type) + '-50 text-' + getNodeColor(node.type) + '-600 border-' + getNodeColor(node.type) + '-100'">
+                                               <span class="material-symbols-outlined text-[20px]">{{ getNodeIcon(node.type) }}</span>
+                                          </div>
+                                          <div class="flex-1">
+                                              <h3 class="text-sm font-bold text-slate-800">{{ node.label }}</h3>
+                                              <p class="text-[10px] text-slate-400 font-medium">{{ node.type }}</p>
+                                          </div>
+                                      </div>
+                  
+                                      <!-- Logic for specific inputs -->
+                                      @if (node.type === 'voicenote') {
+                                          <div class="flex flex-col gap-3">
+                                              <div class="relative">
+                                                  <label [for]="'ln-script-' + node.id" class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Guión</label>
+                                                  <textarea [id]="'ln-script-' + node.id" [value]="node.data?.text || ''" (input)="updateNodeData(node.id, { text: $any($event.target).value })" class="w-full text-xs text-slate-600 leading-relaxed bg-slate-50 border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-shadow resize-none p-2.5" rows="2" placeholder="Escribe el guión..."></textarea>
+                                              </div>
+                                              <div>
+                                                  <span class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Voz</span>
+                                                  <div class="relative">
+                                                      <select [value]="node.data?.voiceId || ''" 
+                                                              (change)="updateNodeData(node.id, { voiceId: $any($event.target).value })"
+                                                              class="w-full text-xs bg-slate-50 border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary p-2 appearance-none cursor-pointer">
+                                                          <option value="" disabled selected>Seleccionar voz...</option>
+                                                          @for (voice of availableVoices; track voice.id) {
+                                                              <option [value]="voice.id">
+                                                                  {{ voice.name }} {{ voice.gender === 'female' ? '👩' : '👨' }} {{ voice.type === 'neural' ? '✨' : '' }}
+                                                              </option>
+                                                          }
+                                                      </select>
+                                                      <div class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                                          <span class="material-symbols-outlined text-[18px]">expand_more</span>
+                                                      </div>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      }
+        
+                                      @if (node.type === 'message') {
+                                         <div class="relative">
+                                             <label [for]="'msg-text-' + node.id" class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Mensaje de Texto</label>
+                                             <textarea [id]="'msg-text-' + node.id" [value]="node.data?.text || ''" (input)="updateNodeData(node.id, { text: $any($event.target).value })" class="w-full text-xs text-slate-600 leading-relaxed bg-slate-50 border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-shadow resize-none p-2.5" rows="2" placeholder="Escribe el mensaje que enviará el agente..."></textarea>
+                                         </div>
+                                     }
+                                      
+                                      @if (node.type === 'userresponse') {
+                                           <div class="mt-3 flex flex-col gap-4">
+                                              <p class="block text-[10px] uppercase font-bold text-slate-400">Añadir opciones</p>
+                                              
+                                              <!-- Loop through Options (Chips) -->
+                                              @for (chip of node.data?.chips || []; track $index) {
+                                                  <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                                                     <!-- Option Header/Input -->
+                                                      <div class="flex items-center gap-2 mb-3">
+                                                          <!-- Toggle Collapse Button -->
+                                                          <button (click)="toggleChipCollapse(node.id, $index)" class="size-6 rounded-md hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors">
+                                                              <span class="material-symbols-outlined text-[18px] transition-transform duration-200" [class.-rotate-90]="chip.isCollapsed">expand_more</span>
+                                                          </button>
+                                                          
+                                                          <div class="flex-1 flex items-center justify-between p-2 bg-white rounded-lg border border-slate-200 focus-within:border-pink-500 focus-within:ring-1 focus-within:ring-pink-200 transition-all">
+                                                              <input [attr.aria-label]="'Opción ' + ($index + 1)" [value]="chip.text" (input)="updateChip(node.id, $index, $any($event.target).value)" class="border-none bg-transparent p-0 text-xs font-bold text-slate-700 w-full focus:ring-0 placeholder:text-slate-300" type="text" placeholder="Opción"/>
+                                                          </div>
+                                                          <button (click)="removeChipFromNode(node.id, $index)" class="size-7 rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 flex items-center justify-center">
+                                                              <span class="material-symbols-outlined text-[16px]">close</span>
+                                                          </button>
+                                                      </div>
+                                                      
+                                                      <!-- NESTED BRANCH -->
+                                                      @if (!chip.isCollapsed) {
+                                                          <div class="pl-2 border-l-2 border-dashed border-slate-200 ml-1 relative">
+                                                              <ng-container *ngTemplateOutlet="nodeListTemplate; context: { nodes: chip.nextSteps || [], parentId: node.id, optionIndex: $index }"></ng-container>
+                                                              
+                                                              <!-- Add button for this branch -->
+                                                              <div class="flex pl-[14px] h-12 items-center relative z-20">
+                                                                  <div class="absolute left-[38px] top-1/2 -translate-y-1/2 w-8 h-[1px] bg-indigo-500/20 opacity-50"></div>
+                                                                  <button (click)="openInsertMenu({ index: (chip.nextSteps ? chip.nextSteps.length : 0), parentNodeId: node.id, optionIndex: $index })" class="rounded-full bg-white hover:bg-indigo-50 border border-slate-200 hover:border-primary text-slate-400 hover:text-primary flex items-center gap-2 px-3 py-1.5 transition-all shadow-sm text-[10px] font-bold uppercase tracking-wide cursor-pointer z-30">
+                                                                     <span class="material-symbols-outlined text-[14px]">add</span>
+                                                                     Paso
+                                                                  </button>
+                                                              </div>
+                                                              
+                                                              <!-- Visual Merge Line -->
+                                                              <div class="absolute bottom-4 left-[-2px] w-4 h-4 rounded-bl-xl border-l-2 border-b-2 border-dashed border-slate-200/50"></div>
+                                                          </div>
+                                                      } @else {
+                                                         <div class="pl-4 text-[10px] text-slate-400 italic">
+                                                             {{ (chip.nextSteps?.length || 0) }} pasos ocultos...
+                                                         </div>
+                                                      }
+                                                  </div>
+                                              }
+                                              
+                                              <!-- Placeholder Input for New Option -->
+                                              <div class="relative group cursor-text">
+                                                 <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors">
+                                                     <span class="material-symbols-outlined text-[20px]">add_circle</span>
+                                                 </div>
+                                                 <input (keydown.enter)="addChipToNode(node.id, $any($event.target).value); $any($event.target).value = ''" 
+                                                        (blur)="onBlurAddChip(node.id, $event)"
+                                                        class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-dashed border-slate-300 rounded-xl text-xs font-semibold text-slate-600 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all outline-none" 
+                                                        type="text" 
+                                                        placeholder="Añadir nueva opción..." />
+                                              </div>
+                                           </div>
+                                      }
+ 
+                                      @if (node.type === 'form') {
+                                         <div class="flex flex-col gap-3">
+                                             <p class="block text-[10px] uppercase font-bold text-slate-400">Campos del Formulario</p>
+                                             
+                                             <!-- Fields List -->
+                                             @for (field of node.data?.fields || []; track $index) {
+                                                 <div class="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border border-slate-200">
+                                                     <div class="flex-1 space-y-2">
+                                                         <input [value]="field.label" (input)="updateFormField(node.id, $index, { label: $any($event.target).value })" class="w-full bg-white border-slate-200 rounded text-xs font-medium px-2 py-1" placeholder="Etiqueta del campo">
+                                                         <div class="flex gap-2">
+                                                             <select [value]="field.type" (change)="updateFormField(node.id, $index, { type: $any($event.target).value })" class="bg-white border-slate-200 rounded text-[10px] px-2 py-1 w-1/2">
+                                                                 <option value="text">Texto</option>
+                                                                 <option value="email">Email</option>
+                                                                 <option value="phone">Teléfono</option>
+                                                                 <option value="number">Número</option>
+                                                             </select>
+                                                             <label class="flex items-center gap-1 cursor-pointer">
+                                                                 <input type="checkbox" [checked]="field.required" (change)="updateFormField(node.id, $index, { required: $any($event.target).checked })" class="rounded text-primary focus:ring-primary size-3">
+                                                                 <span class="text-[10px] text-slate-500">Obligatorio</span>
+                                                             </label>
+                                                         </div>
+                                                     </div>
+                                                     <button (click)="removeFormField(node.id, $index)" class="text-slate-400 hover:text-red-500 p-1">
+                                                         <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                     </button>
+                                                 </div>
+                                             }
+                                             
+                                             <button (click)="addFormField(node.id)" class="flex items-center justify-center gap-1.5 p-2 rounded-lg border border-dashed border-slate-300 text-slate-500 hover:text-primary hover:border-primary hover:bg-slate-50 transition-all text-xs font-medium">
+                                                 <span class="material-symbols-outlined text-[16px]">add</span> Añadir Campo
+                                             </button>
+                                         </div>
+                                      }
+ 
+                                      @if (node.type === 'ragsearch') {
+                                         <div class="space-y-3">
+                                             <div class="relative">
+                                                 <label [for]="'rag-query-' + node.id" class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Consulta de Búsqueda</label>
+                                                 <textarea [id]="'rag-query-' + node.id" [value]="node.data?.searchQuery || ''" (input)="updateNodeData(node.id, { searchQuery: $any($event.target).value })" class="w-full text-xs text-slate-600 leading-relaxed bg-slate-50 border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-shadow resize-none p-2.5" rows="3" placeholder="Ej: Buscar disponibilidad para el servicio X..."></textarea>
+                                                 <p class="text-[10px] text-slate-400 mt-1 italic">El agente usará esta consulta para buscar en la base de conocimientos.</p>
+                                             </div>
+                                         </div>
+                                      }
+
+                                      @if (node.type === 'professional') {
+                                         <div class="p-3 bg-cyan-50 rounded-xl border border-cyan-100 flex items-center gap-3">
+                                             <div class="bg-cyan-100 p-2 rounded-lg text-cyan-600">
+                                                 <span class="material-symbols-outlined text-[20px]">person_search</span>
+                                             </div>
+                                             <div>
+                                                 <p class="text-xs font-bold text-cyan-800">Selector de Profesional</p>
+                                                 <p class="text-[10px] text-cyan-600">Muestra lista de equipo</p>
+                                             </div>
+                                         </div>
+                                      }
+
+                                      @if (node.type === 'smartlisten') {
+                                           <div class="mt-3 flex flex-col gap-4">
+                                              <!-- PRESETS SECTION -->
+                                              <div class="mb-2">
+                                                  <p class="block text-[10px] uppercase font-bold text-slate-400 mb-2">Añadir Intención Rápida (Presets)</p>
+                                                  <div class="flex flex-wrap gap-2">
+                                                      @for (preset of availableIntents(); track preset.name) {
+                                                          <button (click)="addPresetToNode(node.id, preset)" 
+                                                                  class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-semibold text-slate-600 hover:border-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all shadow-sm whitespace-nowrap shrink-0">
+                                                              <span class="material-symbols-outlined text-[16px]">{{ preset.icon }}</span>
+                                                              {{ preset.name }}
+                                                          </button>
+                                                      }
+                                                  </div>
+                                              </div>
+
+                                              <p class="block text-[10px] uppercase font-bold text-slate-400">Intenciones Activas</p>
+                                              
+                                              <!-- Loop through Intents (similar to Chips) -->
+                                              @for (intent of node.data?.intents || []; track $index) {
+                                                  <div class="p-3 bg-red-50 rounded-xl border border-red-100">
+                                                     <!-- Intent Header/Input -->
+                                                      <div class="flex items-center gap-2 mb-3">
+                                                          <!-- Toggle Collapse Button -->
+                                                          <button (click)="toggleChipCollapse(node.id, $index)" class="size-6 rounded-md hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors">
+                                                              <span class="material-symbols-outlined text-[18px] transition-transform duration-200" [class.-rotate-90]="intent.isCollapsed">expand_more</span>
+                                                          </button>
+                                                          
+                                                          <div class="flex-1 flex items-center justify-between p-2 bg-white rounded-lg border border-red-200 focus-within:border-red-500 focus-within:ring-1 focus-within:ring-red-200 transition-all">
+                                                              <div class="w-full">
+                                                                  <input [attr.aria-label]="'Intención ' + ($index + 1)" 
+                                                                         [value]="intent.intentName" 
+                                                                         (input)="updateChip(node.id, $index, $any($event.target).value)" 
+                                                                         class="border-none bg-transparent p-0 text-xs font-bold text-slate-800 w-full focus:ring-0 placeholder:text-slate-300 mb-1 min-w-0" 
+                                                                         type="text" 
+                                                                         placeholder="Nombre de Intención"/>
+                                                                  <!-- Show Keywords Preview -->
+                                                                   @if(intent.keywords && intent.keywords.length > 0) {
+                                                                      <p class="text-[9px] text-slate-400 truncate">
+                                                                          {{ intent.keywords.join(', ') }}
+                                                                      </p>
+                                                                   }
+                                                              </div>
+                                                          </div>
+                                                          <button (click)="removeChipFromNode(node.id, $index)" class="size-7 rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 flex items-center justify-center">
+                                                              <span class="material-symbols-outlined text-[16px]">close</span>
+                                                          </button>
+                                                      </div>
+                                                      
+                                                      <!-- NESTED BRANCH FOR INTENT -->
+                                                      @if (!intent.isCollapsed) {
+                                                          <div class="pl-2 border-l-2 border-dashed border-red-200 ml-1 relative">
+                                                              <ng-container *ngTemplateOutlet="nodeListTemplate; context: { nodes: intent.nextSteps || [], parentId: node.id, optionIndex: $index }"></ng-container>
+                                                              
+                                                              <!-- Add button for this branch -->
+                                                              <div class="flex pl-[14px] h-12 items-center relative z-20">
+                                                                  <div class="absolute left-[38px] top-1/2 -translate-y-1/2 w-8 h-[1px] bg-red-500/20 opacity-50"></div>
+                                                                  <button (click)="openInsertMenu({ index: (intent.nextSteps ? intent.nextSteps.length : 0), parentNodeId: node.id, optionIndex: $index })" class="rounded-full bg-white hover:bg-red-50 border border-slate-200 hover:border-red-500 text-slate-400 hover:text-red-500 flex items-center gap-2 px-3 py-1.5 transition-all shadow-sm text-[10px] font-bold uppercase tracking-wide cursor-pointer z-30">
+                                                                     <span class="material-symbols-outlined text-[14px]">add</span>
+                                                                     Paso
+                                                                  </button>
+                                                              </div>
+                                                              
+                                                              <!-- Visual Merge Line -->
+                                                              <div class="absolute bottom-4 left-[-2px] w-4 h-4 rounded-bl-xl border-l-2 border-b-2 border-dashed border-red-200/50"></div>
+                                                          </div>
+                                                      } @else {
+                                                         <div class="pl-4 text-[10px] text-slate-400 italic">
+                                                             {{ (intent.nextSteps?.length || 0) }} pasos ocultos...
+                                                         </div>
+                                                      }
+                                                  </div>
+                                              }
+                                              
+                                              <!-- Placeholder Input for New Intent (Custom) -->
+                                              <div class="relative group cursor-text mt-2">
+                                                 <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-red-500 transition-colors">
+                                                     <span class="material-symbols-outlined text-[20px]">psychology_alt</span>
+                                                 </div>
+                                                 <input (keydown.enter)="addChipToNode(node.id, $any($event.target).value); $any($event.target).value = ''" 
+                                                        (blur)="onBlurAddChip(node.id, $event)"
+                                                        class="w-full pl-10 pr-3 py-2.5 bg-red-50/50 border border-dashed border-slate-300 rounded-xl text-xs font-semibold text-slate-600 placeholder:text-slate-400 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 focus:bg-white transition-all outline-none" 
+                                                        type="text" 
+                                                        placeholder="O escribe una personalizada..." />
+                                              </div>
+                                              
+                                              <p class="text-[10px] text-slate-400 mt-1 px-1">
+                                                * Usa los botones arriba para configurar la escucha rápidamente.
+                                              </p>
+                                              </div>
+                                      }
+
+                                      @if (node.type === 'bodymap') {
+                                         <div class="p-3 bg-indigo-50 rounded-xl border border-indigo-100 flex flex-col gap-3">
+                                             <div class="flex items-center gap-2">
+                                                 <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600">
+                                                     <span class="material-symbols-outlined text-[20px]">accessibility</span>
+                                                 </div>
+                                                 <div>
+                                                     <p class="text-xs font-bold text-indigo-800">Mapa Corporal</p>
+                                                     <p class="text-[10px] text-indigo-600">Selección interactiva</p>
+                                                 </div>
+                                             </div>
+                                             
+                                             <div class="bg-white p-2 rounded-lg border border-indigo-100">
+                                                 <p class="block text-[10px] uppercase font-bold text-slate-400 mb-2">Vista Inicial</p>
+                                                 <div class="flex gap-2">
+                                                     <button (click)="updateNodeData(node.id, { bodyView: 'front' })" 
+                                                             [class.bg-indigo-600]="node.data?.bodyView !== 'back'" 
+                                                             [class.text-white]="node.data?.bodyView !== 'back'"
+                                                             [class.bg-slate-100]="node.data?.bodyView === 'back'"
+                                                             class="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-1">
+                                                         Frente
+                                                     </button>
+                                                     <button (click)="updateNodeData(node.id, { bodyView: 'back' })" 
+                                                             [class.bg-indigo-600]="node.data?.bodyView === 'back'" 
+                                                             [class.text-white]="node.data?.bodyView === 'back'"
+                                                             [class.bg-slate-100]="node.data?.bodyView !== 'back'"
+                                                             class="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-1">
+                                                         Espalda
+                                                     </button>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                      }
+
+                                      <!-- PAYMENT NODE -->
+                                      @if (node.type === 'payment') {
+                                         <div class="space-y-3">
+                                             <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                                                 <p class="block text-[10px] uppercase font-bold text-slate-400 mb-2">Configuración de Cobro</p>
+                                                 <div class="grid grid-cols-2 gap-3 mb-3">
+                                                      <div>
+                                                          <label [for]="'amt-' + node.id" class="text-[10px] text-slate-500 mb-1 block">Monto</label>
+                                                          <input [id]="'amt-' + node.id" type="number" [ngModel]="node.data?.amount" (ngModelChange)="updateNodeData(node.id, { amount: $event })" class="w-full px-2 py-1.5 text-xs border border-slate-200 rounded focus:border-indigo-500 outline-none">
+                                                      </div>
+                                                      <div>
+                                                          <label [for]="'curr-' + node.id" class="text-[10px] text-slate-500 mb-1 block">Moneda</label>
+                                                          <select [id]="'curr-' + node.id" [ngModel]="node.data?.currency" (ngModelChange)="updateNodeData(node.id, { currency: $event })" class="w-full px-2 py-1.5 text-xs border border-slate-200 rounded focus:border-indigo-500 outline-none bg-white">
+                                                              <option value="EUR">EUR (€)</option>
+                                                              <option value="USD">USD ($)</option>
+                                                          </select>
+                                                      </div>
+                                                 </div>
+                                                 <div>
+                                                      <label [for]="'conc-' + node.id" class="text-[10px] text-slate-500 mb-1 block">Concepto</label>
+                                                      <input [id]="'conc-' + node.id" type="text" [ngModel]="node.data?.concept" (ngModelChange)="updateNodeData(node.id, { concept: $event })" placeholder="Ej: Reserva Cita" class="w-full px-2 py-1.5 text-xs border border-slate-200 rounded focus:border-indigo-500 outline-none">
+                                                 </div>
+                                             </div>
+                                         </div>
+                                      }
+
+                                      <!-- CONDITIONAL NODE -->
+                                      @if (node.type === 'condition') {
+                                         <div class="space-y-3">
+                                             <!-- Config -->
+                                             <div class="p-3 bg-amber-50 rounded-xl border border-amber-100 space-y-2">
+                                                 <div class="flex items-center gap-2 mb-1">
+                                                     <span class="material-symbols-outlined text-amber-600 text-sm">tune</span>
+                                                     <span class="text-xs font-bold text-amber-800">Regla</span>
+                                                 </div>
+                                                 <div class="grid grid-cols-3 gap-2">
+                                                     <input type="text" [ngModel]="node.data?.variable" (ngModelChange)="updateNodeData(node.id, { variable: $event })" placeholder="{var}" class="w-full h-8 px-2 text-xs border border-amber-200 rounded focus:border-amber-500 outline-none">
+                                                     <select [ngModel]="node.data?.operator" (ngModelChange)="updateNodeData(node.id, { operator: $event })" class="w-full h-8 px-1 text-xs border border-amber-200 rounded focus:border-amber-500 outline-none bg-white">
+                                                         <option value="==">Igual (==)</option>
+                                                         <option value="!=">Distinto (!=)</option>
+                                                         <option value=">">Mayor (&gt;)</option>
+                                                         <option value="<">Menor (&lt;)</option>
+                                                         <option value="contains">Contiene</option>
+                                                     </select>
+                                                     <input type="text" [ngModel]="node.data?.value" (ngModelChange)="updateNodeData(node.id, { value: $event })" placeholder="Valor" class="w-full h-8 px-2 text-xs border border-amber-200 rounded focus:border-amber-500 outline-none">
+                                                 </div>
+                                             </div>
+
+                                             <!-- BRANCHES -->
+                                             <div class="grid grid-cols-2 gap-3">
+                                                 <!-- TRUE BRANCH -->
+                                                 <div class="relative">
+                                                     <div class="text-[10px] font-bold text-green-600 mb-1 flex items-center justify-between">
+                                                        <span>SI ES VERDAD</span>
+                                                        <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                                     </div>
+                                                     <div class="min-h-[60px] border-2 border-dashed border-green-200 rounded-xl bg-green-50/50 p-2 space-y-2">
+                                                         <!-- Nested Nodes -->
+                                                          @for (subNode of node.data?.trueBranch; track subNode.id; let i = $index) {
+                                                             <div cdkDrag [cdkDragData]="subNode" 
+                                                                  (click)="selectNode(subNode.id); $event.stopPropagation()"
+                                                                  (keydown.enter)="selectNode(subNode.id); $event.stopPropagation()"
+                                                                  tabindex="0"
+                                                                  class="bg-white rounded-lg border shadow-sm p-2 flex items-center gap-2 cursor-pointer hover:shadow-md transition-all relative group focus:ring-2 focus:ring-indigo-300 outline-none"
+                                                                  [class.border-indigo-500]="selectedNodeId() === subNode.id"
+                                                                  [class.ring-2]="selectedNodeId() === subNode.id"
+                                                                  [class.ring-indigo-100]="selectedNodeId() === subNode.id">
+                                                                  
+                                                                  <div class="size-6 rounded-md flex items-center justify-center shrink-0"
+                                                                       [style.backgroundColor]="getNodeColor(subNode.type) + '15'"
+                                                                       [style.color]="getNodeColor(subNode.type)">
+                                                                      <span class="material-symbols-outlined text-[14px]">{{ getNodeIcon(subNode.type) }}</span>
+                                                                  </div>
+                                                                  <span class="text-xs font-medium truncate">{{ subNode.label }}</span>
+                                                             </div>
+                                                          }
+                                                          
+                                                          <!-- Add Button -->
+                                                          <button (click)="openInsertMenu({ parentNodeId: node.id, branchType: 'true', index: node.data?.trueBranch?.length || 0 }); $event.stopPropagation()"
+                                                                  class="w-full py-1.5 rounded-lg border border-dashed border-green-300 text-green-500 hover:bg-green-100 transition-colors flex items-center justify-center">
+                                                              <span class="material-symbols-outlined text-[16px]">add</span>
+                                                          </button>
+                                                     </div>
+                                                 </div>
+
+                                                 <!-- FALSE BRANCH -->
+                                                 <div class="relative">
+                                                     <div class="text-[10px] font-bold text-red-500 mb-1 flex items-center justify-between">
+                                                        <span>SI ES FALSO</span>
+                                                        <span class="material-symbols-outlined text-[14px]">cancel</span>
+                                                     </div>
+                                                     <div class="min-h-[60px] border-2 border-dashed border-red-200 rounded-xl bg-red-50/50 p-2 space-y-2">
+                                                          <!-- Nested Nodes -->
+                                                          @for (subNode of node.data?.falseBranch; track subNode.id; let i = $index) {
+                                                             <div cdkDrag [cdkDragData]="subNode" 
+                                                                  (click)="selectNode(subNode.id); $event.stopPropagation()"
+                                                                  (keydown.enter)="selectNode(subNode.id); $event.stopPropagation()"
+                                                                  tabindex="0"
+                                                                  class="bg-white rounded-lg border shadow-sm p-2 flex items-center gap-2 cursor-pointer hover:shadow-md transition-all relative group focus:ring-2 focus:ring-indigo-300 outline-none"
+                                                                  [class.border-indigo-500]="selectedNodeId() === subNode.id"
+                                                                  [class.ring-2]="selectedNodeId() === subNode.id"
+                                                                  [class.ring-indigo-100]="selectedNodeId() === subNode.id">
+                                                                  
+                                                                  <div class="size-6 rounded-md flex items-center justify-center shrink-0"
+                                                                       [style.backgroundColor]="getNodeColor(subNode.type) + '15'"
+                                                                       [style.color]="getNodeColor(subNode.type)">
+                                                                      <span class="material-symbols-outlined text-[14px]">{{ getNodeIcon(subNode.type) }}</span>
+                                                                  </div>
+                                                                  <span class="text-xs font-medium truncate">{{ subNode.label }}</span>
+                                                             </div>
+                                                          }
+                                                          
+                                                          <!-- Add Button -->
+                                                          <button (click)="openInsertMenu({ parentNodeId: node.id, branchType: 'false', index: node.data?.falseBranch?.length || 0 }); $event.stopPropagation()"
+                                                                  class="w-full py-1.5 rounded-lg border border-dashed border-red-300 text-red-500 hover:bg-red-100 transition-colors flex items-center justify-center">
+                                                              <span class="material-symbols-outlined text-[16px]">add</span>
+                                                          </button>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                      }
+         
+                                      <!-- Always visible Actions Footer -->
+                                      <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                                         <span class="text-[10px] text-slate-400 italic">Guardado automático</span>
+                                         <button (click)="deleteNode(node.id); $event.stopPropagation()" class="text-xs text-red-500 font-medium hover:bg-red-50 px-2 py-1 rounded transition-colors flex items-center gap-1">
+                                             <span class="material-symbols-outlined text-[14px]">delete</span> Eliminar
+                                         </button>
+                                      </div>
+              
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          }
+      </div>
+  </ng-template>
+  
+  <!-- Floating Add Button (Mobile/Quick) - Always adds to root end for simplicity, or we hide it for nested mode -->
+  <div class="absolute bottom-8 left-0 right-0 flex justify-center z-50 pointer-events-none">
+      <div class="relative group pointer-events-auto">
+          <div class="absolute inset-0 bg-brand-gradient blur-md opacity-40 group-hover:opacity-60 transition-opacity rounded-full"></div>
+          <button (click)="openInsertMenu({ index: nodes().length })" class="relative flex items-center justify-center gap-2 bg-brand-gradient text-white h-12 px-6 rounded-full shadow-float hover:-translate-y-1 transition-all btn-press">
+          <span class="material-symbols-outlined text-[22px]">add_circle</span>
+          <span class="font-bold text-sm tracking-wide">Nuevo Paso</span>
+          </button>
+      </div>
+  </div>
+  
+  <!-- Simple Insert Menu (Overlay) -->
+  @if (isInsertMenuOpen()) {
+     <div class="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/20 backdrop-blur-sm" 
+          (click)="closeInsertMenu()" (keydown.enter)="closeInsertMenu()" (keydown.space)="closeInsertMenu()" tabindex="0" role="button">
+         <!-- Palette here -->
+         <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm" 
+              (click)="$event.stopPropagation()" (keydown.enter)="$event.stopPropagation()" (keydown.space)="$event.stopPropagation()" tabindex="0" role="button">
+             <h3 class="text-lg font-bold text-slate-800 mb-4 px-1">Añadir componente</h3>
+             <div class="grid grid-cols-2 gap-3">
+                  @for (nodeType of nodeTypes; track nodeType.type) {
+                      <button (click)="addNodeAtIndex(nodeType.type)" class="flex items-center gap-3 p-3 rounded-xl border border-slate-100 hover:border-primary/30 hover:bg-slate-50 transition-all text-left group">
+                          <div class="size-10 shrink-0 rounded-lg bg-slate-50 group-hover:bg-white flex items-center justify-center text-xl shadow-sm">
+                              {{ nodeType.emoji }}
+                          </div>
+                          <div>
+                              <p class="text-xs font-bold text-slate-700 group-hover:text-primary leading-tight">{{ nodeType.label }}</p>
+                          </div>
+                      </button>
+                  }
+             </div>
+         </div>
+     </div>
+ }

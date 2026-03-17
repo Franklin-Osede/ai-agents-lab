@@ -1,7 +1,10 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { HttpClientModule } from "@angular/common/http";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { FormsModule } from "@angular/forms";
+
+// Authentication
+import { AuthModule } from './auth/auth.module';
 
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
@@ -28,36 +31,28 @@ import { AGENT_INITIALIZER_PROVIDER } from "./shared/initializers/agent-initiali
 // Note: Abandoned Cart components are standalone and don't need to be declared here
 // They are imported directly in routes
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    LandingPageComponent,
-    AgentCardComponent,
-
-    MetricsPanelComponent,
-    EntityExtractionComponent,
-    RoleSelectorComponent,
-    LoginComponent,
-    RegisterComponent,
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule,
-    WelcomeChatComponent,
-    RiderAgentModule,
-    SuperAppHomeComponent,
-    DemoModalComponent,
-    ChatInterfaceComponent,
-    ServiceSelectorComponent,
-    CalendarComponent,
-    VoicePlayerComponent,
-    GoogleMapsAutocompleteComponent,
-  ],
-  providers: [
-    AGENT_INITIALIZER_PROVIDER, // Initialize all agents on app startup
-  ],
-  bootstrap: [AppComponent],
-})
+@NgModule({ declarations: [
+        AppComponent,
+        LandingPageComponent,
+        AgentCardComponent,
+        MetricsPanelComponent,
+        EntityExtractionComponent,
+        RoleSelectorComponent,
+        LoginComponent,
+        RegisterComponent,
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        FormsModule,
+        AuthModule,
+        WelcomeChatComponent,
+        DemoModalComponent,
+        ChatInterfaceComponent,
+        ServiceSelectorComponent,
+        CalendarComponent,
+        VoicePlayerComponent,
+        GoogleMapsAutocompleteComponent,
+        AppRoutingModule], providers: [
+        AGENT_INITIALIZER_PROVIDER,
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule {}

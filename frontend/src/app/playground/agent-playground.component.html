@@ -1,0 +1,279 @@
+<div class="bg-brand-bg font-display text-primary-dark min-h-screen flex flex-col overflow-hidden">
+<header class="flex items-center justify-between border-b border-solid border-gray-200 px-6 py-3 bg-white z-50">
+<div class="flex items-center gap-4">
+<div class="size-8 text-primary">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z" fill="currentColor"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<h2 class="text-sm font-bold leading-tight tracking-tight text-primary-dark">AgentsMinds Lab</h2>
+<p class="text-[10px] text-secondary-gray uppercase tracking-widest">Dev Environment v2.4.0</p>
+</div>
+</div>
+<div class="flex flex-1 justify-center">
+<div class="flex items-center gap-6 px-4 py-1 bg-gray-50 rounded-full border border-gray-200">
+<span class="text-xs font-medium text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">precision_manufacturing</span>
+                Customer Support Clone
+            </span>
+<span class="text-xs font-medium text-gray-300">|</span>
+<span class="text-xs font-medium text-secondary-gray">Draft v1.2</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-gray-50 border border-gray-200 text-secondary-gray hover:text-primary transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-gray-50 border border-gray-200 text-secondary-gray hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex min-w-[140px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-primary text-white text-sm font-bold shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 transition-colors">
+<span class="truncate">Deploy to Production</span>
+</button>
+</div>
+</header>
+<main class="flex flex-1 overflow-hidden">
+<section class="w-[380px] border-r border-gray-200 flex flex-col bg-white">
+<div class="p-4 border-b border-gray-200 flex items-center justify-between">
+<h3 class="text-xs font-bold uppercase tracking-wider text-secondary-gray">Configuration</h3>
+<span class="text-[10px] px-2 py-0.5 bg-amber-50 text-amber-600 rounded border border-amber-200 font-medium">Auto-Saving</span>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-6">
+<div class="space-y-3">
+<label for="systemInstructions" class="text-sm font-medium flex items-center gap-2 text-primary-dark">
+<span class="material-symbols-outlined text-sm text-primary">terminal</span>
+                    System Instructions
+                </label>
+<div class="relative group">
+<textarea id="systemInstructions" class="w-full h-64 bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm font-mono focus:ring-1 focus:ring-primary focus:border-primary resize-none placeholder:text-gray-400 text-primary-dark" placeholder="Define the agent's persona, constraints, and knowledge focus...">You are a high-fidelity business clone for 'Lumina Tech Support'. Your goal is to resolve technical issues with empathy and technical precision.
+- Tone: Professional, helpful, slightly futuristic.
+- Constraints: Never mention you are an AI. Only use tools provided in the Toolset.
+- Identity: You are Alex from the Technical Success Team.</textarea>
+<div class="absolute bottom-3 right-3 flex gap-2">
+<button class="p-1.5 bg-white rounded-lg border border-gray-200 text-gray-400 hover:text-primary shadow-sm transition-colors">
+<span class="material-symbols-outlined text-sm">colors_spark</span>
+</button>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<p class="text-xs font-medium text-secondary-gray">Temperature</p>
+<span class="text-xs font-mono text-primary font-bold">0.7</span>
+</div>
+<div class="h-1.5 w-full bg-gray-100 rounded-full overflow-visible relative">
+<div class="absolute h-full w-[70%] bg-primary rounded-full"></div>
+<div class="absolute left-[70%] top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-md cursor-pointer" tabindex="0" (keyup.enter)="null"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<p class="text-xs font-medium text-secondary-gray">Verbosity</p>
+<span class="text-xs font-mono text-primary font-bold">High</span>
+</div>
+<div class="h-1.5 w-full bg-gray-100 rounded-full overflow-visible relative">
+<div class="absolute h-full w-[85%] bg-primary rounded-full"></div>
+<div class="absolute left-[85%] top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-md cursor-pointer" tabindex="0" (keyup.enter)="null"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<p class="text-xs font-medium text-secondary-gray">Reasoning Steps</p>
+<span class="text-xs font-mono text-primary font-bold">Enabled</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-9 h-5 bg-primary rounded-full relative transition-colors duration-200" tabindex="0" (keyup.enter)="null">
+<div class="absolute right-1 top-1 size-3 bg-white rounded-full shadow-sm"></div>
+</button>
+</div>
+</div>
+</div>
+<div class="p-3 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+<p class="text-[10px] text-secondary-gray uppercase font-bold mb-2">Inference Model</p>
+<div class="flex items-center justify-between cursor-pointer" tabindex="0" (keyup.enter)="null">
+<div class="flex items-center gap-2">
+<div class="size-6 bg-indigo-50 text-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-xs">neurology</span>
+</div>
+<span class="text-sm font-semibold text-primary-dark">AM-Brain v4 (Large)</span>
+</div>
+<span class="material-symbols-outlined text-secondary-gray">expand_more</span>
+</div>
+</div>
+</div>
+<div class="p-4 bg-gray-50 border-t border-gray-200">
+<button class="w-full bg-primary text-white rounded-xl py-3 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 transition-all">
+<span class="material-symbols-outlined text-sm">refresh</span>
+                Sync &amp; Apply Prompt
+            </button>
+</div>
+</section>
+<section class="flex-1 bg-brand-bg relative flex flex-col items-center justify-center p-8 overflow-hidden">
+<div class="absolute inset-0 opacity-40 pointer-events-none">
+<div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,#4f46e522_0%,transparent_60%)]"></div>
+</div>
+<div class="mb-6 flex items-center gap-3 relative z-10">
+<span class="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase rounded-full border border-emerald-200">
+<span class="size-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                Simulation Active
+            </span>
+<button class="flex items-center gap-1.5 px-3 py-1 bg-white text-secondary-gray text-[10px] font-bold uppercase rounded-full border border-gray-200 hover:bg-gray-50 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-xs">restart_alt</span>
+                Reset Session
+            </button>
+</div>
+<div class="relative w-[340px] h-[640px] bg-white rounded-[3.5rem] border-[10px] border-primary-dark shadow-2xl overflow-hidden flex flex-col z-10">
+<div class="absolute inset-0 flex items-center justify-center test-mode-watermark">
+                TEST MODE
+            </div>
+<div class="p-4 pt-10 bg-white border-b border-gray-100 flex items-center gap-3 relative z-20">
+<div class="size-10 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">robot_2</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-primary-dark">Alex</h4>
+<p class="text-[10px] text-primary font-medium">Technical Success Team</p>
+</div>
+</div>
+<div class="flex-1 p-4 space-y-4 overflow-y-auto custom-scrollbar relative z-20">
+<div class="flex justify-start">
+<div class="max-w-[85%] bg-gray-100 rounded-2xl rounded-tl-none p-3 text-xs text-primary-dark leading-relaxed">
+                        Hello! I'm Alex from Lumina Tech. How can I assist you with your setup today?
+                    </div>
+</div>
+<div class="flex justify-end">
+<div class="max-w-[85%] bg-primary rounded-2xl rounded-tr-none p-3 text-xs text-white leading-relaxed shadow-sm">
+                        Hey Alex, I'm having trouble connecting my API keys to the sandbox.
+                    </div>
+</div>
+<div class="flex justify-start">
+<div class="max-w-[85%] bg-gray-100 rounded-2xl rounded-tl-none p-3 text-xs text-primary-dark leading-relaxed flex flex-col gap-2">
+<span class="flex items-center gap-1.5 text-primary text-[10px] font-bold uppercase">
+<span class="size-1 bg-primary rounded-full animate-bounce"></span>
+                            Thinking...
+                        </span>
+                        I'll look into that for you. Let me check the connection logs for your account.
+                    </div>
+</div>
+</div>
+<div class="p-4 bg-white border-t border-gray-100 relative z-20">
+<div class="flex items-center gap-2 bg-gray-50 rounded-2xl px-3 py-2 border border-gray-200">
+<input class="bg-transparent border-none text-xs text-primary-dark w-full focus:ring-0 placeholder:text-gray-400" placeholder="Type a message..." type="text"/>
+<button class="size-8 bg-primary rounded-xl flex items-center justify-center text-white shadow-sm hover:bg-indigo-700 transition-colors">
+<span class="material-symbols-outlined text-sm">send</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<section class="w-[420px] border-l border-gray-200 flex flex-col bg-white">
+<div class="p-4 border-b border-gray-200 flex items-center justify-between bg-gray-50">
+<h3 class="text-xs font-bold uppercase tracking-wider text-secondary-gray flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-primary">analytics</span>
+                X-Ray Debugger
+            </h3>
+<div class="flex gap-2">
+<button class="p-1.5 hover:bg-gray-200 rounded text-secondary-gray transition-colors">
+<span class="material-symbols-outlined text-sm">download</span>
+</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar">
+<div class="border-b border-gray-100">
+<div class="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors" tabindex="0" (keyup.enter)="null">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-blue-500">database</span>
+<span class="text-sm font-semibold text-primary-dark">RAG Search Results</span>
+</div>
+<span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-200 font-bold">2 Hits</span>
+</div>
+<div class="px-4 pb-4 space-y-3">
+<div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+<div class="flex justify-between mb-1">
+<span class="text-[10px] text-secondary-gray font-medium">kb_tech_manual.pdf</span>
+<span class="text-[10px] font-mono text-emerald-600 font-bold">Score: 0.89</span>
+</div>
+<p class="text-xs text-secondary-gray line-clamp-2 italic">"...to integrate API keys, ensure you have enabled 'Sandbox Mode' in your developer dashboard settings under section 4.1..."</p>
+</div>
+</div>
+</div>
+<div class="border-b border-gray-100">
+<div class="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors" tabindex="0" (keyup.enter)="null">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-amber-500">psychology</span>
+<span class="text-sm font-semibold text-primary-dark">Chain of Thought</span>
+</div>
+<span class="material-symbols-outlined text-sm text-gray-400">expand_less</span>
+</div>
+<div class="px-4 pb-4 space-y-2">
+<div class="pl-4 border-l-2 border-amber-200 space-y-3">
+<div class="text-xs">
+<span class="text-amber-600 font-bold">1. INTENT:</span>
+<span class="text-secondary-gray"> User is reporting a blocker with API key connection in sandbox mode.</span>
+</div>
+<div class="text-xs">
+<span class="text-amber-600 font-bold">2. SEARCH:</span>
+<span class="text-secondary-gray"> Querying knowledge base for "API key sandbox connection error".</span>
+</div>
+<div class="text-xs">
+<span class="text-amber-600 font-bold">3. ANALYZE:</span>
+<span class="text-secondary-gray"> Found relevant documentation in tech_manual. Triggering ToolCall: `check_user_logs`.</span>
+</div>
+</div>
+</div>
+</div>
+<div>
+<div class="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors" tabindex="0" (keyup.enter)="null">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-emerald-500">construction</span>
+<span class="text-sm font-semibold text-primary-dark">Tool Calls &amp; JSON</span>
+</div>
+<span class="material-symbols-outlined text-sm text-gray-400">expand_more</span>
+</div>
+<div class="px-4 pb-4">
+<div class="bg-primary-dark/95 p-4 rounded-xl border border-primary-dark font-mono text-[10px] text-emerald-400 overflow-x-auto shadow-inner">
+<pre>{{ '{' }}
+  "tool": "get_user_logs",
+  "arguments": {{ '{' }}
+    "user_id": "usr_9422",
+    "filter": "api_errors"
+  {{ '}' }},
+  "status": "SUCCESS"
+{{ '}' }}</pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="h-10 bg-white border-t border-gray-200 px-6 flex items-center justify-between z-50">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="size-2 bg-emerald-500 rounded-full"></span>
+<span class="text-[10px] font-bold text-secondary-gray uppercase tracking-tighter">Connection Stable</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-gray-400">speed</span>
+<span class="text-[10px] font-mono text-secondary-gray font-medium">Latency: 482ms</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<div class="flex flex-col items-end">
+<span class="text-[9px] text-secondary-gray uppercase font-bold">Token Usage</span>
+<span class="text-[10px] font-mono text-primary font-bold">In: 4.2k | Out: 1.1k</span>
+</div>
+<div class="h-6 w-[1px] bg-gray-200"></div>
+<div class="flex flex-col items-end">
+<span class="text-[9px] text-secondary-gray uppercase font-bold">Est. Cost</span>
+<span class="text-[10px] font-mono text-primary-dark font-bold">$0.024</span>
+</div>
+</div>
+<button class="p-1 hover:bg-gray-100 rounded text-gray-400 transition-colors">
+<span class="material-symbols-outlined text-sm">keyboard_command_key</span>
+</button>
+</div>
+</footer>
+</div>

@@ -1,0 +1,64 @@
+
+
+@if (activeNiche; as niche) {
+<div class="matrix-container">
+  <!-- Dynamic Header based on Theme -->
+  <div class="matrix-header" [style.borderColor]="niche.themeColor">
+    <h2 [style.color]="niche.themeColor">{{ niche.displayName }}</h2>
+    <div class="live-badge" [style.color]="niche.themeColor">● LIVE MATRIX</div>
+  </div>
+
+  <!-- Dynamic Grid for Infinite Widgets -->
+  <div class="widget-grid">
+    @for (widget of niche.widgets; track widget.title) {
+    <div class="widget-card">
+      <h4 class="widget-title">{{ widget.title }}</h4>
+      
+      <!-- KPI TYPE -->
+      @if (widget.type === 'kpi') {
+      <div class="widget-content kpi">
+        <span class="icon">{{ widget.icon }}</span>
+        <span class="value" [style.color]="niche.themeColor">
+          {{ widget.data.type === 'currency' ? '€' : '' }}{{ widget.data.value }}
+        </span>
+        <span class="label">{{ widget.data.label }}</span>
+      </div>
+      }
+
+      <!-- LIST TYPE -->
+      @if (widget.type === 'list') {
+      <div class="widget-content list">
+        @for (item of widget.data; track item.text) {
+        <div class="list-item">
+          <span>{{ item.text }}</span>
+          <span class="tag" [class.success]="item.status==='Found'" [class.new]="item.status==='New'">{{ item.status }}</span>
+        </div>
+        }
+        @if (widget.data.length === 0) {
+        <div class="empty">Waiting for data...</div>
+        }
+      </div>
+      }
+
+      <!-- CALENDAR TYPE -->
+      @if (widget.type === 'calendar') {
+      <div class="widget-content calendar">
+        <div class="slots">
+          @for (i of [1,2,3,4,5,6]; track i) {
+          <div class="slot" [class.filled]="i <= widget.data.filled"></div>
+          }
+        </div>
+        <div class="cal-status">Slots filled: {{ widget.data.filled }}/6</div>
+      </div>
+      }
+
+    </div>
+    }
+  </div>
+</div>
+} @else {
+  <div class="waiting-state">
+    <h3>WAITING FOR NICHE DETECTION...</h3>
+    <p>Please start the agent...</p>
+  </div>
+}

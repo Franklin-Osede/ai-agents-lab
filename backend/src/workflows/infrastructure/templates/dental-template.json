@@ -1,0 +1,78 @@
+[
+  {
+    "id": "start-node",
+    "type": "smartlisten",
+    "label": "Asistente Dental",
+    "position": { "x": 100, "y": 100 },
+    "data": {
+      "intents": [
+        {
+          "intentName": "Revisión",
+          "keywords": ["revision", "chequeo", "diente", "muela"],
+          "nextSteps": [
+             {
+                "id": "services-node",
+                "type": "services",
+                "label": "Tratamientos Dentales",
+                "position": { "x": 100, "y": 250 },
+                "data": {
+                    "filterTags": ["dental", "general"]
+                }
+             },
+             {
+                "id": "professional-node",
+                "type": "professional",
+                "label": "Odontólogo",
+                "position": { "x": 100, "y": 400 },
+                "data": {}
+             },
+             {
+                "id": "calendar-node",
+                "type": "calendar",
+                "label": "Cita",
+                "position": { "x": 100, "y": 550 },
+                "data": {}
+             }
+          ]
+        },
+        {
+          "intentName": "Limpieza",
+          "keywords": ["limpieza", "higiene", "sarro"],
+          "nextSteps": [
+            {
+               "id": "hygiene-msg",
+               "type": "message",
+               "label": "Info Limpieza",
+               "position": { "x": 300, "y": 250 },
+               "data": {
+                 "text": "La limpieza dental profunda tiene un coste de 50€. Dura aproximadamente 40 minutos."
+               }
+            },
+            {
+                "id": "calendar-node-hyg",
+                "type": "calendar",
+                "label": "Agendar Limpieza",
+                "position": { "x": 300, "y": 400 },
+                "data": {}
+            }
+          ]
+        },
+        {
+           "intentName": "Urgencia Dolor",
+           "keywords": ["dolor", "sangre", "roto"],
+           "nextSteps": [
+             {
+               "id": "urgency-msg",
+               "type": "message",
+               "label": "Urgencia 24h",
+               "position": { "x": 500, "y": 250 },
+               "data": {
+                 "text": "Para urgencias dentales contacta inmediatamente al 600-111-222."
+               }
+             }
+           ]
+        }
+      ]
+    }
+  }
+]

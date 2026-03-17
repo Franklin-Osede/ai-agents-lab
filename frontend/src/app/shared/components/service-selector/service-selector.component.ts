@@ -7,6 +7,7 @@ export interface Service {
   description: string;
   businessType: string;
   tone?: string;
+  price?: string; // Add price
 }
 
 export interface ServiceCategory {
@@ -63,6 +64,7 @@ export class ServiceSelectorComponent {
           description: "Rehabilitación y masajes terapéuticos",
           businessType: "salud",
           tone: "profesional y motivador",
+          price: "45€",
         },
       ],
     },

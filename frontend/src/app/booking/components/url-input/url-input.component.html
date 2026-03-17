@@ -1,0 +1,140 @@
+<div class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display">
+<!-- Top Navigation -->
+<header class="w-full px-6 lg:px-20 py-5 flex items-center justify-between bg-white/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-50 border-b border-[#f1f0f4] dark:border-white/5">
+<div class="flex items-center gap-3 cursor-pointer" routerLink="/">
+            <img src="assets/agentminds-logo.png" alt="AgentMinds" class="size-8 rounded-lg" />
+<h2 class="text-[#121117] dark:text-white text-xl font-bold leading-tight tracking-tight">AgentsMinds</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-center gap-8">
+<a class="text-[#121117] dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors cursor-pointer">Laboratorio</a>
+<a class="text-[#121117] dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors cursor-pointer">Modelos</a>
+<a class="text-[#121117] dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors cursor-pointer">Seguridad</a>
+<a class="text-[#121117] dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors cursor-pointer">Precios</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden sm:block text-[#121117] dark:text-white text-sm font-semibold px-4 cursor-pointer">Entrar</button>
+<button class="flex min-w-[120px] cursor-pointer items-center justify-center rounded-xl h-10 px-5 bg-primary text-white text-sm font-bold tracking-tight hover:opacity-90 transition-all">
+                Registrarse
+            </button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
+<!-- Abstract Background Decoration -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+<div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-purple-500/5 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
+<div class="max-w-[800px] w-full text-center space-y-8">
+<!-- Headline Section -->
+<div class="space-y-4">
+<h1 class="text-[#121117] dark:text-white tracking-tight text-4xl md:text-6xl font-extrabold leading-tight">
+                    Conecta tu Negocio
+                </h1>
+<p class="text-[#656487] dark:text-gray-400 text-lg md:text-xl font-normal max-w-2xl mx-auto leading-relaxed px-4">
+                    Ingresa la URL de tu sitio web para que nuestra IA comience a <span class="text-primary font-semibold">clonar tu ADN empresarial</span> y crear tus empleados digitales.
+                </p>
+</div>
+<!-- Hero Input Section -->
+<div class="relative w-full max-w-[720px] mx-auto px-4 mt-12">
+<div class="hero-input-focus flex items-center bg-white dark:bg-[#1e1d2d] rounded-2xl h-[72px] p-2 shadow-hero border border-transparent transition-all duration-300">
+<div class="flex items-center pl-4 pr-3 text-gray-400">
+<span class="material-symbols-outlined text-[28px]">link</span>
+</div>
+<input 
+  class="flex-1 bg-transparent border-none focus:ring-0 text-[#121117] dark:text-white text-lg placeholder:text-gray-400 font-medium" 
+  placeholder="https://tu-empresa.com" 
+  type="url"
+  [value]="url()"
+  (input)="url.set($any($event.target).value)"
+  (keyup.enter)="onSubmit()"
+  [disabled]="isLoading()"
+  />
+<button 
+  (click)="onSubmit()"
+  [disabled]="isLoading() || !url()"
+  class="gradient-button hidden md:flex items-center justify-center gap-2 h-full px-8 rounded-xl text-white font-bold text-base transition-transform active:scale-95 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+    @if (isLoading()) {
+      <span class="spinner w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+      <span>Conectando...</span>
+    } @else {
+      <span class="material-symbols-outlined">magic_button</span>
+      <span>Empezar Entrenamiento</span>
+    }
+</button>
+</div>
+
+<!-- Validation Error -->
+@if (error()) {
+    <div class="mt-2 text-center text-rose-500 font-medium text-sm animate-fade-in-up">
+        {{ error() }}
+    </div>
+}
+
+<!-- Mobile Button (Visible only on small screens) -->
+<button 
+  (click)="onSubmit()"
+  [disabled]="isLoading() || !url()"
+  class="gradient-button w-full mt-4 md:hidden flex items-center justify-center gap-2 h-14 rounded-xl text-white font-bold text-base shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+    @if (isLoading()) {
+      <span class="spinner w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+      <span>Conectando...</span>
+    } @else {
+      <span class="material-symbols-outlined">magic_button</span>
+      <span>Empezar Entrenamiento</span>
+    }
+</button>
+
+<!-- Demo Data Link -->
+<div class="mt-4 text-center md:hidden">
+    <button (click)="useDemoData()" class="text-sm text-primary font-medium hover:underline">
+        Usar datos de ejemplo
+    </button>
+</div>
+
+<!-- Social Proof / Trust Indicators -->
+<div class="flex flex-wrap items-center justify-center gap-8 mt-8">
+<div class="flex items-center gap-2 text-sm font-medium text-[#656487] dark:text-gray-400">
+<span class="material-symbols-outlined text-green-500 text-[20px] fill-1">shield</span>
+<span>Escaneo seguro y encriptado</span>
+</div>
+<div class="flex items-center gap-2 text-sm font-medium text-[#656487] dark:text-gray-400">
+<span class="material-symbols-outlined text-primary text-[20px] fill-1">bolt</span>
+<span>Listo en 30-60 segundos</span>
+</div>
+<div class="flex items-center gap-2 text-sm font-medium text-[#656487] dark:text-gray-400">
+<span class="material-symbols-outlined text-purple-500 text-[20px] fill-1">verified_user</span>
+<span>GDPR Compliant</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Featured Section (Visual Hint) -->
+<div class="mt-24 w-full max-w-5xl px-4 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
+<p class="text-center text-xs font-bold uppercase tracking-widest text-gray-400 mb-8">Utilizado por laboratorios líderes</p>
+<div class="flex flex-wrap justify-center items-center gap-12 md:gap-20">
+<div class="h-8 w-32 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" style="mask-image: linear-gradient(to bottom, black, transparent); -webkit-mask-image: linear-gradient(to bottom, black, transparent);"></div>
+<div class="h-8 w-32 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" style="mask-image: linear-gradient(to bottom, black, transparent); -webkit-mask-image: linear-gradient(to bottom, black, transparent);"></div>
+<div class="h-8 w-32 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" style="mask-image: linear-gradient(to bottom, black, transparent); -webkit-mask-image: linear-gradient(to bottom, black, transparent);"></div>
+<div class="h-8 w-32 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" style="mask-image: linear-gradient(to bottom, black, transparent); -webkit-mask-image: linear-gradient(to bottom, black, transparent);"></div>
+</div>
+</div>
+</main>
+<!-- Simple Footer -->
+<footer class="w-full py-10 px-6 border-t border-[#f1f0f4] dark:border-white/5 flex flex-col md:flex-row items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+<div class="flex items-center gap-4 mb-4 md:mb-0">
+<span>© 2024 AgentsMinds Lab</span>
+<span class="hidden md:inline text-gray-300">|</span>
+<a class="hover:text-primary transition-colors cursor-pointer">Privacidad</a>
+<a class="hover:text-primary transition-colors cursor-pointer">Términos</a>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-1.5">
+<div class="size-2 rounded-full bg-green-500 animate-pulse"></div>
+<span class="text-xs font-medium">Sistemas Operativos</span>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">language</span>
+<span class="font-medium">Español</span>
+</div>
+</div>
+</footer>
+</div>

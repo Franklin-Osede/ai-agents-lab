@@ -797,57 +797,6 @@ export const DIALOGUES = {
     },
 
     {
-      id: "italian.starters",
-      response: "Nuestros entrantes clásicos. ¿Cuál te apetece?",
-      suggestions: ["🥖 Bruschetta", "🥩 Carpaccio", "🥗 Caprese", "⬅️ Volver"],
-      on_select: {
-        "🥖 Bruschetta": {
-          context: "italian",
-          category: "added_starter",
-          add_item: {
-            name: "Bruschetta",
-            price: 6.5,
-            image: "assets/food_images/bruschetta.webp",
-            tags: ["italian", "starter"]
-          },
-        },
-        "🥩 Carpaccio": {
-          context: "italian",
-          category: "added_starter",
-          add_item: {
-            name: "Carpaccio",
-            price: 12.0,
-            image: "assets/food_images/carpaccio.webp",
-            tags: ["italian", "starter"]
-          },
-        },
-        "🥗 Caprese": {
-          context: "italian",
-          category: "added_starter",
-          add_item: {
-            name: "Ensalada Caprese",
-            price: 9.5,
-            image: "assets/food_images/caprese.webp",
-            tags: ["italian", "starter"]
-          },
-        },
-        "⬅️ Volver": { context: "italian", category: "default" },
-      },
-    },
-
-    {
-      id: "italian.added_starter",
-      response: "¡Entrante añadido! 🇮🇹 ¿Seguimos con pizza, pasta o algo más?",
-      suggestions: ["🍕 Ver Pizzas", "🍝 Ver Pastas", "🥗 Más Entrantes", "✅ Ya lo tengo todo"],
-      on_select: {
-        "🍕 Ver Pizzas": { context: "italian", category: "menu_pizza" },
-        "🍝 Ver Pastas": { context: "italian", category: "menu_pasta" },
-        "🥗 Más Entrantes": { context: "italian", category: "starters" },
-        "✅ Ya lo tengo todo": { context: "general", category: "confirm_order" },
-      },
-    },
-
-    {
       id: "italian.kids",
       response: "Para niños: pizza infantil o pasta suave. ¿Cuál prefieres?",
       suggestions: ["🍕 Pizza infantil", "🍝 Pasta suave", "⬅️ Volver"],
@@ -1484,11 +1433,10 @@ export const DIALOGUES = {
       id: "spanish.added_main",
       response:
         "¡Excelente elección! 😋 ¿Qué más te apetece?",
-      suggestions: ["🥘 Más tapas", "🍽️ Raciones", "🥤 Bebidas", "🍰 Postres", "➕ Seguir pidiendo", "✅ Ya lo tengo todo"],
+      suggestions: ["🥘 Más tapas", "🍽️ Raciones", "🥤 Bebidas", "🍰 Postres", "✅ Ya lo tengo todo"],
       on_select: {
         "🥘 Más tapas": { context: "spanish", category: "menu_tapas" },
         "🍽️ Raciones": { context: "spanish", category: "menu_raciones" },
-        "➕ Seguir pidiendo": { context: "spanish", category: "menu" },
         "Jamón Ibérico": {
           context: "spanish",
           category: "added_main",
@@ -1650,22 +1598,18 @@ export const DIALOGUES = {
       suggestions: ["🍩 Churros", "🍮 Crema catalana"],
       on_select: {
         "🍩 Churros": {
-          context: "spanish",
-          category: "added_main",
+          context: "general",
+          category: "add_to_order",
           add_item: {
             name: "Churros con chocolate",
-            price: 5.5,
-            image: "assets/food_images/churros.webp",
             tags: ["dessert", "spanish"],
           },
         },
         "🍮 Crema catalana": {
-          context: "spanish",
-          category: "added_main",
+          context: "general",
+          category: "add_to_order",
           add_item: {
             name: "Crema catalana",
-            price: 6.0,
-            image: "assets/food_images/crema_catalana.webp",
             tags: ["dessert", "spanish"],
           },
         },

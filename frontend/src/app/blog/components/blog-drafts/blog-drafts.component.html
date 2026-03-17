@@ -1,0 +1,141 @@
+<div class="flex min-h-screen bg-gray-50 font-sans text-clinical-dark">
+  <!-- Sidebar Navigation -->
+  <aside class="w-72 bg-white border-r border-gray-200 flex flex-col p-6 gap-8 fixed h-full z-20">
+    <a class="flex items-center gap-3 px-2 cursor-pointer hover:opacity-80 transition-opacity" href="/">
+      <div class="size-10 bg-clinical-blue rounded-xl flex items-center justify-center text-white shadow-lg shadow-clinical-blue/20">
+        <span class="material-symbols-outlined text-2xl">neurology</span>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold tracking-tight text-gray-900 leading-none">AgentMinds</h1>
+        <p class="text-[10px] text-gray-500 font-bold mt-1.5 uppercase tracking-widest">Admin Panel</p>
+      </div>
+    </a>
+    
+    <nav class="flex flex-col gap-2">
+      <a [routerLink]="['/blog/admin/new']" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-clinical-blue/10 text-clinical-blue font-bold cursor-pointer">
+        <span class="material-symbols-outlined">article</span>
+        <span>Blog</span>
+      </a>
+      <a class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium cursor-pointer">
+        <span class="material-symbols-outlined">settings</span>
+        <span>Configuración</span>
+      </a>
+      <hr class="border-gray-100 my-2">
+      <a class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-400 opacity-70 hover:opacity-100 hover:bg-gray-50 hover:text-gray-900 transition-all font-medium cursor-pointer text-sm" href="/">
+        <span class="material-symbols-outlined text-base">public</span>
+        <span>Volver a la Web</span>
+      </a>
+    </nav>
+    
+    <div class="mt-auto">
+      <button (click)="logout()" class="w-full flex items-center justify-center gap-2 py-3 bg-red-50 text-red-600 hover:bg-red-100 rounded-2xl text-sm font-bold transition-colors">
+        <span class="material-symbols-outlined text-lg">logout</span>
+        Cerrar Sesión
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 ml-72 p-10 bg-gray-50 min-h-screen">
+    <!-- Header Section -->
+    <header class="flex flex-col gap-6 mb-10 max-w-5xl mx-auto pt-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="flex items-center gap-2 text-sm font-medium text-gray-400 mb-2">
+            <span>Admin</span>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <span>Blog</span>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <span class="text-clinical-blue font-bold">Borradores</span>
+          </div>
+          <h2 class="text-4xl font-extrabold text-gray-900 tracking-tight">Gestión de Contenidos</h2>
+        </div>
+        <button [routerLink]="['/blog/admin/new']" class="flex items-center gap-2 bg-clinical-blue text-white px-8 py-4 rounded-full font-bold text-base hover:bg-blue-800 hover:shadow-lg hover:-translate-y-0.5 transition-all">
+          <span class="material-symbols-outlined">add</span>
+          Nuevo Artículo
+        </button>
+      </div>
+      
+      <div class="flex border-b border-gray-200 gap-2">
+        <button (click)="setTab('drafts')" [class]="currentTab === 'drafts' ? 'px-8 py-4 text-clinical-blue font-bold border-b-4 border-clinical-blue text-base' : 'px-8 py-4 text-gray-500 font-bold border-b-4 border-transparent hover:text-gray-900 transition-colors text-base cursor-pointer'">Borradores @if(currentTab === 'drafts') {<span>({{ posts.length }})</span>}</button>
+        <button (click)="setTab('published')" [class]="currentTab === 'published' ? 'px-8 py-4 text-clinical-blue font-bold border-b-4 border-clinical-blue text-base' : 'px-8 py-4 text-gray-500 font-bold border-b-4 border-transparent hover:text-gray-900 transition-colors text-base cursor-pointer'">Publicados @if(currentTab === 'published') {<span>({{ posts.length }})</span>}</button>
+        <button (click)="setTab('trashed')" [class]="currentTab === 'trashed' ? 'px-8 py-4 text-clinical-blue font-bold border-b-4 border-clinical-blue text-base' : 'px-8 py-4 text-gray-500 font-bold border-b-4 border-transparent hover:text-gray-900 transition-colors text-base cursor-pointer'">Papelera @if(currentTab === 'trashed') {<span>({{ posts.length }})</span>}</button>
+      </div>
+    </header>
+    
+    <!-- Posts List -->
+    <div class="flex flex-col gap-6 max-w-5xl mx-auto pb-12">
+      
+      @if (loading) {
+        <div class="flex justify-center items-center py-20">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-clinical-blue"></div>
+        </div>
+      }
+      
+      @for (post of posts; track post.id) {
+        <div class="bg-white p-6 rounded-[2rem] shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col md:flex-row gap-8 group hover:shadow-xl transition-all duration-300">
+          <div class="w-full md:w-64 h-48 md:h-auto rounded-3xl bg-gray-100 overflow-hidden flex-shrink-0 relative">
+            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&q=80&w=600" alt="Blog cover"/>
+            <div class="absolute top-4 left-4 px-3 py-1.5 backdrop-blur-sm text-[10px] font-bold uppercase tracking-widest rounded-full border shadow-sm"
+                 [ngClass]="{'bg-amber-100/90 text-amber-700 border-amber-200/50': post.status === 'draft', 'bg-green-100/90 text-green-700 border-green-200/50': post.status === 'published', 'bg-red-100/90 text-red-700 border-red-200/50': post.status === 'trashed'}">
+              {{ post.status === 'draft' ? 'Borrador IA' : (post.status === 'published' ? 'Publicado' : 'Papelera') }}
+            </div>
+          </div>
+          
+          <div class="flex flex-col justify-between flex-1 py-2">
+            <div>
+              <h3 class="text-2xl font-extrabold text-gray-900 group-hover:text-clinical-blue transition-colors mb-3 leading-tight">{{ post.title }}</h3>
+              <p class="text-gray-500 line-clamp-2 mb-4 leading-relaxed" [innerHTML]="(post.content | slice:0:150) + '...'"></p>
+              <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 font-medium">
+                @if (post.authorName) {
+                  <span class="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg"><span class="material-symbols-outlined text-base">smart_toy</span> {{ post.authorName }}</span>
+                }
+                <span class="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg"><span class="material-symbols-outlined text-base">schedule</span> {{ post.createdAt | date:'dd MMM yyyy, HH:mm' }}</span>
+              </div>
+            </div>
+            
+            <div class="flex items-center justify-between pt-6 border-t border-gray-100 mt-6">
+              <div class="flex gap-2">
+                @if (currentTab !== 'trashed') {
+                  <button class="p-3 rounded-xl bg-gray-50 text-gray-500 hover:bg-clinical-blue/10 hover:text-clinical-blue transition-all cursor-pointer" title="Editar">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                }
+                <button [routerLink]="['/blog', post.slug]" class="p-3 rounded-xl bg-gray-50 text-gray-500 hover:bg-clinical-blue/10 hover:text-clinical-blue transition-all cursor-pointer" title="Vista previa">
+                  <span class="material-symbols-outlined">visibility</span>
+                </button>
+                @if (currentTab === 'drafts') {
+                  <button class="p-3 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-100 transition-all font-semibold flex items-center gap-1.5 ml-1 cursor-pointer" title="Mejorar con IA para SEO">
+                    <span class="material-symbols-outlined text-base">troubleshoot</span>
+                    <span class="text-xs">Optimizar SEO</span>
+                  </button>
+                }
+                @if (currentTab !== 'trashed') {
+                  <button (click)="moveToTrash(post.id)" class="p-3 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-all ml-2 cursor-pointer" title="Mover a Papelera">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                }
+              </div>
+              @if (currentTab === 'drafts') {
+                <button (click)="publish(post.id)" class="flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-clinical-blue hover:shadow-lg transition-all focus:ring-4 focus:ring-clinical-blue/30 active:scale-95 cursor-pointer">
+                  <span class="material-symbols-outlined text-base">send</span>
+                  Publicar Ahora
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      } @empty {
+        @if (!loading) {
+          <div class="text-center py-24 bg-white rounded-[2rem] border border-dashed border-gray-200 shadow-sm">
+            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span class="material-symbols-outlined text-gray-400 text-4xl">article</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-2 mt-4">Vaya, parece que está vacío</h3>
+            <p class="text-gray-500 max-w-sm mx-auto leading-relaxed">No hay artículos aquí por el momento.</p>
+          </div>
+        }
+      }
+    </div>
+  </main>
+</div>

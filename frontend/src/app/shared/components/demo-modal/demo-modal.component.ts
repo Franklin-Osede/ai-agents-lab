@@ -808,7 +808,7 @@ export class DemoModalComponent implements OnInit, OnDestroy {
           ];
         }
       } else if (newStep === 3) {
-        nextMessage = "¿Cuánto tiempo tienes disponible? (Te mereces más, pero entendemos 😊)";
+        nextMessage = "¿Cuánto tiempo tienes disponible?";
         nextOptions = [
           "⚡ 30-45 minutos (Express)",
           "⏰ 60 minutos (Estándar)",
@@ -3010,10 +3010,69 @@ export class DemoModalComponent implements OnInit, OnDestroy {
   }) {
     this.selectedProfessional = professional.name;
     this.selectedProfessionalData = professional;
+    
+    // 🎤 ASSIGN VOICE BASED ON PROFESSIONAL'S GENDER
+    const gender = this.detectProfessionalGender(professional);
+    const voiceId = this.assignVoiceByGender(gender);
+    
+    console.log(`🎤 Professional selected: ${professional.name}`);
+    console.log(`🎤 Detected gender: ${gender}`);
+    console.log(`🎤 Assigned voice: ${voiceId}`);
+    
+    this.pollyService.setVoice(voiceId);
+    this.voiceService.clearCache();
+    
     // After selecting professional, go to chat
     this.goToStep(1); // Chat step
     // Add welcome message with professional context
     this.addWelcomeMessageWithProfessional();
+  }
+
+  /**
+   * Detect professional's gender based on name and title
+   */
+  private detectProfessionalGender(professional: any): 'male' | 'female' {
+    const name = professional.name.toLowerCase();
+    
+    // Check by title prefix
+    if (name.startsWith('dra.') || name.startsWith('lic. ') && name.includes('ana') || 
+        name.includes('maría') || name.includes('laura') || name.includes('carmen')) {
+      return 'female';
+    }
+    
+    // Female names
+    const femaleNames = ['ana', 'maría', 'laura', 'carmen', 'elena', 'patricia', 
+                         'sofía', 'mia', 'lupe', 'teresa', 'isabel', 'rosa'];
+    if (femaleNames.some(fn => name.includes(fn))) {
+      return 'female';
+    }
+    
+    // Male names
+    const maleNames = ['carlos', 'roberto', 'miguel', 'luis', 'javier', 'fernando', 
+                       'andrés', 'enrique', 'sergio', 'pedro', 'josé', 'juan'];
+    if (maleNames.some(mn => name.includes(mn))) {
+      return 'male';
+    }
+    
+    // Default to female (most service categories are female-dominated)
+    return 'female';
+  }
+
+  /**
+   * Assign voice based on gender with variety
+   */
+  private assignVoiceByGender(gender: 'male' | 'female'): string {
+    const maleVoices = ['Sergio', 'Andres', 'Enrique'];
+    const femaleVoices = ['Lucia', 'Mia', 'Lupe'];
+    
+    // Use random selection for variety
+    if (gender === 'male') {
+      const randomIndex = Math.floor(Math.random() * maleVoices.length);
+      return maleVoices[randomIndex];
+    } else {
+      const randomIndex = Math.floor(Math.random() * femaleVoices.length);
+      return femaleVoices[randomIndex];
+    }
   }
 
   onServiceSelected(service: any) {

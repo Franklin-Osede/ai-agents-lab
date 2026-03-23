@@ -24,6 +24,7 @@ import { GoogleMapsAutocompleteComponent } from "./shared/components/google-maps
 import { WelcomeChatComponent } from "./abandoned-cart/components/welcome-chat/welcome-chat.component";
 import { RiderAgentModule } from "./rider-agent/rider-agent.module";
 import { SuperAppHomeComponent } from "./rider-agent/components/super-app-home/super-app-home.component";
+import { ChatBubbleComponent } from "./shared/components/chat-bubble/chat-bubble.component";
 
 // Agent Orchestrator System
 import { AGENT_INITIALIZER_PROVIDER } from "./shared/initializers/agent-initializer";
@@ -51,6 +52,7 @@ import { AGENT_INITIALIZER_PROVIDER } from "./shared/initializers/agent-initiali
         CalendarComponent,
         VoicePlayerComponent,
         GoogleMapsAutocompleteComponent,
+        ChatBubbleComponent,
         AppRoutingModule], providers: [
         AGENT_INITIALIZER_PROVIDER,
         provideHttpClient(withInterceptorsFromDi()),

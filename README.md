@@ -30,6 +30,27 @@
 
 **AI Agents Lab** orchestrates specialized AI agents to handle complex business automation workflows. The platform encapsulates a **NestJS** microservices backend operating under strict **Domain-Driven Design (DDD)** and **Test-Driven Development (TDD)** paradigms, paired with a modern **Angular** centralized dashboard.
 
+### Ecosystem Mindmap
+
+```mermaid
+mindmap
+  root((AI Agents Lab))
+    Booking Sub-System
+      Intent Classification
+      Entity Extraction
+      Smart Slot Negotiation
+    DM Triage
+      Instagram Integration
+      WhatsApp Direct
+      Telegram Outreach
+    Follow-Up Loop
+      Automated Cron Jobs
+      CRM Tracker
+    Voice & Media
+      D-ID Avatar Videos
+      TTS Audio Synthesis
+```
+
 ## 🚀 Key Highlights
 
 *   **Advanced NLP Parsing**: Entity extraction algorithms (dates, times, locations) powered by OpenAI.
@@ -110,6 +131,29 @@ sequenceDiagram
     Flow-->>User: Booking Confirmation Message
 ```
 
+### Core Entity-Relationship Model
+
+```mermaid
+erDiagram
+    CUSTOMER ||--o{ BOOKING : acts_on
+    CUSTOMER {
+        uuid id PK
+        string phone
+        string email
+    }
+    BOOKING ||--|{ AGENT_SESSION : generates
+    BOOKING {
+        uuid id PK
+        string status
+        datetime target_slot
+        string classification_intent
+    }
+    AGENT_SESSION {
+        uuid session_id
+        string channel_type
+    }
+```
+
 ---
 
 ## 🤖 AI Agents
@@ -119,6 +163,20 @@ The platform includes four standalone AI systems capable of handling precise ope
 ### 1. Booking Agent
 *   **Purpose**: Automated availability resolution and intent classification.
 *   **Features**: Extracting nested entities, intelligent time-slot negotiation.
+
+**Operational State Flow:**
+```mermaid
+stateDiagram-v2
+    [*] --> Listen
+    Listen --> ClassifyIntent : Message received
+    ClassifyIntent --> ExtractData : Intent == BOOKING
+    ExtractData --> ValidateSlot : NLP Entities Parsed
+    ValidateSlot --> ConflictHandling : Schedule Collision
+    ValidateSlot --> Finalize : Open Slot
+    ConflictHandling --> Finalize : Alternate Accepted
+    Finalize --> [*] : Confirmation Sent
+```
+
 
 ### 2. DM Response Agent
 *   **Purpose**: Smart triage and context-aware responses to DMs.

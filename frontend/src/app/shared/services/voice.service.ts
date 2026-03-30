@@ -18,7 +18,7 @@ export class VoiceService {
   // API URL - reusing abandoned cart agent prefix for now as the controller lives there
   // Ideally this would be a shared endpoint
   private apiUrl = `${
-    environment.apiBaseUrl || "http://localhost:3005/api/v1"
+    environment.apiBaseUrl || "http://localhost:3007/api/v1"
   }/agents/voice`;
 
   /**

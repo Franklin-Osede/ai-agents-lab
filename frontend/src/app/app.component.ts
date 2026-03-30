@@ -33,7 +33,7 @@ export class AppComponent implements OnInit {
       url.includes("/abandoned-cart") ||
       url.includes("/rider");
       
-    this.hideNavbar = this.isAbandonedCartRoute || url.includes("/blog/admin") || url.includes("/login");
+    this.hideNavbar = this.isAbandonedCartRoute || url.includes("/blog/admin") || url.includes("/login") || url.includes("/hair-transplant");
 
     // Add/remove class to body for styling
     if (this.isAbandonedCartRoute) {

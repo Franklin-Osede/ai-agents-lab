@@ -15,6 +15,7 @@ import { WelcomeChatComponent } from './abandoned-cart/components/welcome-chat/w
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
   { path: 'about', loadComponent: () => import('./components/about/about.component').then(m => m.AboutComponent) },
+  { path: 'hair-transplant', loadComponent: () => import('./components/hair-transplant-landing/hair-transplant-landing.component').then(m => m.HairTransplantLandingComponent) },
   // Abandoned Cart Routes with Mobile Layout Wrapper
   {
     path: 'abandoned-cart',

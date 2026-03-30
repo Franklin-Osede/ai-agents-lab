@@ -1,31 +1,31 @@
 <!-- The Initial "Want to talk?" White Card Overlay -->
 @if (!isChatActive()) {
-  <div class="fixed bottom-6 right-6 w-[280px] bg-white rounded-3xl shadow-xl p-5 z-50 border border-gray-100 animate-fade-in-up">
+  <div class="fixed bottom-6 right-6 w-[280px] bg-white rounded-3xl shadow-xl p-5 z-50 border border-gray-100 animate-fade-in-up hover:scale-105 transition-transform cursor-pointer">
     <div class="flex flex-col gap-4">
       <!-- Top section: Icon and Text -->
       <div class="flex items-center gap-3">
         <!-- Magic Star Icon (Circle background) -->
-        <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0">
+        <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 2L12.3 8.3L19 9L13.8 13.5L15.3 20L10 16.5L4.7 20L6.2 13.5L1 9L7.7 8.3L10 2Z" fill="transparent" stroke="#8C8C8C" stroke-width="2" stroke-linejoin="round"/>
-            <circle cx="6" cy="18" r="1.5" fill="#8C8C8C"/>
-            <path d="M19 4V8M17 6H21" stroke="#8C8C8C" stroke-width="2" stroke-linecap="round"/>
+            <path d="M10 2L12.3 8.3L19 9L13.8 13.5L15.3 20L10 16.5L4.7 20L6.2 13.5L1 9L7.7 8.3L10 2Z" fill="transparent" stroke="#094cb2" stroke-width="2" stroke-linejoin="round"/>
+            <circle cx="6" cy="18" r="1.5" fill="#094cb2"/>
+            <path d="M19 4V8M17 6H21" stroke="#094cb2" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </div>
         <p class="text-[#202020] text-[15px] font-medium leading-tight">
-          ¿Quieres hablar con nuestro asistente?
+          ¿Dudas sobre nuestros servicios?
         </p>
       </div>
       
       <!-- Bottom section: Blue Brand Button -->
       <button 
         (click)="startChat()"
-        class="w-full bg-[#1e40af] hover:bg-[#1e3a8a] text-white font-medium text-[15px] py-3 px-4 rounded-full flex items-center justify-center gap-2 transition-colors">
+        class="w-full bg-[#094cb2] hover:bg-[#183ce3] text-white font-medium text-[15px] py-3 px-4 rounded-full flex items-center justify-center gap-2 transition-colors">
         <!-- Microphone Icon -->
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2ZM19 11C19 14.87 15.87 18 12 18C8.13 18 5 14.87 5 11H3C3 15.53 6.39 19.28 10.84 19.89V23H13.16V19.89C17.61 19.28 21 15.53 21 11H19Z"/>
         </svg>
-        Hablar ahora
+        Asistente Virtual
       </button>
     </div>
   </div>
@@ -33,15 +33,14 @@
 
 <!-- Actual Chat Window -->
 @if (isChatActive()) {
-  <!-- Optional distinct overlay / shadow drop for mobile or desktop -->
-  <div class="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 w-full sm:w-[400px] h-[48vh] sm:h-[32rem] bg-white sm:rounded-[2rem] rounded-t-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 flex flex-col z-[100] animate-fade-in-up overflow-hidden">
+  <div class="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 w-full sm:w-[420px] max-h-[80vh] h-auto sm:max-h-none sm:h-[36rem] bg-white sm:rounded-[2rem] rounded-t-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 flex flex-col z-[100] animate-fade-in-up overflow-hidden">
     <!-- Header -->
-    <div class="bg-[#183ce3] border-b border-[#183ce3] p-4 flex items-center justify-between shadow-md z-10 shrink-0">
+    <div class="bg-[#1b1c1d] border-b border-gray-800 p-4 flex items-center justify-between shadow-md z-10 shrink-0">
       <div class="flex items-center gap-3">
         <div class="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_5px_rgba(74,222,128,0.5)]"></div>
         <span class="font-semibold text-white text-[15px]">Asistente Virtual</span>
       </div>
-      <button (click)="closeChat()" class="text-white/80 hover:text-white p-1 rounded-full hover:bg-white/15 transition-colors">
+      <button (click)="closeChat()" class="text-white/80 hover:text-white p-1 rounded-full hover:bg-white/15 transition-colors cursor-pointer">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
@@ -49,20 +48,56 @@
     </div>
 
     <!-- Messages Area -->
-    <div id="chat-messages-container" class="flex-1 overflow-y-auto p-5 pb-10 bg-gray-50 flex flex-col gap-5">
-      @for (msg of messages(); track $index) {
+    <div id="chat-messages-container" class="flex-1 overflow-y-auto p-5 pb-10 bg-[#faf9fa] flex flex-col gap-6">
+      @for (msg of messages(); track msg.id) {
         @if (msg.role === 'assistant') {
-          <div class="flex gap-3">
-            <div class="w-10 h-10 rounded-full bg-[#183ce3] text-white flex items-center justify-center flex-shrink-0 text-sm font-bold shadow-sm">
-              AV
+          <div class="flex gap-3 w-full animate-fade-in-up">
+            <div class="w-10 h-10 rounded-full bg-[#094cb2] flex items-center justify-center flex-shrink-0 shadow-sm mt-1 overflow-hidden border border-gray-200">
+               <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2.5&w=100&h=100&q=80" alt="Asistente Virtual" class="w-full h-full object-cover object-top">
             </div>
-            <div class="bg-white p-4 rounded-2xl rounded-tl-none border border-gray-100 shadow-sm text-gray-800 text-[15px] leading-relaxed">
-              {{ msg.content }}
+            
+            <div class="flex flex-col gap-2 w-full max-w-[85%]">
+              <!-- WhatsApp-style Audio Note Representation -->
+              <div class="bg-white p-3 rounded-2xl rounded-tl-none border border-gray-100 shadow-sm flex items-center gap-3 w-[260px] sm:w-[300px]">
+                 <button class="w-9 h-9 rounded-full flex items-center justify-center text-white shrink-0 shadow-sm transition-transform active:scale-95" [ngClass]="msg.isPlaying ? 'bg-[#183ce3]' : 'bg-[#094cb2]'">
+                    <span class="material-symbols-outlined text-[20px] {{ !msg.isPlaying ? 'ml-0.5' : '' }}">
+                       {{ msg.isPlaying ? 'pause' : 'play_arrow' }}
+                    </span>
+                 </button>
+                 
+                 <!-- Fake Waveform / Progress Line -->
+                 <div class="flex-1 flex items-center gap-3 px-1">
+                    <div class="relative w-full h-[3px] bg-slate-200 mt-[1px] rounded-full">
+                       <div class="absolute top-0 left-0 h-full bg-[#094cb2] rounded-full transition-all duration-300 ease-linear" [style.width.%]="msg.progressPercent || 0"></div>
+                       <div class="absolute top-1/2 w-2.5 h-2.5 bg-[#094cb2] rounded-full shadow-sm -translate-y-1/2 -ml-1 transition-all duration-300 ease-linear" [style.left.%]="msg.progressPercent || 0"></div>
+                    </div>
+                    <!-- Dynamic Time -->
+                    <span class="text-[10px] font-bold text-slate-400 shrink-0 min-w-[32px] text-right tabular-nums">
+                       {{ msg.isPlaying ? msg.currentTime : (msg.progressPercent === 100 ? msg.totalTime || msg.currentTime : (msg.totalTime || '0:00')) }}
+                    </span>
+                 </div>
+              </div>
+
+              <!-- Transcript Toggle & Content -->
+              <div class="flex flex-col">
+                <button (click)="toggleTranscript(msg.id)" class="text-[12px] font-semibold text-[#656487] hover:text-[#094cb2] flex items-center gap-1 ml-1 transition-colors self-start cursor-pointer">
+                   <span class="material-symbols-outlined text-[16px]">
+                     {{ msg.showTranscript ? 'expand_less' : 'expand_more' }}
+                   </span>
+                   {{ msg.showTranscript ? 'Ocultar texto' : 'Ver transcripción web' }}
+                </button>
+                
+                @if (msg.showTranscript) {
+                  <div class="mt-2 bg-blue-50/60 p-3.5 rounded-xl border border-blue-100 text-gray-700 text-[14px] leading-relaxed animate-fade-in-up">
+                    {{ msg.content }}
+                  </div>
+                }
+              </div>
             </div>
           </div>
         } @else {
           <!-- User message -->
-          <div class="flex gap-3 self-end flex-row-reverse max-w-[85%]">
+          <div class="flex gap-3 self-end flex-row-reverse max-w-[85%] animate-fade-in-right">
             <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center flex-shrink-0 text-sm font-bold shadow-sm">
               Tú
             </div>
@@ -72,49 +107,50 @@
           </div>
         }
       }
+      
       <!-- Inline Chips Flow -->
       @if (showChips()) {
         <div class="flex flex-wrap gap-2.5 animate-fade-in-up mt-2">
           @if (currentChipView() === 'main') {
-            @if (!clickedChips().has('Sobre nosotros')) {
-              <button (click)="handleChipClick('Sobre nosotros')" class="bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm">
-                Sobre nosotros
+            @if (!clickedChips().has('Sobre la tecnología')) {
+              <button (click)="handleChipClick('Sobre la tecnología')" class="bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2 rounded-full hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-colors shadow-sm cursor-pointer">
+                Sobre la tecnología
               </button>
             }
-            @if (!clickedChips().has('Nuestros servicios')) {
-              <button (click)="handleChipClick('Nuestros servicios')" class="bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm">
-                Nuestros servicios
+            @if (!clickedChips().has('Filtrado automático')) {
+              <button (click)="handleChipClick('Filtrado automático')" class="bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2 rounded-full hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-colors shadow-sm cursor-pointer">
+                Filtrado automático
               </button>
             }
-            @if (!clickedChips().has('❓ Preguntas Frecuentes') && !clickedChips().has('¿Cómo funciona su servicio?') && !clickedChips().has('¿Cuánto tarda la instalación?') && !clickedChips().has('¿Cuánto tardaré en ver resultados?')) {
-              <button (click)="handleChipClick('❓ Preguntas Frecuentes')" class="bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm">
-                ❓ Preguntas Frecuentes
+            @if (!clickedChips().has('❓ Dudas Operativas') && !clickedChips().has('¿Cómo pre-evalúan al paciente?') && !clickedChips().has('¿Cómo se adapta a mi agenda?') && !clickedChips().has('¿Qué retorno (ROI) puedo esperar?')) {
+              <button (click)="handleChipClick('❓ Dudas Operativas')" class="bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2 rounded-full hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-colors shadow-sm cursor-pointer">
+                ❓ Dudas Operativas
               </button>
             }
-            <button (click)="handleChipClick('📅 Agendar cita')" class="w-full bg-[#1e40af] border border-[#1e40af] text-white text-[14px] font-semibold px-4 py-3 rounded-full hover:bg-[#1e3a8a] transition-all shadow-md flex items-center justify-center gap-1.5 mt-2 animate-bounce">
-              📅 Agendar cita ahora
+            <button (click)="handleChipClick('📅 Auditar mi estrategia (Gratis)')" class="w-full bg-[#094cb2] border border-[#094cb2] text-white text-[14px] font-semibold px-4 py-3 rounded-full hover:bg-[#183ce3] cursor-pointer transition-colors shadow-md flex items-center justify-center gap-1.5 mt-2 animate-bounce">
+              📅 Auditar mi estrategia (Gratis)
             </button>
           } @else if (currentChipView() === 'faqs') {
-            @if (!clickedChips().has('¿Cómo funciona su servicio?')) {
-              <button (click)="handleChipClick('¿Cómo funciona su servicio?')" class="w-full text-left bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2.5 rounded-2xl hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm">
-                ¿Cómo funciona su servicio?
+            @if (!clickedChips().has('¿Cómo pre-evalúan al paciente?')) {
+              <button (click)="handleChipClick('¿Cómo pre-evalúan al paciente?')" class="w-full text-left bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2.5 rounded-2xl hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-all shadow-sm cursor-pointer">
+                ¿Cómo pre-evalúan al paciente?
               </button>
             }
-            @if (!clickedChips().has('¿Cuánto tarda la instalación?')) {
-              <button (click)="handleChipClick('¿Cuánto tarda la instalación?')" class="w-full text-left bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2.5 rounded-2xl hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm">
-                ¿Cuánto tarda la instalación?
+            @if (!clickedChips().has('¿Cómo se adapta a mi agenda?')) {
+              <button (click)="handleChipClick('¿Cómo se adapta a mi agenda?')" class="w-full text-left bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2.5 rounded-2xl hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-all shadow-sm cursor-pointer">
+                ¿Cómo se adapta a mi agenda?
               </button>
             }
-            @if (!clickedChips().has('¿Cuánto tardaré en ver resultados?')) {
-              <button (click)="handleChipClick('¿Cuánto tardaré en ver resultados?')" class="w-full text-left bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2.5 rounded-2xl hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm">
-                ¿Cuánto tardaré en ver resultados?
+            @if (!clickedChips().has('¿Qué retorno (ROI) puedo esperar?')) {
+              <button (click)="handleChipClick('¿Qué retorno (ROI) puedo esperar?')" class="w-full text-left bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2.5 rounded-2xl hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-all shadow-sm cursor-pointer">
+                ¿Qué retorno (ROI) puedo esperar?
               </button>
             }
-            <button (click)="handleChipClick('↩️ Volver a inicio')" class="w-full flex items-center justify-center bg-gray-100 border border-gray-200 text-gray-800 text-[14px] font-semibold px-4 py-2.5 rounded-full hover:bg-gray-200 transition-all shadow-sm mt-2">
-              ↩️ Volver a inicio
+            <button (click)="handleChipClick('↩️ Volver a opciones')" class="w-full flex items-center justify-center bg-gray-100 border border-gray-200 text-gray-800 text-[14px] font-semibold px-4 py-2.5 rounded-full hover:bg-gray-200 transition-all shadow-sm mt-2 cursor-pointer">
+              ↩️ Volver a opciones
             </button>
-            <button (click)="handleChipClick('📅 Agendar cita')" class="w-full bg-[#1e40af] border border-[#1e40af] text-white text-[14px] font-semibold px-4 py-3 rounded-full hover:bg-[#1e3a8a] transition-all shadow-md flex items-center justify-center gap-1.5 mt-2 animate-bounce">
-              📅 Agendar cita ahora
+            <button (click)="handleChipClick('📅 Auditar mi estrategia (Gratis)')" class="w-full bg-[#094cb2] border border-[#094cb2] text-white text-[14px] font-semibold px-4 py-3 rounded-full hover:bg-[#183ce3] cursor-pointer transition-colors shadow-md flex items-center justify-center gap-1.5 mt-2 animate-bounce">
+              📅 Auditar mi estrategia (Gratis)
             </button>
           }
         </div>

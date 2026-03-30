@@ -1,0 +1,408 @@
+<div class="bg-[#faf9fa] font-body text-[#1b1c1d] antialiased selection:bg-[#094cb2]/10 overflow-x-hidden scroll-smooth">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-[#e3e2e3]">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+<!-- AgentMinds Logo -->
+<div class="flex items-center gap-2 cursor-pointer" routerLink="/">
+  <div class="w-8 h-8 bg-[#1b1c1d] rounded-lg flex items-center justify-center shadow-sm">
+    <div class="w-3 h-3 bg-white rounded-full"></div>
+  </div>
+  <span class="font-bold text-xl tracking-tight text-slate-900">AgentMinds</span>
+</div>
+
+<div class="hidden md:flex gap-8 items-center">
+<button (click)="scrollToSection('problema', $event)" class="text-slate-600 hover:text-[#094cb2] transition-colors font-label tracking-wider cursor-pointer font-bold text-xs uppercase bg-transparent border-none outline-none focus:outline-none">Desafío Clínico</button>
+<button (click)="scrollToSection('sistema', $event)" class="text-slate-600 hover:text-[#094cb2] transition-colors font-label tracking-wider cursor-pointer font-bold text-xs uppercase bg-transparent border-none outline-none focus:outline-none">La Solución IA</button>
+<button (click)="scrollToSection('roi', $event)" class="text-slate-600 hover:text-[#094cb2] transition-colors font-label tracking-wider cursor-pointer font-bold text-xs uppercase bg-transparent border-none outline-none focus:outline-none">Métricas de Retorno</button>
+</div>
+<button (click)="openContact()" class="bg-[#094cb2] text-white px-6 py-2.5 rounded-full font-label text-sm font-bold hover:bg-[#3366cc] cursor-pointer transition-all scale-95 hover:scale-100 shadow-md shadow-[#094cb2]/20">
+  Solicitar Diagnóstico
+</button>
+</div>
+</nav>
+
+<main class="pt-24 mt-8 overflow-hidden">
+<!-- Section 1: Hero -->
+<section class="relative px-6 pb-20 lg:pb-32 max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+<div class="space-y-8">
+<span class="inline-block px-4 py-1.5 bg-[#d9e2ff] text-[#094cb2] font-label text-xs font-bold tracking-widest rounded-full uppercase shadow-sm">Automatización Clínica Especializada</span>
+<h1 class="text-4xl lg:text-[42px] xl:text-[54px] font-headline font-bold leading-[1.1] text-[#1b1c1d]">
+  Potencia la captación de pacientes capilares con sistemas&nbsp;automatizados
+</h1>
+<p class="text-xl text-[#434653] max-w-xl leading-relaxed">
+  El único sistema de <b>Asistencia Clínica por IA</b> diseñado para pre-cualificar pacientes de Injerto, Terapias PRP y Micropigmentación. Resuelve inquietudes médicas 24/7 y transfiere al especialista únicamente casos viables.
+</p>
+<div class="flex flex-col sm:flex-row gap-4">
+<button (click)="openContact()" class="bg-[#094cb2] text-white px-8 py-4 rounded-xl font-bold text-[17px] shadow-xl shadow-[#094cb2]/30 hover:-translate-y-1 transition-transform cursor-pointer flex items-center justify-center gap-3">
+<span>Auditoría de Adquisición Gratuita</span>
+<span class="material-symbols-outlined font-bold" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<ul class="flex flex-col sm:flex-row gap-4 sm:gap-6 text-sm font-medium text-[#434653] pt-4 border-t border-[#e3e2e3]">
+  <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[#094cb2] text-[16px]">check_circle</span> Derivación segmentada por tratamiento</li>
+  <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[#094cb2] text-[16px]">check_circle</span> Validación médica activa</li>
+  <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[#094cb2] text-[16px]">check_circle</span> Contacto instantáneo 24/7</li>
+</ul>
+</div>
+
+<div class="relative flex justify-center mt-10 lg:mt-0 px-4">
+<div class="absolute -z-10 w-80 h-80 bg-[#094cb2]/10 blur-[100px] rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+<!-- Chat UI Mockup (Adjusted Layout for better spacing with rectangular bubbles) -->
+<div class="w-full max-w-[340px] h-[550px] sm:h-[580px] bg-slate-900 rounded-[2.5rem] p-3 shadow-[0_25px_60px_-15px_rgba(9,76,178,0.25)] border-[6px] border-slate-800 relative overflow-hidden group mx-auto flex flex-col">
+<div class="bg-[#faf9fa] h-full rounded-[1.8rem] overflow-hidden flex flex-col relative z-10 transition-transform duration-500 group-hover:scale-[1.01]">
+<div class="bg-white p-4 flex items-center justify-between border-b border-gray-200 shadow-sm z-20 shrink-0">
+  <div class="flex items-center gap-3">
+    <div class="w-9 h-9 rounded-full bg-[#094cb2] flex items-center justify-center shadow-md text-white shrink-0">
+      <span class="material-symbols-outlined text-sm">psychology</span>
+    </div>
+    <div class="overflow-hidden">
+      <p class="text-[9px] font-bold text-gray-500 font-label uppercase truncate">Instituto Capilar</p>
+      <p class="text-[11px] font-bold text-[#094cb2] flex items-center gap-1 truncate">
+        Atención Médica Digital <span class="w-1.5 h-1.5 rounded-full bg-green-500 ml-0.5 shrink-0"></span>
+      </p>
+    </div>
+  </div>
+</div>
+<!-- Flexible container with massive padding for bubbles so they never cut off -->
+<div class="flex-1 px-4 py-5 space-y-4 text-[12px] font-medium overflow-y-auto pb-8 relative flex flex-col custom-scrollbar">
+  <!-- Message 1 -->
+  <div class="bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200 text-[#434653] p-3.5 rounded-lg rounded-tl-sm max-w-[85%] leading-relaxed self-start">
+    Hola José, he recibido tu solicitud para valoración capilar. Para adelantar tu expediente al cirujano, ¿qué zona te preocupa más recuperar: las zonas frontales (entradas) o la coronilla?
+  </div>
+  <!-- Message 2 -->
+  <div class="bg-[#094cb2] text-white shadow-md p-3.5 rounded-lg rounded-tr-sm self-end max-w-[85%] leading-relaxed mt-2">
+    Principalmente las entradas, pero el postoperatorio me preocupa bastante al tener una recesión algo severa.
+  </div>
+  <!-- Message 3 -->
+  <div class="bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200 text-[#434653] p-3.5 rounded-lg rounded-tl-sm max-w-[85%] leading-relaxed self-start mt-2">
+    Nuestro equipo usa anestesia local de altísima precisión. Será <b>asintomático</b>. Diagnostiquemos ahora mismo tus variables capilares:
+  </div>
+  <!-- Message 4 (Action) -->
+  <div class="bg-blue-50 text-[#094cb2] px-3.5 py-3 border border-blue-100 rounded-lg inline-flex flex-col gap-2 text-[11px] cursor-default self-start mt-1">
+    <div class="flex items-center gap-1.5 font-bold"><span class="material-symbols-outlined text-[15px]">troubleshoot</span> Análisis AI Completo</div>
+    <span class="bg-white px-2.5 py-1.5 rounded-md text-[#434653] font-medium shadow-sm flex items-center"><span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-2"></span> Compatibilidad confirmada</span>
+  </div>
+  <!-- Message 5 -->
+  <div class="bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200 text-[#434653] p-3.5 rounded-lg rounded-tl-sm max-w-[85%] leading-relaxed self-start mt-2">
+    Candidato operativamente válido. ¿Agendamos este viernes valoración sin coste con cirujanos?
+  </div>
+</div>
+<!-- Input Footer -->
+<div class="p-3 bg-white border-t border-gray-200 flex gap-2 shadow-[0_-4px_15px_rgba(0,0,0,0.02)] z-20 shrink-0">
+<div class="flex-1 bg-[#f5f3f4] rounded-lg h-10 px-4 text-[11px] flex items-center text-gray-400 font-medium tracking-wide border border-gray-100">Escribe "Viernes genial"...</div>
+<div class="w-10 h-10 bg-[#094cb2] rounded-lg flex items-center justify-center text-white shadow-md cursor-pointer hover:scale-105 transition-transform shrink-0">
+<span class="material-symbols-outlined text-[16px]" data-icon="send">send</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Section 2: Problem -->
+<section id="problema" class="bg-white py-24 px-6 border-y border-[#e3e2e3]">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-16 md:mb-24 space-y-6">
+<span class="text-[#094cb2] font-label font-bold tracking-widest text-xs uppercase bg-blue-50 px-4 py-2 rounded-full inline-block">Perspectiva Sectorial</span>
+<h2 class="text-3xl md:text-5xl lg:text-[54px] font-headline font-bold text-[#1b1c1d] max-w-4xl mx-auto leading-[1.15]">La excelencia clínica exige un sistema de admisión hipereficiente.</h2>
+<p class="text-[#434653] max-w-3xl mx-auto text-lg md:text-[20px] pt-2 leading-relaxed">Las demoras en la atención inicial y la gestión superficial de dudas o historiales clínicos generan fugas constantes de pacientes cualificados hacia alternativas nacionales o internacionales (Turquía). Cada minuto de retraso médico resiente&nbsp;tu&nbsp;agenda&nbsp;diaria.</p>
+</div>
+<div class="grid md:grid-cols-3 gap-8">
+<div class="bg-[#faf9fa] p-10 rounded-3xl border border-[#e3e2e3] group hover:border-[#094cb2]/30 hover:shadow-xl transition-all duration-300">
+<div class="w-14 h-14 bg-red-50 text-red-700 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:-translate-y-1 transition-transform border border-red-100">
+<span class="material-symbols-outlined" data-icon="sync_problem">sync_problem</span>
+</div>
+<h3 class="text-xl font-headline font-bold mb-4 text-[#1b1c1d]">Sobrecarga del Equipo de Admisiones</h3>
+<p class="text-[#434653] leading-relaxed text-[15px]">Tus profesionales administrativos aportan alto valor al centro, pero acaban destinando un margen temporal desproporcionado a filtrar consultas inviables económicamente o clínicamente irrelevantes.</p>
+</div>
+<div class="bg-[#faf9fa] p-10 rounded-3xl border border-[#e3e2e3] group hover:border-[#094cb2]/30 hover:shadow-xl transition-all duration-300">
+<div class="w-14 h-14 bg-orange-50 text-orange-700 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:-translate-y-1 transition-transform border border-orange-100">
+<span class="material-symbols-outlined" data-icon="bedtime">bedtime</span>
+</div>
+<h3 class="text-xl font-headline font-bold mb-4 text-[#1b1c1d]">La Ventana de Decisión Nocturna</h3>
+<p class="text-[#434653] leading-relaxed text-[15px]">El paciente estudia el impacto post-operatorio o la validez de los tratamientos preventivos en horario extendido (21:00h - 02:00h). Requerirle aguardar a la apertura del centro frustra su predisposición psicológica de reserva.</p>
+</div>
+<div class="bg-[#faf9fa] p-10 rounded-3xl border border-[#e3e2e3] group hover:border-[#094cb2]/30 hover:shadow-xl transition-all duration-300">
+<div class="w-14 h-14 bg-blue-50 text-[#094cb2] rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:-translate-y-1 transition-transform border border-blue-100">
+<span class="material-symbols-outlined" data-icon="event_busy">event_busy</span>
+</div>
+<h3 class="text-xl font-headline font-bold mb-4 text-[#1b1c1d]">Ineficiencia de Agenda Quirúrgica</h3>
+<p class="text-[#434653] leading-relaxed text-[15px]">Programar sesiones presenciales de valoración con casos clínicos insalvables contamina el flujo de trabajo del cirujano o dermatólogo, mermando radicalmente la rentabilidad por quirófano.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Section 3: Advantage -->
+<section class="py-24 px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+<div class="lg:w-1/2">
+<div class="relative group">
+<div class="absolute -inset-4 bg-blue-50 rounded-[3rem] group-hover:-inset-2 transition-all duration-700"></div>
+<img alt="Modern Clinical Professional" class="relative rounded-[2rem] w-full object-cover aspect-[4/5] shadow-xl border border-gray-100 transition-all duration-700" src="https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&q=80&w=800" />
+<div class="absolute -bottom-8 -right-4 md:-right-8 bg-white p-6 md:p-8 rounded-3xl shadow-2xl border border-gray-100 z-20 max-w-xs transition-transform hover:-translate-y-2 duration-300 hidden sm:block">
+  <div class="flex gap-1 mb-2">
+    <span class="material-symbols-outlined text-[18px] text-[#094cb2]">star</span>
+    <span class="material-symbols-outlined text-[18px] text-[#094cb2]">star</span>
+    <span class="material-symbols-outlined text-[18px] text-[#094cb2]">star</span>
+    <span class="material-symbols-outlined text-[18px] text-[#094cb2]">star</span>
+    <span class="material-symbols-outlined text-[18px] text-[#094cb2]">star</span>
+  </div>
+  <p class="font-bold text-[#1b1c1d] text-[15px] leading-tight mb-2">Una inteligencia puramente clínica orientada a resultados tangibles.</p>
+  <p class="text-[10px] text-gray-500 uppercase font-label font-bold tracking-widest mt-2">Dedicación exclusiva a Clínicas Premium</p>
+</div>
+</div>
+</div>
+<div class="lg:w-1/2 space-y-8 mt-16 lg:mt-0 lg:pl-10">
+<h2 class="text-4xl md:text-5xl font-headline font-bold leading-tight text-[#1b1c1d]">
+  Abordando clínicamente las barreras psicológicas y dudas logísticas.
+</h2>
+<div class="space-y-6 text-[#434653] text-[16px] leading-relaxed">
+<p>
+  Transformamos el interés inicial del perfil capilar en una valoración firme. Usamos un motor de diálogo avanzado que educa al paciente, despeja miedos sobre técnicas (<b>FUE, DHI o PRP</b>) y pre-diagnostica la zona receptora antes de transferirlo al flujo real.
+</p>
+<p>
+  Aquel paciente dispuesto a costear una cirugía premium ignora los formularios robóticos obsoletos. AgentMinds dialoga con base médica, eleva la percepción de lujo y le entrega al especialista una visita médica higienizada de dudas mundanas.
+</p>
+</div>
+<div class="pt-8 grid grid-cols-2 gap-8 border-t border-[#e3e2e3]">
+<div>
+<p class="text-4xl font-headline font-black text-[#094cb2]">100%</p>
+<p class="text-[13px] font-bold mt-2 text-[#1b1c1d] uppercase tracking-wider">Pacientes Filtrados</p>
+<p class="text-[13px] text-gray-500 mt-1 leading-snug">Cualificamos y educamos a cada contacto antes de que llegue a consulta presencial.</p>
+</div>
+<div>
+<p class="text-4xl font-headline font-black text-[#094cb2]">0h</p>
+<p class="text-[13px] font-bold mt-2 text-[#1b1c1d] uppercase tracking-wider">De Tiempo Improductivo</p>
+<p class="text-[13px] text-gray-500 mt-1 leading-snug">El equipo médico invierte su tiempo única y exclusivamente en pacientes aptos para cirugía.</p>
+</div>
+</div>
+<button (click)="openContact()" class="mt-8 text-white bg-[#1b1c1d] font-bold font-label flex items-center gap-3 px-6 py-3.5 rounded-xl hover:bg-[#303031] shadow-md transition-all cursor-pointer w-max uppercase text-xs tracking-widest hover:scale-105">
+  Hablar con un Especialista <span class="material-symbols-outlined text-[16px]">support_agent</span>
+</button>
+</div>
+</section>
+
+<!-- Section 4: Core Features (Alternating) -->
+<section id="sistema" class="py-32 space-y-32 bg-[#faf9fa] relative border-y border-[#e3e2e3]">
+<!-- Feature 1 -->
+<div class="px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+<div class="lg:w-1/2 space-y-6">
+<span class="text-gray-500 font-label font-bold tracking-widest text-[10px] uppercase border border-gray-300 px-3 py-1.5 rounded-full">Gestión de Interacciones Clínicas</span>
+<h3 class="text-4xl font-headline font-bold text-[#1b1c1d]">Interrogatorio Facultativo Sistemático</h3>
+<p class="text-lg text-[#434653] leading-relaxed">
+    Nuestro sistema de admisión inteligente encauza sutilmente al paciente hacia la determinación métrica de su viabilidad médica. Clasifica en tiempo real si el caso precisa Cirugía, Mesoterapia Preventiva o Tratamientos Auxiliares no quirúrgicos.
+</p>
+<ul class="space-y-6 pt-4">
+<li class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-xl bg-white shadow-sm border border-gray-100 flex items-center justify-center mt-0.5 flex-shrink-0">
+  <span class="material-symbols-outlined text-[#094cb2] text-[20px]">science</span>
+</div>
+<div>
+  <b class="text-[#1b1c1d] block text-[16px]">Delimitación de Expectativas Ópticas</b>
+  <span class="text-[#434653] text-[15px] leading-relaxed block mt-1">El modelo acota escenarios de densificación coherentes, atajando la desilusión post-operatoria mitigando falsas promesas en el primer contacto.</span>
+</div>
+</li>
+<li class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-xl bg-white shadow-sm border border-gray-100 flex items-center justify-center mt-0.5 flex-shrink-0">
+  <span class="material-symbols-outlined text-[#094cb2] text-[20px]">filter_alt_off</span>
+</div>
+<div>
+  <b class="text-[#1b1c1d] block text-[16px]">Tamizado Financiero de Primera Ronda</b>
+  <span class="text-[#434653] text-[15px] leading-relaxed block mt-1">Descarta elegantemente prospectos atraídos por campañas agresivas incomplatibles con sus honorarios médicos, agilizando la cartera de clientes.</span>
+</div>
+</li>
+</ul>
+</div>
+<div class="lg:w-1/2 w-full">
+<div class="rounded-[2.5rem] overflow-hidden shadow-2xl relative border-4 border-white bg-white aspect-[4/3] group">
+  <img alt="Modern Clinical Facial Analysis" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.03]" src="https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&q=80&w=1000" />
+  <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent pt-32 pb-6 px-6">
+    <div class="bg-white/10 backdrop-blur-xl border border-white/20 p-4 rounded-xl shadow-xl">
+      <div class="flex items-center gap-2 mb-1.5">
+        <span class="material-symbols-outlined text-[#f9e37a] text-[14px]">auto_awesome</span>
+        <p class="text-[#f9e37a] font-bold text-[10px] uppercase tracking-widest">Resumen Diagnóstico AI a Hubspot</p>
+      </div>
+      <p class="text-white text-[14px] font-medium leading-relaxed">"Reporte Sintético: V/42A. Suspende pauta vasodilatadora oral voluntariamente. Clasificación alopecia androgenética media. Interés por densificación frontal intensa. Aprobada derivación."</p>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- Feature 2 -->
+<div class="px-6 max-w-7xl mx-auto flex flex-col lg:flex-row-reverse items-center gap-16 mt-32">
+<div class="lg:w-1/2 space-y-6">
+<span class="text-gray-500 font-label font-bold tracking-widest text-[10px] uppercase border border-gray-300 px-3 py-1.5 rounded-full">Soporte Estratégico Especializado</span>
+<h3 class="text-4xl font-headline font-bold text-[#1b1c1d]">Gestor de Reticencias Bioestéticas</h3>
+<p class="text-lg text-[#434653] leading-relaxed">
+    Los procedimientos capilares inducen inhibiciones agudas referentes a la higiene, reincorporación social y permanencia del folículo o microtinta inserta. AgentMinds suprime dichos miedos amparándose exclusivamente en el corpus brindado por su clínica.
+</p>
+<div class="space-y-4 pt-4">
+  <div class="p-6 bg-white rounded-2xl shadow-sm border border-[#e3e2e3] transition-colors relative cursor-default border-l-4 border-l-[#094cb2]">
+      <p class="text-[#1b1c1d] font-semibold text-[15px] pl-2 italic text-gray-700">"Quiero la sesión de DHI pero desempeño trabajo de cara al público continuo, ¿hay manera de no rapar completamente mi zona receptora?"</p>
+      <div class="mt-4 pt-4 border-t border-gray-50 flex flex-col gap-2">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#094cb2] text-sm">precision_manufacturing</span>
+          <p class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Respuesta Inyectada (0.8s)</p>
+        </div>
+        <p class="text-[14px] text-[#434653] leading-relaxed pl-6 border-l-2 border-blue-50">"Perfectamente viable. Nuestro equipo quirúrgico domina el 'Unshaven Hair Transplant FUE' (sin rasurado). Permite la reincorporación corporativa imperceptible en 72h extraemos exclusivamente de donación difuminada."</p>
+      </div>
+  </div>
+</div>
+</div>
+<div class="lg:w-1/2 w-full">
+<div class="rounded-[2.5rem] overflow-hidden shadow-2xl relative border-4 border-white bg-white aspect-[4/3] group">
+<img alt="Professional Specialized Health Consultation" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.03] opacity-90" src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=1000" />
+</div>
+</div>
+</div>
+
+<!-- Feature 3 -->
+<div class="px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 mt-32 relative z-10">
+<div class="lg:w-1/2 space-y-6">
+<span class="text-gray-500 font-label font-bold tracking-widest text-[10px] uppercase border border-gray-300 px-3 py-1.5 rounded-full">Despliegue Informático Central</span>
+<h3 class="text-4xl font-headline font-bold text-[#1b1c1d]">Integración Clínica Omnidireccional</h3>
+<p class="text-lg text-[#434653] leading-relaxed">
+    Nuestra solución empresarial omite interfaces invasivas. Opera directamente mediante APIs aseguradas, enviando el triage del paciente calificado de Instagram o Web directo hacia los embudos de su CRM habitual de manera transparente.
+</p>
+<div class="flex flex-col gap-4 bg-white p-6 rounded-2xl border border-blue-50 mt-4 shadow-sm relative overflow-hidden">
+  <div class="absolute right-0 top-0 w-32 h-32 bg-blue-50/50 rounded-bl-full pointer-events-none -mr-4 -mt-4"></div>
+  <p class="text-xs font-bold text-[#1b1c1d] uppercase tracking-widest border-b border-gray-100 pb-2 flex items-center gap-2">Infraestructuras Base Compatibles</p>
+  <div class="flex items-center gap-3 text-[#434653] font-medium text-[14px] pt-2">
+    <div class="w-8 h-8 rounded-full bg-[#f5f3f4] flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-[#094cb2] text-[16px]">lan</span></div>
+    Módulos Globales (Hubspot, Pipedrive, ClinicCloud, DriCloud)
+  </div>
+  <div class="flex items-center gap-3 text-[#434653] font-medium text-[14px]">
+    <div class="w-8 h-8 rounded-full bg-[#f5f3f4] flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-[#094cb2] text-[16px]">event_available</span></div>
+    Volcado asíncrono sobre agendas Google/Outlook
+  </div>
+  <div class="flex items-center gap-3 text-[#434653] font-medium text-[14px]">
+    <div class="w-8 h-8 rounded-full bg-[#f5f3f4] flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-[#25D366] text-[16px]">chat</span></div>
+    Interconectividad oficial sobre Cloud API
+  </div>
+</div>
+</div>
+<div class="lg:w-1/2 w-full">
+<div class="rounded-[2.5rem] overflow-hidden shadow-2xl aspect-[4/3] border-4 border-white bg-white group relative">
+<img alt="Modern Clinical Data Integration Dashboard" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.03]" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1000" />
+<div class="absolute inset-0 bg-[#094cb2]/5 group-hover:bg-transparent transition-colors duration-500"></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Section 6: Pipeline Replacement (No Interactive Objections) -->
+<section id="embudo" class="py-32 px-6 bg-white relative">
+<div class="absolute inset-0 bg-[#faf9fa] skew-y-3 origin-center -z-10 h-full"></div>
+<div class="max-w-5xl mx-auto text-center space-y-16 relative z-10">
+
+  <div class="space-y-4">
+    <span class="text-[#094cb2] font-label font-bold tracking-widest text-[10px] uppercase border border-blue-200 px-3 py-1.5 rounded-full bg-white">Metodología de Adquisición</span>
+    <h2 class="text-4xl lg:text-5xl font-headline font-bold text-[#1b1c1d] max-w-2xl mx-auto leading-tight">Flujo de Paciente 100% Autogestionado</h2>
+    <p class="text-lg text-[#434653] max-w-2xl mx-auto">De lead en redes sociales a paciente agendado y calificado de forma autónoma. Visualiza el circuito interno AgentMinds.</p>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-6 lg:gap-8 pt-8 relative">
+    <!-- Connecting Line (Desktop Only, solid and pushed fully back) -->
+    <div class="hidden md:block absolute top-[60px] left-[15%] right-[15%] h-0.5 bg-gradient-to-r from-transparent via-[#094cb2]/10 to-transparent border-dashed border-t-2 border-[#094cb2]/20 -z-50"></div>
+    
+    <!-- Step 1 -->
+    <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_10px_30px_rgb(0,0,0,0.03)] flex flex-col items-center text-center relative hover:-translate-y-2 transition-transform duration-300 z-10">
+      <div class="w-16 h-16 rounded-full bg-slate-50 border border-gray-200 text-[#1b1c1d] flex items-center justify-center font-bold text-2xl shadow-sm mb-6 z-20">
+        <span class="material-symbols-outlined">ads_click</span>
+      </div>
+      <h4 class="text-[17px] font-bold text-[#1b1c1d] mb-3">1. Captación Externa</h4>
+      <p class="text-[14px] text-[#434653] leading-relaxed">El paciente contacta mediante WhatsApp Ads, Meta Ads o Web tras despertar interés inicial por el tratamiento capilar.</p>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="bg-[#f0f4ff] rounded-3xl p-8 border border-blue-100 shadow-[0_10px_30px_rgba(9,76,178,0.05)] flex flex-col items-center text-center relative hover:-translate-y-2 transition-transform duration-300 z-10">
+      <div class="w-16 h-16 rounded-full bg-[#094cb2] text-white flex items-center justify-center font-bold text-2xl shadow-[0_4px_15px_rgba(9,76,178,0.4)] mb-6 z-20">
+        <span class="material-symbols-outlined">neurology</span>
+      </div>
+      <h4 class="text-[17px] font-bold text-[#1b1c1d] mb-3">2. Triaje Terapéutico IA</h4>
+      <p class="text-[14px] text-[#434653] leading-relaxed">AgentMinds analiza compatibilidad, resuelve dudas postoperatorias, erradica sesgos financieros y emite veredicto al instante.</p>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="bg-white rounded-3xl p-8 border border-green-100 shadow-[0_10px_30px_rgb(0,0,0,0.03)] flex flex-col items-center text-center relative hover:-translate-y-2 transition-transform duration-300 z-10">
+      <div class="w-16 h-16 rounded-full bg-green-50 border border-green-200 text-green-600 flex items-center justify-center font-bold text-2xl shadow-sm mb-6 z-20">
+        <span class="material-symbols-outlined">event_available</span>
+      </div>
+      <h4 class="text-[17px] font-bold text-[#1b1c1d] mb-3">3. Reserva Integral Confirmada</h4>
+      <p class="text-[14px] text-[#434653] leading-relaxed">Derivación síncrona a la interfaz de recepción: paciente filtrado y calendarizado con el especialista correspondiente.</p>
+    </div>
+  </div>
+
+  <div class="pt-8 relative z-20">
+    <button (click)="openContact()" class="bg-[#1b1c1d] text-white px-8 py-3.5 rounded-full font-label text-[13px] font-bold transition-all shadow-md hover:shadow-xl hover:bg-[#303031] cursor-pointer inline-flex items-center gap-2 uppercase tracking-widest">
+      Analizar Mi Tráfico de Entradas Médicas <span class="material-symbols-outlined text-sm">trending_flat</span>
+    </button>
+  </div>
+</div>
+</section>
+
+<!-- Section 5: ROI (Moved logic below pipeline) -->
+<section id="roi" class="bg-slate-950 py-32 px-6 text-white text-center relative overflow-hidden">
+<div class="absolute -top-40 -right-40 w-96 h-96 bg-[#094cb2]/20 rounded-full blur-[100px] pointer-events-none"></div>
+
+<div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10">
+<div class="space-y-4 p-10 lg:p-12 rounded-[2.5rem] bg-white/[0.03] border border-white/5 shadow-2xl hover:bg-white/[0.05] transition-colors border-t-white/10 hover:-translate-y-1 duration-300">
+<p class="text-6xl lg:text-7xl font-body font-light tracking-tighter text-[#094cb2] leading-none">3.4x</p>
+<p class="text-xl font-bold text-white mt-4 uppercase tracking-widest text-[13px]">Incremento Pre-Operativo Relativo</p>
+<p class="text-[#8c94a3] mt-3 leading-relaxed text-[15px]">Al proveer resolución médica básica en un tiempo inferior a 3 segundos, se disipa el espectro competitivo e incentiva la fidelización primaria antes de buscar valoraciones externas.</p>
+</div>
+<div class="space-y-4 p-10 lg:p-12 rounded-[2.5rem] bg-white/[0.03] border border-white/5 shadow-2xl hover:bg-white/[0.05] transition-colors border-t-white/10 hover:-translate-y-1 duration-300">
+<p class="text-6xl lg:text-7xl font-body font-light tracking-tighter text-[#f9e37a] leading-none">-75%</p>
+<p class="text-xl font-bold text-white mt-4 uppercase tracking-widest text-[13px]">Disminución de Retorno Funcional Tardío</p>
+<p class="text-[#8c94a3] mt-3 leading-relaxed text-[15px]">Su centralita administrativa prescinde de expedientes disonantes o casos vacíos; tramitando con total agilidad asignaciones de bloque quirúrgico efectivo y expedito.</p>
+</div>
+</div>
+</section>
+
+<!-- Section 7: Final CTA -->
+<section class="bg-gradient-to-r from-[#094cb2] to-[#123173] py-28 px-6 relative overflow-hidden">
+<div class="absolute inset-0 bg-black/10"></div>
+<div class="absolute top-0 right-0 w-[600px] h-[600px] bg-white/5 blur-[100px] rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+<div class="max-w-4xl mx-auto text-center space-y-10 relative z-10">
+<h2 class="text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-headline font-bold text-white leading-[1.1] tracking-tight">
+    Actualiza la conversión y protocolos de admisión de tus clínicas capilares.
+</h2>
+<p class="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed font-normal">
+    Elevar el estatus cualitativo de tu centro médico exige operar mediante recursos contemporáneos. Implemente a AgentMinds como director digital de admisiones clínicas ininterrumpido.
+</p>
+<div class="pt-8 flex flex-col items-center">
+<button (click)="openContact()" class="bg-white text-[#1b1c1d] px-12 md:px-14 py-5 md:py-6 rounded-2xl text-[18px] md:text-[20px] font-bold shadow-2xl hover:bg-gray-50 hover:shadow-white/20 hover:-translate-y-1 transition-all group relative cursor-pointer border border-transparent">
+  <span class="relative z-10 flex items-center justify-center gap-3">
+    Agendar Protocolo Evaluativo
+    <span class="material-symbols-outlined text-[#094cb2] font-black text-xl">event_available</span>
+  </span>
+</button>
+<div class="flex items-center gap-2 mt-8 px-5 py-2 rounded-full border border-blue-200/20 bg-blue-900/30 backdrop-blur-sm">
+  <span class="material-symbols-outlined text-[#f9e37a] text-sm">verified</span>
+  <p class="text-white font-label text-[11px] md:text-xs font-medium tracking-widest uppercase opacity-90">Despliegue operativo inyectado y funcional en el ecosistema bajo demanda</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+
+<!-- Footer -->
+<footer class="bg-white border-t border-gray-200">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-12 max-w-7xl mx-auto gap-10 text-center md:text-left">
+<div class="space-y-4 flex flex-col items-center md:items-start">
+  <div class="flex items-center gap-2 cursor-pointer opacity-80 hover:opacity-100 transition-opacity" routerLink="/">
+    <div class="w-8 h-8 bg-[#1b1c1d] rounded-lg flex items-center justify-center shadow-sm">
+      <div class="w-3 h-3 bg-white rounded-full"></div>
+    </div>
+    <span class="font-bold text-lg tracking-tight text-[#1b1c1d]">AgentMinds</span>
+  </div>
+  <p class="text-[#434653] max-w-sm text-[13px] leading-relaxed font-medium">Infraestructura de automatización biomédica especializada. Potenciando los protocolos de diagnóstico inicial y agenda de clínicas médicas premium.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8 lg:gap-10">
+<a class="text-gray-500 hover:text-[#094cb2] font-label font-bold text-[10px] tracking-widest transition-all cursor-pointer">CÓDIGO DE CONDUCTA LEGAL</a>
+<a class="text-gray-500 hover:text-[#094cb2] font-label font-bold text-[10px] tracking-widest transition-all cursor-pointer">ACUERDOS DE CONFIDENCIALIDAD</a>
+</div>
+</div>
+</footer>
+</div>

@@ -94,11 +94,20 @@ export class VoiceAgentController {
       const userTranscript = await this.aiProvider.transcribeAudio(file.buffer);
 
       // 2. Generate AI response
-      const systemPrompt =
+      const lang = dto.language?.toLowerCase() === 'en' ? 'en' : 'es';
+
+      let basePrompt =
         dto.systemPrompt ||
         'You are a helpful AI assistant for abandoned cart recovery. Be brief, friendly, and encouraging.';
+
+      if (lang === 'en') {
+        basePrompt += ' IMPORTANT: You MUST respond ONLY in English.';
+      } else {
+        basePrompt += ' IMPORTANTE: Debes responder ÚNICAMENTE en Español.';
+      }
+
       const aiResponse = await this.aiProvider.generateResponse(userTranscript, {
-        systemPrompt,
+        systemPrompt: basePrompt,
         temperature: 0.7,
         maxTokens: 150,
       });
@@ -111,6 +120,9 @@ export class VoiceAgentController {
       res.setHeader('X-Transcript-AI', encodeURIComponent(aiResponse));
       res.setHeader('Content-Type', 'audio/mpeg');
       res.setHeader('Content-Length', audioBuffer.length.toString());
+
+      // Set language header for the client
+      res.setHeader('X-Response-Language', lang);
 
       // 5. Send audio response
       return res.send(audioBuffer);

@@ -10,14 +10,22 @@
       </div>
       <!-- Desktop Menu -->
       <div class="hidden md:flex items-center gap-6">
-        <a class="text-sm font-medium text-clinical-gray hover:text-clinical-dark transition-colors cursor-pointer" routerLink="/" fragment="beneficios">Beneficios</a>
-        <a class="text-sm font-medium text-clinical-gray hover:text-clinical-dark transition-colors cursor-pointer" routerLink="/blog">Blog</a>
-        <a class="text-sm font-medium text-clinical-gray hover:text-clinical-dark transition-colors cursor-pointer" routerLink="/about">Nosotros</a>
+        <a class="text-sm font-medium text-clinical-gray hover:text-clinical-dark transition-colors cursor-pointer" routerLink="/" fragment="beneficios">{{ 'NAVBAR.BENEFITS' | translate }}</a>
+        <a class="text-sm font-medium text-clinical-gray hover:text-clinical-dark transition-colors cursor-pointer" routerLink="/blog">{{ 'NAVBAR.BLOG' | translate }}</a>
+        <a class="text-sm font-medium text-clinical-gray hover:text-clinical-dark transition-colors cursor-pointer" routerLink="/about">{{ 'NAVBAR.ABOUT' | translate }}</a>
         
         <div class="flex items-center gap-4 ml-4 pl-4 border-l border-gray-200">
           <button (click)="openContact()" class="bg-clinical-blue text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer">
-            Solicitar Demo
+            {{ 'NAVBAR.REQUEST_DEMO' | translate }}
           </button>
+          
+          <!-- Language Switcher -->
+          <div class="relative group cursor-pointer border-l border-gray-200 pl-4 ml-2">
+            <div class="flex items-center gap-1 text-sm font-bold text-clinical-gray hover:text-clinical-blue" (click)="toggleLanguage()">
+              {{ currentLanguage === 'en' ? '🇬🇧 EN' : '🇪🇸 ES' }}
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+          </div>
         </div>
       </div>
     </div>

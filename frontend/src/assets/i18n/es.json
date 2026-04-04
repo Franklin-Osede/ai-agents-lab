@@ -1,42 +1,59 @@
 {
-  "COMMON": {
-    "APP_NAME": "AI Agents Lab",
-    "WELCOME": "Bienvenido",
-    "LOADING": "Cargando...",
-    "ERROR": "Error",
-    "SUCCESS": "Éxito",
-    "SAVE": "Guardar",
-    "CANCEL": "Cancelar",
-    "DELETE": "Eliminar",
-    "EDIT": "Editar",
-    "BACK": "Volver",
-    "NEXT": "Siguiente",
-    "PREVIOUS": "Anterior",
-    "CLOSE": "Cerrar"
+  "NAVBAR": {
+    "BENEFITS": "Beneficios",
+    "BLOG": "Blog",
+    "ABOUT": "Nosotros",
+    "REQUEST_DEMO": "Solicitar Demo"
   },
-  "NAV": {
-    "HOME": "Inicio",
-    "AGENTS": "Agentes",
-    "DASHBOARD": "Panel",
-    "SETTINGS": "Configuración"
+  "CHAT_BUBBLE": {
+    "GREETING_DISPLAY": "¡Hola! Soy tu asistente virtual. ¿Te gustaría ver cómo filtramos y cualificamos automáticamente a tus pacientes capilares?",
+    "GREETING_SPEAK": "¡Hola! ... Soy tu asistente virtual. ... ¿Te gustaría ver cómo filtramos, y cualificamos automáticamente a tus pacientes capilares?",
+    "CHIP_OPERATIVE_DOUBTS": "❓ Dudas Operativas",
+    "CHIP_BACK_TO_OPTIONS": "↩️ Volver a opciones",
+    "CHIP_HOW_EVALUATED": "¿Cómo pre-evalúan al paciente?",
+    "CHIP_HOW_ADAPTED": "¿Cómo se adapta a mi agenda?",
+    "CHIP_ROI": "¿Qué retorno (ROI) puedo esperar?",
+    "CHIP_TECH": "Sobre la tecnología",
+    "CHIP_FILTERING": "Filtrado automático",
+    "CHIP_AUDIT": "📅 Auditar mi estrategia (Gratis)",
+    "RES_OP_DOUBTS_DISPLAY": "Por supuesto. Los directores de clínicas suelen tener estas dudas. ¿Qué te gustaría profundizar?",
+    "RES_OP_DOUBTS_SPEAK": "Por supuesto. ... Los directores de clínicas, suelen tener este tipo de dudas. ... Cuéntame, ¿en qué punto te gustaría profundizar?",
+    "RES_BACK_DISPLAY": "¿Hay alguna otra métrica o proceso que te gustaría explorar?",
+    "RES_BACK_SPEAK": "¿Hay alguna otra métrica..., o proceso interno, que te gustaría explorar?",
+    "RES_EVAL_DISPLAY": "Integramos un protocolo clínico en tu Web y WhatsApp. El agente conversa de forma fluida con el paciente sobre su caso, pide fotografías en tiempo real e identifica la viabilidad médica antes de agendar.",
+    "RES_EVAL_SPEAK": "Integramos un protocolo clínico directamente en tu Web, ... y en tu Whats App corporativo. El agente virtual, conversa de forma muy fluida con el paciente sobre su caso empático, ... le pide fotografías en tiempo real, ... y finalmente, identifica la viabilidad médica, justo antes de enviarlo a la agenda.",
+    "RES_ADAPT_DISPLAY": "La IA sincroniza los pacientes pre-calificados directamente con tu CRM y tu calendario actual. Además, reactivamos automáticamente antiguas listas de contactos de tu base de datos para generar consultas nuevas.",
+    "RES_ADAPT_SPEAK": "La inteligencia artificial, sincroniza los pacientes que ya están pre-calificados, ... directamente con el cé erre eme, o el calendario que uses actualmente. ... Y además de esto, reactivamos de forma automática, las antiguas listas de contactos de tu base de datos, para conseguirte consultas nuevas sin coste publicitario.",
+    "RES_ROI_DISPLAY": "Tus especialistas dejarán de perder tiempo en valoraciones gratuitas que no convierten. Filtraremos y educaremos únicamente a pacientes perfilados por la IA con alta intención de compra, maximizando la facturación y optimizando las horas del equipo.",
+    "RES_ROI_SPEAK": "El retorno es muy claro. ... Tus especialistas, dejarán de perder el tiempo en valoraciones gratuitas que nunca convierten. ... Nosotros nos encargamos de filtrar y educar a los pacientes perfilados, ... pacientes con una intención de compra real,... lo cual maximiza la facturación mensual, y optimiza muchísimo las horas de tu equipo.",
+    "RES_TECH_DISPLAY": "Diseñamos sistemas automatizados que blindan tu clínica. Evitamos la fuga de pacientes por demoras, multiplicamos la captación reteniendo el interés al instante y ahorramos cientos de horas de gestión manual a tu equipo.",
+    "RES_TECH_SPEAK": "Diseñamos sistemas automatizados que blindan por completo tu clínica. ... El objetivo es muy claro: ... evitar la fuga de pacientes por culpa de las demoras, ... multiplicar la captación reteniendo su interés desde el primer segundo, ... y ahorrarle cientos de horas de gestión manual a todo tu equipo.",
+    "RES_FILTERING_DISPLAY": "Quitamos esa carga a tus comerciales. El agente despeja, uno a uno, todos los miedos al tratamiento, explica técnicas o tiempos de recuperación, y negocia la cualificación antes de derivar la visita presencial.",
+    "RES_FILTERING_SPEAK": "Le quitamos toda esa carga pesada a tu equipo comercial. ... El agente es capaz de despejar, uno a uno, todos los miedos típicos frente al tratamiento,... les explica las técnicas o los tiempos de recuperación con paciencia,... y negocia si el paciente está cualificado, antes de derivar una visita presencial a la clínica.",
+    "RES_AUDIT_DISPLAY": "¡Excelente decisión! Te abro el circuito de reservas. Selecciona un bloque horario y un especialista en infraestructuras tecnológicas analizará en directo tu estrategia de captación actual.",
+    "RES_AUDIT_SPEAK": "¡Excelente decisión! ... Te voy a abrir el circuito de reservas. ... Solo tienes que seleccionar un bloque horario que te venga bien,... y un experto en infraestructuras tecnológicas, se conectará contigo para analizar en directo tu estrategia de captación actual.",
+    "RES_DEFAULT_DISPLAY": "Entendido. Un coordinador revisará esta consulta en detalle de manera inminente.",
+    "RES_DEFAULT_SPEAK": "Entendido. ... Un coordinador revisará tu consulta en detalle ahora mismo."
   },
-  "ABANDONED_CART": {
-    "TITLE": "Agente Recuperador IA",
-    "SUBTITLE": "Tu experto en recuperación de ventas",
-    "GREETING": "Hola, soy tu Agente Recuperador. ¿Te gustaría saber cuántos carritos abandonados tienes pendientes?",
-    "PRESS_TO_RESPOND": "Presiona para responder",
-    "RECORDING": "Grabando...",
-    "STOP_RECORDING": "Detener Grabación",
-    "PROCESSING": "Procesando tu voz...",
-    "YOUR_RESPONSE": "Tu respuesta",
-    "AI_RESPONSE": "Respuesta IA",
-    "GO_TO_DASHBOARD": "Ir al Dashboard",
-    "BACK_TO_AGENTS": "Volver a Agentes"
+  "LANDING": {
+    "HERO_SUB": "IA para Negocios de Servicios y Ventas de Alto Valor",
+    "HERO_TITLE": "Convierte más consultas de alto valor con un <span class=\"text-clinical-blue\">Agente IA</span> 24/7",
+    "HERO_DESC": "Captamos prospectos cualificados, los filtramos en automático y garantizamos su asistencia a la reserva o reunión de cierre.",
+    "HERO_BUTTON": "Agendar Auditoría Gratuita",
+    "HERO_METRIC_TIME": "+40 horas",
+    "HERO_METRIC_SUB": "ahorradas al mes"
   },
-  "VOICE": {
-    "GREETING_LABEL": "Saludo",
-    "PLAY": "Reproducir",
-    "PAUSE": "Pausar",
-    "REPLAY": "Repetir"
+  "HAIR_TRANSPLANT": {
+    "NAV_CHALLENGE": "Desafío Clínico",
+    "NAV_SOLUTION": "La Solución IA",
+    "NAV_ROI": "Métricas de Retorno",
+    "NAV_BUTTON": "Solicitar Diagnóstico",
+    "HERO_SUB": "Automatización Clínica Especializada",
+    "HERO_TITLE": "Potencia la captación de pacientes capilares con sistemas&nbsp;automatizados",
+    "HERO_DESC": "El único sistema de <b>Asistencia Clínica por IA</b> diseñado para pre-cualificar pacientes de Injerto, Terapias PRP y Micropigmentación. Resuelve inquietudes médicas 24/7 y transfiere al especialista únicamente casos viables.",
+    "HERO_BUTTON": "Auditoría de Adquisición Gratuita",
+    "FEAT_1": "Derivación segmentada por tratamiento",
+    "FEAT_2": "Validación médica activa",
+    "FEAT_3": "Contacto instantáneo 24/7"
   }
 }

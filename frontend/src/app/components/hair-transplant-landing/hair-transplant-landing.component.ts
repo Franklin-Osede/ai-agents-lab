@@ -1,11 +1,12 @@
 import { Component, inject } from "@angular/core";
 import { Router, RouterModule } from "@angular/router";
 import { CommonModule } from "@angular/common";
+import { TranslateModule } from "@ngx-translate/core";
 
 @Component({
   selector: "app-hair-transplant-landing",
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: "./hair-transplant-landing.component.html",
   styleUrls: ["./hair-transplant-landing.component.scss"],
 })

@@ -1,42 +1,59 @@
 {
-  "COMMON": {
-    "APP_NAME": "AI Agents Lab",
-    "WELCOME": "Welcome",
-    "LOADING": "Loading...",
-    "ERROR": "Error",
-    "SUCCESS": "Success",
-    "SAVE": "Save",
-    "CANCEL": "Cancel",
-    "DELETE": "Delete",
-    "EDIT": "Edit",
-    "BACK": "Back",
-    "NEXT": "Next",
-    "PREVIOUS": "Previous",
-    "CLOSE": "Close"
+  "NAVBAR": {
+    "BENEFITS": "Benefits",
+    "BLOG": "Blog",
+    "ABOUT": "About Us",
+    "REQUEST_DEMO": "Request Demo"
   },
-  "NAV": {
-    "HOME": "Home",
-    "AGENTS": "Agents",
-    "DASHBOARD": "Dashboard",
-    "SETTINGS": "Settings"
+  "CHAT_BUBBLE": {
+    "GREETING_DISPLAY": "Hello! I am your virtual assistant. Would you like to see how we automatically filter and qualify your hair transplant patients?",
+    "GREETING_SPEAK": "Hello! ... I am your virtual assistant. ... Would you like to see how we automatically filter, and qualify your hair transplant patients?",
+    "CHIP_OPERATIVE_DOUBTS": "❓ Operational Doubts",
+    "CHIP_BACK_TO_OPTIONS": "↩️ Back to options",
+    "CHIP_HOW_EVALUATED": "How is the patient pre-evaluated?",
+    "CHIP_HOW_ADAPTED": "How does it adapt to my schedule?",
+    "CHIP_ROI": "What ROI can I expect?",
+    "CHIP_TECH": "About the technology",
+    "CHIP_FILTERING": "Automatic filtering",
+    "CHIP_AUDIT": "📅 Audit my strategy (Free)",
+    "RES_OP_DOUBTS_DISPLAY": "Of course. Clinic directors usually have these doubts. What would you like to dive into?",
+    "RES_OP_DOUBTS_SPEAK": "Of course. ... Clinic directors usually have these doubts. ... Tell me, what would you like to dive into?",
+    "RES_BACK_DISPLAY": "Is there any other metric or process you would like to explore?",
+    "RES_BACK_SPEAK": "Is there any other metric... or internal process, you would like to explore?",
+    "RES_EVAL_DISPLAY": "We integrate a clinical protocol on your Website and WhatsApp. The agent converses fluidly with the patient about their case, asks for real-time photos, and identifies medical viability before scheduling.",
+    "RES_EVAL_SPEAK": "We integrate a clinical protocol directly on your Website, ... and in your corporate WhatsApp. The virtual agent converses fluidly with the patient about their case, ... asks for real-time photos, ... and finally, identifies medical viability, right before scheduling.",
+    "RES_ADAPT_DISPLAY": "The AI synchronizes pre-qualified patients directly with your CRM and current calendar. In addition, we automatically reactivate old contact lists from your database to generate new consultations.",
+    "RES_ADAPT_SPEAK": "Artificial intelligence synchronizes patients who are already pre-qualified, ... directly with your CRM, or the calendar you currently use. ... And on top of this, we automatically reactivate old contact lists from your database, to get you new consultations without advertising costs.",
+    "RES_ROI_DISPLAY": "Your specialists will stop wasting time on free evaluations that do not convert. We will filter and educate only AI-profiled patients with high purchasing intent, maximizing billing and optimizing the team's hours.",
+    "RES_ROI_SPEAK": "The return is very clear. ... Your specialists will stop wasting time on free evaluations that never convert. ... We take care of filtering and educating the profiled patients, ... patients with real purchasing intent,... which maximizes monthly billing, and greatly optimizes your team's hours.",
+    "RES_TECH_DISPLAY": "We design automated systems that shield your clinic. We prevent patient leakage due to delays, multiply acquisition by retaining interest instantly, and save your team hundreds of hours of manual management.",
+    "RES_TECH_SPEAK": "We design automated systems that completely shield your clinic. ... The goal is very clear: ... prevent patient leakage due to delays, ... multiply acquisition by retaining their interest from the first second, ... and save your entire team hundreds of hours of manual management.",
+    "RES_FILTERING_DISPLAY": "We take that burden off your sales team. The agent clears up, one by one, all fears about the treatment, explains techniques or recovery times, and negotiates qualification before referring the in-person visit.",
+    "RES_FILTERING_SPEAK": "We take all that heavy burden off your sales team. ... The agent is capable of clearing up, one by one, all typical fears regarding the treatment,... patiently explains techniques or recovery times,... and negotiates if the patient is qualified, before referring an in-person visit to the clinic.",
+    "RES_AUDIT_DISPLAY": "Excellent decision! I'm opening the reservation circuit for you. Select a time block and a technological infrastructure specialist will connect with you to directly analyze your current acquisition strategy.",
+    "RES_AUDIT_SPEAK": "Excellent decision! ... I'm going to open the reservation circuit for you. ... Just select a time block that suits you,... and an expert in technological infrastructures will connect with you to directly analyze your current acquisition strategy.",
+    "RES_DEFAULT_DISPLAY": "Understood. A coordinator will review this query in detail imminently.",
+    "RES_DEFAULT_SPEAK": "Understood. ... A coordinator will review your query in detail right now."
   },
-  "ABANDONED_CART": {
-    "TITLE": "Cart Recovery AI Agent",
-    "SUBTITLE": "Your sales recovery expert",
-    "GREETING": "Hello, I'm your Recovery Agent. Would you like to know how many abandoned carts you have pending?",
-    "PRESS_TO_RESPOND": "Press to respond",
-    "RECORDING": "Recording...",
-    "STOP_RECORDING": "Stop Recording",
-    "PROCESSING": "Processing your voice...",
-    "YOUR_RESPONSE": "Your response",
-    "AI_RESPONSE": "AI Response",
-    "GO_TO_DASHBOARD": "Go to Dashboard",
-    "BACK_TO_AGENTS": "Back to Agents"
+  "LANDING": {
+    "HERO_SUB": "AI for High-Value Services and Sales",
+    "HERO_TITLE": "Convert more high-ticket inquiries with a 24/7 <span class=\"text-clinical-blue\">AI Agent</span>",
+    "HERO_DESC": "We capture qualified prospects, filter them automatically, and guarantee their attendance at the booking or closing meeting.",
+    "HERO_BUTTON": "Schedule Free Audit",
+    "HERO_METRIC_TIME": "+40 hours",
+    "HERO_METRIC_SUB": "saved per month"
   },
-  "VOICE": {
-    "GREETING_LABEL": "Greeting",
-    "PLAY": "Play",
-    "PAUSE": "Pause",
-    "REPLAY": "Replay"
+  "HAIR_TRANSPLANT": {
+    "NAV_CHALLENGE": "Clinical Challenge",
+    "NAV_SOLUTION": "AI Solution",
+    "NAV_ROI": "ROI Metrics",
+    "NAV_BUTTON": "Request Diagnosis",
+    "HERO_SUB": "Specialized Clinical Automation",
+    "HERO_TITLE": "Boost hair transplant patient acquisition with automated systems",
+    "HERO_DESC": "The only <b>AI Clinical Assistance</b> system designed to pre-qualify Hair Transplant, PRP Therapy, and Micropigmentation patients. It resolves medical concerns 24/7 and transfers only viable cases to the specialist.",
+    "HERO_BUTTON": "Free Acquisition Audit",
+    "FEAT_1": "Segmented referral by treatment",
+    "FEAT_2": "Active medical validation",
+    "FEAT_3": "Instant 24/7 contact"
   }
 }

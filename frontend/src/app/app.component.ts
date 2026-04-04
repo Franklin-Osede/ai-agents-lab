@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from "@angular/core";
 import { Router, NavigationEnd } from "@angular/router";
 import { filter } from "rxjs/operators";
 import { ThemeService } from "./shared/services/theme.service";
+import { TranslationService } from "./core/services/translation.service";
 
 @Component({
   selector: "app-root",
@@ -11,9 +12,12 @@ import { ThemeService } from "./shared/services/theme.service";
 export class AppComponent implements OnInit {
   private readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
+  public readonly translationService = inject(TranslationService);
+  
   title = "AgentMinds";
   isAbandonedCartRoute = false;
   hideNavbar = false;
+  currentLanguage: string = 'es';
 
   ngOnInit(): void {
     // Check initial route
@@ -25,6 +29,15 @@ export class AppComponent implements OnInit {
       .subscribe(() => {
         this.updateRouteClass();
       });
+
+    this.translationService.currentLanguage$.subscribe(lang => {
+      this.currentLanguage = lang;
+    });
+  }
+
+  toggleLanguage(): void {
+    const newLang = this.currentLanguage === 'es' ? 'en' : 'es';
+    this.translationService.setLanguage(newLang);
   }
 
   private updateRouteClass(): void {

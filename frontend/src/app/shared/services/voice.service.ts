@@ -2,12 +2,14 @@ import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, firstValueFrom } from "rxjs";
 import { environment } from "../../../environments/environment";
+import { TranslationService } from "../../core/services/translation.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class VoiceService {
   private http = inject(HttpClient);
+  private translationService = inject(TranslationService);
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
   private recognition: any; // Web Speech API instance
@@ -66,13 +68,18 @@ export class VoiceService {
    */
   async interact(
     audioBlob: Blob,
-    systemPrompt?: string
+    systemPrompt?: string,
+    language?: string
   ): Promise<{ audio: Blob; userText: string; aiText: string }> {
     const formData = new FormData();
     formData.append("audio", audioBlob, "recording.webm");
     if (systemPrompt) {
       formData.append("systemPrompt", systemPrompt);
     }
+    
+    // Pass language, default to currently selected in TranslationService
+    const targetLang = language || this.translationService.getCurrentLanguage();
+    formData.append("language", targetLang);
 
     try {
       const response = await firstValueFrom(

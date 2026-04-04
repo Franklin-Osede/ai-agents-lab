@@ -112,45 +112,45 @@
       @if (showChips()) {
         <div class="flex flex-wrap gap-2.5 animate-fade-in-up mt-2">
           @if (currentChipView() === 'main') {
-            @if (!clickedChips().has('Sobre la tecnología')) {
-              <button (click)="handleChipClick('Sobre la tecnología')" class="bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2 rounded-full hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-colors shadow-sm cursor-pointer">
-                Sobre la tecnología
+            @if (!clickedChips().has('CHIP_TECH')) {
+              <button (click)="handleChipClick('CHIP_TECH')" class="bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2 rounded-full hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-colors shadow-sm cursor-pointer">
+                {{ 'CHAT_BUBBLE.CHIP_TECH' | translate }}
               </button>
             }
-            @if (!clickedChips().has('Filtrado automático')) {
-              <button (click)="handleChipClick('Filtrado automático')" class="bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2 rounded-full hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-colors shadow-sm cursor-pointer">
-                Filtrado automático
+            @if (!clickedChips().has('CHIP_FILTERING')) {
+              <button (click)="handleChipClick('CHIP_FILTERING')" class="bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2 rounded-full hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-colors shadow-sm cursor-pointer">
+                {{ 'CHAT_BUBBLE.CHIP_FILTERING' | translate }}
               </button>
             }
-            @if (!clickedChips().has('❓ Dudas Operativas') && !clickedChips().has('¿Cómo pre-evalúan al paciente?') && !clickedChips().has('¿Cómo se adapta a mi agenda?') && !clickedChips().has('¿Qué retorno (ROI) puedo esperar?')) {
-              <button (click)="handleChipClick('❓ Dudas Operativas')" class="bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2 rounded-full hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-colors shadow-sm cursor-pointer">
-                ❓ Dudas Operativas
+            @if (!clickedChips().has('CHIP_OPERATIVE_DOUBTS') && !clickedChips().has('CHIP_HOW_EVALUATED') && !clickedChips().has('CHIP_HOW_ADAPTED') && !clickedChips().has('CHIP_ROI')) {
+              <button (click)="handleChipClick('CHIP_OPERATIVE_DOUBTS')" class="bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2 rounded-full hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-colors shadow-sm cursor-pointer">
+                {{ 'CHAT_BUBBLE.CHIP_OPERATIVE_DOUBTS' | translate }}
               </button>
             }
-            <button (click)="handleChipClick('📅 Auditar mi estrategia (Gratis)')" class="w-full bg-[#094cb2] border border-[#094cb2] text-white text-[14px] font-semibold px-4 py-3 rounded-full hover:bg-[#183ce3] cursor-pointer transition-colors shadow-md flex items-center justify-center gap-1.5 mt-2 animate-bounce">
-              📅 Auditar mi estrategia (Gratis)
+            <button (click)="handleChipClick('CHIP_AUDIT')" class="w-full bg-[#094cb2] border border-[#094cb2] text-white text-[14px] font-semibold px-4 py-3 rounded-full hover:bg-[#183ce3] cursor-pointer transition-colors shadow-md flex items-center justify-center gap-1.5 mt-2 animate-bounce">
+              {{ 'CHAT_BUBBLE.CHIP_AUDIT' | translate }}
             </button>
           } @else if (currentChipView() === 'faqs') {
-            @if (!clickedChips().has('¿Cómo pre-evalúan al paciente?')) {
-              <button (click)="handleChipClick('¿Cómo pre-evalúan al paciente?')" class="w-full text-left bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2.5 rounded-2xl hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-all shadow-sm cursor-pointer">
-                ¿Cómo pre-evalúan al paciente?
+            @if (!clickedChips().has('CHIP_HOW_EVALUATED')) {
+              <button (click)="handleChipClick('CHIP_HOW_EVALUATED')" class="w-full text-left bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2.5 rounded-2xl hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-all shadow-sm cursor-pointer">
+                {{ 'CHAT_BUBBLE.CHIP_HOW_EVALUATED' | translate }}
               </button>
             }
-            @if (!clickedChips().has('¿Cómo se adapta a mi agenda?')) {
-              <button (click)="handleChipClick('¿Cómo se adapta a mi agenda?')" class="w-full text-left bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2.5 rounded-2xl hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-all shadow-sm cursor-pointer">
-                ¿Cómo se adapta a mi agenda?
+            @if (!clickedChips().has('CHIP_HOW_ADAPTED')) {
+              <button (click)="handleChipClick('CHIP_HOW_ADAPTED')" class="w-full text-left bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2.5 rounded-2xl hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-all shadow-sm cursor-pointer">
+                {{ 'CHAT_BUBBLE.CHIP_HOW_ADAPTED' | translate }}
               </button>
             }
-            @if (!clickedChips().has('¿Qué retorno (ROI) puedo esperar?')) {
-              <button (click)="handleChipClick('¿Qué retorno (ROI) puedo esperar?')" class="w-full text-left bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2.5 rounded-2xl hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-all shadow-sm cursor-pointer">
-                ¿Qué retorno (ROI) puedo esperar?
+            @if (!clickedChips().has('CHIP_ROI')) {
+              <button (click)="handleChipClick('CHIP_ROI')" class="w-full text-left bg-white border border-gray-200 text-gray-700 text-[14px] font-medium px-4 py-2.5 rounded-2xl hover:bg-blue-50 hover:text-[#094cb2] hover:border-blue-200 transition-all shadow-sm cursor-pointer">
+                {{ 'CHAT_BUBBLE.CHIP_ROI' | translate }}
               </button>
             }
-            <button (click)="handleChipClick('↩️ Volver a opciones')" class="w-full flex items-center justify-center bg-gray-100 border border-gray-200 text-gray-800 text-[14px] font-semibold px-4 py-2.5 rounded-full hover:bg-gray-200 transition-all shadow-sm mt-2 cursor-pointer">
-              ↩️ Volver a opciones
+            <button (click)="handleChipClick('CHIP_BACK_TO_OPTIONS')" class="w-full flex items-center justify-center bg-gray-100 border border-gray-200 text-gray-800 text-[14px] font-semibold px-4 py-2.5 rounded-full hover:bg-gray-200 transition-all shadow-sm mt-2 cursor-pointer">
+              {{ 'CHAT_BUBBLE.CHIP_BACK_TO_OPTIONS' | translate }}
             </button>
-            <button (click)="handleChipClick('📅 Auditar mi estrategia (Gratis)')" class="w-full bg-[#094cb2] border border-[#094cb2] text-white text-[14px] font-semibold px-4 py-3 rounded-full hover:bg-[#183ce3] cursor-pointer transition-colors shadow-md flex items-center justify-center gap-1.5 mt-2 animate-bounce">
-              📅 Auditar mi estrategia (Gratis)
+            <button (click)="handleChipClick('CHIP_AUDIT')" class="w-full bg-[#094cb2] border border-[#094cb2] text-white text-[14px] font-semibold px-4 py-3 rounded-full hover:bg-[#183ce3] cursor-pointer transition-colors shadow-md flex items-center justify-center gap-1.5 mt-2 animate-bounce">
+              {{ 'CHAT_BUBBLE.CHIP_AUDIT' | translate }}
             </button>
           }
         </div>

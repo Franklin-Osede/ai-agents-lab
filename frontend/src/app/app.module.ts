@@ -5,6 +5,10 @@ import { FormsModule } from "@angular/forms";
 
 // Authentication
 import { AuthModule } from './auth/auth.module';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader, provideTranslateHttpLoader } from '@ngx-translate/http-loader';
+import { HttpClient } from '@angular/common/http';
+
 
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
@@ -53,8 +57,15 @@ import { AGENT_INITIALIZER_PROVIDER } from "./shared/initializers/agent-initiali
         VoicePlayerComponent,
         GoogleMapsAutocompleteComponent,
         ChatBubbleComponent,
-        AppRoutingModule], providers: [
+        AppRoutingModule,
+        TranslateModule.forRoot({
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateHttpLoader
+          }
+        })], providers: [
         AGENT_INITIALIZER_PROVIDER,
         provideHttpClient(withInterceptorsFromDi()),
+        provideTranslateHttpLoader({ prefix: './assets/i18n/', suffix: '.json' })
     ] })
 export class AppModule {}

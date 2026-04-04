@@ -10,4 +10,13 @@ export class VoiceInteractDto {
   @IsString()
   @IsOptional()
   systemPrompt?: string;
+
+  @ApiProperty({
+    description: 'Language of the interaction (es, en)',
+    example: 'en',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  language?: string;
 }

@@ -2,6 +2,7 @@ import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VoiceService } from '../../../core/services/voice.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 export interface ChatMessage {
   id: number;
@@ -17,40 +18,53 @@ export interface ChatMessage {
 @Component({
   selector: 'app-chat-bubble',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './chat-bubble.component.html',
   styleUrls: ['./chat-bubble.component.scss']
 })
 export class ChatBubbleComponent implements OnInit {
   private voiceService = inject(VoiceService);
+  private translate = inject(TranslateService);
   isChatActive = signal(false);
   isPlaying = signal(false);
   showChips = signal(false);
   private msgIdCounter = 0;
   
   // Chat History
-  messages = signal<ChatMessage[]>([
-    { 
-      id: this.msgIdCounter++, 
-      role: 'assistant', 
-      content: '¡Hola! Soy tu asistente virtual. ¿Te gustaría ver cómo filtramos y cualificamos automáticamente a tus pacientes capilares?',
-      showTranscript: false,
-      progressPercent: 0,
-      currentTime: '0:00',
-      totalTime: '0:00',
-      isPlaying: false
-    }
-  ]);
+  messages = signal<ChatMessage[]>([]);
 
   currentChipView = signal<'main' | 'faqs'>('main');
   clickedChips = signal<Set<string>>(new Set());
 
-  private greetingDisplay = "¡Hola! Soy tu asistente virtual. ¿Te gustaría ver cómo filtramos y cualificamos automáticamente a tus pacientes capilares?";
-  private greetingSpeak = "¡Hola! ... Soy tu asistente virtual. ... ¿Te gustaría ver cómo filtramos, y cualificamos automáticamente a tus pacientes capilares?";
   private selectedVoiceId = "Lucia"; 
 
   ngOnInit() {
-    this.voiceService.preload(this.greetingSpeak, this.selectedVoiceId);
+    this.translate.onLangChange.subscribe(() => {
+      this.initGreeting();
+    });
+    this.initGreeting();
+  }
+
+  initGreeting() {
+    const display = this.translate.instant('CHAT_BUBBLE.GREETING_DISPLAY');
+    const speak = this.translate.instant('CHAT_BUBBLE.GREETING_SPEAK');
+    
+    // reset if not actively chatting
+    if (!this.isChatActive()) {
+       this.messages.set([
+         { 
+           id: this.msgIdCounter++, 
+           role: 'assistant', 
+           content: display,
+           showTranscript: false,
+           progressPercent: 0,
+           currentTime: '0:00',
+           totalTime: '0:00',
+           isPlaying: false
+         }
+       ]);
+       this.voiceService.preload(speak, this.selectedVoiceId);
+    }
   }
 
   startChat() {
@@ -61,7 +75,8 @@ export class ChatBubbleComponent implements OnInit {
   playGreeting() {
     this.isPlaying.set(true);
     this.showChips.set(false);
-    this.playVoiceResponse(this.greetingSpeak, 0); 
+    const speak = this.translate.instant('CHAT_BUBBLE.GREETING_SPEAK');
+    this.playVoiceResponse(speak, this.messages()[0].id); 
   }
 
   toggleTranscript(msgId: number) {
@@ -75,53 +90,54 @@ export class ChatBubbleComponent implements OnInit {
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   }
 
-  handleChipClick(chipText: string) {
+  handleChipClick(chipKey: string) {
+    const chipText = this.translate.instant(`CHAT_BUBBLE.${chipKey}`);
     this.addMessage('user', chipText);
     this.showChips.set(false); 
     
     this.clickedChips.update(set => {
       const newSet = new Set(set);
-      newSet.add(chipText);
+      newSet.add(chipKey);
       return newSet;
     });
 
-    let responseDisplay = "";
-    let responseSpeak = "";
+    let displayKey = "RES_DEFAULT_DISPLAY";
+    let speakKey = "RES_DEFAULT_SPEAK";
     let nextView: 'main' | 'faqs' = this.currentChipView();
 
-    if (chipText === "❓ Dudas Operativas") {
+    if (chipKey === "CHIP_OPERATIVE_DOUBTS") {
       nextView = 'faqs';
-      responseDisplay = "Por supuesto. Los directores de clínicas suelen tener estas dudas. ¿Qué te gustaría profundizar?";
-      responseSpeak = "Por supuesto. ... Los directores de clínicas, suelen tener este tipo de dudas. ... Cuéntame, ¿en qué punto te gustaría profundizar?";
-    } else if (chipText === "↩️ Volver a opciones") {
+      displayKey = "RES_OP_DOUBTS_DISPLAY";
+      speakKey = "RES_OP_DOUBTS_SPEAK";
+    } else if (chipKey === "CHIP_BACK_TO_OPTIONS") {
       nextView = 'main';
-      responseDisplay = "¿Hay alguna otra métrica o proceso que te gustaría explorar?";
-      responseSpeak = "¿Hay alguna otra métrica..., o proceso interno, que te gustaría explorar?";
-    } else if (chipText === "¿Cómo pre-evalúan al paciente?") {
-       responseDisplay = "Integramos un protocolo clínico en tu Web y WhatsApp. El agente conversa de forma fluida con el paciente sobre su caso, pide fotografías en tiempo real e identifica la viabilidad médica antes de agendar.";
-       responseSpeak = "Integramos un protocolo clínico directamente en tu Web, ... y en tu Whats App corporativo. El agente virtual, conversa de forma muy fluida con el paciente sobre su caso empático, ... le pide fotografías en tiempo real, ... y finalmente, identifica la viabilidad médica, justo antes de enviarlo a la agenda.";
-    } else if (chipText === "¿Cómo se adapta a mi agenda?") {
-       responseDisplay = "La IA sincroniza los pacientes pre-calificados directamente con tu CRM y tu calendario actual. Además, reactivamos automáticamente antiguas listas de contactos de tu base de datos para generar consultas nuevas.";
-       responseSpeak = "La inteligencia artificial, sincroniza los pacientes que ya están pre-calificados, ... directamente con el cé erre eme, o el calendario que uses actualmente. ... Y además de esto, reactivamos de forma automática, las antiguas listas de contactos de tu base de datos, para conseguirte consultas nuevas sin coste publicitario.";
-    } else if (chipText === "¿Qué retorno (ROI) puedo esperar?") {
-       responseDisplay = "Tus especialistas dejarán de perder tiempo en valoraciones gratuitas que no convierten. Filtraremos y educaremos únicamente a pacientes perfilados por la IA con alta intención de compra, maximizando la facturación y optimizando las horas del equipo.";
-       responseSpeak = "El retorno es muy claro. ... Tus especialistas, dejarán de perder el tiempo en valoraciones gratuitas que nunca convierten. ... Nosotros nos encargamos de filtrar y educar a los pacientes perfilados, ... pacientes con una intención de compra real,... lo cual maximiza la facturación mensual, y optimiza muchísimo las horas de tu equipo.";
-    } else if (chipText === "Sobre la tecnología") {
-       responseDisplay = "Diseñamos sistemas automatizados que blindan tu clínica. Evitamos la fuga de pacientes por demoras, multiplicamos la captación reteniendo el interés al instante y ahorramos cientos de horas de gestión manual a tu equipo.";
-       responseSpeak = "Diseñamos sistemas automatizados que blindan por completo tu clínica. ... El objetivo es muy claro: ... evitar la fuga de pacientes por culpa de las demoras, ... multiplicar la captación reteniendo su interés desde el primer segundo, ... y ahorrarle cientos de horas de gestión manual a todo tu equipo.";
-    } else if (chipText === "Filtrado automático") {
-       responseDisplay = "Quitamos esa carga a tus comerciales. El agente despeja, uno a uno, todos los miedos al tratamiento, explica técnicas o tiempos de recuperación, y negocia la cualificación antes de derivar la visita presencial.";
-       responseSpeak = "Le quitamos toda esa carga pesada a tu equipo comercial. ... El agente es capaz de despejar, uno a uno, todos los miedos típicos frente al tratamiento,... les explica las técnicas o los tiempos de recuperación con paciencia,... y negocia si el paciente está cualificado, antes de derivar una visita presencial a la clínica.";
-    } else if (chipText === "📅 Auditar mi estrategia (Gratis)") {
-       responseDisplay = "¡Excelente decisión! Te abro el circuito de reservas. Selecciona un bloque horario y un especialista en infraestructuras tecnológicas analizará en directo tu estrategia de captación actual.";
-       responseSpeak = "¡Excelente decisión! ... Te voy a abrir el circuito de reservas. ... Solo tienes que seleccionar un bloque horario que te venga bien,... y un experto en infraestructuras tecnológicas, se conectará contigo para analizar en directo tu estrategia de captación actual.";
+      displayKey = "RES_BACK_DISPLAY";
+      speakKey = "RES_BACK_SPEAK";
+    } else if (chipKey === "CHIP_HOW_EVALUATED") {
+       displayKey = "RES_EVAL_DISPLAY";
+       speakKey = "RES_EVAL_SPEAK";
+    } else if (chipKey === "CHIP_HOW_ADAPTED") {
+       displayKey = "RES_ADAPT_DISPLAY";
+       speakKey = "RES_ADAPT_SPEAK";
+    } else if (chipKey === "CHIP_ROI") {
+       displayKey = "RES_ROI_DISPLAY";
+       speakKey = "RES_ROI_SPEAK";
+    } else if (chipKey === "CHIP_TECH") {
+       displayKey = "RES_TECH_DISPLAY";
+       speakKey = "RES_TECH_SPEAK";
+    } else if (chipKey === "CHIP_FILTERING") {
+       displayKey = "RES_FILTERING_DISPLAY";
+       speakKey = "RES_FILTERING_SPEAK";
+    } else if (chipKey === "CHIP_AUDIT") {
+       displayKey = "RES_AUDIT_DISPLAY";
+       speakKey = "RES_AUDIT_SPEAK";
        setTimeout(() => {
          window.open('https://calendly.com/agentminds', '_blank');
        }, 2000);
-    } else {
-       responseDisplay = "Entendido. Un coordinador revisará esta consulta en detalle de manera inminente.";
-       responseSpeak = "Entendido. ... Un coordinador revisará tu consulta en detalle ahora mismo.";
     }
+
+    const responseDisplay = this.translate.instant(`CHAT_BUBBLE.${displayKey}`);
+    const responseSpeak = this.translate.instant(`CHAT_BUBBLE.${speakKey}`);
 
     if (responseDisplay) {
       setTimeout(() => {

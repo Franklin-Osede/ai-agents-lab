@@ -10,17 +10,16 @@
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-clinical-blue opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-clinical-blue"></span>
             </span>
-            IA para Negocios de Servicios y Ventas de Alto Valor
+            {{ 'LANDING.HERO_SUB' | translate }}
           </div>
-          <h1 class="text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight text-clinical-dark">
-            Convierte más consultas de alto valor con un <span class="text-clinical-blue">Agente IA</span> 24/7
+          <h1 class="text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight text-clinical-dark" [innerHTML]="'LANDING.HERO_TITLE' | translate">
           </h1>
           <p class="text-lg text-clinical-gray max-w-lg leading-relaxed">
-            Captamos prospectos cualificados, los filtramos en automático y garantizamos su asistencia a la reserva o reunión de cierre.
+            {{ 'LANDING.HERO_DESC' | translate }}
           </p>
           <div class="flex flex-col sm:flex-row gap-4 items-center sm:items-stretch">
             <button (click)="openContact()" class="bg-clinical-blue text-white px-8 py-4 rounded-full font-bold shadow-lg shadow-clinical-blue/20 hover:scale-[1.02] transition-transform cursor-pointer flex-shrink-0">
-              Agendar Auditoría Gratuita
+              {{ 'LANDING.HERO_BUTTON' | translate }}
             </button>
             <div class="flex items-center gap-3 px-6 py-3 rounded-full border border-gray-200 bg-white/50 backdrop-blur-sm self-center sm:self-auto shrink-0">
               <div class="flex -space-x-2">
@@ -28,8 +27,8 @@
                 <div class="w-8 h-8 rounded-full bg-gray-200 border-2 border-white overflow-hidden"><img src="https://i.pravatar.cc/100?img=33" alt="Doc" class="w-full h-full object-cover"></div>
               </div>
               <div class="text-xs text-clinical-gray leading-tight">
-                <p class="font-bold">+40 horas</p>
-                <p>ahorradas al mes</p>
+                <p class="font-bold">{{ 'LANDING.HERO_METRIC_TIME' | translate }}</p>
+                <p>{{ 'LANDING.HERO_METRIC_SUB' | translate }}</p>
               </div>
             </div>
           </div>

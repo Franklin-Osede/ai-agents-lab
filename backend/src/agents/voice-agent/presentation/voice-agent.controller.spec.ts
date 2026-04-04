@@ -12,6 +12,14 @@ describe('VoiceAgentController', () => {
     generateVoiceMessage: jest.fn(),
   };
 
+  const mockAiProvider = {
+    transcribeAudio: jest.fn().mockResolvedValue('test transcript'),
+    generateResponse: jest.fn().mockResolvedValue('test response'),
+    generateAudio: jest.fn().mockResolvedValue(Buffer.from('audio')),
+  };
+
+  const mockPollyService = {};
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [VoiceAgentController],
@@ -19,6 +27,14 @@ describe('VoiceAgentController', () => {
         {
           provide: VoiceAgentService,
           useValue: mockService,
+        },
+        {
+          provide: 'IAiProvider', // AI_PROVIDER_TOKEN
+          useValue: mockAiProvider,
+        },
+        {
+          provide: 'PollyService', // Adjust if real injection token is different
+          useValue: mockPollyService,
         },
       ],
     }).compile();
@@ -115,6 +131,48 @@ describe('VoiceAgentController', () => {
       // Assert
       expect(result.success).toBe(true);
       expect(result.videoUrl).toBe(mockVoiceMessage.videoUrl);
+    });
+  });
+
+  describe('interact', () => {
+    it('should set English system prompt if language is en', async () => {
+      const dto = { language: 'en', systemPrompt: 'Base prompt' };
+      const res = {
+        setHeader: jest.fn(),
+        send: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      await controller.interact({ buffer: Buffer.from('') } as any, dto, res as any);
+
+      expect(mockAiProvider.generateResponse).toHaveBeenCalledWith(
+        'test transcript',
+        expect.objectContaining({
+          systemPrompt: expect.stringContaining('MUST respond ONLY in English'),
+        }),
+      );
+      expect(res.setHeader).toHaveBeenCalledWith('X-Response-Language', 'en');
+    });
+
+    it('should set Spanish system prompt if language is es', async () => {
+      const dto = { language: 'es', systemPrompt: 'Base prompt' };
+      const res = {
+        setHeader: jest.fn(),
+        send: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      await controller.interact({ buffer: Buffer.from('') } as any, dto, res as any);
+
+      expect(mockAiProvider.generateResponse).toHaveBeenCalledWith(
+        'test transcript',
+        expect.objectContaining({
+          systemPrompt: expect.stringContaining('ÚNICAMENTE en Español'),
+        }),
+      );
+      expect(res.setHeader).toHaveBeenCalledWith('X-Response-Language', 'es');
     });
   });
 });

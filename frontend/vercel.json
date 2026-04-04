@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/demo/(.*)",
+      "destination": "https://agentminds.vercel.app/demo/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
